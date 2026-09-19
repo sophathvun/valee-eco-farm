@@ -1,12 +1,93 @@
 // 1. Setup IndexedDB using Dexie.js
-const db = new Dexie("PigFarmDB");
-db.version(6).stores({
-    transactions: '++id, type, amount, currency, date, category, note',
-    categories: '++id, type, name',
-    invoices: '++id, invNo, date, customer, address, items, subtotal, delivery, grandTotal, currency, txId',
-    preparers: '++id, name',
-    users: '++id, username, password'
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyBwBK74uWvtm_CPlxX88Pz-5A9avMtELXs",
+  authDomain: "valee-eco-farm.firebaseapp.com",
+  projectId: "valee-eco-farm",
+  storageBucket: "valee-eco-farm.firebasestorage.app",
+  messagingSenderId: "204722767845",
+  appId: "1:204722767845:web:b132ee57cd0e5c7123110c",
+  measurementId: "G-QFQK6VSKTP"
+};
+firebase.initializeApp(firebaseConfig);
+const firestore = firebase.firestore();
+firestore.enablePersistence({synchronizeTabs:true}).catch(console.error);
+
+class FirebaseQuery {
+    constructor(query) { this.query = query; }
+    reverse() { this.shouldReverse = true; return this; }
+    async toArray() {
+        const snap = await this.query.get();
+        let arr = snap.docs.map(d => d.data());
+        if(this.shouldReverse) arr.reverse();
+        return arr;
+    }
+    async last() {
+        const arr = await this.toArray();
+        return arr[arr.length - 1];
+    }
+    async first() {
+        const snap = await this.query.limit(1).get();
+        return snap.empty ? null : snap.docs[0].data();
+    }
+    async count() {
+        const snap = await this.query.get();
+        return snap.size;
+    }
+}
+
+class FirebaseStore {
+    constructor(collectionName) {
+        this.col = firestore.collection(collectionName);
+    }
+    async count() { const snap = await this.col.get(); return snap.size; }
+    async add(obj) { 
+        if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
+        await this.col.doc(obj.id.toString()).set(obj); 
+        return obj.id; 
+    }
+    async bulkAdd(arr) { 
+        const batch = firestore.batch();
+        arr.forEach(obj => {
+            if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
+            batch.set(this.col.doc(obj.id.toString()), obj);
+        });
+        await batch.commit();
+    }
+    async get(id) { 
+        if(!id) return null;
+        const doc = await this.col.doc(id.toString()).get(); 
+        return doc.exists ? doc.data() : null; 
+    }
+    async update(id, obj) { 
+        if(!id) return;
+        await this.col.doc(id.toString()).update(obj); 
+    }
+    async delete(id) { 
+        if(!id) return;
+        await this.col.doc(id.toString()).delete(); 
+    }
+    async toArray() { 
+        const snap = await this.col.get(); 
+        return snap.docs.map(d => d.data()); 
+    }
+    orderBy(field) { return new FirebaseQuery(this.col.orderBy(field)); }
+    where(field) {
+        const col = this.col;
+        return {
+            equals: (val) => new FirebaseQuery(col.where(field, '==', val)),
+            equalsIgnoreCase: (val) => new FirebaseQuery(col.where(field, '==', val)),
+            anyOf: (arr) => new FirebaseQuery(col.where(field, 'in', arr))
+        };
+    }
+}
+
+const db = {
+    transactions: new FirebaseStore('transactions'),
+    categories: new FirebaseStore('categories'),
+    invoices: new FirebaseStore('invoices'),
+    preparers: new FirebaseStore('preparers'),
+    users: new FirebaseStore('users')
+};
 
 let myChart = null;
 let reportChartInstance = null;
