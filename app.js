@@ -139,7 +139,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const p = document.getElementById('loginPassword').value.trim();
     
     // Check in DB
-    const user = await db.users.where({ username: u, password: p }).first();
+    const allUsers = await db.users.toArray();
+    const user = allUsers.find(x => x.username === u && x.password === p);
     if (user) {
         sessionStorage.setItem('currentUser', JSON.stringify(user));
         currentUser = user;
