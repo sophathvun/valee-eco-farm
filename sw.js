@@ -1,11 +1,12 @@
-const CACHE_NAME = 'pigfarm-v3';
+const CACHE_NAME = 'pigfarm-v4';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './app.js',
     './manifest.json',
     './assets/bootstrap.min.css',
-    './assets/dexie.min.js',
+    'https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js',
+    'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js',
     './assets/chart.umd.min.js'
 ];
 
