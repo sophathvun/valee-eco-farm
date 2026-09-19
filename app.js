@@ -338,6 +338,13 @@ function formatKhmerDate(dateStr) {
 
 // ====== CATEGORY MANAGEMENT ======
 async function loadCategories() {
+    let allCats = await db.categories.toArray();
+    let hasGarbled = allCats.some(c => c.name && c.name.includes('áž'));
+    if (hasGarbled) {
+        for (let c of allCats) {
+            if (c.name.includes('áž')) await db.categories.delete(c.id);
+        }
+    }
     let catCount = await db.categories.count();
     if (catCount === 0) {
         const defaults = [
@@ -391,6 +398,13 @@ async function loadCategories() {
 
 // ====== PREPARER MANAGEMENT ======
 async function loadPreparers() {
+    let allPrep = await db.preparers.toArray();
+    let hasGarbled = allPrep.some(p => p.name && p.name.includes('áž'));
+    if (hasGarbled) {
+        for (let p of allPrep) {
+            if (p.name.includes('áž')) await db.preparers.delete(p.id);
+        }
+    }
     let pCount = await db.preparers.count();
     if (pCount === 0) {
         await db.preparers.bulkAdd([{name: 'សុខ សាន្ត'}]);
