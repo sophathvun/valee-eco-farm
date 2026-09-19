@@ -1736,3 +1736,14 @@ checkLogin().then((isLoggedIn) => {
     loadInvoices();
     loadData();
 });
+
+// Auto-update PWA logic
+let refreshing = false;
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+        }
+    });
+}
