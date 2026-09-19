@@ -1,12 +1,93 @@
-// 1. Setup IndexedDB using Dexie.js
-const db = new Dexie("PigFarmDB");
-db.version(6).stores({
-    transactions: '++id, type, amount, currency, date, category, note',
-    categories: '++id, type, name',
-    invoices: '++id, invNo, date, customer, address, items, subtotal, delivery, grandTotal, currency, txId',
-    preparers: '++id, name',
-    users: '++id, username, password'
-});
+// 1. Setup Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBwBK74uWvtm_CPlxX88Pz-5A9avMtELXs",
+  authDomain: "valee-eco-farm.firebaseapp.com",
+  projectId: "valee-eco-farm",
+  storageBucket: "valee-eco-farm.firebasestorage.app",
+  messagingSenderId: "204722767845",
+  appId: "1:204722767845:web:b132ee57cd0e5c7123110c",
+  measurementId: "G-QFQK6VSKTP"
+};
+firebase.initializeApp(firebaseConfig);
+const firestore = firebase.firestore();
+firestore.enablePersistence({synchronizeTabs:true}).catch(console.error);
+
+class FirebaseQuery {
+    constructor(query) { this.query = query; }
+    reverse() { this.shouldReverse = true; return this; }
+    async toArray() {
+        const snap = await this.query.get();
+        let arr = snap.docs.map(d => d.data());
+        if(this.shouldReverse) arr.reverse();
+        return arr;
+    }
+    async last() {
+        const arr = await this.toArray();
+        return arr[arr.length - 1];
+    }
+    async first() {
+        const snap = await this.query.limit(1).get();
+        return snap.empty ? null : snap.docs[0].data();
+    }
+    async count() {
+        const snap = await this.query.get();
+        return snap.size;
+    }
+}
+
+class FirebaseStore {
+    constructor(collectionName) {
+        this.col = firestore.collection(collectionName);
+    }
+    async count() { const snap = await this.col.get(); return snap.size; }
+    async add(obj) { 
+        if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
+        await this.col.doc(obj.id.toString()).set(obj); 
+        return obj.id; 
+    }
+    async bulkAdd(arr) { 
+        const batch = firestore.batch();
+        arr.forEach(obj => {
+            if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
+            batch.set(this.col.doc(obj.id.toString()), obj);
+        });
+        await batch.commit();
+    }
+    async get(id) { 
+        if(!id) return null;
+        const doc = await this.col.doc(id.toString()).get(); 
+        return doc.exists ? doc.data() : null; 
+    }
+    async update(id, obj) { 
+        if(!id) return;
+        await this.col.doc(id.toString()).update(obj); 
+    }
+    async delete(id) { 
+        if(!id) return;
+        await this.col.doc(id.toString()).delete(); 
+    }
+    async toArray() { 
+        const snap = await this.col.get(); 
+        return snap.docs.map(d => d.data()); 
+    }
+    orderBy(field) { return new FirebaseQuery(this.col.orderBy(field)); }
+    where(field) {
+        const col = this.col;
+        return {
+            equals: (val) => new FirebaseQuery(col.where(field, '==', val)),
+            equalsIgnoreCase: (val) => new FirebaseQuery(col.where(field, '==', val)),
+            anyOf: (arr) => new FirebaseQuery(col.where(field, 'in', arr))
+        };
+    }
+}
+
+const db = {
+    transactions: new FirebaseStore('transactions'),
+    categories: new FirebaseStore('categories'),
+    invoices: new FirebaseStore('invoices'),
+    preparers: new FirebaseStore('preparers'),
+    users: new FirebaseStore('users')
+};
 
 let myChart = null;
 let reportChartInstance = null;
@@ -77,7 +158,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         else if (hasPermission('settings')) showTab('settings');
         
     } else {
-        alert('ឈ្មោះគណនី ឬ លេខសម្ងាត់មិនត្រឹមត្រូវទេ!');
+        alert('ážˆáŸ’áž˜áŸ„áŸ‡áž‚ážŽáž“áž¸ áž¬ áž›áŸážážŸáž˜áŸ’áž„áž¶ážáŸ‹áž˜áž·áž“ážáŸ’ážšáž¹áž˜ážáŸ’ážšáž¼ážœáž‘áŸ!');
     }
 });
 
@@ -132,7 +213,7 @@ updateOnlineStatus();
 
 function loadSystemSettings() {
     const sysPhone = localStorage.getItem('sysPhone') || '095 989 708';
-    const sysAddrKh = localStorage.getItem('sysAddrKh') || 'ភូមិព្រីង ឃុំយាយម៉ៅ\nស្រុកភ្នំស្រួច ខេត្តកំពង់ស្ពឺ';
+    const sysAddrKh = localStorage.getItem('sysAddrKh') || 'áž—áž¼áž˜áž·áž–áŸ’ážšáž¸áž„ ážƒáž»áŸ†áž™áž¶áž™áž˜áŸ‰áŸ…\nážŸáŸ’ážšáž»áž€áž—áŸ’áž“áŸ†ážŸáŸ’ážšáž½áž… ážáŸážáŸ’ážáž€áŸ†áž–áž„áŸ‹ážŸáŸ’áž–ážº';
     const sysAddrEn = localStorage.getItem('sysAddrEn') || 'Phoum Pring, Khum Yeay Moa\nSrok Phnom Srouch, Kampong Speu';
     const sysPreparer = localStorage.getItem('sysPreparer') || '';
     const sysLogo = localStorage.getItem('sysLogo'); // Base64 if exists
@@ -188,13 +269,13 @@ function showTab(tabId) {
     document.querySelector('.sidebar').classList.remove('mobile-open');
     
     const titles = {
-        'dashboard': 'ទំព័រដើម',
-        'invoice': 'បង្កើតវិក្កយបត្រ (Invoice)',
-        'invoice-list': 'ប្រវត្តិវិក្កយបត្រ',
-        'income': 'បញ្ចូលទិន្នន័យចំណូលផ្ទាល់',
-        'expense': 'បញ្ចូលទិន្នន័យចំណាយ',
-        'reports': 'របាយការណ៍',
-        'settings': 'ការកំណត់ប្រព័ន្ធទូទៅ'
+        'dashboard': 'áž‘áŸ†áž–áŸážšážŠáž¾áž˜',
+        'invoice': 'áž”áž„áŸ’áž€áž¾ážážœáž·áž€áŸ’áž€áž™áž”ážáŸ’ážš (Invoice)',
+        'invoice-list': 'áž”áŸ’ážšážœážáŸ’ážáž·ážœáž·áž€áŸ’áž€áž™áž”ážáŸ’ážš',
+        'income': 'áž”áž‰áŸ’áž…áž¼áž›áž‘áž·áž“áŸ’áž“áž“áŸáž™áž…áŸ†ážŽáž¼áž›áž•áŸ’áž‘áž¶áž›áŸ‹',
+        'expense': 'áž”áž‰áŸ’áž…áž¼áž›áž‘áž·áž“áŸ’áž“áž“áŸáž™áž…áŸ†ážŽáž¶áž™',
+        'reports': 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸ',
+        'settings': 'áž€áž¶ážšáž€áŸ†ážŽážáŸ‹áž”áŸ’ážšáž–áŸáž“áŸ’áž’áž‘áž¼áž‘áŸ…'
     };
     const pageTitle = document.getElementById('page-title');
     if (pageTitle) pageTitle.textContent = titles[tabId];
@@ -210,19 +291,19 @@ function formatCurrency(amount, currency) {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
     }
     const formatted = new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
-    return `៛${formatted}`;
+    return `áŸ›${formatted}`;
 }
 
 function formatKhmerDate(dateStr) {
     if (!dateStr || dateStr.length !== 10) return dateStr;
     const parts = dateStr.split('-');
     if (parts.length !== 3) return dateStr;
-    const khmerDigits = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+    const khmerDigits = ['áŸ ', 'áŸ¡', 'áŸ¢', 'áŸ£', 'áŸ¤', 'áŸ¥', 'áŸ¦', 'áŸ§', 'áŸ¨', 'áŸ©'];
     const toKhmer = (numStr) => String(numStr).replace(/[0-9]/g, w => khmerDigits[w]);
     const year = toKhmer(parts[0]);
     const monthIndex = parseInt(parts[1], 10) - 1;
     const day = toKhmer(parseInt(parts[2], 10).toString());
-    const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+    const khmerMonths = ['áž˜áž€ážšáž¶', 'áž€áž»áž˜áŸ’áž—áŸˆ', 'áž˜áž¸áž“áž¶', 'áž˜áŸážŸáž¶', 'áž§ážŸáž—áž¶', 'áž˜áž·ážáž»áž“áž¶', 'áž€áž€áŸ’áž€ážŠáž¶', 'ážŸáž¸áž áž¶', 'áž€áž‰áŸ’áž‰áž¶', 'ážáž»áž›áž¶', 'ážœáž·áž…áŸ’áž†áž·áž€áž¶', 'áž’áŸ’áž“áž¼'];
     return `${day} ${khmerMonths[monthIndex]} ${year}`;
 }
 
@@ -231,12 +312,12 @@ async function loadCategories() {
     let catCount = await db.categories.count();
     if (catCount === 0) {
         const defaults = [
-            { type: 'income', name: 'លក់ជ្រូកសាច់' }, { type: 'income', name: 'លក់កូនជ្រូក' },
-            { type: 'income', name: 'លក់ជី (លាមកជ្រូក)' }, { type: 'income', name: 'ផ្សេងៗ' },
-            { type: 'expense', name: 'ចំណីជ្រូក' }, { type: 'expense', name: 'ថ្នាំសង្កូវ និងវ៉ាក់សាំង' },
-            { type: 'expense', name: 'ប្រាក់ខែបុគ្គលិក' }, { type: 'expense', name: 'ថ្លៃទឹក និងភ្លើង' },
-            { type: 'expense', name: 'ថ្លៃដឹកជញ្ជូន' }, { type: 'expense', name: 'ទិញកូនជ្រូក' },
-            { type: 'expense', name: 'ផ្សេងៗ' }
+            { type: 'income', name: 'áž›áž€áŸ‹áž‡áŸ’ážšáž¼áž€ážŸáž¶áž…áŸ‹' }, { type: 'income', name: 'áž›áž€áŸ‹áž€áž¼áž“áž‡áŸ’ážšáž¼áž€' },
+            { type: 'income', name: 'áž›áž€áŸ‹áž‡áž¸ (áž›áž¶áž˜áž€áž‡áŸ’ážšáž¼áž€)' }, { type: 'income', name: 'áž•áŸ’ážŸáŸáž„áŸ—' },
+            { type: 'expense', name: 'áž…áŸ†ážŽáž¸áž‡áŸ’ážšáž¼áž€' }, { type: 'expense', name: 'ážáŸ’áž“áž¶áŸ†ážŸáž„áŸ’áž€áž¼ážœ áž“áž·áž„ážœáŸ‰áž¶áž€áŸ‹ážŸáž¶áŸ†áž„' },
+            { type: 'expense', name: 'áž”áŸ’ážšáž¶áž€áŸ‹ážáŸ‚áž”áž»áž‚áŸ’áž‚áž›áž·áž€' }, { type: 'expense', name: 'ážáŸ’áž›áŸƒáž‘áž¹áž€ áž“áž·áž„áž—áŸ’áž›áž¾áž„' },
+            { type: 'expense', name: 'ážáŸ’áž›áŸƒážŠáž¹áž€áž‡áž‰áŸ’áž‡áž¼áž“' }, { type: 'expense', name: 'áž‘áž·áž‰áž€áž¼áž“áž‡áŸ’ážšáž¼áž€' },
+            { type: 'expense', name: 'áž•áŸ’ážŸáŸáž„áŸ—' }
         ];
         await db.categories.bulkAdd(defaults);
     }
@@ -265,7 +346,7 @@ async function loadCategories() {
     incomeCats.forEach(c => {
         const li = document.createElement('li');
         li.className = 'list-group-item d-flex justify-content-between align-items-center';
-        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">កែប្រែ</button><button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${c.id})">លុប</button></div>`;
+        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">áž€áŸ‚áž”áŸ’ážšáŸ‚</button><button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${c.id})">áž›áž»áž”</button></div>`;
         incList.appendChild(li);
     });
 
@@ -274,7 +355,7 @@ async function loadCategories() {
     expenseCats.forEach(c => {
         const li = document.createElement('li');
         li.className = 'list-group-item d-flex justify-content-between align-items-center';
-        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">កែប្រែ</button><button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${c.id})">លុប</button></div>`;
+        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">áž€áŸ‚áž”áŸ’ážšáŸ‚</button><button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${c.id})">áž›áž»áž”</button></div>`;
         expList.appendChild(li);
     });
 }
@@ -283,7 +364,7 @@ async function loadCategories() {
 async function loadPreparers() {
     let pCount = await db.preparers.count();
     if (pCount === 0) {
-        await db.preparers.bulkAdd([{name: 'សុខ សាន្ត'}]);
+        await db.preparers.bulkAdd([{name: 'ážŸáž»áž ážŸáž¶áž“áŸ’áž'}]);
     }
     const all = await db.preparers.toArray();
     
@@ -294,7 +375,7 @@ async function loadPreparers() {
         all.forEach(p => {
             const li = document.createElement('li');
             li.className = 'list-group-item d-flex justify-content-between align-items-center';
-            li.innerHTML = `<span>${p.name}</span><div><button class="btn btn-sm btn-outline-primary me-1" onclick="editPreparer(${p.id}, '${p.name.replace(/'/g, "\\'")}')">កែប្រែ</button><button class="btn btn-sm btn-outline-danger" onclick="deletePreparer(${p.id})">លុប</button></div>`;
+            li.innerHTML = `<span>${p.name}</span><div><button class="btn btn-sm btn-outline-primary me-1" onclick="editPreparer(${p.id}, '${p.name.replace(/'/g, "\\'")}')">áž€áŸ‚áž”áŸ’ážšáŸ‚</button><button class="btn btn-sm btn-outline-danger" onclick="deletePreparer(${p.id})">áž›áž»áž”</button></div>`;
             list.appendChild(li);
         });
     }
@@ -327,7 +408,7 @@ document.getElementById('addPreparerForm').addEventListener('submit', async (e) 
 });
 
 async function editPreparer(id, oldName) {
-    const newName = prompt('សូមបញ្ចូលឈ្មោះអ្នករៀបចំថ្មី៖', oldName);
+    const newName = prompt('ážŸáž¼áž˜áž”áž‰áŸ’áž…áž¼áž›ážˆáŸ’áž˜áŸ„áŸ‡áž¢áŸ’áž“áž€ážšáŸ€áž”áž…áŸ†ážáŸ’áž˜áž¸áŸ–', oldName);
     if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
         await db.preparers.update(id, { name: newName.trim() });
         loadPreparers();
@@ -335,7 +416,7 @@ async function editPreparer(id, oldName) {
 }
 
 async function deletePreparer(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបឈ្មោះនេះមែនទេ?')) {
+    if(confirm('ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”ážˆáŸ’áž˜áŸ„áŸ‡áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?')) {
         await db.preparers.delete(id);
         loadPreparers();
     }
@@ -354,24 +435,24 @@ async function loadUsers() {
         const tr = document.createElement('tr');
         
         let permsKhmer = [];
-        if (u.permissions.includes('dashboard')) permsKhmer.push('ទំព័រដើម');
-        if (u.permissions.includes('invoice_add')) permsKhmer.push('បង្កើតវិក្កយបត្រ');
-        if (u.permissions.includes('invoice_list')) permsKhmer.push('បញ្ជីវិក្កយបត្រ');
-        if (u.permissions.includes('income')) permsKhmer.push('ទំព័រចំណូល');
-        if (u.permissions.includes('expense')) permsKhmer.push('ទំព័រចំណាយ');
-        if (u.permissions.includes('reports')) permsKhmer.push('របាយការណ៍');
-        if (u.permissions.includes('settings')) permsKhmer.push('ការកំណត់');
-        if (!u.permissions.includes('write')) permsKhmer.push('(អត់សិទ្ធិកែប្រែ)');
-        if (permsKhmer.length >= 7 && u.permissions.includes('write')) permsKhmer = ['មានសិទ្ធិទាំងអស់ (Admin)'];
+        if (u.permissions.includes('dashboard')) permsKhmer.push('áž‘áŸ†áž–áŸážšážŠáž¾áž˜');
+        if (u.permissions.includes('invoice_add')) permsKhmer.push('áž”áž„áŸ’áž€áž¾ážážœáž·áž€áŸ’áž€áž™áž”ážáŸ’ážš');
+        if (u.permissions.includes('invoice_list')) permsKhmer.push('áž”áž‰áŸ’áž‡áž¸ážœáž·áž€áŸ’áž€áž™áž”ážáŸ’ážš');
+        if (u.permissions.includes('income')) permsKhmer.push('áž‘áŸ†áž–áŸážšáž…áŸ†ážŽáž¼áž›');
+        if (u.permissions.includes('expense')) permsKhmer.push('áž‘áŸ†áž–áŸážšáž…áŸ†ážŽáž¶áž™');
+        if (u.permissions.includes('reports')) permsKhmer.push('ážšáž”áž¶áž™áž€áž¶ážšážŽáŸ');
+        if (u.permissions.includes('settings')) permsKhmer.push('áž€áž¶ážšáž€áŸ†ážŽážáŸ‹');
+        if (!u.permissions.includes('write')) permsKhmer.push('(áž¢ážáŸ‹ážŸáž·áž‘áŸ’áž’áž·áž€áŸ‚áž”áŸ’ážšáŸ‚)');
+        if (permsKhmer.length >= 7 && u.permissions.includes('write')) permsKhmer = ['áž˜áž¶áž“ážŸáž·áž‘áŸ’áž’áž·áž‘áž¶áŸ†áž„áž¢ážŸáŸ‹ (Admin)'];
         
         tr.innerHTML = `
             <td class="fw-bold">${u.username}</td>
             <td><small>${permsKhmer.join(', ')}</small></td>
             <td>
                 ${u.username !== 'admin' ? `
-                    <button class="btn btn-sm btn-outline-warning" onclick="editUser(${u.id})">កែប្រែ</button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${u.id})">លុប</button>
-                ` : '<span class="badge bg-secondary">មិនអាចកែប្រែ/លុបបាន</span>'}
+                    <button class="btn btn-sm btn-outline-warning" onclick="editUser(${u.id})">áž€áŸ‚áž”áŸ’ážšáŸ‚</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${u.id})">áž›áž»áž”</button>
+                ` : '<span class="badge bg-secondary">áž˜áž·áž“áž¢áž¶áž…áž€áŸ‚áž”áŸ’ážšáŸ‚/áž›áž»áž”áž”áž¶áž“</span>'}
             </td>
         `;
         tbody.appendChild(tr);
@@ -391,7 +472,7 @@ window.editUser = async function(id) {
     
     editingUserId = id;
     const btn = document.querySelector('#addUserForm button[type="submit"]');
-    btn.textContent = 'រក្សាទុកការកែប្រែ (Update)';
+    btn.textContent = 'ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áž€áž¶ážšáž€áŸ‚áž”áŸ’ážšáŸ‚ (Update)';
     btn.classList.replace('btn-dark', 'btn-warning');
 };
 
@@ -406,7 +487,7 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
     });
     
     if (perms.length === 0) {
-        alert('សូមជ្រើសរើសសិទ្ធិយ៉ាងហោចណាស់មួយ!');
+        alert('ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸážŸáž·áž‘áŸ’áž’áž·áž™áŸ‰áž¶áž„áž áŸ„áž…ážŽáž¶ážŸáŸ‹áž˜áž½áž™!');
         return;
     }
     
@@ -414,34 +495,34 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
         // Update existing user
         const exists = await db.users.where('username').equalsIgnoreCase(username).first();
         if (exists && exists.id !== editingUserId) {
-            alert('ឈ្មោះគណនីនេះមានរួចហើយ!');
+            alert('ážˆáŸ’áž˜áŸ„áŸ‡áž‚ážŽáž“áž¸áž“áŸáŸ‡áž˜áž¶áž“ážšáž½áž…áž áž¾áž™!');
             return;
         }
         await db.users.update(editingUserId, { username, password, permissions: perms });
-        alert('កែប្រែបានជោគជ័យ!');
+        alert('áž€áŸ‚áž”áŸ’ážšáŸ‚áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!');
     } else {
         // Create new user
         const exists = await db.users.where('username').equalsIgnoreCase(username).count();
         if (exists > 0) {
-            alert('ឈ្មោះគណនីនេះមានរួចហើយ!');
+            alert('ážˆáŸ’áž˜áŸ„áŸ‡áž‚ážŽáž“áž¸áž“áŸáŸ‡áž˜áž¶áž“ážšáž½áž…áž áž¾áž™!');
             return;
         }
         await db.users.add({ username, password, permissions: perms });
-        alert('បង្កើតគណនីបានជោគជ័យ!');
+        alert('áž”áž„áŸ’áž€áž¾ážáž‚ážŽáž“áž¸áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!');
     }
     
     // Reset form
     document.getElementById('addUserForm').reset();
     editingUserId = null;
     const btn = document.querySelector('#addUserForm button[type="submit"]');
-    btn.textContent = 'បង្កើតគណនី';
+    btn.textContent = 'áž”áž„áŸ’áž€áž¾ážáž‚ážŽáž“áž¸';
     btn.classList.replace('btn-warning', 'btn-dark');
     
     loadUsers();
 });
 
 window.deleteUser = async function(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបគណនីនេះមែនទេ?')) {
+    if(confirm('ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”áž‚ážŽáž“áž¸áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?')) {
         await db.users.delete(id);
         loadUsers();
     }
@@ -477,29 +558,29 @@ document.getElementById('systemSettingsForm').addEventListener('submit', (e) => 
         reader.onload = function(evt) {
             localStorage.setItem('sysLogo', evt.target.result);
             loadSystemSettings();
-            Swal.fire('ជោគជ័យ!', 'ការកំណត់ប្រព័ន្ធត្រូវបានរក្សាទុក។', 'success');
+            Swal.fire('áž‡áŸ„áž‚áž‡áŸáž™!', 'áž€áž¶ážšáž€áŸ†ážŽážáŸ‹áž”áŸ’ážšáž–áŸáž“áŸ’áž’ážáŸ’ážšáž¼ážœáž”áž¶áž“ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áŸ”', 'success');
         };
         reader.readAsDataURL(fileInput.files[0]);
     } else {
         loadSystemSettings();
-        Swal.fire('ជោគជ័យ!', 'ការកំណត់ប្រព័ន្ធត្រូវបានរក្សាទុក។', 'success');
+        Swal.fire('áž‡áŸ„áž‚áž‡áŸáž™!', 'áž€áž¶ážšáž€áŸ†ážŽážáŸ‹áž”áŸ’ážšáž–áŸáž“áŸ’áž’ážáŸ’ážšáž¼ážœáž”áž¶áž“ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áŸ”', 'success');
     }
 });
 
 async function editCategory(id, oldName) {
-    const newName = prompt('សូមបញ្ចូលឈ្មោះប្រភេទថ្មី៖', oldName);
+    const newName = prompt('ážŸáž¼áž˜áž”áž‰áŸ’áž…áž¼áž›ážˆáŸ’áž˜áŸ„áŸ‡áž”áŸ’ážšáž—áŸáž‘ážáŸ’áž˜áž¸áŸ–', oldName);
     if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
         const finalName = newName.trim();
         await db.categories.update(id, { name: finalName });
         const txsToUpdate = await db.transactions.where('category').equals(oldName).toArray();
         for (let tx of txsToUpdate) await db.transactions.update(tx.id, { category: finalName });
-        alert('កែប្រែបានជោគជ័យ!');
+        alert('áž€áŸ‚áž”áŸ’ážšáŸ‚áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!');
         loadCategories(); loadData();
     }
 }
 
 async function deleteCategory(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបប្រភេទនេះមែនទេ?')) {
+    if(confirm('ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”áž”áŸ’ážšáž—áŸáž‘áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?')) {
         await db.categories.delete(id);
         loadCategories();
     }
@@ -517,11 +598,11 @@ function addInvoiceRow() {
     tr.id = `inv-row-${invoiceItemCount}`;
     tr.innerHTML = `
         <td><input type="text" class="form-control item-id" placeholder="ID"></td>
-        <td><input type="text" class="form-control item-desc" placeholder="បរិយាយ..." required></td>
+        <td><input type="text" class="form-control item-desc" placeholder="áž”ážšáž·áž™áž¶áž™..." required></td>
         <td><input type="number" class="form-control item-mass" value="1" min="1" step="0.01" oninput="calculateInvoiceTotal()"></td>
         <td><input type="number" class="form-control item-price" value="0" min="0" step="0.01" oninput="calculateInvoiceTotal()"></td>
         <td><input type="number" class="form-control item-total fw-bold" readonly value="0"></td>
-        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">លុប</button></td>
+        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">áž›áž»áž”</button></td>
     `;
     tbody.appendChild(tr);
 }
@@ -574,7 +655,7 @@ function resetInvoiceForm() {
     invoiceItemCount = 0;
     editingInvoiceId = null;
     editingTxId = null;
-    document.getElementById('btn-save-invoice').textContent = 'រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ (Save & Print)';
+    document.getElementById('btn-save-invoice').textContent = 'ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áž‡áž¶áž…áŸ†ážŽáž¼áž› & áž–áŸ’ážšáž¸áž“ážœáž·áž€áŸ’áž€áž™áž”ážáŸ’ážš (Save & Print)';
     addInvoiceRow();
     generateInvoiceNumber();
 }
@@ -584,7 +665,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     
     const rows = document.querySelectorAll('#inv-items-body tr');
     if (rows.length === 0) {
-        alert('សូមបញ្ចូលទំនិញយ៉ាងហោចណាស់មួយ!'); return;
+        alert('ážŸáž¼áž˜áž”áž‰áŸ’áž…áž¼áž›áž‘áŸ†áž“áž·áž‰áž™áŸ‰áž¶áž„áž áŸ„áž…ážŽáž¶ážŸáŸ‹áž˜áž½áž™!'); return;
     }
 
     const invNo = document.getElementById('inv-no').value;
@@ -612,12 +693,12 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
 
     if (editingInvoiceId) {
         if (editingTxId) {
-            await db.transactions.update(editingTxId, { amount: grandTotal, currency: currency, date: date, category: category, note: `វិក្កយបត្រ N°: ${invNo} - ភ្ញៀវ: ${customer}` });
+            await db.transactions.update(editingTxId, { amount: grandTotal, currency: currency, date: date, category: category, note: `ážœáž·áž€áŸ’áž€áž™áž”ážáŸ’ážš NÂ°: ${invNo} - áž—áŸ’áž‰áŸ€ážœ: ${customer}` });
         }
         await db.invoices.update(editingInvoiceId, savedInv);
     } else {
         const txId = await db.transactions.add({ 
-            type: 'income', amount: grandTotal, currency: currency, date: date, category: category, note: `វិក្កយបត្រ N°: ${invNo} - ភ្ញៀវ: ${customer}` 
+            type: 'income', amount: grandTotal, currency: currency, date: date, category: category, note: `ážœáž·áž€áŸ’áž€áž™áž”ážáŸ’ážš NÂ°: ${invNo} - áž—áŸ’áž‰áŸ€ážœ: ${customer}` 
         });
         savedInv.txId = txId;
         await db.invoices.add(savedInv);
@@ -635,7 +716,7 @@ function printElement(elId) {
     const m = String(now.getMonth() + 1).padStart(2, '0');
     const d = String(now.getDate()).padStart(2, '0');
     const todayStr = formatKhmerDate(`${y}-${m}-${d}`).split(' ');
-    const finalDate = `ធ្វើនៅថ្ងៃទី ${todayStr[0]} ខែ${todayStr[1]} ឆ្នាំ${todayStr[2]}`;
+    const finalDate = `áž’áŸ’ážœáž¾áž“áŸ…ážáŸ’áž„áŸƒáž‘áž¸ ${todayStr[0]} ážáŸ‚${todayStr[1]} áž†áŸ’áž“áž¶áŸ†${todayStr[2]}`;
     document.querySelectorAll('.sys-print-date').forEach(el => el.textContent = finalDate);
 
     document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
@@ -721,9 +802,9 @@ async function loadInvoices() {
                 <td>${inv.customer}</td>
                 <td class="fw-bold text-success">${formatCurrency(inv.grandTotal, cur)}</td>
                 <td>
-                    <button class="btn btn-sm btn-info text-white" onclick="reprintInvoice(${inv.id})">ព្រីន (Print)</button>
-                    ${hasPermission('write') ? `<button class="btn btn-sm btn-warning" onclick="editInvoice(${inv.id})">កែប្រែ (Edit)</button>` : ''}
-                    ${hasPermission('write') ? `<button class="btn btn-sm btn-danger" onclick="deleteInvoice(${inv.id})">លុប (Delete)</button>` : ''}
+                    <button class="btn btn-sm btn-info text-white" onclick="reprintInvoice(${inv.id})">áž–áŸ’ážšáž¸áž“ (Print)</button>
+                    ${hasPermission('write') ? `<button class="btn btn-sm btn-warning" onclick="editInvoice(${inv.id})">áž€áŸ‚áž”áŸ’ážšáŸ‚ (Edit)</button>` : ''}
+                    ${hasPermission('write') ? `<button class="btn btn-sm btn-danger" onclick="deleteInvoice(${inv.id})">áž›áž»áž” (Delete)</button>` : ''}
                 </td>
             </tr>
         `;
@@ -758,11 +839,11 @@ async function editInvoice(id) {
         tr.id = `inv-row-${invoiceItemCount}`;
         tr.innerHTML = `
             <td><input type="text" class="form-control item-id" placeholder="ID" value="${item.id || ''}"></td>
-            <td><input type="text" class="form-control item-desc" placeholder="បរិយាយ..." required value="${item.desc}"></td>
+            <td><input type="text" class="form-control item-desc" placeholder="áž”ážšáž·áž™áž¶áž™..." required value="${item.desc}"></td>
             <td><input type="number" class="form-control item-mass" min="1" step="0.01" oninput="calculateInvoiceTotal()" value="${item.mass}"></td>
             <td><input type="number" class="form-control item-price" min="0" step="0.01" oninput="calculateInvoiceTotal()" value="${item.price}"></td>
             <td><input type="number" class="form-control item-total fw-bold" readonly value="${item.total}"></td>
-            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">លុប</button></td>
+            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">áž›áž»áž”</button></td>
         `;
         tbody.appendChild(tr);
     });
@@ -771,12 +852,12 @@ async function editInvoice(id) {
     document.getElementById('inv-delivery').value = inv.delivery || 0;
     document.getElementById('inv-grandtotal').value = inv.grandTotal;
     
-    document.getElementById('btn-save-invoice').textContent = 'កែប្រែ & ព្រីនវិក្កយបត្រ (Update & Print)';
+    document.getElementById('btn-save-invoice').textContent = 'áž€áŸ‚áž”áŸ’ážšáŸ‚ & áž–áŸ’ážšáž¸áž“ážœáž·áž€áŸ’áž€áž™áž”ážáŸ’ážš (Update & Print)';
     showTab('invoice');
 }
 
 async function deleteInvoice(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបវិក្កយបត្រនេះមែនទេ? (ទិន្នន័យចំណូលដែលពាក់ព័ន្ធវានឹងត្រូវលុបចោលដូចគ្នា)')) {
+    if(confirm('ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”ážœáž·áž€áŸ’áž€áž™áž”ážáŸ’ážšáž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ? (áž‘áž·áž“áŸ’áž“áž“áŸáž™áž…áŸ†ážŽáž¼áž›ážŠáŸ‚áž›áž–áž¶áž€áŸ‹áž–áŸáž“áŸ’áž’ážœáž¶áž“áž¹áž„ážáŸ’ážšáž¼ážœáž›áž»áž”áž…áŸ„áž›ážŠáž¼áž…áž‚áŸ’áž“áž¶)')) {
         const inv = await db.invoices.get(id);
         if (inv && inv.txId) {
             await db.transactions.delete(inv.txId);
@@ -800,7 +881,7 @@ document.getElementById('incomeForm').addEventListener('submit', async (e) => {
     await db.transactions.add({ type: 'income', amount, currency, date, category, note });
     document.getElementById('inc-amount').value = '';
     document.getElementById('inc-note').value = '';
-    alert('រក្សាទុកចំណូលបានជោគជ័យ!');
+    alert('ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áž…áŸ†ážŽáž¼áž›áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!');
     loadData();
 });
 
@@ -815,12 +896,12 @@ document.getElementById('expenseForm').addEventListener('submit', async (e) => {
     await db.transactions.add({ type: 'expense', amount, currency, date, category, note });
     document.getElementById('exp-amount').value = '';
     document.getElementById('exp-note').value = '';
-    alert('រក្សាទុកចំណាយបានជោគជ័យ!');
+    alert('ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áž…áŸ†ážŽáž¶áž™áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!');
     loadData();
 });
 
 async function deleteTransaction(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?')) {
+    if(confirm('ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”áž‘áž·áž“áŸ’áž“áž“áŸáž™áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?')) {
         await db.transactions.delete(id);
         loadData();
     }
@@ -888,11 +969,11 @@ async function loadData() {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${formatKhmerDate(tx.date)}</td>
-                <td><span class="badge ${tx.type === 'income' ? 'bg-success' : 'bg-danger'}">${tx.type === 'income' ? 'ចំណូល' : 'ចំណាយ'}</span></td>
+                <td><span class="badge ${tx.type === 'income' ? 'bg-success' : 'bg-danger'}">${tx.type === 'income' ? 'áž…áŸ†ážŽáž¼áž›' : 'áž…áŸ†ážŽáž¶áž™'}</span></td>
                 <td>${tx.category}</td>
                 <td class="${tx.type === 'income' ? 'text-success' : 'text-danger'}">${formatCurrency(tx.amount, cur)}</td>
                 <td>${tx.note}</td>
-                <td>${hasPermission('write') ? `<button class="btn btn-sm btn-danger" onclick="deleteTransaction(${tx.id})">លុប</button>` : ''}</td>
+                <td>${hasPermission('write') ? `<button class="btn btn-sm btn-danger" onclick="deleteTransaction(${tx.id})">áž›áž»áž”</button>` : ''}</td>
             `;
             tbody.appendChild(tr);
         }
@@ -973,11 +1054,11 @@ async function printListReport(type) {
     if (type === 'income') {
         fromDate = document.getElementById('filter-inc-from').value;
         toDate = document.getElementById('filter-inc-to').value;
-        title = 'របាយការណ៍ចំណូល';
+        title = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¼áž›';
     } else {
         fromDate = document.getElementById('filter-exp-from').value;
         toDate = document.getElementById('filter-exp-to').value;
-        title = 'របាយការណ៍ចំណាយ';
+        title = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¶áž™';
     }
 
     if (fromDate) filtered = filtered.filter(tx => tx.date >= fromDate);
@@ -986,10 +1067,10 @@ async function printListReport(type) {
     document.getElementById('p-rep-title').textContent = title;
     
     let dateRangeStr = '';
-    if (fromDate && toDate) dateRangeStr = `ចាប់ពីថ្ងៃទី ${formatKhmerDate(fromDate)} ដល់ថ្ងៃទី ${formatKhmerDate(toDate)}`;
-    else if (fromDate) dateRangeStr = `ចាប់ពីថ្ងៃទី ${formatKhmerDate(fromDate)} ជាបន្តបន្ទាប់`;
-    else if (toDate) dateRangeStr = `រហូតដល់ថ្ងៃទី ${formatKhmerDate(toDate)}`;
-    else dateRangeStr = `របាយការណ៍សរុបទាំងអស់`;
+    if (fromDate && toDate) dateRangeStr = `áž…áž¶áž”áŸ‹áž–áž¸ážáŸ’áž„áŸƒáž‘áž¸ ${formatKhmerDate(fromDate)} ážŠáž›áŸ‹ážáŸ’áž„áŸƒáž‘áž¸ ${formatKhmerDate(toDate)}`;
+    else if (fromDate) dateRangeStr = `áž…áž¶áž”áŸ‹áž–áž¸ážáŸ’áž„áŸƒáž‘áž¸ ${formatKhmerDate(fromDate)} áž‡áž¶áž”áž“áŸ’ážáž”áž“áŸ’áž‘áž¶áž”áŸ‹`;
+    else if (toDate) dateRangeStr = `ážšáž áž¼ážážŠáž›áŸ‹ážáŸ’áž„áŸƒáž‘áž¸ ${formatKhmerDate(toDate)}`;
+    else dateRangeStr = `ážšáž”áž¶áž™áž€áž¶ážšážŽáŸážŸážšáž»áž”áž‘áž¶áŸ†áž„áž¢ážŸáŸ‹`;
     
     document.getElementById('p-rep-date').textContent = dateRangeStr;
 
@@ -1036,8 +1117,8 @@ function updateChart(chartData) {
         data: {
             labels: labels,
             datasets: [
-                { label: 'ចំណូល (រៀល)', data: incomeData, backgroundColor: 'rgba(40, 167, 69, 0.6)' },
-                { label: 'ចំណាយ (រៀល)', data: expenseData, backgroundColor: 'rgba(220, 53, 69, 0.6)' }
+                { label: 'áž…áŸ†ážŽáž¼áž› (ážšáŸ€áž›)', data: incomeData, backgroundColor: 'rgba(40, 167, 69, 0.6)' },
+                { label: 'áž…áŸ†ážŽáž¶áž™ (ážšáŸ€áž›)', data: expenseData, backgroundColor: 'rgba(220, 53, 69, 0.6)' }
             ]
         },
         options: { responsive: true, scales: { y: { beginAtZero: true } } }
@@ -1063,9 +1144,9 @@ function switchReportTab(tabId) {
     // Update card header title
     const cardTitle = document.getElementById('report-card-title');
     if (cardTitle) {
-        if (tabId === 'summary') cardTitle.textContent = 'របាយការណ៍ចំណូលចំណាយ';
-        else if (tabId === 'income') cardTitle.textContent = 'របាយការណ៍ចំណូល';
-        else if (tabId === 'expense') cardTitle.textContent = 'របាយការណ៍ចំណាយ';
+        if (tabId === 'summary') cardTitle.textContent = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¼áž›áž…áŸ†ážŽáž¶áž™';
+        else if (tabId === 'income') cardTitle.textContent = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¼áž›';
+        else if (tabId === 'expense') cardTitle.textContent = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¶áž™';
     }
     
     // Manage Main Content visibility
@@ -1093,8 +1174,8 @@ async function populateYearFilter() {
     Array.from(years).sort().reverse().forEach(year => {
         const opt = document.createElement('option');
         opt.value = year;
-        const toKhmer = (numStr) => String(numStr).replace(/[0-9]/g, w => ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'][w]);
-        opt.textContent = 'ឆ្នាំ ' + toKhmer(year);
+        const toKhmer = (numStr) => String(numStr).replace(/[0-9]/g, w => ['áŸ ', 'áŸ¡', 'áŸ¢', 'áŸ£', 'áŸ¤', 'áŸ¥', 'áŸ¦', 'áŸ§', 'áŸ¨', 'áŸ©'][w]);
+        opt.textContent = 'áž†áŸ’áž“áž¶áŸ† ' + toKhmer(year);
         yearSelect.appendChild(opt);
     });
 }
@@ -1105,18 +1186,18 @@ async function generateReport() {
     const day = document.getElementById('filterDay').value;
     
     let prefix = year;
-    let summaryText = `របាយការណ៍ប្រចាំឆ្នាំ ${year}`;
+    let summaryText = `ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž”áŸ’ážšáž…áž¶áŸ†áž†áŸ’áž“áž¶áŸ† ${year}`;
     
     if (month !== 'all') {
-        const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+        const khmerMonths = ['áž˜áž€ážšáž¶', 'áž€áž»áž˜áŸ’áž—áŸˆ', 'áž˜áž¸áž“áž¶', 'áž˜áŸážŸáž¶', 'áž§ážŸáž—áž¶', 'áž˜áž·ážáž»áž“áž¶', 'áž€áž€áŸ’áž€ážŠáž¶', 'ážŸáž¸áž áž¶', 'áž€áž‰áŸ’áž‰áž¶', 'ážáž»áž›áž¶', 'ážœáž·áž…áŸ’áž†áž·áž€áž¶', 'áž’áŸ’áž“áž¼'];
         const monthName = khmerMonths[parseInt(month, 10) - 1];
         
         if (day !== 'all') {
             prefix = `${year}-${month}-${day}`;
-            summaryText = `របាយការណ៍ថ្ងៃទី ${day} ខែ ${monthName} ឆ្នាំ ${year}`;
+            summaryText = `ážšáž”áž¶áž™áž€áž¶ážšážŽáŸážáŸ’áž„áŸƒáž‘áž¸ ${day} ážáŸ‚ ${monthName} áž†áŸ’áž“áž¶áŸ† ${year}`;
         } else {
             prefix = `${year}-${month}`;
-            summaryText = `របាយការណ៍ខែ ${monthName} ឆ្នាំ ${year}`;
+            summaryText = `ážšáž”áž¶áž™áž€áž¶ážšážŽáŸážáŸ‚ ${monthName} áž†áŸ’áž“áž¶áŸ† ${year}`;
         }
     } else {
         document.getElementById('filterDay').value = 'all';
@@ -1142,14 +1223,14 @@ async function generateReport() {
         let key = '', label = '';
         if (month === 'all') {
             key = tx.date.substring(0, 7); // YYYY-MM
-            const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
-            label = `ខែ ${khmerMonths[parseInt(key.split('-')[1], 10) - 1]}`;
+            const khmerMonths = ['áž˜áž€ážšáž¶', 'áž€áž»áž˜áŸ’áž—áŸˆ', 'áž˜áž¸áž“áž¶', 'áž˜áŸážŸáž¶', 'áž§ážŸáž—áž¶', 'áž˜áž·ážáž»áž“áž¶', 'áž€áž€áŸ’áž€ážŠáž¶', 'ážŸáž¸áž áž¶', 'áž€áž‰áŸ’áž‰áž¶', 'ážáž»áž›áž¶', 'ážœáž·áž…áŸ’áž†áž·áž€áž¶', 'áž’áŸ’áž“áž¼'];
+            label = `ážáŸ‚ ${khmerMonths[parseInt(key.split('-')[1], 10) - 1]}`;
         } else if (day === 'all') {
             key = tx.date; // YYYY-MM-DD
-            label = `ថ្ងៃទី ${key.split('-')[2]}`;
+            label = `ážáŸ’áž„áŸƒáž‘áž¸ ${key.split('-')[2]}`;
         } else {
             key = tx.category + '_' + tx.type;
-            label = `${tx.category} ${tx.type === 'income' ? '(ចំណូល)' : '(ចំណាយ)'}`;
+            label = `${tx.category} ${tx.type === 'income' ? '(áž…áŸ†ážŽáž¼áž›)' : '(áž…áŸ†ážŽáž¶áž™)'}`;
         }
         if (!summaryBreakdown[key]) summaryBreakdown[key] = { label, incKHR: 0, incUSD: 0, expKHR: 0, expUSD: 0 };
 
@@ -1175,7 +1256,7 @@ async function generateReport() {
     if (currentReportTab === 'summary') {
         const thCol = document.getElementById('rep-summary-first-col');
         if (thCol) {
-            thCol.textContent = (month !== 'all' && day !== 'all') ? 'ប្រភេទ (ចំណូល/ចំណាយ)' : 'កាលបរិច្ឆេទ';
+            thCol.textContent = (month !== 'all' && day !== 'all') ? 'áž”áŸ’ážšáž—áŸáž‘ (áž…áŸ†ážŽáž¼áž›/áž…áŸ†ážŽáž¶áž™)' : 'áž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘';
         }
         
         const tbody = document.getElementById('rep-summary-tbody');
@@ -1188,7 +1269,7 @@ async function generateReport() {
                 // Render Income Group
                 const incKeys = Object.keys(summaryBreakdown).filter(k => k.endsWith('_income')).sort();
                 if (incKeys.length > 0) {
-                    tbody.innerHTML += `<tr><td colspan="8" class="text-start fw-bold bg-light text-success">ក្រុមចំណូល (Income)</td></tr>`;
+                    tbody.innerHTML += `<tr><td colspan="8" class="text-start fw-bold bg-light text-success">áž€áŸ’ážšáž»áž˜áž…áŸ†ážŽáž¼áž› (Income)</td></tr>`;
                     incKeys.forEach(k => {
                         const b = summaryBreakdown[k];
                         tbody.innerHTML += `<tr>
@@ -1206,7 +1287,7 @@ async function generateReport() {
                 // Render Expense Group
                 const expKeys = Object.keys(summaryBreakdown).filter(k => k.endsWith('_expense')).sort();
                 if (expKeys.length > 0) {
-                    tbody.innerHTML += `<tr><td colspan="8" class="text-start fw-bold bg-light text-danger">ក្រុមចំណាយ (Expense)</td></tr>`;
+                    tbody.innerHTML += `<tr><td colspan="8" class="text-start fw-bold bg-light text-danger">áž€áŸ’ážšáž»áž˜áž…áŸ†ážŽáž¶áž™ (Expense)</td></tr>`;
                     expKeys.forEach(k => {
                         const b = summaryBreakdown[k];
                         tbody.innerHTML += `<tr>
@@ -1251,19 +1332,19 @@ async function generateReport() {
         
         // Group by period (month/day) and then by category
         const groups = {};
-        const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+        const khmerMonths = ['áž˜áž€ážšáž¶', 'áž€áž»áž˜áŸ’áž—áŸˆ', 'áž˜áž¸áž“áž¶', 'áž˜áŸážŸáž¶', 'áž§ážŸáž—áž¶', 'áž˜áž·ážáž»áž“áž¶', 'áž€áž€áŸ’áž€ážŠáž¶', 'ážŸáž¸áž áž¶', 'áž€áž‰áŸ’áž‰áž¶', 'ážáž»áž›áž¶', 'ážœáž·áž…áŸ’áž†áž·áž€áž¶', 'áž’áŸ’áž“áž¼'];
         
         filtered.filter(tx => tx.type === 'income').forEach(tx => {
             let gKey = '', gLabel = '';
             if (month === 'all') {
                 gKey = tx.date.substring(0, 7);
-                gLabel = `ខែ ${khmerMonths[parseInt(gKey.split('-')[1], 10) - 1]}`;
+                gLabel = `ážáŸ‚ ${khmerMonths[parseInt(gKey.split('-')[1], 10) - 1]}`;
             } else if (day === 'all') {
                 gKey = tx.date;
-                gLabel = `ថ្ងៃទី ${gKey.split('-')[2]}`;
+                gLabel = `ážáŸ’áž„áŸƒáž‘áž¸ ${gKey.split('-')[2]}`;
             } else {
                 gKey = 'all';
-                gLabel = `ប្រចាំថ្ងៃទី ${day}`;
+                gLabel = `áž”áŸ’ážšáž…áž¶áŸ†ážáŸ’áž„áŸƒáž‘áž¸ ${day}`;
             }
             if (!groups[gKey]) groups[gKey] = { label: gLabel, cats: {} };
             if (!groups[gKey].cats[tx.category]) groups[gKey].cats[tx.category] = { khr: 0, usd: 0 };
@@ -1272,9 +1353,9 @@ async function generateReport() {
 
         const thLabel = document.querySelector('#rep-tab-income thead th:nth-child(2)');
         if (thLabel) {
-            if (month === 'all') thLabel.textContent = 'ខែ';
-            else if (day === 'all') thLabel.textContent = 'កាលបរិច្ឆេទ';
-            else thLabel.textContent = 'ប្រភេទចំណូល';
+            if (month === 'all') thLabel.textContent = 'ážáŸ‚';
+            else if (day === 'all') thLabel.textContent = 'áž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘';
+            else thLabel.textContent = 'áž”áŸ’ážšáž—áŸáž‘áž…áŸ†ážŽáž¼áž›';
         }
 
         let index = 1;
@@ -1293,26 +1374,26 @@ async function generateReport() {
 
         document.getElementById('rep-inc-grand-khr-tbl').textContent = formatCurrency(incKHR, 'KHR');
         document.getElementById('rep-inc-grand-usd-tbl').textContent = formatCurrency(incUSD, 'USD');
-        updateSpecificChart('incReportChart', incData, 'ចំណូល', 'rgba(40, 167, 69, 0.7)');
+        updateSpecificChart('incReportChart', incData, 'áž…áŸ†ážŽáž¼áž›', 'rgba(40, 167, 69, 0.7)');
     }
     else if (currentReportTab === 'expense') {
         const tbody = document.getElementById('rep-exp-tbody');
         tbody.innerHTML = '';
         
         const groups = {};
-        const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+        const khmerMonths = ['áž˜áž€ážšáž¶', 'áž€áž»áž˜áŸ’áž—áŸˆ', 'áž˜áž¸áž“áž¶', 'áž˜áŸážŸáž¶', 'áž§ážŸáž—áž¶', 'áž˜áž·ážáž»áž“áž¶', 'áž€áž€áŸ’áž€ážŠáž¶', 'ážŸáž¸áž áž¶', 'áž€áž‰áŸ’áž‰áž¶', 'ážáž»áž›áž¶', 'ážœáž·áž…áŸ’áž†áž·áž€áž¶', 'áž’áŸ’áž“áž¼'];
         
         filtered.filter(tx => tx.type === 'expense').forEach(tx => {
             let gKey = '', gLabel = '';
             if (month === 'all') {
                 gKey = tx.date.substring(0, 7);
-                gLabel = `ខែ ${khmerMonths[parseInt(gKey.split('-')[1], 10) - 1]}`;
+                gLabel = `ážáŸ‚ ${khmerMonths[parseInt(gKey.split('-')[1], 10) - 1]}`;
             } else if (day === 'all') {
                 gKey = tx.date;
-                gLabel = `ថ្ងៃទី ${gKey.split('-')[2]}`;
+                gLabel = `ážáŸ’áž„áŸƒáž‘áž¸ ${gKey.split('-')[2]}`;
             } else {
                 gKey = 'all';
-                gLabel = `ប្រចាំថ្ងៃទី ${day}`;
+                gLabel = `áž”áŸ’ážšáž…áž¶áŸ†ážáŸ’áž„áŸƒáž‘áž¸ ${day}`;
             }
             if (!groups[gKey]) groups[gKey] = { label: gLabel, cats: {} };
             if (!groups[gKey].cats[tx.category]) groups[gKey].cats[tx.category] = { khr: 0, usd: 0 };
@@ -1321,9 +1402,9 @@ async function generateReport() {
 
         const thLabel = document.querySelector('#rep-tab-expense thead th:nth-child(2)');
         if (thLabel) {
-            if (month === 'all') thLabel.textContent = 'ខែ';
-            else if (day === 'all') thLabel.textContent = 'កាលបរិច្ឆេទ';
-            else thLabel.textContent = 'ប្រភេទចំណាយ';
+            if (month === 'all') thLabel.textContent = 'ážáŸ‚';
+            else if (day === 'all') thLabel.textContent = 'áž€áž¶áž›áž”ážšáž·áž…áŸ’áž†áŸáž‘';
+            else thLabel.textContent = 'áž”áŸ’ážšáž—áŸáž‘áž…áŸ†ážŽáž¶áž™';
         }
 
         let index = 1;
@@ -1342,7 +1423,7 @@ async function generateReport() {
 
         document.getElementById('rep-exp-grand-khr-tbl').textContent = formatCurrency(expKHR, 'KHR');
         document.getElementById('rep-exp-grand-usd-tbl').textContent = formatCurrency(expUSD, 'USD');
-        updateSpecificChart('expReportChart', expData, 'ចំណាយ', 'rgba(220, 53, 69, 0.7)');
+        updateSpecificChart('expReportChart', expData, 'áž…áŸ†ážŽáž¶áž™', 'rgba(220, 53, 69, 0.7)');
     }
 }
 
@@ -1360,11 +1441,11 @@ function updateReportChart(chartData) {
         data: {
             labels: categories,
             datasets: [
-                { label: 'ចំណូល (រៀល)', data: incomeData, backgroundColor: 'rgba(40, 167, 69, 0.7)' },
-                { label: 'ចំណាយ (រៀល)', data: expenseData, backgroundColor: 'rgba(220, 53, 69, 0.7)' }
+                { label: 'áž…áŸ†ážŽáž¼áž› (ážšáŸ€áž›)', data: incomeData, backgroundColor: 'rgba(40, 167, 69, 0.7)' },
+                { label: 'áž…áŸ†ážŽáž¶áž™ (ážšáŸ€áž›)', data: expenseData, backgroundColor: 'rgba(220, 53, 69, 0.7)' }
             ]
         },
-        options: { responsive: true, plugins: { title: { display: true, text: 'ចំណូលចំណាយតាមប្រភេទនីមួយៗ' } } }
+        options: { responsive: true, plugins: { title: { display: true, text: 'áž…áŸ†ážŽáž¼áž›áž…áŸ†ážŽáž¶áž™ážáž¶áž˜áž”áŸ’ážšáž—áŸáž‘áž“áž¸áž˜áž½áž™áŸ—' } } }
     });
 }
 
@@ -1382,9 +1463,9 @@ function updateSpecificChart(canvasId, dataObj, label, color) {
         type: 'bar',
         data: {
             labels: categories,
-            datasets: [{ label: `${label}សរុបប៉ាន់ស្មានជារៀល`, data: dataValues, backgroundColor: color }]
+            datasets: [{ label: `${label}ážŸážšáž»áž”áž”áŸ‰áž¶áž“áŸ‹ážŸáŸ’áž˜áž¶áž“áž‡áž¶ážšáŸ€áž›`, data: dataValues, backgroundColor: color }]
         },
-        options: { responsive: true, plugins: { title: { display: true, text: `ក្រាហ្វបង្ហាញ${label}តាមប្រភេទ` } } }
+        options: { responsive: true, plugins: { title: { display: true, text: `áž€áŸ’ážšáž¶áž áŸ’ážœáž”áž„áŸ’áž áž¶áž‰${label}ážáž¶áž˜áž”áŸ’ážšáž—áŸáž‘` } } }
     });
     
     if (canvasId === 'incReportChart') incReportChartInstance = instance;
@@ -1414,35 +1495,35 @@ async function printAnalyticsReport(printType = 'summary') {
         const allTx = await db.transactions.toArray();
         let filtered = allTx.filter(tx => tx.date.startsWith(prefix));
         
-        let suffix = 'ប្រចាំថ្ងៃ';
-        if (month === 'all') suffix = 'ប្រចាំឆ្នាំ';
-        else if (day === 'all') suffix = 'ប្រចាំខែ';
+        let suffix = 'áž”áŸ’ážšáž…áž¶áŸ†ážáŸ’áž„áŸƒ';
+        if (month === 'all') suffix = 'áž”áŸ’ážšáž…áž¶áŸ†áž†áŸ’áž“áž¶áŸ†';
+        else if (day === 'all') suffix = 'áž”áŸ’ážšáž…áž¶áŸ†ážáŸ‚';
         
         // Filter by current report tab type (Income or Expense)
         if (currentReportTab === 'income') {
             filtered = filtered.filter(tx => tx.type === 'income');
-            titleEl.textContent = 'របាយការណ៍ប្រតិបត្តិការចំណូល' + suffix;
+            titleEl.textContent = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž”áŸ’ážšážáž·áž”ážáŸ’ážáž·áž€áž¶ážšáž…áŸ†ážŽáž¼áž›' + suffix;
         } else if (currentReportTab === 'expense') {
             filtered = filtered.filter(tx => tx.type === 'expense');
-            titleEl.textContent = 'របាយការណ៍ប្រតិបត្តិការចំណាយ' + suffix;
+            titleEl.textContent = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž”áŸ’ážšážáž·áž”ážáŸ’ážáž·áž€áž¶ážšáž…áŸ†ážŽáž¶áž™' + suffix;
         } else {
-            titleEl.textContent = 'របាយការណ៍ប្រតិបត្តិការចំណូលចំណាយសរុប' + suffix;
+            titleEl.textContent = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž”áŸ’ážšážáž·áž”ážáŸ’ážáž·áž€áž¶ážšáž…áŸ†ážŽáž¼áž›áž…áŸ†ážŽáž¶áž™ážŸážšáž»áž”' + suffix;
         }
 
         let tableHTML = `
             <table class="table table-bordered text-center mt-3" style="font-size:14px;">
                 <thead class="table-success">
                     <tr>
-                        <th>ល.រ</th>
-                        <th>ប្រភេទ</th>
+                        <th>áž›.ážš</th>
+                        <th>áž”áŸ’ážšáž—áŸáž‘</th>
                         ${currentReportTab === 'summary' ? `
-                            <th>ចំណូល (៛)</th>
-                            <th>ចំណូល ($)</th>
-                            <th>ចំណាយ (៛)</th>
-                            <th>ចំណាយ ($)</th>
+                            <th>áž…áŸ†ážŽáž¼áž› (áŸ›)</th>
+                            <th>áž…áŸ†ážŽáž¼áž› ($)</th>
+                            <th>áž…áŸ†ážŽáž¶áž™ (áŸ›)</th>
+                            <th>áž…áŸ†ážŽáž¶áž™ ($)</th>
                         ` : `
-                            <th>ទឹកប្រាក់ (៛)</th>
-                            <th>ទឹកប្រាក់ ($)</th>
+                            <th>áž‘áž¹áž€áž”áŸ’ážšáž¶áž€áŸ‹ (áŸ›)</th>
+                            <th>áž‘áž¹áž€áž”áŸ’ážšáž¶áž€áŸ‹ ($)</th>
                         `}
                     </tr>
                 </thead>
@@ -1451,7 +1532,7 @@ async function printAnalyticsReport(printType = 'summary') {
         let totalIncKhr = 0, totalIncUsd = 0;
         let totalExpKhr = 0, totalExpUsd = 0;
         
-        const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+        const khmerMonths = ['áž˜áž€ážšáž¶', 'áž€áž»áž˜áŸ’áž—áŸˆ', 'áž˜áž¸áž“áž¶', 'áž˜áŸážŸáž¶', 'áž§ážŸáž—áž¶', 'áž˜áž·ážáž»áž“áž¶', 'áž€áž€áŸ’áž€ážŠáž¶', 'ážŸáž¸áž áž¶', 'áž€áž‰áŸ’áž‰áž¶', 'ážáž»áž›áž¶', 'ážœáž·áž…áŸ’áž†áž·áž€áž¶', 'áž’áŸ’áž“áž¼'];
         const groupedByPeriod = {};
         filtered.forEach(tx => {
             const gKey = month === 'all' ? tx.date.substring(0, 7) : tx.date;
@@ -1466,10 +1547,10 @@ async function printAnalyticsReport(printType = 'summary') {
             let groupName = '';
             if (month === 'all') {
                 const mParts = gKey.split('-');
-                groupName = `ខែ ${khmerMonths[parseInt(mParts[1], 10) - 1]} ${mParts[0]}`;
+                groupName = `ážáŸ‚ ${khmerMonths[parseInt(mParts[1], 10) - 1]} ${mParts[0]}`;
             } else {
                 const dParts = gKey.split('-');
-                groupName = `ថ្ងៃទី ${dParts[2]} ខែ ${khmerMonths[parseInt(dParts[1], 10) - 1]} ${dParts[0]}`;
+                groupName = `ážáŸ’áž„áŸƒáž‘áž¸ ${dParts[2]} ážáŸ‚ ${khmerMonths[parseInt(dParts[1], 10) - 1]} ${dParts[0]}`;
             }
             
             tableHTML += `<tr><td colspan="${mainColspan}" class="text-start fw-bold bg-light text-primary" style="font-size: 16px;">${groupName}</td></tr>`;
@@ -1525,7 +1606,7 @@ async function printAnalyticsReport(printType = 'summary') {
             if (currentReportTab === 'summary') {
                 tableHTML += `
                     <tr class="table-light fw-bold" style="font-size: 15px;">
-                        <td colspan="2" class="text-end">សរុបប្រចាំ${groupName}:</td>
+                        <td colspan="2" class="text-end">ážŸážšáž»áž”áž”áŸ’ážšáž…áž¶áŸ†${groupName}:</td>
                         <td class="text-success">${formatCurrency(pIncKhr, 'KHR')}</td>
                         <td class="text-success">${formatCurrency(pIncUsd, 'USD')}</td>
                         <td class="text-danger">${formatCurrency(pExpKhr, 'KHR')}</td>
@@ -1538,7 +1619,7 @@ async function printAnalyticsReport(printType = 'summary') {
                 const cClass = currentReportTab === 'income' ? 'text-success' : 'text-danger';
                 tableHTML += `
                     <tr class="table-light fw-bold" style="font-size: 15px;">
-                        <td colspan="2" class="text-end">សរុបប្រចាំ${groupName}:</td>
+                        <td colspan="2" class="text-end">ážŸážšáž»áž”áž”áŸ’ážšáž…áž¶áŸ†${groupName}:</td>
                         <td class="${cClass}">${formatCurrency(pKhr, 'KHR')}</td>
                         <td class="${cClass}">${formatCurrency(pUsd, 'USD')}</td>
                     </tr>
@@ -1546,10 +1627,10 @@ async function printAnalyticsReport(printType = 'summary') {
             }
         });
         
-        let periodStr = 'សរុបរួមប្រចាំរយៈពេលនេះ:';
-        if (month === 'all') periodStr = `សរុបរួមប្រចាំឆ្នាំ ${year}:`;
-        else if (day === 'all') periodStr = `សរុបរួមប្រចាំខែ ${khmerMonths[parseInt(month, 10) - 1]} ${year}:`;
-        else periodStr = `សរុបរួមប្រចាំថ្ងៃទី ${day} ខែ ${khmerMonths[parseInt(month, 10) - 1]} ${year}:`;
+        let periodStr = 'ážŸážšáž»áž”ážšáž½áž˜áž”áŸ’ážšáž…áž¶áŸ†ážšáž™áŸˆáž–áŸáž›áž“áŸáŸ‡:';
+        if (month === 'all') periodStr = `ážŸážšáž»áž”ážšáž½áž˜áž”áŸ’ážšáž…áž¶áŸ†áž†áŸ’áž“áž¶áŸ† ${year}:`;
+        else if (day === 'all') periodStr = `ážŸážšáž»áž”ážšáž½áž˜áž”áŸ’ážšáž…áž¶áŸ†ážáŸ‚ ${khmerMonths[parseInt(month, 10) - 1]} ${year}:`;
+        else periodStr = `ážŸážšáž»áž”ážšáž½áž˜áž”áŸ’ážšáž…áž¶áŸ†ážáŸ’áž„áŸƒáž‘áž¸ ${day} ážáŸ‚ ${khmerMonths[parseInt(month, 10) - 1]} ${year}:`;
         
         if (currentReportTab === 'summary') {
             tableHTML += `</tbody><tfoot class="table-success fw-bold" style="font-size: 16px;">
@@ -1561,7 +1642,7 @@ async function printAnalyticsReport(printType = 'summary') {
                     <td class="text-danger">${formatCurrency(totalExpUsd, 'USD')}</td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="text-end">ប្រាក់ចំណេញ (ចំណូល - ចំណាយ):</td>
+                    <td colspan="2" class="text-end">áž”áŸ’ážšáž¶áž€áŸ‹áž…áŸ†ážŽáŸáž‰ (áž…áŸ†ážŽáž¼áž› - áž…áŸ†ážŽáž¶áž™):</td>
                     <td colspan="4" class="text-primary text-center">${formatCurrency(totalIncKhr - totalExpKhr, 'KHR')} | ${formatCurrency(totalIncUsd - totalExpUsd, 'USD')}</td>
                 </tr>
             </tfoot></table>`;
@@ -1583,20 +1664,20 @@ async function printAnalyticsReport(printType = 'summary') {
     } else {
         const month = document.getElementById('filterMonth').value;
         const day = document.getElementById('filterDay').value;
-        let suffix = 'ប្រចាំថ្ងៃ';
-        if (month === 'all') suffix = 'ប្រចាំឆ្នាំ';
-        else if (day === 'all') suffix = 'ប្រចាំខែ';
+        let suffix = 'áž”áŸ’ážšáž…áž¶áŸ†ážáŸ’áž„áŸƒ';
+        if (month === 'all') suffix = 'áž”áŸ’ážšáž…áž¶áŸ†áž†áŸ’áž“áž¶áŸ†';
+        else if (day === 'all') suffix = 'áž”áŸ’ážšáž…áž¶áŸ†ážáŸ‚';
 
         if (currentReportTab === 'summary') {
-            titleEl.textContent = 'របាយការណ៍ចំណូលចំណាយសរុប' + suffix;
+            titleEl.textContent = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¼áž›áž…áŸ†ážŽáž¶áž™ážŸážšáž»áž”' + suffix;
             const tableHTML = document.querySelector('#rep-tab-summary .table-responsive').innerHTML;
             contentEl.innerHTML = tableHTML;
         } else if (currentReportTab === 'income') {
-            titleEl.textContent = 'របាយការណ៍ចំណូល' + suffix;
+            titleEl.textContent = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¼áž›' + suffix;
             const tableHTML = document.querySelector('#rep-tab-income .table-responsive').innerHTML;
             contentEl.innerHTML = tableHTML;
         } else if (currentReportTab === 'expense') {
-            titleEl.textContent = 'របាយការណ៍ចំណាយ' + suffix;
+            titleEl.textContent = 'ážšáž”áž¶áž™áž€áž¶ážšážŽáŸáž…áŸ†ážŽáž¶áž™' + suffix;
             const tableHTML = document.querySelector('#rep-tab-expense .table-responsive').innerHTML;
             contentEl.innerHTML = tableHTML;
         }
@@ -1610,11 +1691,38 @@ async function exportData() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allTx));
     const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "pig_farm_backup_" + new Date().toISOString().split('T')[0] + ".json");
+    downloadAnchorNode.setAttribute("download", "transactions_backup.json");
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
 }
+
+window.importData = function() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = async event => {
+            try {
+                const data = JSON.parse(event.target.result);
+                if(data && Array.isArray(data)) {
+                    await db.transactions.bulkAdd(data);
+                    alert("✅ ទាញទិន្នន័យចូលជោគជ័យ! សូម Refresh វេបសាយ។");
+                    loadData();
+                } else {
+                    alert("❌ ឯកសារមិនត្រឹមត្រូវ!");
+                }
+            } catch(err) {
+                alert("❌ បរាជ័យក្នុងការទាញទិន្នន័យ៖ " + err.message);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+};
 
 // Initial Load
 checkLogin().then((isLoggedIn) => {
