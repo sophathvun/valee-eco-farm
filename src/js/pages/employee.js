@@ -27,8 +27,8 @@ async function loadEmployees() {
             <td class="text-info fw-bold">${formatCurrency(emp.salary, 'USD')} <small class="text-muted">${wageSuffix}</small></td>
             <td class="align-middle">
                 ${hasPermission('employee_manage') ? `
-                <button class="btn btn-sm btn-outline-warning btn-edit me-1" onclick="editEmployee(${emp.id})">\u1780\u17c2\u1794\u17d2\u179a\u17c2</button>
-                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteEmployee(${emp.id})">\u179b\u17bb\u1794</button>
+                <button class="btn btn-sm btn-outline-warning btn-edit me-1" onclick="editEmployee(${emp.id})">✏️</button>
+                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteEmployee(${emp.id})">🗑️</button>
                 ` : ''}
             </td>
         `;

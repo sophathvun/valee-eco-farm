@@ -28,7 +28,7 @@ async function addInvoiceRow() {
         </td>
         <td><input type="number" class="form-control item-price" value="0" min="0" step="0.01" oninput="calculateInvoiceTotal()"></td>
         <td><input type="number" class="form-control item-total fw-bold" readonly value="0"></td>
-        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">លុប</button></td>
+        <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">🗑️</button></td>
     `;
     tbody.appendChild(tr);
 }
@@ -243,8 +243,8 @@ async function loadInvoices() {
                 <td class="fw-bold text-success">${formatCurrency(inv.grandTotal, cur)}</td>
                 <td>
                     <button class="btn btn-sm btn-info text-white" onclick="reprintInvoice(${inv.id})">ព្រីន (Print)</button>
-                    <button class="btn btn-sm btn-warning btn-edit" onclick="editInvoice(${inv.id})">កែប្រែ (Edit)</button>
-                    <button class="btn btn-sm btn-danger btn-delete" onclick="deleteInvoice(${inv.id})">លុប (Delete)</button>
+                    <button class="btn btn-sm btn-warning btn-edit" onclick="editInvoice(${inv.id})">✏️</button>
+                    <button class="btn btn-sm btn-danger btn-delete" onclick="deleteInvoice(${inv.id})">🗑️</button>
                 </td>
             </tr>
         `;
@@ -303,7 +303,7 @@ async function editInvoice(id) {
             </td>
             <td><input type="number" class="form-control item-price" min="0" step="0.01" oninput="calculateInvoiceTotal()" value="${item.price}"></td>
             <td><input type="number" class="form-control item-total fw-bold" readonly value="${item.total}"></td>
-            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">លុប</button></td>
+            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">🗑️</button></td>
         `;
         tbody.appendChild(tr);
     });

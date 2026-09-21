@@ -44,7 +44,7 @@ async function loadCategories() {
     incomeCats.forEach(c => {
         const li = document.createElement('li');
         li.className = 'list-group-item d-flex justify-content-between align-items-center';
-        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">កែប្រែ</button><button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteCategory(${c.id})">លុប</button></div>`;
+        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">✏️</button><button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteCategory(${c.id})">🗑️</button></div>`;
         incList.appendChild(li);
     });
 
@@ -53,7 +53,7 @@ async function loadCategories() {
     expenseCats.forEach(c => {
         const li = document.createElement('li');
         li.className = 'list-group-item d-flex justify-content-between align-items-center';
-        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">កែប្រែ</button><button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteCategory(${c.id})">លុប</button></div>`;
+        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">✏️</button><button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteCategory(${c.id})">🗑️</button></div>`;
         expList.appendChild(li);
     });
 }
@@ -80,7 +80,7 @@ async function loadPreparers() {
         all.forEach(p => {
             const li = document.createElement('li');
             li.className = 'list-group-item d-flex justify-content-between align-items-center';
-            li.innerHTML = `<span>${p.name}</span><div><button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editPreparer(${p.id}, '${p.name.replace(/'/g, "\\'")}')">កែប្រែ</button><button class="btn btn-sm btn-outline-danger btn-delete" onclick="deletePreparer(${p.id})">លុប</button></div>`;
+            li.innerHTML = `<span>${p.name}</span><div><button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editPreparer(${p.id}, '${p.name.replace(/'/g, "\\'")}')">✏️</button><button class="btn btn-sm btn-outline-danger btn-delete" onclick="deletePreparer(${p.id})">🗑️</button></div>`;
             list.appendChild(li);
         });
     }
@@ -205,8 +205,8 @@ async function loadUsersAndRoles() {
             <td>${statusToggle}</td>
             <td>
                 ${!isOriginalAdmin ? `
-                    <button class="btn btn-sm btn-outline-warning btn-edit" onclick="editUser(${u.id})">កែប្រែ</button>
-                    <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteUser(${u.id})">លុប</button>
+                    <button class="btn btn-sm btn-outline-warning btn-edit" onclick="editUser(${u.id})">✏️</button>
+                    <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteUser(${u.id})">🗑️</button>
                 ` : '<span class="text-muted">No actions</span>'}
             </td>
         `;
@@ -333,7 +333,7 @@ async function loadRoles() {
         li.innerHTML = `<span>${r.name}</span>
             <div>
                 ${r.name.toLowerCase() !== 'admin' ? `
-                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteRole(${r.id})">លុប</button>
+                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteRole(${r.id})">🗑️</button>
                 ` : `<span class="badge bg-secondary">មិនអាចលុបបាន</span>`}
             </div>`;
         ul.appendChild(li);
@@ -490,7 +490,7 @@ async function loadUnits() {
             li.className = 'list-group-item d-flex justify-content-between align-items-center';
             li.innerHTML = `<span>${u.name}</span>
             <div>
-                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteUnit(${u.id})">លុប</button>
+                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteUnit(${u.id})">🗑️</button>
             </div>`;
             list.appendChild(li);
         });
@@ -524,8 +524,8 @@ async function loadDepartments() {
         const li = document.createElement('li');
         li.className = 'list-group-item d-flex justify-content-between align-items-center';
         li.innerHTML = `<span>${d.name}</span><div>
-            <button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editDepartment(${d.id}, '${d.name.replace(/'/g, "\\'")}')">កែប្រែ</button>
-            <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteDepartment(${d.id})">លុប</button>
+            <button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editDepartment(${d.id}, '${d.name.replace(/'/g, "\\'")}')">✏️</button>
+            <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteDepartment(${d.id})">🗑️</button>
         </div>`;
         list.appendChild(li);
     });
@@ -573,8 +573,8 @@ async function loadPositions() {
         const li = document.createElement('li');
         li.className = 'list-group-item d-flex justify-content-between align-items-center';
         li.innerHTML = `<span>${p.name}</span><div>
-            <button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editPosition(${p.id}, '${p.name.replace(/'/g, "\\'")}')">កែប្រែ</button>
-            <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deletePosition(${p.id})">លុប</button>
+            <button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editPosition(${p.id}, '${p.name.replace(/'/g, "\\'")}')">✏️</button>
+            <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deletePosition(${p.id})">🗑️</button>
         </div>`;
         list.appendChild(li);
     });

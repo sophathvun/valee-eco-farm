@@ -72,7 +72,7 @@ async function loadData() {
                 if (incCount < limit) {
                     incCount++;
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${formatKhmerDate(tx.date)}</td><td>${tx.category}</td><td class="text-success fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td>${hasPermission('income') ? `<button class="btn btn-sm btn-warning btn-edit me-1" onclick="editTransaction(${tx.id}, 'income')">\u1780\u17c2\u1794\u17d2\u179a\u17c2</button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})">\u179b\u17bb\u1794</button>` : ''}</td>`;
+                    tr.innerHTML = `<td>${formatKhmerDate(tx.date)}</td><td>${tx.category}</td><td class="text-success fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td>${hasPermission('income') ? `<button class="btn btn-sm btn-warning btn-edit me-1" onclick="editTransaction(${tx.id}, 'income')">✏️</button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})">🗑️</button>` : ''}</td>`;
                     incBody.appendChild(tr);
                 }
             }
@@ -90,7 +90,7 @@ async function loadData() {
                 if (expCount < limit) {
                     expCount++;
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${formatKhmerDate(tx.date)}</td><td>${tx.category}</td><td class="text-danger fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td>${hasPermission('expense') ? `<button class="btn btn-sm btn-warning btn-edit me-1" onclick="editTransaction(${tx.id}, 'expense')">\u1780\u17c2\u1794\u17d2\u179a\u17c2</button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})">\u179b\u17bb\u1794</button>` : ''}</td>`;
+                    tr.innerHTML = `<td>${formatKhmerDate(tx.date)}</td><td>${tx.category}</td><td class="text-danger fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td>${hasPermission('expense') ? `<button class="btn btn-sm btn-warning btn-edit me-1" onclick="editTransaction(${tx.id}, 'expense')">✏️</button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})">🗑️</button>` : ''}</td>`;
                     expBody.appendChild(tr);
                 }
             }
