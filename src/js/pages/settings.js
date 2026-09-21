@@ -650,20 +650,19 @@ async function loadBranding() {
     }
 }
 
-// Handle file input changes for previews
-['LoginLogo', 'SidebarLogo', 'SidebarLogoDark', 'Favicon', 'MobileIcon'].forEach(type => {
-    const input = document.getElementById('input' + type);
-    if (input) {
-        input.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('preview' + type).src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+// Handle file input changes for previews using event delegation
+document.addEventListener('change', function(e) {
+    const ids = ['inputLoginLogo', 'inputSidebarLogo', 'inputSidebarLogoDark', 'inputFavicon', 'inputMobileIcon'];
+    if (ids.includes(e.target.id)) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const type = e.target.id.replace('input', '');
+                document.getElementById('preview' + type).src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
     }
 });
 
@@ -703,19 +702,19 @@ window.saveBranding = async function() {
         const brandData = { id: 1 };
         
         const loginImg = document.getElementById('previewLoginLogo').src;
-        if (!loginImg.includes('assets/images/logo.png')) brandData.loginLogo = await compressImage(loginImg, 400, 400);
+        brandData.loginLogo = loginImg.includes('assets/images/logo.png') ? '' : await compressImage(loginImg, 400, 400);
 
         const sidebarImg = document.getElementById('previewSidebarLogo').src;
-        if (!sidebarImg.includes('assets/images/logo.png')) brandData.sidebarLogo = await compressImage(sidebarImg, 200, 200);
+        brandData.sidebarLogo = sidebarImg.includes('assets/images/logo.png') ? '' : await compressImage(sidebarImg, 200, 200);
 
         const sidebarDarkImg = document.getElementById('previewSidebarLogoDark').src;
-        if (!sidebarDarkImg.includes('assets/images/logo.png')) brandData.sidebarLogoDark = await compressImage(sidebarDarkImg, 200, 200);
+        brandData.sidebarLogoDark = sidebarDarkImg.includes('assets/images/logo.png') ? '' : await compressImage(sidebarDarkImg, 200, 200);
 
         const faviconImg = document.getElementById('previewFavicon').src;
-        if (!faviconImg.includes('assets/images/logo.png')) brandData.favicon = await compressImage(faviconImg, 64, 64);
+        brandData.favicon = faviconImg.includes('assets/images/logo.png') ? '' : await compressImage(faviconImg, 64, 64);
 
         const mobileImg = document.getElementById('previewMobileIcon').src;
-        if (!mobileImg.includes('assets/images/logo.png')) brandData.mobileIcon = await compressImage(mobileImg, 192, 192);
+        brandData.mobileIcon = mobileImg.includes('assets/images/logo.png') ? '' : await compressImage(mobileImg, 192, 192);
 
         const existing = await db.brandSettings.get(1);
         if (existing) {
