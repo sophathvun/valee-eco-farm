@@ -182,103 +182,137 @@
                                     <div id="rolePermissionsContainer" style="display: none;">
                                         <h6 class="fw-bold mb-3">ផ្តល់សិទ្ធិអនុញ្ញាតសម្រាប់តួនាទីនេះ៖</h6>
                                         <form id="rolePermissionsForm">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="dashboard" id="rpermDash">
-                                                        <label class="form-check-label" for="rpermDash">ទំព័រដើម (មើលទិន្នន័យរួម)</label>
-                                                    </div>
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="invoice_add" id="rpermInvAdd">
-                                                        <label class="form-check-label" for="rpermInvAdd">បង្កើតវិក្កយបត្រ (Invoice)</label>
-                                                    </div>
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="invoice_list" id="rpermInvList">
-                                                        <label class="form-check-label" for="rpermInvList">បញ្ជីវិក្កយបត្រ (Invoice List)</label>
-                                                    </div>
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="income" id="rpermInc">
-                                                        <label class="form-check-label" for="rpermInc">ទំព័រចំណូល (Income)</label>
-                                                    </div>
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="expense" id="rpermExp">
-                                                        <label class="form-check-label" for="rpermExp">ទំព័រចំណាយ (Expense)</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-check mb-1">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="reports" id="rpermReports">
-                                                        <label class="form-check-label fw-bold" for="rpermReports">របាយការណ៍ (Reports)</label>
-                                                    </div>
-                                                    <div class="ms-4 mb-2">
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="reports_summary" id="rpermRepSum">
-                                                            <label class="form-check-label text-muted" for="rpermRepSum">ចំណូលចំណាយ (Summary)</label>
-                                                        </div>
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="reports_income" id="rpermRepInc">
-                                                            <label class="form-check-label text-muted" for="rpermRepInc">ចំណូល (Income)</label>
-                                                        </div>
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="reports_expense" id="rpermRepExp">
-                                                            <label class="form-check-label text-muted" for="rpermRepExp">ចំណាយ (Expense)</label>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-check mb-1">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="settings" id="rpermSettings">
-                                                        <label class="form-check-label fw-bold" for="rpermSettings">ការកំណត់ទូទៅ (Settings)</label>
-                                                    </div>
-                                                    <div class="ms-4 mb-2">
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_categories" id="rpermSetCat">
-                                                            <label class="form-check-label text-muted" for="rpermSetCat">ប្រភេទចំណូល/ចំណាយ (Categories)</label>
-                                                        </div>
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_preparers" id="rpermSetPrep">
-                                                            <label class="form-check-label text-muted" for="rpermSetPrep">អ្នករៀបចំរបាយការណ៍ (Preparers)</label>
-                                                        </div>
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_farm_info" id="rpermSetFarm">
-                                                            <label class="form-check-label text-muted" for="rpermSetFarm">ព័ត៌មានកសិដ្ឋាន (Farm Info)</label>
-                                                        </div>
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_users" id="rpermSetUsers">
-                                                            <label class="form-check-label text-muted" for="rpermSetUsers">បង្កើតអ្នកប្រើប្រាស់ (Users)</label>
-                                                        </div>
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_permissions" id="rpermSetPerms">
-                                                            <label class="form-check-label text-muted" for="rpermSetPerms">សិទ្ធិអ្នកប្រើប្រាស់ (Permissions)</label>
-                                                        </div>
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_roles" id="rpermSetRoles">
-                                                            <label class="form-check-label text-muted" for="rpermSetRoles">តួនាទីអ្នកប្រើប្រាស់ (Roles)</label>
-                                                        </div>
-                                                        <div class="form-check mb-1">
-                                                            <input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_emp_structure" id="rpermSetEmpStruct">
-                                                            <label class="form-check-label text-muted" for="rpermSetEmpStruct">រចនាសម្ព័ន្ធបុគ្គលិក (Emp Structure)</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="employee_manage" id="rpermEmployee">
-                                                        <label class="form-check-label" for="rpermEmployee">គ្រប់គ្រងបុគ្គលិក (Employee)</label>
-                                                    </div>
-                                                    <hr class="my-2">
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="perm_add" id="rpermAdd">
-                                                        <label class="form-check-label text-success fw-bold" for="rpermAdd">សិទ្ធិបញ្ចូលទិន្នន័យ (Add Access)</label>
-                                                    </div>
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="perm_edit" id="rpermEdit">
-                                                        <label class="form-check-label text-warning fw-bold" for="rpermEdit">សិទ្ធិកែប្រែទិន្នន័យ (Edit Access)</label>
-                                                    </div>
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="perm_delete" id="rpermDelete">
-                                                        <label class="form-check-label text-danger fw-bold" for="rpermDelete">សិទ្ធិលុបទិន្នន័យ (Delete Access)</label>
-                                                    </div>
-                                                </div>
+                                            <div class="table-responsive mb-3">
+                                                <table class="table table-bordered table-hover align-middle mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>ម៉ឺនុយ / អនុម៉ឺនុយ (Menu / Submenu)</th>
+                                                            <th class="text-center">ចូលមើល (View)</th>
+                                                            <th class="text-center">បញ្ចូល (Add)</th>
+                                                            <th class="text-center">កែប្រែ (Edit)</th>
+                                                            <th class="text-center">លុប (Delete)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <!-- Dashboard -->
+                                                        <tr>
+                                                            <td class="fw-bold">ទំព័រដើម (Dashboard)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="dashboard"></div></td>
+                                                            <td class="text-center text-muted">-</td><td class="text-center text-muted">-</td><td class="text-center text-muted">-</td>
+                                                        </tr>
+                                                        <!-- Invoice Add -->
+                                                        <tr>
+                                                            <td class="fw-bold">បង្កើតវិក្កយបត្រ (Create Invoice)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="invoice_add"></div></td>
+                                                            <td class="text-center text-muted">-</td><td class="text-center text-muted">-</td><td class="text-center text-muted">-</td>
+                                                        </tr>
+                                                        <!-- Invoice List -->
+                                                        <tr>
+                                                            <td class="fw-bold">បញ្ជីវិក្កយបត្រ (Invoice List)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="invoice_list"></div></td>
+                                                            <td class="text-center text-muted">-</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="invoice_list_edit"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="invoice_list_delete"></div></td>
+                                                        </tr>
+                                                        <!-- Income -->
+                                                        <tr>
+                                                            <td class="fw-bold">ចំណូល (Income)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="income"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="income_add"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="income_edit"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="income_delete"></div></td>
+                                                        </tr>
+                                                        <!-- Expense -->
+                                                        <tr>
+                                                            <td class="fw-bold">ចំណាយ (Expense)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="expense"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="expense_add"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="expense_edit"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="expense_delete"></div></td>
+                                                        </tr>
+                                                        <!-- Employee -->
+                                                        <tr>
+                                                            <td class="fw-bold">គ្រប់គ្រងបុគ្គលិក (Employee)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="employee_manage"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="employee_add"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="employee_edit"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="employee_delete"></div></td>
+                                                        </tr>
+                                                        <!-- Reports -->
+                                                        <tr class="table-light">
+                                                            <td class="fw-bold" colspan="5">របាយការណ៍ (Reports) <div class="form-check form-switch d-inline-block ms-2"><input class="form-check-input role-perm-checkbox" type="checkbox" value="reports" id="rpermReports"></div></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">ចំណូលចំណាយ (Summary)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="reports_summary"></div></td>
+                                                            <td class="text-center text-muted">-</td><td class="text-center text-muted">-</td><td class="text-center text-muted">-</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">ចំណូល (Income)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="reports_income"></div></td>
+                                                            <td class="text-center text-muted">-</td><td class="text-center text-muted">-</td><td class="text-center text-muted">-</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">ចំណាយ (Expense)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="reports_expense"></div></td>
+                                                            <td class="text-center text-muted">-</td><td class="text-center text-muted">-</td><td class="text-center text-muted">-</td>
+                                                        </tr>
+                                                        <!-- Settings -->
+                                                        <tr class="table-light">
+                                                            <td class="fw-bold" colspan="5">ការកំណត់ទូទៅ (Settings) <div class="form-check form-switch d-inline-block ms-2"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings" id="rpermSettings"></div></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">ប្រភេទចំណូល/ចំណាយ (Categories & Units)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_categories"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_categories_add"></div></td>
+                                                            <td class="text-center text-muted">-</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_categories_delete"></div></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">អ្នករៀបចំរបាយការណ៍ (Preparers)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_preparers"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_preparers_add"></div></td>
+                                                            <td class="text-center text-muted">-</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_preparers_delete"></div></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">ព័ត៌មានកសិដ្ឋាន (Farm Info)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_farm_info"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_farm_info_edit"></div></td>
+                                                            <td class="text-center text-muted">-</td><td class="text-center text-muted">-</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">អ្នកប្រើប្រាស់ (Users)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_users"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_users_add"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_users_edit"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_users_delete"></div></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">សិទ្ធិអ្នកប្រើប្រាស់ (Permissions)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_permissions"></div></td>
+                                                            <td class="text-center text-muted">-</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_permissions_edit"></div></td>
+                                                            <td class="text-center text-muted">-</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">តួនាទី (Roles)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_roles"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_roles_add"></div></td>
+                                                            <td class="text-center text-muted">-</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_roles_delete"></div></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ps-4">រចនាសម្ព័ន្ធបុគ្គលិក (Emp Structure)</td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_emp_structure"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_emp_structure_add"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_emp_structure_edit"></div></td>
+                                                            <td class="text-center"><div class="form-check form-switch d-flex justify-content-center"><input class="form-check-input role-perm-checkbox" type="checkbox" value="settings_emp_structure_delete"></div></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                            <button type="button" class="btn btn-warning mt-3" onclick="saveRolePermissions()">រក្សាទុកសិទ្ធិ / Save Permissions</button>
+                                            <button type="button" class="btn btn-warning" onclick="saveRolePermissions()">រក្សាទុកសិទ្ធិ / Save Permissions</button>
                                         </form>
                                     </div>
                                 </div>

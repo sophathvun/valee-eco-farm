@@ -103,17 +103,25 @@ window.applyPermissions = function() {
         }
     });
 
+    const specificAccessKeys = [
+        'income_add', 'income_edit', 'income_delete',
+        'expense_add', 'expense_edit', 'expense_delete',
+        'invoice_add', 'invoice_list_edit', 'invoice_list_delete',
+        'employee_add', 'employee_edit', 'employee_delete',
+        'settings_categories_add', 'settings_categories_delete',
+        'settings_preparers_add', 'settings_preparers_delete',
+        'settings_farm_info_edit', 'settings_users_add', 'settings_users_edit', 'settings_users_delete',
+        'settings_permissions_edit', 'settings_roles_add', 'settings_roles_delete',
+        'settings_emp_structure_add', 'settings_emp_structure_edit', 'settings_emp_structure_delete'
+    ];
+
     if (currentUser.username.toLowerCase() !== 'admin') {
-        if (!perms.includes('perm_add')) document.body.classList.add('no-add-access');
-        else document.body.classList.remove('no-add-access');
-        
-        if (!perms.includes('perm_edit')) document.body.classList.add('no-edit-access');
-        else document.body.classList.remove('no-edit-access');
-        
-        if (!perms.includes('perm_delete')) document.body.classList.add('no-delete-access');
-        else document.body.classList.remove('no-delete-access');
+        specificAccessKeys.forEach(key => {
+            if (!perms.includes(key)) document.body.classList.add('no-' + key);
+            else document.body.classList.remove('no-' + key);
+        });
     } else {
-        document.body.classList.remove('no-add-access', 'no-edit-access', 'no-delete-access');
+        specificAccessKeys.forEach(key => document.body.classList.remove('no-' + key));
     }
 };
 

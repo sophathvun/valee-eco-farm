@@ -107,11 +107,44 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     .card-header.d-flex { flex-wrap: wrap; gap: 10px; }
 }
 
-/* Read Only Mode */
-body.no-add-access .write-only { display: none !important; }
-body.no-add-access .col-md-5.write-only + .col-md-7 { width: 100%; }
-body.no-edit-access .btn-edit { display: none !important; }
-body.no-delete-access .btn-delete { display: none !important; }
+/* Read Only Mode (Module Specific) */
+body.no-income_add #income-tab .write-only, body.no-income_add #income-tab .btn-add { display: none !important; }
+body.no-income_add #income-tab .col-md-5.write-only + .col-md-7 { width: 100%; }
+body.no-income_edit #income-tab .btn-edit { display: none !important; }
+body.no-income_delete #income-tab .btn-delete { display: none !important; }
+
+body.no-expense_add #expense-tab .write-only, body.no-expense_add #expense-tab .btn-add { display: none !important; }
+body.no-expense_add #expense-tab .col-md-5.write-only + .col-md-7 { width: 100%; }
+body.no-expense_edit #expense-tab .btn-edit { display: none !important; }
+body.no-expense_delete #expense-tab .btn-delete { display: none !important; }
+
+body.no-invoice_add #invoice-tab .btn-save-invoice, body.no-invoice_add #invoice-tab .btn-add { display: none !important; }
+body.no-invoice_list_edit #invoice-list-tab .btn-edit { display: none !important; }
+body.no-invoice_list_delete #invoice-list-tab .btn-delete { display: none !important; }
+
+body.no-employee_add #employee-tab .btn-add { display: none !important; }
+body.no-employee_edit #employee-tab .btn-edit { display: none !important; }
+body.no-employee_delete #employee-tab .btn-delete { display: none !important; }
+
+body.no-settings_categories_add #settings-categories-tab .btn-success, body.no-settings_categories_add #settings-categories-tab .btn-danger, body.no-settings_categories_add #settings-categories-tab .btn-primary { display: none !important; }
+body.no-settings_categories_delete #settings-categories-tab .btn-delete { display: none !important; }
+
+body.no-settings_preparers_add #settings-preparers-tab button[type="submit"] { display: none !important; }
+body.no-settings_preparers_delete #settings-preparers-tab .btn-delete { display: none !important; }
+
+body.no-settings_farm_info_edit #settings-farm_info-tab button[type="submit"] { display: none !important; }
+
+body.no-settings_users_add #settings-users-tab button[type="submit"] { display: none !important; }
+body.no-settings_users_edit #settings-users-tab .btn-edit { display: none !important; }
+body.no-settings_users_delete #settings-users-tab .btn-delete { display: none !important; }
+
+body.no-settings_permissions_edit #settings-permissions-tab button.btn-warning { display: none !important; }
+body.no-settings_roles_add #settings-roles-tab button[type="submit"] { display: none !important; }
+body.no-settings_roles_delete #settings-roles-tab .btn-delete { display: none !important; }
+
+body.no-settings_emp_structure_add #settings-emp_structure-tab button[type="submit"] { display: none !important; }
+body.no-settings_emp_structure_edit #settings-emp_structure-tab .btn-edit { display: none !important; }
+body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { display: none !important; }
 
 /* Dark Theme Variables */
 body.dark-theme {
