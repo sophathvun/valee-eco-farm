@@ -1,0 +1,125 @@
+                <div class="card shadow-sm mb-4">
+                    
+                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0" id="report-card-title">របាយការណ៍ចំណូលចំណាយ</h4>
+                        <div class="custom-dropdown">
+                            <button class="btn btn-sm btn-light fw-bold text-dark dropbtn" onclick="this.parentElement.classList.toggle('show')">🖨️ ព្រីនរបាយការណ៍នេះ ▼</button>
+                            <div class="custom-dropdown-content">
+                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printAnalyticsReport('summary');">🖨️ ព្រីនរបាយការណ៍សរុប</a>
+                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printAnalyticsReport('detail');">🖨️ ព្រីនរបាយការណ៍លំអិត</a>
+                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើស \'Save as PDF\' នៅក្នុងផ្ទាំង Print បន្ទាប់។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#007bff'}).then((result) => { if(result.isConfirmed) printAnalyticsReport('summary'); });">💾 ព្រីនរបាយការណ៍សរុប PDF</a>
+                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើស \'Save as PDF\' នៅក្នុងផ្ទាំង Print បន្ទាប់។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#007bff'}).then((result) => { if(result.isConfirmed) printAnalyticsReport('detail'); });">💾 ព្រីនរបាយការណ៍លំអិត PDF</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body bg-light border-bottom">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">ជ្រើសរើសឆ្នាំ</label>
+                                <select id="filterYear" class="form-select" onchange="generateReport()"></select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">ជ្រើសរើសខែ</label>
+                                <select id="filterMonth" class="form-select" onchange="generateReport()">
+                                    <option value="all">ប្រចាំឆ្នាំ (គ្រប់ខែ)</option>
+                                    <option value="01">មករា</option><option value="02">កុម្ភៈ</option><option value="03">មីនា</option>
+                                    <option value="04">មេសា</option><option value="05">ឧសភា</option><option value="06">មិថុនា</option>
+                                    <option value="07">កក្កដា</option><option value="08">សីហា</option><option value="09">កញ្ញា</option>
+                                    <option value="10">តុលា</option><option value="11">វិច្ឆិកា</option><option value="12">ធ្នូ</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">ជ្រើសរើសថ្ងៃ</label>
+                                <select id="filterDay" class="form-select" onchange="generateReport()">
+                                    <option value="all">ពេញមួយខែ</option>
+                                    <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option>
+                                    <option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option>
+                                    <option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option>
+                                    <option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
+                                    <option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option>
+                                    <option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option>
+                                    <option value="31">31</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold">អ្នកធ្វើរបាយការណ៍</label>
+                                <select id="filterPreparer" class="form-select" onchange="updatePreparerName()"></select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-body">
+                        <h4 id="reportSummaryText" class="mb-4 text-center text-secondary"></h4>
+
+                        <!-- TAB 1: SUMMARY (BOTH) -->
+                        <div id="rep-tab-summary">
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ល.រ</th>
+                                            <th id="rep-summary-first-col">កាលបរិច្ឆេទ</th>
+                                            <th>ចំណូល (៛)</th><th>ចំណូល ($)</th>
+                                            <th>ចំណាយ (៛)</th><th>ចំណាយ ($)</th>
+                                            <th>ចំណេញ/ខាត (៛)</th><th>ចំណេញ/ខាត ($)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rep-summary-tbody">
+                                    </tbody>
+                                    <tfoot class="table-light fw-bold fs-6">
+                                        <tr>
+                                            <td colspan="2">សរុបរួម</td>
+                                            <td class="text-success" id="repIncKHR">0</td><td class="text-success" id="repIncUSD">0</td>
+                                            <td class="text-danger" id="repExpKHR">0</td><td class="text-danger" id="repExpUSD">0</td>
+                                            <td class="text-primary" id="repBalKHR">0</td><td class="text-primary" id="repBalUSD">0</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="mt-4"><canvas id="reportChart" height="80"></canvas></div>
+                        </div>
+
+                        <!-- TAB 2: INCOME ONLY -->
+                        <div id="rep-tab-income" class="d-none">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover text-center">
+                                    <thead class="table-light">
+                                        <tr><th>ល.រ</th><th>ប្រភេទចំណូល</th><th>សរុបទឹកប្រាក់ (៛)</th><th>សរុបទឹកប្រាក់ ($)</th></tr>
+                                    </thead>
+                                    <tbody id="rep-inc-tbody"></tbody>
+                                    <tfoot class="table-light fw-bold fs-6">
+                                        <tr>
+                                            <td colspan="2" class="text-end">សរុបរួម:</td>
+                                            <td id="rep-inc-grand-khr-tbl" class="text-success"></td>
+                                            <td id="rep-inc-grand-usd-tbl" class="text-success"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="mt-4"><canvas id="incReportChart" height="80"></canvas></div>
+                        </div>
+
+                        <!-- TAB 3: EXPENSE ONLY -->
+                        <div id="rep-tab-expense" class="d-none">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover text-center">
+                                    <thead class="table-light">
+                                        <tr><th>ល.រ</th><th>ប្រភេទចំណាយ</th><th>សរុបទឹកប្រាក់ (៛)</th><th>សរុបទឹកប្រាក់ ($)</th></tr>
+                                    </thead>
+                                    <tbody id="rep-exp-tbody"></tbody>
+                                    <tfoot class="table-light fw-bold fs-6">
+                                        <tr>
+                                            <td colspan="2" class="text-end">សរុបរួម:</td>
+                                            <td id="rep-exp-grand-khr-tbl" class="text-danger"></td>
+                                            <td id="rep-exp-grand-usd-tbl" class="text-danger"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="mt-4"><canvas id="expReportChart" height="80"></canvas></div>
+                        </div>
+
+                    </div>
+                </div>

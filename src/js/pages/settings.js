@@ -1,0 +1,514 @@
+// ====== CATEGORY MANAGEMENT ======
+async function loadCategories() {
+    let allCats = await db.categories.toArray();
+    let hasGarbled = allCats.some(c => c.name && c.name.includes('áž'));
+    if (hasGarbled) {
+        for (let c of allCats) {
+            if (c.name.includes('áž')) await db.categories.delete(c.id);
+        }
+    }
+    let catCount = await db.categories.count();
+    if (catCount === 0) {
+        const defaults = [
+            { type: 'income', name: 'លក់ជ្រូកសាច់' }, { type: 'income', name: 'លក់កូនជ្រូក' },
+            { type: 'income', name: 'លក់ជី (លាមកជ្រូក)' }, { type: 'income', name: 'ផ្សេងៗ' },
+            { type: 'expense', name: 'ចំណីជ្រូក' }, { type: 'expense', name: 'ថ្នាំសង្កូវ និងវ៉ាក់សាំង' },
+            { type: 'expense', name: 'ប្រាក់ខែបុគ្គលិក' }, { type: 'expense', name: 'ថ្លៃទឹក និងភ្លើង' },
+            { type: 'expense', name: 'ថ្លៃដឹកជញ្ជូន' }, { type: 'expense', name: 'ទិញកូនជ្រូក' },
+            { type: 'expense', name: 'ផ្សេងៗ' }
+        ];
+        await db.categories.bulkAdd(defaults);
+    }
+    
+    const allCategories = await db.categories.toArray();
+    const incomeCats = allCategories.filter(c => c.type === 'income');
+    const expenseCats = allCategories.filter(c => c.type === 'expense');
+
+    const incSelect = document.getElementById('inc-category');
+    const invIncSelect = document.getElementById('inv-income-category');
+    incSelect.innerHTML = '';
+    invIncSelect.innerHTML = '';
+    incomeCats.forEach(c => {
+        incSelect.appendChild(new Option(c.name, c.name));
+        invIncSelect.appendChild(new Option(c.name, c.name));
+    });
+
+    const expSelect = document.getElementById('exp-category');
+    expSelect.innerHTML = '';
+    expenseCats.forEach(c => {
+        expSelect.appendChild(new Option(c.name, c.name));
+    });
+
+    const incList = document.getElementById('incCatList');
+    incList.innerHTML = '';
+    incomeCats.forEach(c => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">កែប្រែ</button><button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteCategory(${c.id})">លុប</button></div>`;
+        incList.appendChild(li);
+    });
+
+    const expList = document.getElementById('expCatList');
+    expList.innerHTML = '';
+    expenseCats.forEach(c => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `<span>${c.name}</span><div><button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editCategory(${c.id}, '${c.name.replace(/'/g, "\\'")}')">កែប្រែ</button><button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteCategory(${c.id})">លុប</button></div>`;
+        expList.appendChild(li);
+    });
+}
+
+// ====== PREPARER MANAGEMENT ======
+async function loadPreparers() {
+    let allPrep = await db.preparers.toArray();
+    let hasGarbled = allPrep.some(p => p.name && p.name.includes('áž'));
+    if (hasGarbled) {
+        for (let p of allPrep) {
+            if (p.name.includes('áž')) await db.preparers.delete(p.id);
+        }
+    }
+    let pCount = await db.preparers.count();
+    if (pCount === 0) {
+        await db.preparers.bulkAdd([{name: 'សុខ សាន្ត'}]);
+    }
+    const all = await db.preparers.toArray();
+    
+    // Populate list in Settings
+    const list = document.getElementById('preparerList');
+    if (list) {
+        list.innerHTML = '';
+        all.forEach(p => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `<span>${p.name}</span><div><button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editPreparer(${p.id}, '${p.name.replace(/'/g, "\\'")}')">កែប្រែ</button><button class="btn btn-sm btn-outline-danger btn-delete" onclick="deletePreparer(${p.id})">លុប</button></div>`;
+            list.appendChild(li);
+        });
+    }
+
+    // Populate Dropdown in Reports
+    const select = document.getElementById('filterPreparer');
+    if (select) {
+        const currentVal = select.value || localStorage.getItem('sysPreparer') || all[0]?.name; 
+        select.innerHTML = all.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+        if (currentVal && all.some(p => p.name === currentVal)) {
+            select.value = currentVal;
+        } else if (all.length > 0) {
+            select.value = all[0].name;
+        }
+        updatePreparerName();
+    }
+}
+
+window.updatePreparerName = function() {
+    const prepName = document.getElementById('filterPreparer')?.value || '';
+    document.querySelectorAll('.sys-preparer').forEach(el => el.textContent = prepName);
+    localStorage.setItem('sysPreparer', prepName);
+}
+
+document.getElementById('addPreparerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await db.preparers.add({ name: document.getElementById('newPrepName').value });
+    document.getElementById('newPrepName').value = '';
+    loadPreparers();
+});
+
+async function editPreparer(id, oldName) {
+    const newName = prompt('សូមបញ្ចូលឈ្មោះអ្នករៀបចំថ្មី៖', oldName);
+    if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
+        await db.preparers.update(id, { name: newName.trim() });
+        loadPreparers();
+    }
+}
+
+async function deletePreparer(id) {
+    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបឈ្មោះនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    if (res.isConfirmed) {
+        await db.preparers.delete(id);
+        loadPreparers();
+    }
+}
+
+window.switchSettingsTab = function(tabId) {
+    if (!tabId) tabId = 'categories';
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    const targetTab = document.getElementById(`settings-${tabId}-tab`);
+    if (targetTab) {
+        targetTab.style.display = 'block';
+    }
+    
+    // load specific data based on tab
+    if (tabId === 'categories') loadCategories();
+    if (tabId === 'preparers') loadPreparers();
+    if (tabId === 'roles') loadRoles();
+    if (tabId === 'permissions') loadRolesForPerms();
+    if (tabId === 'users') loadUsersAndRoles();
+    if (tabId === 'emp_structure') {
+        loadDepartments();
+        loadPositions();
+    }
+}
+
+// ====== USER MANAGEMENT ======
+let editingUserId = null;
+
+async function loadUsersAndRoles() {
+    const roles = await db.roles.toArray();
+    const roleSelect = document.getElementById('newUserRole');
+    if (roleSelect) {
+        roleSelect.innerHTML = '<option value="">-- សូមជ្រើសរើសតួនាទី --</option>';
+        roles.forEach(r => {
+            roleSelect.appendChild(new Option(r.name, r.id));
+        });
+    }
+    
+    const allUsers = await db.users.toArray();
+    const tbody = document.getElementById('userListTable');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    allUsers.forEach(u => {
+        const tr = document.createElement('tr');
+        let roleName = 'N/A';
+        if (u.roleId) {
+            const r = roles.find(ro => ro.id == u.roleId);
+            if (r) roleName = r.name;
+        } else if (u.username.toLowerCase() === 'admin') {
+            roleName = 'Admin';
+        }
+        
+        tr.innerHTML = `
+            <td class="fw-bold">${u.username}</td>
+            <td><span class="badge bg-primary">${roleName}</span></td>
+            <td>
+                ${u.username.toLowerCase() !== 'admin' ? `
+                    <button class="btn btn-sm btn-outline-warning btn-edit" onclick="editUser(${u.id})">កែប្រែ</button>
+                    <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteUser(${u.id})">លុប</button>
+                ` : `
+                    <button class="btn btn-sm btn-outline-warning btn-edit" onclick="editUser(${u.id})">កែប្រែ</button>
+                    <span class="badge bg-secondary">មិនអាចលុបបាន</span>
+                `}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+window.editUser = async function(id) {
+    const user = await db.users.get(id);
+    if (!user) return;
+    
+    document.getElementById('newUsername').value = user.username;
+    document.getElementById('newUserPassword').value = user.password;
+    if (user.roleId) {
+        document.getElementById('newUserRole').value = user.roleId;
+    }
+    
+    editingUserId = id;
+    const btn = document.querySelector('#addUserForm button[type="submit"]');
+    btn.textContent = 'រក្សាទុកការកែប្រែ (Update)';
+    btn.classList.replace('btn-dark', 'btn-warning');
+};
+
+document.getElementById('addUserForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('newUsername').value.trim();
+    const password = document.getElementById('newUserPassword').value.trim();
+    const roleId = document.getElementById('newUserRole').value;
+    
+    if (!roleId) {
+        Swal.fire({icon: 'info', text: 'សូមជ្រើសរើសតួនាទី!', confirmButtonText: 'យល់ព្រម'});
+        return;
+    }
+    
+    if (editingUserId) {
+        const exists = await db.users.where('username').equalsIgnoreCase(username).first();
+        if (exists && exists.id !== editingUserId) {
+            Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
+            return;
+        }
+        await db.users.update(editingUserId, { username, password, roleId: parseInt(roleId) });
+        Swal.fire({icon: 'info', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
+    } else {
+        const exists = await db.users.where('username').equalsIgnoreCase(username).count();
+        if (exists > 0) {
+            Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
+            return;
+        }
+        await db.users.add({ username, password, roleId: parseInt(roleId) });
+        Swal.fire({icon: 'info', text: 'បង្កើតគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
+    }
+    
+    document.getElementById('addUserForm').reset();
+    editingUserId = null;
+    const btn = document.querySelector('#addUserForm button[type="submit"]');
+    btn.textContent = 'បង្កើតគណនី';
+    btn.classList.replace('btn-warning', 'btn-dark');
+    
+    loadUsersAndRoles();
+});
+
+window.deleteUser = async function(id) {
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបគណនីនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'});
+    if (res.isConfirmed) {
+        await db.users.delete(id);
+        loadUsersAndRoles();
+    }
+};
+
+// ====== ROLE MANAGEMENT ======
+async function loadRoles() {
+    let roles = await db.roles.toArray();
+    if (roles.length === 0) {
+        await db.roles.bulkAdd([
+            { name: 'Admin', permissions: ['dashboard', 'invoice_add', 'invoice_list', 'income', 'expense', 'reports', 'settings', 'employee_manage', 'perm_add', 'perm_edit', 'perm_delete'] },
+            { name: 'Manager', permissions: ['dashboard', 'invoice_list', 'income', 'expense', 'reports', 'employee_manage', 'perm_add', 'perm_edit'] },
+            { name: 'Staff', permissions: ['dashboard', 'invoice_add', 'invoice_list', 'income', 'expense', 'perm_add'] }
+        ]);
+        roles = await db.roles.toArray();
+    }
+    const ul = document.getElementById('roleList');
+    if (!ul) return;
+    ul.innerHTML = '';
+    roles.forEach(r => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `<span>${r.name}</span>
+            <div>
+                ${r.name.toLowerCase() !== 'admin' ? `
+                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteRole(${r.id})">លុប</button>
+                ` : `<span class="badge bg-secondary">មិនអាចលុបបាន</span>`}
+            </div>`;
+        ul.appendChild(li);
+    });
+}
+
+document.getElementById('addRoleForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('newRoleName').value.trim();
+    if(name) {
+        await db.roles.add({ name, permissions: [] });
+        document.getElementById('newRoleName').value = '';
+        loadRoles();
+    }
+});
+
+window.deleteRole = async function(id) {
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបតួនាទីនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម'});
+    if(res.isConfirmed) {
+        await db.roles.delete(id);
+        loadRoles();
+    }
+}
+
+// ====== PERMISSIONS MANAGEMENT ======
+async function loadRolesForPerms() {
+    const roles = await db.roles.toArray();
+    const select = document.getElementById('roleSelectForPerms');
+    if(!select) return;
+    select.innerHTML = '<option value="">-- សូមជ្រើសរើសតួនាទី --</option>';
+    roles.forEach(r => {
+        select.appendChild(new Option(r.name, r.id));
+    });
+}
+
+window.loadPermissionsForRole = async function() {
+    const roleId = document.getElementById('roleSelectForPerms').value;
+    const container = document.getElementById('rolePermissionsContainer');
+    if(!roleId) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    const role = await db.roles.get(parseInt(roleId));
+    if(!role) return;
+    
+    document.querySelectorAll('.role-perm-checkbox').forEach(cb => {
+        cb.checked = (role.permissions || []).includes(cb.value);
+        if(role.name.toLowerCase() === 'admin') {
+            cb.checked = true;
+            cb.disabled = true;
+        } else {
+            cb.disabled = false;
+        }
+    });
+    
+    container.style.display = 'block';
+}
+
+window.saveRolePermissions = async function() {
+    const roleId = document.getElementById('roleSelectForPerms').value;
+    if(!roleId) return;
+    const role = await db.roles.get(parseInt(roleId));
+    if(role.name.toLowerCase() === 'admin') {
+        Swal.fire('បដិសេធ', 'មិនអាចកែប្រែសិទ្ធិ Admin បានទេ!', 'error');
+        return;
+    }
+    
+    const perms = [];
+    document.querySelectorAll('.role-perm-checkbox:checked').forEach(cb => {
+        perms.push(cb.value);
+    });
+    
+    await db.roles.update(parseInt(roleId), { permissions: perms });
+    Swal.fire('ជោគជ័យ', 'សិទ្ធិត្រូវបានរក្សាទុក!', 'success');
+}
+
+document.getElementById('addIncomeCategoryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await db.categories.add({ type: 'income', name: document.getElementById('newIncCatName').value });
+    document.getElementById('newIncCatName').value = '';
+    loadCategories();
+});
+
+document.getElementById('addExpenseCategoryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await db.categories.add({ type: 'expense', name: document.getElementById('newExpCatName').value });
+    document.getElementById('newExpCatName').value = '';
+    loadCategories();
+});
+
+document.getElementById('systemSettingsForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const phone = document.getElementById('setSysPhone').value;
+    const addrKh = document.getElementById('setSysAddrKh').value;
+    const addrEn = document.getElementById('setSysAddrEn').value;
+    const fileInput = document.getElementById('setSysLogo');
+    
+    localStorage.setItem('sysPhone', phone);
+    localStorage.setItem('sysAddrKh', addrKh);
+    localStorage.setItem('sysAddrEn', addrEn);
+
+    if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            localStorage.setItem('sysLogo', evt.target.result);
+            loadSystemSettings();
+            Swal.fire('ជោគជ័យ!', 'ការកំណត់ប្រព័ន្ធត្រូវបានរក្សាទុក។', 'success');
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        loadSystemSettings();
+        Swal.fire('ជោគជ័យ!', 'ការកំណត់ប្រព័ន្ធត្រូវបានរក្សាទុក។', 'success');
+    }
+});
+
+async function editCategory(id, oldName) {
+    const newName = prompt('សូមបញ្ចូលឈ្មោះប្រភេទថ្មី៖', oldName);
+    if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
+        const finalName = newName.trim();
+        await db.categories.update(id, { name: finalName });
+        const txsToUpdate = await db.transactions.where('category').equals(oldName).toArray();
+        for (let tx of txsToUpdate) await db.transactions.update(tx.id, { category: finalName });
+        Swal.fire({icon: 'info', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+        loadCategories(); loadData();
+    }
+}
+
+async function deleteCategory(id) {
+    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបប្រភេទនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    if (res.isConfirmed) {
+        await db.categories.delete(id);
+        loadCategories();
+    }
+}
+
+
+// ====== DEPARTMENT MANAGEMENT ======
+async function loadDepartments() {
+    const all = await db.departments.toArray();
+    const list = document.getElementById('departmentList');
+    if (!list) return;
+    list.innerHTML = '';
+    all.forEach(d => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `<span>${d.name}</span><div>
+            <button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editDepartment(${d.id}, '${d.name.replace(/'/g, "\\'")}')">កែប្រែ</button>
+            <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteDepartment(${d.id})">លុប</button>
+        </div>`;
+        list.appendChild(li);
+    });
+}
+
+document.getElementById('addDepartmentForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('newDepartmentName');
+    const name = input.value.trim();
+    if (name) {
+        await db.departments.add({ name });
+        input.value = '';
+        Swal.fire({icon: 'success', text: 'បានបញ្ចូលដោយជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+        loadDepartments();
+        if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
+    }
+});
+
+window.editDepartment = async function(id, oldName) {
+    const newName = prompt('សូមបញ្ចូលឈ្មោះផ្នែកថ្មី:', oldName);
+    if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
+        await db.departments.update(id, { name: newName.trim() });
+        Swal.fire({icon: 'info', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+        loadDepartments();
+        if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
+    }
+};
+
+window.deleteDepartment = async function(id) {
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបផ្នែកនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់', confirmButtonColor: '#d33'});
+    if (res.isConfirmed) {
+        await db.departments.delete(id);
+        loadDepartments();
+        if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
+    }
+};
+
+// ====== POSITION MANAGEMENT ======
+async function loadPositions() {
+    const all = await db.positions.toArray();
+    const list = document.getElementById('positionList');
+    if (!list) return;
+    list.innerHTML = '';
+    all.forEach(p => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `<span>${p.name}</span><div>
+            <button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editPosition(${p.id}, '${p.name.replace(/'/g, "\\'")}')">កែប្រែ</button>
+            <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deletePosition(${p.id})">លុប</button>
+        </div>`;
+        list.appendChild(li);
+    });
+}
+
+document.getElementById('addPositionForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('newPositionName');
+    const name = input.value.trim();
+    if (name) {
+        await db.positions.add({ name });
+        input.value = '';
+        Swal.fire({icon: 'success', text: 'បានបញ្ចូលដោយជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+        loadPositions();
+        if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
+    }
+});
+
+window.editPosition = async function(id, oldName) {
+    const newName = prompt('សូមបញ្ចូលឈ្មោះតួនាទីថ្មី:', oldName);
+    if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
+        await db.positions.update(id, { name: newName.trim() });
+        Swal.fire({icon: 'info', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+        loadPositions();
+        if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
+    }
+};
+
+window.deletePosition = async function(id) {
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបតួនាទីនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់', confirmButtonColor: '#d33'});
+    if (res.isConfirmed) {
+        await db.positions.delete(id);
+        loadPositions();
+        if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
+    }
+};

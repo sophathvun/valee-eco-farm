@@ -1,0 +1,108 @@
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <div class="card shadow-sm border-info">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 text-info fw-bold"><span class="text-info">👨‍💼</span> បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី</h5>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('employeeForm').reset(); editingEmployeeId=null; document.getElementById('emp-photo-preview').removeAttribute('src'); if(typeof updatePhotoPlaceholder==='function') updatePhotoPlaceholder(); document.querySelector('#employeeForm button[type=submit]').innerHTML='រក្សាទុក';">សំអាត (Clear)</button>
+                            </div>
+                            <div class="card-body">
+                                <form id="employeeForm">
+                                    <div class="row">
+                                        <div class="col-md-4 text-center mb-3">
+                                            <label class="form-label fw-bold d-block">រូបថតបុគ្គលិក (Photo)</label>
+                                            <div id="emp-photo-dropzone" class="rounded mx-auto p-3 mb-2 bg-light d-flex flex-column align-items-center justify-content-center" style="cursor: pointer; width: 100%; height: 220px; border: 2px dashed #0dcaf0; transition: 0.3s;">
+                                                <div class="rounded-3 overflow-hidden mb-2 bg-white shadow-sm" style="width: 150px; height: 150px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; position: relative;">
+                                                    <img id="emp-photo-preview" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <span id="emp-photo-placeholder" style="font-size: 2rem; color: #ccc; position: absolute;">📸</span>
+                                                </div>
+                                                <small class="text-muted fw-bold">Drag &amp; Drop ឬ ចុចទីនេះ</small>
+                                            </div>
+                                            <input type="file" id="emp-photo" accept="image/*" class="d-none">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">ឈ្មោះបុគ្គលិក (Name)</label>
+                                                    <input type="text" class="form-control" id="emp-name" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">ភេទ (Gender)</label>
+                                                    <select class="form-select" id="emp-gender">
+                                                        <option value="ប្រុស">ប្រុស (Male)</option>
+                                                        <option value="ស្រី">ស្រី (Female)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">ថ្ងៃខែឆ្នាំកំណើត (DOB)</label>
+                                                    <input type="date" class="form-control" id="emp-dob">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">លេខទូរស័ព្ទ (Phone)</label>
+                                                    <input type="text" class="form-control" id="emp-phone">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">ផ្នែកការងារ (Department)</label>
+                                                    <select class="form-select" id="emp-department" required>
+                                                        <option value="">-- ជ្រើសរើសផ្នែក --</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">តួនាទី (Position)</label>
+                                                    <select class="form-select" id="emp-position" required>
+                                                        <option value="">-- ជ្រើសរើសតួនាទី --</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">ប្រភេទការងារ (Type)</label>
+                                                    <select class="form-select" id="emp-type">
+                                                        <option value="Full-Time">ពេញម៉ោង (Full-Time)</option>
+                                                        <option value="Part-Time">ក្រៅម៉ោង (Part-Time)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-12 mb-3">
+                                                    <label class="form-label fw-bold">ប្រាក់ឈ្នួលគោល (Base Rate) USD</label>
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control" id="emp-salary" min="0" step="0.01" required>
+                                                        <select class="form-select" id="emp-wage-type" style="max-width: 150px;">
+                                                            <option value="Monthly">គិតជាខែ</option>
+                                                            <option value="Daily">គិតជាថ្ងៃ</option>
+                                                            <option value="Hourly">គិតជាម៉ោង</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-info w-100 text-white fw-bold">រក្សាទុក</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-primary">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 text-primary fw-bold">បញ្ជីបុគ្គលិក (Employee List)</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped text-center align-middle mb-0">
+                                <thead class="table-info">
+                                    <tr>
+                                        <th>រូបថត</th>
+                                        <th>ឈ្មោះបុគ្គលិក</th>
+                                        <th>ភេទ</th>
+                                        <th>ផ្នែកការងារ</th>
+                                        <th>តួនាទី</th>
+                                        <th>ប្រភេទការងារ</th>
+                                        <th>លេខទូរស័ព្ទ</th>
+                                        <th>ប្រាក់ខែគោល</th>
+                                        <th>សកម្មភាព</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeeList">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>

@@ -1,0 +1,37 @@
+                <!-- Filter Section -->
+                <div class="card shadow-sm mb-3 border-0 border-top border-secondary border-4">
+                    <div class="card-body">
+                        <div class="row align-items-end">
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label text-secondary fw-bold">ស្វែងរកលេខវិក្កយបត្រ</label>
+                                <input type="text" class="form-control" id="search-inv-no" placeholder="ឧ. 001" oninput="loadInvoices()">
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label text-secondary fw-bold">ចាប់ពីថ្ងៃទី (From)</label>
+                                <input type="date" class="form-control" id="search-inv-from" onchange="loadInvoices()">
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label text-secondary fw-bold">ដល់ថ្ងៃទី (To)</label>
+                                <input type="date" class="form-control" id="search-inv-to" onchange="loadInvoices()">
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="clearInvoiceFilters()">សំអាតការស្វែងរក (Clear)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0 border-top border-info border-4">
+                    <div class="card-header bg-white">
+                        <h4 class="mb-0 text-info">ប្រវត្តិវិក្កយបត្រដែលបានចេញ (Invoice History)</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 text-center">
+                                <thead class="table-light">
+                                    <tr><th>ថ្ងៃទី</th><th>លេខវិក្កយបត្រ</th><th>អតិថិជន</th><th>សរុបទឹកប្រាក់</th><th>សកម្មភាព</th></tr>
+                                </thead>
+                                <tbody id="invoiceListBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>

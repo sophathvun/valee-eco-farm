@@ -7,96 +7,10 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <link rel="stylesheet" href="assets/cropper.min.css">
-    <style>
-        body { font-family: 'Kantumruy Pro', 'Khmer OS Battambang', sans-serif; background-color: #f4f6f9; overflow-x: hidden; margin: 0; }
-        .wrapper { display: flex; width: 100%; min-height: 100vh; }
-        
-        /* Sidebar Styles */
-        .sidebar { min-width: 250px; max-width: 250px; background-color: #343a40; color: #fff; transition: all 0.3s; display: flex; flex-direction: column; }
-        .sidebar .brand { padding: 20px; font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid #4f5962; background: #23272b; }
-        .sidebar .nav-link { color: #c2c7d0; padding: 15px 20px; border-radius: 0; font-size: 1.1rem; border-left: 4px solid transparent; }
-        .sidebar .nav-link:hover { background-color: #495057; color: #fff; }
-        .sidebar .nav-link.active { background-color: #007bff; color: #fff; border-left-color: #0056b3; }
-        
-        /* Main Content */
-        .content { width: 100%; padding: 30px; }
-        .card-income { border-left: 5px solid #28a745; }
-        .card-expense { border-left: 5px solid #dc3545; }
-        .card-balance { border-left: 5px solid #007bff; }
-        #offline-status { display: none; }
-        
-        /* View Management */
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-
-        /* Print Styles */
-        @media screen {
-            .print-container { display: none !important; }
-        }
-        @media print {
-            body { background-color: #fff; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .wrapper, .sidebar, .content, .view-section { display: none !important; }
-            .print-container { display: none !important; }
-            #print-area-invoice.print-template, #print-area-report.print-template, #print-area-analytics.print-template { 
-                display: block !important; 
-                position: absolute; left: 0; top: 0; width: 100%; 
-            }
-            .print-template * { visibility: visible; }
-            @page { margin: 10mm; }
-        }
-
-        /* Invoice Custom Styles (To match user's image) */
-        .invoice-box { font-family: 'Khmer OS Battambang', sans-serif; color: #000; }
-        .invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .invoice-header-left h3 { color: #28a745; font-weight: bold; font-family: 'Khmer OS Muol Light', cursive; font-size: 1.5rem; margin-bottom: 5px; }
-        .invoice-header-left p { margin: 2px 0; font-size: 14px; }
-        .invoice-header-right p { margin: 2px 0; font-size: 14px; display: flex; justify-content: space-between; width: 250px; }
-        .invoice-title { text-align: center; margin: 20px 0; }
-        .invoice-title h2 { font-family: 'Khmer OS Muol Light', cursive; margin-bottom: 0; }
-        .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
-        .invoice-table th, .invoice-table td { border: 1px solid #000; padding: 5px; text-align: center; }
-        .invoice-table th { background-color: #e2efda; font-weight: bold; }
-        .invoice-summary { width: 300px; float: right; margin-bottom: 40px; border-collapse: collapse; }
-        .invoice-summary td { border: 1px solid #000; padding: 5px; text-align: right; }
-        .invoice-summary .bg-green { background-color: #e2efda; }
-        .invoice-footer { display: flex; justify-content: space-between; text-align: center; margin-top: 50px; clear: both; }
-        .invoice-footer-box { width: 30%; }
-        .invoice-footer-line { margin-top: 100px; border-top: 1px solid #000; width: 80%; margin-left: auto; margin-right: auto; }
-        
-        /* Report Tabs Styling */
-        #reportTabs .nav-link { color: #495057; border-radius: 0; }
-        #reportTabs .nav-link:hover { background-color: #f8f9fa; }
-    </style>
-    <style>
-        .custom-dropdown { position: relative; display: inline-block; }
-        .custom-dropdown-content { display: none; position: absolute; right: 0; background-color: white; min-width: 250px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000; border-radius: 8px; border: 1px solid #ddd; overflow: hidden; }
-        .custom-dropdown-content a { color: #333; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #eee; font-size: 14px; transition: 0.2s; text-align: left; }
-        .custom-dropdown-content a:last-child { border-bottom: none; }
-        .custom-dropdown-content a:hover { background-color: #f8f9fa; color: #000; }
-        .custom-dropdown.show .custom-dropdown-content { display: block; }
-        
-        /* Mobile Responsive Design */
-        @media (max-width: 768px) {
-            .wrapper { flex-direction: column; }
-            .sidebar { min-width: 100%; max-width: 100%; height: auto; }
-            .sidebar .nav { display: none; }
-            .sidebar.mobile-open .nav { display: flex; }
-            .content { padding: 15px; }
-            .card-body { padding: 15px; }
-            /* Make tables horizontally scrollable without breaking the layout */
-            .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .table-responsive table th, .table-responsive table td { white-space: nowrap; }
-            /* Adjust inputs to stack instead of being inline if necessary */
-            .row > [class^="col-"] { margin-bottom: 10px; }
-            /* Adjust headers that might squish */
-            .card-header.d-flex { flex-wrap: wrap; gap: 10px; }
-        }
-        
-        /* Read Only Mode */
-        body.readonly-mode .write-only { display: none !important; }
-        body.readonly-mode .col-md-5.write-only + .col-md-7 { width: 100%; }
-        body.readonly-mode button.btn-danger, body.readonly-mode button.btn-warning, body.readonly-mode button.btn-outline-danger, body.readonly-mode button.btn-outline-warning { display: none !important; }
-    </style>
+    <link rel="stylesheet" href="src/css/global.css">
+    <link rel="stylesheet" href="src/css/print.css">
+    <link rel="stylesheet" href="src/css/global.css">
+    <link rel="stylesheet" href="src/css/print.css">
 </head>
 <body class="bg-light">
 
@@ -104,7 +18,7 @@
     <div id="login-view" style="display: flex; height: 100vh; align-items: center; justify-content: center; background-color: #343a40;">
         <div class="card shadow-lg" style="width: 400px; max-width: 90%;">
             <div class="card-body p-4 text-center">
-                <img src="logo.png" alt="Logo" width="80" height="80" class="mb-3 rounded-circle bg-light p-2 sys-logo">
+                <img src="assets/images/logo.png" alt="Logo" width="80" height="80" class="mb-3 rounded-circle bg-light p-2 sys-logo">
                 <h4 class="mb-4 text-primary fw-bold" style="font-family: 'Khmer OS Muol Light', cursive;">វ៉ាលេអេកូហ្វាម</h4>
                 <form id="loginForm">
                     <div class="mb-3 text-start">
@@ -123,822 +37,161 @@
 
     <div class="wrapper" id="main-wrapper" style="display: none;">
         <!-- Sidebar -->
-        <nav class="sidebar shadow-sm">
-            <div class="brand d-flex align-items-center justify-content-between">
-                <div>
-                    <img src="logo.png" alt="Logo" width="30" height="30" class="me-2 rounded-circle bg-white p-1 sys-logo">
-                    <span style="font-size: 1rem;">វ៉ាលេអេកូហ្វាម</span>
+        <nav class="sidebar">
+            <div class="brand d-flex align-items-center">
+                <img src="assets/images/logo.png" alt="Logo" width="40" height="40" class="me-3 rounded-circle sys-logo">
+                <div class="lh-1">
+                    <span class="brand-title fw-bold text-white d-block mb-1" style="font-family: 'Khmer OS Muol Light', cursive; font-size: 0.85rem;">វ៉ាលេអេកូហ្វាម</span>
+                    <small class="brand-subtitle text-muted" style="font-size: 0.7rem;">VALLEY ECO FARM</small>
                 </div>
-                <button class="btn btn-sm btn-outline-light d-md-none" onclick="document.querySelector('.sidebar').classList.toggle('mobile-open')">☰</button>
             </div>
-            <ul class="nav flex-column mt-3">
-                <li class="nav-item">
-                    <a href="#" class="nav-link active" id="nav-dashboard" onclick="showTab('dashboard')">🏠 ទំព័រដើម</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" id="nav-invoice" onclick="showTab('invoice')">🧾 បង្កើតវិក្កយបត្រ</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" id="nav-invoice-list" onclick="showTab('invoice-list')">🗂️ បញ្ជីវិក្កយបត្រ</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" id="nav-income" onclick="showTab('income')">💰 បញ្ចូលចំណូល</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" id="nav-expense" onclick="showTab('expense')">💸 បញ្ចូលចំណាយ</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link d-flex justify-content-between align-items-center" id="nav-reports" onclick="showTab('reports'); const sm = document.getElementById('reportsSubmenu'); const i = document.getElementById('reportsIcon'); if(sm.style.display==='none'){sm.style.display='block';i.textContent='▲';}else{sm.style.display='none';i.textContent='▼';}">
-                        <span>📊 របាយការណ៍</span>
-                        <span id="reportsIcon" style="font-size: 0.8rem;">▼</span>
+
+            <div class="sidebar-search px-3 mb-2 mt-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted border-secondary">🔍</span>
+                    <input type="text" id="sidebarSearchInput" oninput="filterSidebarMenu()" class="form-control border-start-0 border-secondary bg-transparent text-white shadow-none" placeholder="Search Menu" style="font-size: 0.85rem;">
+                </div>
+                <div class="text-muted mt-2" style="font-size: 0.65rem;">Favorites<br>Click a menu item's heart icon to add it to favorites.</div>
+            </div>
+
+            <ul class="nav flex-column sidebar-menu mt-2">
+                <li class="nav-item sys-menu-item" data-perm="dashboard">
+                    <a href="#" class="nav-link active" id="nav-dashboard" onclick="showTab('dashboard')">
+                        <span class="nav-link-icon">🔘</span>
+                        <span class="nav-link-title">ទំព័រដើម</span>
                     </a>
-                    <ul class="nav flex-column" id="reportsSubmenu" style="display: none; background-color: #23272b;">
+                </li>
+                <li class="nav-item sys-menu-item" data-perm="invoice_add">
+                    <a href="#" class="nav-link" id="nav-invoice" onclick="showTab('invoice')">
+                        <span class="nav-link-icon">🧾</span>
+                        <span class="nav-link-title">បង្កើតវិក្កយបត្រ</span>
+                    </a>
+                </li>
+                <li class="nav-item sys-menu-item" data-perm="invoice_list">
+                    <a href="#" class="nav-link" id="nav-invoice-list" onclick="showTab('invoice-list')">
+                        <span class="nav-link-icon">🗂️</span>
+                        <span class="nav-link-title">បញ្ជីវិក្កយបត្រ</span>
+                    </a>
+                </li>
+                <li class="nav-item sys-menu-item" data-perm="income">
+                    <a href="#" class="nav-link" id="nav-income" onclick="showTab('income')">
+                        <span class="nav-link-icon">💰</span>
+                        <span class="nav-link-title">ចំណូល</span>
+                    </a>
+                </li>
+                <li class="nav-item sys-menu-item" data-perm="expense">
+                    <a href="#" class="nav-link" id="nav-expense" onclick="showTab('expense')">
+                        <span class="nav-link-icon">💸</span>
+                        <span class="nav-link-title">ចំណាយ</span>
+                    </a>
+                </li>
+                <li class="nav-item sys-menu-item" data-perm="reports">
+                    <a href="#" class="nav-link d-flex justify-content-between align-items-center" id="nav-reports" onclick="showTab('reports'); const sm = document.getElementById('reportsSubmenu'); const i = document.getElementById('reportsIcon'); if(sm.style.display==='none'){sm.style.display='block';i.textContent='▲';}else{sm.style.display='none';i.textContent='▼';}">
+                        <div>
+                            <span class="nav-link-icon">📊</span>
+                            <span class="nav-link-title">របាយការណ៍</span>
+                        </div>
+                        <span id="reportsIcon" class="submenu-indicator" style="font-size: 0.7rem; opacity: 0.8;">▼</span>
+                    </a>
+                    <ul class="nav flex-column" id="reportsSubmenu" style="display: none; background-color: #1a2234; border-radius: 8px; margin: 0 15px;">
                         <li class="nav-item">
-                            <a href="#" class="nav-link" id="nav-reports-summary" style="padding-left: 45px; font-size: 0.95rem;" onclick="showTab('reports'); switchReportTab('summary');">📊 ចំណូលចំណាយ</a>
+                            <a href="#" class="nav-link submenu-link" id="nav-reports-summary" onclick="showTab('reports'); switchReportTab('summary');">📊 ចំណូលចំណាយ</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link" id="nav-reports-income" style="padding-left: 45px; font-size: 0.95rem;" onclick="showTab('reports'); switchReportTab('income');">📈 ចំណូល</a>
+                            <a href="#" class="nav-link submenu-link" id="nav-reports-income" onclick="showTab('reports'); switchReportTab('income');">📈 ចំណូល</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link" id="nav-reports-expense" style="padding-left: 45px; font-size: 0.95rem;" onclick="showTab('reports'); switchReportTab('expense');">📉 ចំណាយ</a>
+                            <a href="#" class="nav-link submenu-link" id="nav-reports-expense" onclick="showTab('reports'); switchReportTab('expense');">📉 ចំណាយ</a>
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" id="nav-employee" onclick="showTab('employee')">👨‍💼 គ្រប់គ្រងបុគ្គលិក</a>
+                <li class="nav-item sys-menu-item" data-perm="employee_manage">
+                    <a href="#" class="nav-link" id="nav-employee" onclick="showTab('employee')">
+                        <span class="nav-link-icon">👨‍💼</span>
+                        <span class="nav-link-title">គ្រប់គ្រងបុគ្គលិក</span>
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link" id="nav-settings" onclick="showTab('settings')">⚙️ ការកំណត់ទូទៅ</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link text-danger" id="nav-logout" onclick="logoutUser()">🚪 ចាកចេញ (Logout)</a>
+                <li class="nav-item sys-menu-item" data-perm="settings">
+                    <a href="#" class="nav-link d-flex justify-content-between align-items-center" id="nav-settings" onclick="showTab('settings'); const sm = document.getElementById('settingsSubmenu'); const i = document.getElementById('settingsIcon'); if(sm.style.display==='none'){sm.style.display='block';i.textContent='▲';}else{sm.style.display='none';i.textContent='▼';}">
+                        <div>
+                            <span class="nav-link-icon">⚙️</span>
+                            <span class="nav-link-title">ការកំណត់ទូទៅ</span>
+                        </div>
+                        <span id="settingsIcon" class="submenu-indicator" style="font-size: 0.7rem; opacity: 0.8;">▼</span>
+                    </a>
+                    <ul class="nav flex-column" id="settingsSubmenu" style="display: none; background-color: #1a2234; border-radius: 8px; margin: 0 15px;">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-categories" onclick="showTab('settings', 'categories');">🏷️ ប្រភេទចំណូល/ចំណាយ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-preparers" onclick="showTab('settings', 'preparers');">📝 អ្នករៀបចំរបាយការណ៍</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-farm_info" onclick="showTab('settings', 'farm_info');">🌾 ព័ត៌មានកសិដ្ឋាន</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-users" onclick="showTab('settings', 'users');">👤 បង្កើតអ្នកប្រើប្រាស់</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-permissions" onclick="showTab('settings', 'permissions');">🔑 សិទ្ធិអ្នកប្រើប្រាស់</a>
+                        </li>
+                          <li class="nav-item">
+                              <a href="#" class="nav-link submenu-link" id="nav-settings-roles" onclick="showTab('settings', 'roles');">👥 តួនាទីអ្នកប្រើប្រាស់ (System Roles)</a>
+                          </li>
+                          <li class="nav-item">
+                              <a href="#" class="nav-link submenu-link" id="nav-settings-emp_structure" onclick="showTab('settings', 'emp_structure');">🏢 រចនាសម្ព័ន្ធបុគ្គលិក (Emp Structure)</a>
+                          </li>
+                      </ul>
+                  </li>
+                <li class="nav-item mt-3">
+                    <a href="#" class="nav-link text-danger" id="nav-logout" onclick="logoutUser()">
+                        <span class="nav-link-icon">🚪</span>
+                        <span class="nav-link-title">ចាកចេញ</span>
+                    </a>
                 </li>
             </ul>
         </nav>
 
-        <!-- Main Content -->
-        <div class="content">
-            <div id="offline-status" class="alert alert-warning fw-bold text-center mb-4 shadow-sm" style="display: none;">⚠️ កំពុងដំណើរការដោយគ្មានអ៊ីនធឺណិត (Offline Mode)</div>
-
-            <!-- 1. DASHBOARD VIEW -->
-            <div id="dashboard-view" class="view-section active">
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <div class="card card-income shadow-sm mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title text-success">ចំណូលខែនេះ</h5>
-                                <h3 id="totalIncomeKHR" class="mb-0">៛0</h3>
-                                <h5 id="totalIncomeUSD" class="text-success mt-1">$0</h5>
-                            </div>
+        <!-- Main Panel (Includes Top Navbar and Content) -->
+        <div class="main-panel flex-grow-1 d-flex flex-column" style="min-width: 0; background-color: #f4f6f8;">
+            
+            <!-- Top Navbar -->
+            <header class="top-navbar d-flex justify-content-between align-items-center shadow-sm px-4 bg-white" style="height: 64px;">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm btn-outline-secondary d-md-none me-3" onclick="document.querySelector('.sidebar').classList.toggle('mobile-open')">☰</button>
+                    <h5 class="m-0 d-flex align-items-center text-muted fs-6" id="top-navbar-title">
+                        <span id="top-navbar-text">Dashboard</span>
+                    </h5>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <span id="theme-toggle" class="me-3 fs-5" style="cursor: pointer;" onclick="toggleTheme()">🌙</span>
+                    <span class="me-3 fs-5" style="cursor: pointer;">🔔</span>
+                    <span class="me-4 fs-5" style="cursor: pointer;">💬</span>
+                    <div class="user-profile d-flex align-items-center" style="cursor: pointer;">
+                        <div class="text-end me-2 d-none d-md-block lh-1">
+                            <div class="fw-bold text-dark fs-6" id="top-user-name">USER</div>
+                            <small class="text-muted" style="font-size: 0.7rem;">Administrator</small>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-expense shadow-sm mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title text-danger">ចំណាយខែនេះ</h5>
-                                <h3 id="totalExpenseKHR" class="mb-0">៛0</h3>
-                                <h5 id="totalExpenseUSD" class="text-danger mt-1">$0</h5>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-balance shadow-sm mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">ប្រាក់ចំណេញខែនេះ</h5>
-                                <h3 id="totalBalanceKHR" class="mb-0">៛0</h3>
-                                <h5 id="totalBalanceUSD" class="text-primary mt-1">$0</h5>
-                            </div>
-                        </div>
+                        <img src="assets/images/logo.png" width="35" height="35" class="rounded-circle border sys-logo">
                     </div>
                 </div>
+            </header>
 
-                <div class="row">
-                    <div class="col-md-12 mb-4">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-success text-white">ក្រាហ្វរបាយការណ៍ ៧ ថ្ងៃចុងក្រោយ</div>
-                            <div class="card-body">
-                                <canvas id="myChart" height="60"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                                <span>ប្រវត្តិប្រតិបត្តិការថ្មីៗ (៥០ ចុងក្រោយ)</span>
-                                <button class="btn btn-sm btn-light" onclick="exportData()">ទាញយកទិន្នន័យបម្រុងទុក</button>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover mb-0 text-center">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>ថ្ងៃទី</th>
-                                                <th>ប្រភេទ</th>
-                                                <th>ឈ្មោះ</th>
-                                                <th>ទឹកប្រាក់</th>
-                                                <th>កំណត់សម្គាល់</th>
-                                                <th>សកម្មភាព</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="transactionList"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Main Content -->
+            <div class="content p-4 overflow-auto">
+                <div id="offline-status" class="alert alert-warning fw-bold text-center mb-4 shadow-sm" style="display: none;">⚠️ កំពុងដំណើរការដោយគ្មានអ៊ីនធឺណិត (Offline Mode)</div>
 
-            <!-- 1.5. INVOICE VIEW -->
-            <div id="invoice-view" class="view-section">
-                <div class="card shadow-sm border-0 border-top border-primary border-4">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0 text-primary">បង្កើតវិក្កយបត្រ (Invoice)</h4>
-                        <span class="badge bg-info text-dark">ពេលព្រីនវិក្កយបត្រ វានឹងកត់ត្រាចូលជាចំណូលដោយស្វ័យប្រវត្តិ!</span>
-                    </div>
-                    <div class="card-body">
-                        <form id="invoiceForm">
-                            <!-- Invoice Header Details -->
-                            <div class="row mb-3">
-                                <div class="col-md-3">
-                                    <label class="form-label">លេខវិក្កយបត្រ (Invoice N°)</label>
-                                    <input type="text" class="form-control" id="inv-no" required placeholder="001">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">កាលបរិច្ឆេទ (Date)</label>
-                                    <input type="date" class="form-control" id="inv-date" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">ឈ្មោះអតិថិជន (Customer)</label>
-                                    <input type="text" class="form-control" id="inv-customer" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">អាសយដ្ឋាន (Address)</label>
-                                    <input type="text" class="form-control" id="inv-address">
-                                </div>
-                            </div>
-                            <hr>
-                            <!-- Invoice Items Table -->
-                            <div class="table-responsive mb-3">
-                                <table class="table table-bordered text-center" id="inv-items-table">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>លេខផលិតផល (Item)</th>
-                                            <th>បរិយាយមុខទំនិញ (Description)</th>
-                                            <th>មាឌ/ឯកតា (Mass/Unit)</th>
-                                            <th>តម្លៃ/ឯកតា (Price/Unit)</th>
-                                            <th>សរុប (Total)</th>
-                                            <th>សកម្មភាព</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="inv-items-body"></tbody>
-                                </table>
-                            </div>
-                            <button type="button" class="btn btn-outline-primary mb-3" onclick="addInvoiceRow()">+ បន្ថែមទំនិញ (Add Item)</button>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">ប្រភេទចំណូល (ពេលកត់ត្រាចូលប្រព័ន្ធ)</label>
-                                        <select class="form-select" id="inv-income-category" required></select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">រូបិយប័ណ្ណនៃវិក្កយបត្រនេះ</label>
-                                        <select class="form-select" id="inv-currency">
-                                            <option value="USD">ដុល្លារអាមេរិក ($)</option>
-                                            <option value="KHR">ប្រាក់រៀល (៛)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <table class="table table-borderless text-end">
-                                        <tr><td>សរុប (Subtotal):</td><td><input type="number" class="form-control text-end" id="inv-subtotal" readonly value="0"></td></tr>
-                                        <tr><td>សេវាដឹកជញ្ជូន (Delivery Fee):</td><td><input type="number" class="form-control text-end" id="inv-delivery" value="0" step="0.01" oninput="calculateInvoiceTotal()"></td></tr>
-                                        <tr><th>តម្លៃសរុប (Grand Total):</th><td><input type="number" class="form-control text-end fw-bold" id="inv-grandtotal" readonly value="0"></td></tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <hr>
-                            <button type="submit" id="btn-save-invoice" class="btn btn-primary w-100 py-3 fs-5">រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ (Save & Print)</button>
-                            <button type="button" class="btn btn-secondary w-100 py-2 mt-2" onclick="resetInvoiceForm()">បោះបង់ (Cancel / Reset)</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 1.6 INVOICE LIST VIEW -->
-            <div id="invoice-list-view" class="view-section">
-                <!-- Filter Section -->
-                <div class="card shadow-sm mb-3 border-0 border-top border-secondary border-4">
-                    <div class="card-body">
-                        <div class="row align-items-end">
-                            <div class="col-md-3 mb-2">
-                                <label class="form-label text-secondary fw-bold">ស្វែងរកលេខវិក្កយបត្រ</label>
-                                <input type="text" class="form-control" id="search-inv-no" placeholder="ឧ. 001" oninput="loadInvoices()">
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <label class="form-label text-secondary fw-bold">ចាប់ពីថ្ងៃទី (From)</label>
-                                <input type="date" class="form-control" id="search-inv-from" onchange="loadInvoices()">
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <label class="form-label text-secondary fw-bold">ដល់ថ្ងៃទី (To)</label>
-                                <input type="date" class="form-control" id="search-inv-to" onchange="loadInvoices()">
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <button class="btn btn-outline-secondary w-100" onclick="clearInvoiceFilters()">សំអាតការស្វែងរក (Clear)</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card shadow-sm border-0 border-top border-info border-4">
-                    <div class="card-header bg-white">
-                        <h4 class="mb-0 text-info">ប្រវត្តិវិក្កយបត្រដែលបានចេញ (Invoice History)</h4>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 text-center">
-                                <thead class="table-light">
-                                    <tr><th>ថ្ងៃទី</th><th>លេខវិក្កយបត្រ</th><th>អតិថិជន</th><th>សរុបទឹកប្រាក់</th><th>សកម្មភាព</th></tr>
-                                </thead>
-                                <tbody id="invoiceListBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. INCOME VIEW -->
-            <div id="income-view" class="view-section">
-                <div class="row">
-                    <div class="col-md-5 mb-4 write-only">
-                        <div class="card shadow-sm border-0 border-top border-success border-4">
-                            <div class="card-header bg-white">
-                                <h4 class="mb-0 text-success">បញ្ចូលទិន្នន័យចំណូលផ្ទាល់</h4>
-                            </div>
-                            <div class="card-body">
-                                <form id="incomeForm">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">រូបិយប័ណ្ណ</label>
-                                            <select class="form-select" id="inc-currency" required><option value="KHR">ប្រាក់រៀល (៛)</option><option value="USD">ដុល្លារអាមេរិក ($)</option></select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">ចំនួនទឹកប្រាក់</label>
-                                            <input type="number" class="form-control" id="inc-amount" required min="0" step="0.01">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">កាលបរិច្ឆេទ</label>
-                                        <input type="date" class="form-control" id="inc-date" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">ប្រភេទចំណូល</label>
-                                        <select class="form-select" id="inc-category" required></select>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="form-label">កំណត់សម្គាល់</label>
-                                        <input type="text" class="form-control" id="inc-note" placeholder="ឧ. លក់ជ្រូក ៥ក្បាល">
-                                    </div>
-                                    <button type="submit" class="btn btn-success w-100 py-2 fs-5">រក្សាទុកចំណូល</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="card shadow-sm border-0 border-top border-success border-4">
-                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-success fw-bold">ប្រវត្តិបញ្ចូលចំណូល</h5>
-                                <div class="custom-dropdown">
-                                    <button class="btn btn-sm btn-outline-success fw-bold dropbtn" onclick="this.parentElement.classList.toggle('show')">🖨️ ព្រីនរបាយការណ៍ ▼</button>
-                                    <div class="custom-dropdown-content">
-                                        <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printListReport('income');">🖨️ ព្រីនរបាយការណ៍នេះ</a>
-                                        <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើស \'Save as PDF\' នៅក្នុងផ្ទាំង Print បន្ទាប់។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#28a745'}).then((result) => { if(result.isConfirmed) printListReport('income'); });">💾 រក្សាទុករបាយការជា PDF</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body bg-light pb-2 pt-2 border-bottom">
-                                <div class="row align-items-end">
-                                    <div class="col-md-4">
-                                        <label class="form-label" style="font-size: 13px;">ចាប់ពីថ្ងៃទី (From)</label>
-                                        <input type="date" class="form-control form-control-sm" id="filter-inc-from" onchange="loadData()">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label" style="font-size: 13px;">ដល់ថ្ងៃទី (To)</label>
-                                        <input type="date" class="form-control form-control-sm" id="filter-inc-to" onchange="loadData()">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button class="btn btn-sm btn-secondary w-100 mb-1" onclick="clearIncFilter()">សំអាត</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                    <table class="table table-hover mb-0 text-center">
-                                        <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
-                                            <tr><th>ថ្ងៃទី</th><th>ប្រភេទ</th><th>ទឹកប្រាក់</th><th>កំណត់សម្គាល់</th></tr>
-                                        </thead>
-                                        <tbody id="recentIncomeList"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white text-end fw-bold border-top">
-                                សរុប (រៀល): <span id="list-inc-total-khr" class="text-success fs-5">៛0</span> &nbsp;|&nbsp; 
-                                សរុប (ដុល្លារ): <span id="list-inc-total-usd" class="text-success fs-5">$0.00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> <!-- End Income View -->
-
-            <!-- 3. EXPENSE VIEW -->
-            <div id="expense-view" class="view-section">
-                <div class="row">
-                    <div class="col-md-5 mb-4 write-only">
-                        <div class="card shadow-sm border-0 border-top border-danger border-4">
-                            <div class="card-header bg-white">
-                                <h4 class="mb-0 text-danger">បញ្ចូលទិន្នន័យចំណាយ</h4>
-                            </div>
-                            <div class="card-body">
-                                <form id="expenseForm">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label">រូបិយប័ណ្ណ</label>
-                                            <select class="form-select" id="exp-currency" required><option value="KHR">ប្រាក់រៀល (៛)</option><option value="USD">ដុល្លារអាមេរិក ($)</option></select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">ចំនួនទឹកប្រាក់</label>
-                                            <input type="number" class="form-control" id="exp-amount" required min="0" step="0.01">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">កាលបរិច្ឆេទ</label>
-                                        <input type="date" class="form-control" id="exp-date" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">ប្រភេទចំណាយ</label>
-                                        <select class="form-select" id="exp-category" required></select>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="form-label">កំណត់សម្គាល់</label>
-                                        <input type="text" class="form-control" id="exp-note" placeholder="ឧ. ទិញចំណី ៥បាវ">
-                                    </div>
-                                    <button type="submit" class="btn btn-danger w-100 py-2 fs-5">រក្សាទុកចំណាយ</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-7">
-                        <div class="card shadow-sm border-0 border-top border-danger border-4">
-                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-danger fw-bold">ប្រវត្តិបញ្ចូលចំណាយ</h5>
-                                <div class="custom-dropdown">
-                                    <button class="btn btn-sm btn-outline-danger fw-bold dropbtn" onclick="this.parentElement.classList.toggle('show')">🖨️ ព្រីនរបាយការណ៍ ▼</button>
-                                    <div class="custom-dropdown-content">
-                                        <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printListReport('expense');">🖨️ ព្រីនរបាយការណ៍នេះ</a>
-                                        <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើស \'Save as PDF\' នៅក្នុងផ្ទាំង Print បន្ទាប់។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#dc3545'}).then((result) => { if(result.isConfirmed) printListReport('expense'); });">💾 រក្សាទុករបាយការជា PDF</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body bg-light pb-2 pt-2 border-bottom">
-                                <div class="row align-items-end">
-                                    <div class="col-md-4">
-                                        <label class="form-label" style="font-size: 13px;">ចាប់ពីថ្ងៃទី (From)</label>
-                                        <input type="date" class="form-control form-control-sm" id="filter-exp-from" onchange="loadData()">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label" style="font-size: 13px;">ដល់ថ្ងៃទី (To)</label>
-                                        <input type="date" class="form-control form-control-sm" id="filter-exp-to" onchange="loadData()">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button class="btn btn-sm btn-secondary w-100 mb-1" onclick="clearExpFilter()">សំអាត</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                                    <table class="table table-hover mb-0 text-center">
-                                        <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
-                                            <tr><th>ថ្ងៃទី</th><th>ប្រភេទ</th><th>ទឹកប្រាក់</th><th>កំណត់សម្គាល់</th></tr>
-                                        </thead>
-                                        <tbody id="recentExpenseList"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white text-end fw-bold border-top">
-                                សរុប (រៀល): <span id="list-exp-total-khr" class="text-danger fs-5">៛0</span> &nbsp;|&nbsp; 
-                                សរុប (ដុល្លារ): <span id="list-exp-total-usd" class="text-danger fs-5">$0.00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> <!-- End Expense View -->
-
-            <!-- 4. REPORTS VIEW (UPDATED WITH TABS) -->
-            <div id="reports-view" class="view-section">
-                <div class="card shadow-sm mb-4">
-                    
-                    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0" id="report-card-title">របាយការណ៍ចំណូលចំណាយ</h4>
-                        <div class="custom-dropdown">
-                            <button class="btn btn-sm btn-light fw-bold text-dark dropbtn" onclick="this.parentElement.classList.toggle('show')">🖨️ ព្រីនរបាយការណ៍នេះ ▼</button>
-                            <div class="custom-dropdown-content">
-                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printAnalyticsReport('summary');">🖨️ ព្រីនរបាយការណ៍សរុប</a>
-                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printAnalyticsReport('detail');">🖨️ ព្រីនរបាយការណ៍លំអិត</a>
-                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើស \'Save as PDF\' នៅក្នុងផ្ទាំង Print បន្ទាប់។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#007bff'}).then((result) => { if(result.isConfirmed) printAnalyticsReport('summary'); });">💾 ព្រីនរបាយការណ៍សរុប PDF</a>
-                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើស \'Save as PDF\' នៅក្នុងផ្ទាំង Print បន្ទាប់។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#007bff'}).then((result) => { if(result.isConfirmed) printAnalyticsReport('detail'); });">💾 ព្រីនរបាយការណ៍លំអិត PDF</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body bg-light border-bottom">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">ជ្រើសរើសឆ្នាំ</label>
-                                <select id="filterYear" class="form-select" onchange="generateReport()"></select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">ជ្រើសរើសខែ</label>
-                                <select id="filterMonth" class="form-select" onchange="generateReport()">
-                                    <option value="all">ប្រចាំឆ្នាំ (គ្រប់ខែ)</option>
-                                    <option value="01">មករា</option><option value="02">កុម្ភៈ</option><option value="03">មីនា</option>
-                                    <option value="04">មេសា</option><option value="05">ឧសភា</option><option value="06">មិថុនា</option>
-                                    <option value="07">កក្កដា</option><option value="08">សីហា</option><option value="09">កញ្ញា</option>
-                                    <option value="10">តុលា</option><option value="11">វិច្ឆិកា</option><option value="12">ធ្នូ</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">ជ្រើសរើសថ្ងៃ</label>
-                                <select id="filterDay" class="form-select" onchange="generateReport()">
-                                    <option value="all">ពេញមួយខែ</option>
-                                    <option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option>
-                                    <option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option>
-                                    <option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option>
-                                    <option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option>
-                                    <option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option>
-                                    <option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option>
-                                    <option value="31">31</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-bold">អ្នកធ្វើរបាយការណ៍</label>
-                                <select id="filterPreparer" class="form-select" onchange="updatePreparerName()"></select>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="card-body">
-                        <h4 id="reportSummaryText" class="mb-4 text-center text-secondary"></h4>
-
-                        <!-- TAB 1: SUMMARY (BOTH) -->
-                        <div id="rep-tab-summary">
-                            <div class="table-responsive">
-                                <table class="table table-bordered text-center">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>ល.រ</th>
-                                            <th id="rep-summary-first-col">កាលបរិច្ឆេទ</th>
-                                            <th>ចំណូល (៛)</th><th>ចំណូល ($)</th>
-                                            <th>ចំណាយ (៛)</th><th>ចំណាយ ($)</th>
-                                            <th>ចំណេញ/ខាត (៛)</th><th>ចំណេញ/ខាត ($)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rep-summary-tbody">
-                                    </tbody>
-                                    <tfoot class="table-light fw-bold fs-6">
-                                        <tr>
-                                            <td colspan="2">សរុបរួម</td>
-                                            <td class="text-success" id="repIncKHR">0</td><td class="text-success" id="repIncUSD">0</td>
-                                            <td class="text-danger" id="repExpKHR">0</td><td class="text-danger" id="repExpUSD">0</td>
-                                            <td class="text-primary" id="repBalKHR">0</td><td class="text-primary" id="repBalUSD">0</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <div class="mt-4"><canvas id="reportChart" height="80"></canvas></div>
-                        </div>
-
-                        <!-- TAB 2: INCOME ONLY -->
-                        <div id="rep-tab-income" class="d-none">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover text-center">
-                                    <thead class="table-light">
-                                        <tr><th>ល.រ</th><th>ប្រភេទចំណូល</th><th>សរុបទឹកប្រាក់ (៛)</th><th>សរុបទឹកប្រាក់ ($)</th></tr>
-                                    </thead>
-                                    <tbody id="rep-inc-tbody"></tbody>
-                                    <tfoot class="table-light fw-bold fs-6">
-                                        <tr>
-                                            <td colspan="2" class="text-end">សរុបរួម:</td>
-                                            <td id="rep-inc-grand-khr-tbl" class="text-success"></td>
-                                            <td id="rep-inc-grand-usd-tbl" class="text-success"></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <div class="mt-4"><canvas id="incReportChart" height="80"></canvas></div>
-                        </div>
-
-                        <!-- TAB 3: EXPENSE ONLY -->
-                        <div id="rep-tab-expense" class="d-none">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover text-center">
-                                    <thead class="table-light">
-                                        <tr><th>ល.រ</th><th>ប្រភេទចំណាយ</th><th>សរុបទឹកប្រាក់ (៛)</th><th>សរុបទឹកប្រាក់ ($)</th></tr>
-                                    </thead>
-                                    <tbody id="rep-exp-tbody"></tbody>
-                                    <tfoot class="table-light fw-bold fs-6">
-                                        <tr>
-                                            <td colspan="2" class="text-end">សរុបរួម:</td>
-                                            <td id="rep-exp-grand-khr-tbl" class="text-danger"></td>
-                                            <td id="rep-exp-grand-usd-tbl" class="text-danger"></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <div class="mt-4"><canvas id="expReportChart" height="80"></canvas></div>
-                        </div>
-
-                    </div>
-                </div>
-            </div> <!-- End Reports View -->
-
-            <!-- EMPLOYEE VIEW -->
-            <div id="employee-view" class="view-section">
-                <div class="row">
-                    <div class="col-md-12 mb-4">
-                        <div class="card shadow-sm border-info">
-                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-info fw-bold"><span class="text-info">👨‍💼</span> បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី</h5>
-                                <button class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('employeeForm').reset(); editingEmployeeId=null; document.getElementById('emp-photo-preview').removeAttribute('src'); if(typeof updatePhotoPlaceholder==='function') updatePhotoPlaceholder(); document.querySelector('#employeeForm button[type=submit]').innerHTML='រក្សាទុក';">សំអាត (Clear)</button>
-                            </div>
-                            <div class="card-body">
-                                <form id="employeeForm">
-                                    <div class="row">
-                                        <div class="col-md-4 text-center mb-3">
-                                            <label class="form-label fw-bold d-block">រូបថតបុគ្គលិក (Photo)</label>
-                                            <div id="emp-photo-dropzone" class="rounded mx-auto p-3 mb-2 bg-light d-flex flex-column align-items-center justify-content-center" style="cursor: pointer; width: 100%; height: 220px; border: 2px dashed #0dcaf0; transition: 0.3s;">
-                                                <div class="rounded-3 overflow-hidden mb-2 bg-white shadow-sm" style="width: 150px; height: 150px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; position: relative;">
-                                                    <img id="emp-photo-preview" style="width: 100%; height: 100%; object-fit: cover;">
-                                                    <span id="emp-photo-placeholder" style="font-size: 2rem; color: #ccc; position: absolute;">📸</span>
-                                                </div>
-                                                <small class="text-muted fw-bold">Drag &amp; Drop ឬ ចុចទីនេះ</small>
-                                            </div>
-                                            <input type="file" id="emp-photo" accept="image/*" class="d-none">
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ឈ្មោះបុគ្គលិក (Name)</label>
-                                                    <input type="text" class="form-control" id="emp-name" required>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ភេទ (Gender)</label>
-                                                    <select class="form-select" id="emp-gender">
-                                                        <option value="ប្រុស">ប្រុស (Male)</option>
-                                                        <option value="ស្រី">ស្រី (Female)</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ថ្ងៃខែឆ្នាំកំណើត (DOB)</label>
-                                                    <input type="date" class="form-control" id="emp-dob">
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">លេខទូរស័ព្ទ (Phone)</label>
-                                                    <input type="text" class="form-control" id="emp-phone">
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">តួនាទី (Position)</label>
-                                                    <input type="text" class="form-control" id="emp-position" required>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ប្រភេទការងារ (Type)</label>
-                                                    <select class="form-select" id="emp-type">
-                                                        <option value="Full-Time">ពេញម៉ោង (Full-Time)</option>
-                                                        <option value="Part-Time">ក្រៅម៉ោង (Part-Time)</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-12 mb-3">
-                                                    <label class="form-label fw-bold">ប្រាក់ឈ្នួលគោល (Base Rate) USD</label>
-                                                    <div class="input-group">
-                                                        <input type="number" class="form-control" id="emp-salary" min="0" step="0.01" required>
-                                                        <select class="form-select" id="emp-wage-type" style="max-width: 150px;">
-                                                            <option value="Monthly">គិតជាខែ</option>
-                                                            <option value="Daily">គិតជាថ្ងៃ</option>
-                                                            <option value="Hourly">គិតជាម៉ោង</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <button type="submit" class="btn btn-info w-100 text-white fw-bold">រក្សាទុក</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm border-primary">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0 text-primary fw-bold">បញ្ជីបុគ្គលិក (Employee List)</h5>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped text-center align-middle mb-0">
-                                <thead class="table-info">
-                                    <tr>
-                                        <th>រូបថត</th>
-                                        <th>ឈ្មោះបុគ្គលិក</th>
-                                        <th>ភេទ</th>
-                                        <th>តួនាទី</th>
-                                        <th>ប្រភេទ</th>
-                                        <th>លេខទូរស័ព្ទ</th>
-                                        <th>ប្រាក់ឈ្នួល</th>
-                                        <th>សកម្មភាព</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="employeeList">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Employee View -->
-
-            <!-- 5. SETTINGS VIEW -->
-            <div id="settings-view" class="view-section">
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card shadow-sm border-0 border-top border-success border-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0 text-success">ប្រភេទចំណូល</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="addIncomeCategoryForm" class="d-flex mb-3">
-                                    <input type="text" class="form-control me-2" id="newIncCatName" placeholder="ឈ្មោះប្រភេទចំណូលថ្មី..." required>
-                                    <button type="submit" class="btn btn-success">បញ្ចូល</button>
-                                </form>
-                                <ul class="list-group" id="incCatList"></ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-4">
-                        <div class="card shadow-sm border-0 border-top border-danger border-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0 text-danger">ប្រភេទចំណាយ</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="addExpenseCategoryForm" class="d-flex mb-3">
-                                    <input type="text" class="form-control me-2" id="newExpCatName" placeholder="ឈ្មោះប្រភេទចំណាយថ្មី..." required>
-                                    <button type="submit" class="btn btn-danger">បញ្ចូល</button>
-                                </form>
-                                <ul class="list-group" id="expCatList"></ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card shadow-sm border-0 border-top border-primary border-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0 text-primary">ការកំណត់ប្រព័ន្ធទូទៅ (System Settings)</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="systemSettingsForm">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-bold">លេខទូរស័ព្ទ / Phone Number</label>
-                                            <input type="text" class="form-control" id="setSysPhone" placeholder="012 345 678">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-bold">រូបសញ្ញា / Logo</label>
-                                            <div class="d-flex align-items-center">
-                                                <img src="logo.png" id="previewSysLogo" alt="Preview" class="sys-logo border rounded p-1 me-2" width="60" height="60" style="object-fit: contain;">
-                                                <div class="flex-grow-1">
-                                                    <input type="file" class="form-control" id="setSysLogo" accept="image/*" onchange="previewLogo(this)">
-                                                    <small class="text-muted">ជ្រើសរើសរូបភាពថ្មីដើម្បីប្តូរ Logo គ្រប់ទីកន្លែង</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-bold">អាសយដ្ឋាន (ខ្មែរ)</label>
-                                            <textarea class="form-control" id="setSysAddrKh" rows="2" placeholder="ភូមិព្រីង ឃុំយាយម៉ៅ&#10;ស្រុកភ្នំស្រួច ខេត្តកំពង់ស្ពឺ"></textarea>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-bold">អាសយដ្ឋាន (English)</label>
-                                            <textarea class="form-control" id="setSysAddrEn" rows="2" placeholder="Phoum Pring, Khum Yeay Moa&#10;Srok Phnom Srouch, Kampong Speu"></textarea>
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">រក្សាទុកការកំណត់ / Save Settings</button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-4">
-                        <div class="card shadow-sm border-0 border-top border-info border-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0 text-info">ឈ្មោះអ្នករៀបចំរបាយការណ៍ (Report Preparers)</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="addPreparerForm" class="d-flex mb-3">
-                                    <input type="text" class="form-control me-2" id="newPrepName" placeholder="ឧទាហរណ៍៖ សុខ សាន្ត..." required>
-                                    <button type="submit" class="btn btn-info text-white">បញ្ចូល</button>
-                                </form>
-                                <ul class="list-group" id="preparerList"></ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-4">
-                        <div class="card shadow-sm border-0 border-top border-dark border-4">
-                            <div class="card-header bg-white">
-                                <h5 class="mb-0 text-dark">គ្រប់គ្រងគណនីបុគ្គលិក (User Management)</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-5">
-                                        <h6 class="fw-bold mb-3">បញ្ចូលគណនីថ្មី</h6>
-                                        <form id="addUserForm">
-                                            <div class="mb-2">
-                                                <input type="text" class="form-control" id="newUsername" placeholder="ឈ្មោះគណនី (Username)" required>
-                                            </div>
-                                            <div class="mb-2">
-                                                <input type="password" class="form-control" id="newUserPassword" placeholder="លេខសម្ងាត់ (Password)" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="fw-bold mb-1">ជ្រើសរើសសិទ្ធិ (Permissions):</label>
-                                                <div class="form-check">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" value="dashboard" id="permDash">
-                                                    <label class="form-check-label" for="permDash">ទំព័រដើម (មើលទិន្នន័យរួម)</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" value="invoice_add" id="permInvAdd">
-                                                    <label class="form-check-label" for="permInvAdd">បង្កើតវិក្កយបត្រ (Invoice)</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" value="invoice_list" id="permInvList">
-                                                    <label class="form-check-label" for="permInvList">បញ្ជីវិក្កយបត្រ (Invoice List)</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" value="income" id="permInc">
-                                                    <label class="form-check-label" for="permInc">ទំព័រចំណូល (Income)</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" value="expense" id="permExp">
-                                                    <label class="form-check-label" for="permExp">ទំព័រចំណាយ (Expense)</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" value="reports" id="permReports">
-                                                    <label class="form-check-label" for="permReports">របាយការណ៍ (Reports)</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" value="settings" id="permSettings">
-                                                    <label class="form-check-label" for="permSettings">ការកំណត់ទូទៅ (Settings)</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" value="employee_manage" id="permEmployee">
-                                                    <label class="form-check-label" for="permEmployee">គ្រប់គ្រងបុគ្គលិក (Employee)</label>
-                                                </div>
-                                                <hr class="my-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input perm-checkbox" type="checkbox" value="write" id="permWrite">
-                                                    <label class="form-check-label text-danger fw-bold" for="permWrite">សិទ្ធិបញ្ចូល/កែប្រែ/លុប (Write Access)</label>
-                                                </div>
-                                            </div>
-                                            <button type="submit" class="btn btn-dark w-100">បង្កើតគណនី</button>
-                                        </form>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <h6 class="fw-bold mb-3 mt-4 mt-md-0">បញ្ជីគណនី</h6>
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered text-center text-nowrap">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th>ឈ្មោះគណនី</th>
-                                                        <th>សិទ្ធិអនុញ្ញាត</th>
-                                                        <th>សកម្មភាព</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="userListTable"></tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> <!-- End Settings View -->
-        </div> <!-- End Main Content -->
+                <!-- Main Content Area to inject views -->
+                <div id="main-content-container"></div>
+            </div> <!-- End Content -->
+        </div> <!-- End Main Panel -->
     </div> <!-- End Wrapper -->
 
     <!-- ================= HIDDEN PRINT AREA FOR INVOICE ================= -->
     <div id="print-area-invoice" class="print-container invoice-box">
         <div class="d-flex align-items-center mb-2">
-            <img src="logo.png" alt="Logo" width="70" height="70" class="me-3 sys-logo">
+            <img src="assets/images/logo.png" alt="Logo" width="70" height="70" class="me-3 sys-logo">
             <div>
                 <h3 style="color: #28a745; font-weight: bold; font-family: 'Khmer OS Muol Light', cursive; font-size: 1.5rem; margin-bottom: 0;">វ៉ាលេអេកូហ្វាម</h3>
                 <h4 style="font-weight: bold; margin-bottom: 0;">VALLEY ECO FARM</h4>
@@ -1006,7 +259,7 @@
     <!-- ================= HIDDEN PRINT AREA FOR REPORTS ================= -->
     <div id="print-area-report" class="print-container invoice-box">
         <div class="d-flex align-items-center mb-2">
-            <img src="logo.png" alt="Logo" width="70" height="70" class="me-3 sys-logo">
+            <img src="assets/images/logo.png" alt="Logo" width="70" height="70" class="me-3 sys-logo">
             <div>
                 <h3 style="color: #28a745; font-weight: bold; font-family: 'Khmer OS Muol Light', cursive; font-size: 1.5rem; margin-bottom: 0;">វ៉ាលេអេកូហ្វាម</h3>
                 <h4 style="font-weight: bold; margin-bottom: 0;">VALLEY ECO FARM</h4>
@@ -1043,7 +296,7 @@
     <!-- ================= HIDDEN PRINT AREA FOR ANALYTICS ================= -->
     <div id="print-area-analytics" class="print-container invoice-box">
         <div class="d-flex align-items-center mb-2">
-            <img src="logo.png" alt="Logo" width="70" height="70" class="me-3 sys-logo">
+            <img src="assets/images/logo.png" alt="Logo" width="70" height="70" class="me-3 sys-logo">
             <div>
                 <h3 style="color: #28a745; font-weight: bold; font-family: 'Khmer OS Muol Light', cursive; font-size: 1.5rem; margin-bottom: 0;">វ៉ាលេអេកូហ្វាម</h3>
                 <h4 style="font-weight: bold; margin-bottom: 0;">VALLEY ECO FARM</h4>
@@ -1104,7 +357,7 @@
         </div>
     </div>
 
-    <script src="app.js" charset="UTF-8"></script>
+    <script type="module" src="src/js/main.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').then(reg => { console.log('Service Worker បានជោគជ័យ'); }).catch(err => { console.log('Service Worker បរាជ័យ', err); });

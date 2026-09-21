@@ -1,0 +1,160 @@
+/* global.css */
+@font-face {
+    font-family: 'Khmer OS Siemreap';
+    src: url('../../assets/fonts/KhmerOSsiemreap.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Khmer OS Muol Light';
+    src: url('../../assets/fonts/KhmerOSmuollight.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Khmer OS Battambang';
+    src: url('../../assets/fonts/KhmerOSbattambang.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang', sans-serif; background-color: #f4f6f9; overflow-x: hidden; margin: 0; }
+.wrapper { display: flex; width: 100%; min-height: 100vh; }
+
+/* Report Titles */
+.report-title,
+#report-card-title,
+#p-rep-title,
+#pa-title,
+.invoice-title h2,
+.invoice-header-left h3 {
+    font-family: 'Khmer OS Muol Light', cursive !important;
+}
+
+/* Sidebar Styles (Tabler Inspired) */
+.sidebar { min-width: 260px; max-width: 260px; background-color: #1e293b; color: #cbd5e1; transition: all 0.3s; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; border-right: 1px solid #0f172a; }
+.sidebar .brand { padding: 15px 20px; border-bottom: 1px solid #334155; }
+.sidebar .sidebar-menu { padding: 0 10px; margin-bottom: 20px; }
+.sidebar .sys-menu-item { margin-bottom: 4px; border-left: 4px solid transparent; border-radius: 0 8px 8px 0; transition: all 0.2s; }
+.sidebar .sys-menu-item.active-group { background-color: #0f172a; border-left-color: #198754; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06); padding-bottom: 6px; }
+.sidebar .nav-link { color: #94a3b8; padding: 10px 15px; font-size: 0.95rem; display: flex; align-items: center; transition: all 0.2s; border-radius: 0 8px 8px 0; }
+.sidebar .nav-link-icon { margin-right: 12px; font-size: 1.1rem; opacity: 0.7; }
+.sidebar .nav-link:hover { background-color: #334155; color: #fff; }
+.sidebar .nav-link:hover .nav-link-icon { opacity: 1; }
+.sidebar .nav-link.active { color: #fff; font-weight: 600; }
+.sidebar .nav-link.active .nav-link-icon { opacity: 1; color: #fff; }
+
+/* Submenu */
+.sidebar .submenu-link { padding: 8px 15px 8px 45px; font-size: 0.85rem; margin-bottom: 2px; border-radius: 8px; }
+.sidebar .submenu-link.active { background-color: #1e293b; color: #198754; }
+
+/* Main Content Area */
+.main-panel { height: 100vh; overflow: hidden; }
+.content { flex-grow: 1; overflow-y: auto; height: calc(100vh - 64px); padding: 30px; background-color: #f4f6f8; }
+
+.card-income { border-left: 5px solid #28a745; }
+.card-expense { border-left: 5px solid #dc3545; }
+.card-balance { border-left: 5px solid #007bff; }
+#offline-status { display: none; }
+
+/* View Management */
+.view-section { display: none; }
+.view-section.active { display: block; }
+
+/* Invoice Custom Styles (To match user's image) */
+.invoice-box { font-family: 'Khmer OS Battambang', sans-serif; color: #000; }
+.invoice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.invoice-header-left h3 { color: #28a745; font-weight: bold; font-family: 'Khmer OS Muol Light', cursive; font-size: 1.5rem; margin-bottom: 5px; }
+.invoice-header-left p { margin: 2px 0; font-size: 14px; }
+.invoice-header-right p { margin: 2px 0; font-size: 14px; display: flex; justify-content: space-between; width: 250px; }
+.invoice-title { text-align: center; margin: 20px 0; }
+.invoice-title h2 { font-family: 'Khmer OS Muol Light', cursive; margin-bottom: 0; }
+.invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+.invoice-table th, .invoice-table td { border: 1px solid #000; padding: 5px; text-align: center; }
+.invoice-table th { background-color: #e2efda; font-weight: bold; }
+.invoice-summary { width: 300px; float: right; margin-bottom: 40px; border-collapse: collapse; }
+.invoice-summary td { border: 1px solid #000; padding: 5px; text-align: right; }
+.invoice-summary .bg-green { background-color: #e2efda; }
+.invoice-footer { display: flex; justify-content: space-between; text-align: center; margin-top: 50px; clear: both; }
+.invoice-footer-box { width: 30%; }
+.invoice-footer-line { margin-top: 100px; border-top: 1px solid #000; width: 80%; margin-left: auto; margin-right: auto; }
+
+/* Report Tabs Styling */
+#reportTabs .nav-link { color: #495057; border-radius: 0; }
+#reportTabs .nav-link:hover { background-color: #f8f9fa; }
+
+/* Dropdown */
+.custom-dropdown { position: relative; display: inline-block; }
+.custom-dropdown-content { display: none; position: absolute; right: 0; background-color: white; min-width: 250px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000; border-radius: 8px; border: 1px solid #ddd; overflow: hidden; }
+.custom-dropdown-content a { color: #333; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #eee; font-size: 14px; transition: 0.2s; text-align: left; }
+.custom-dropdown-content a:last-child { border-bottom: none; }
+.custom-dropdown-content a:hover { background-color: #f8f9fa; color: #000; }
+.custom-dropdown.show .custom-dropdown-content { display: block; }
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    .sidebar { position: fixed; left: -260px; top: 0; bottom: 0; z-index: 1050; }
+    .sidebar.mobile-open { left: 0; }
+    .main-panel { margin-left: 0; width: 100%; }
+    .content { padding: 15px; }
+    .card-body { padding: 15px; }
+    /* Make tables horizontally scrollable without breaking the layout */
+    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .table-responsive table th, .table-responsive table td { white-space: nowrap; }
+    /* Adjust inputs to stack instead of being inline if necessary */
+    .row > [class^="col-"] { margin-bottom: 10px; }
+    /* Adjust headers that might squish */
+    .card-header.d-flex { flex-wrap: wrap; gap: 10px; }
+}
+
+/* Read Only Mode */
+body.no-add-access .write-only { display: none !important; }
+body.no-add-access .col-md-5.write-only + .col-md-7 { width: 100%; }
+body.no-edit-access .btn-edit { display: none !important; }
+body.no-delete-access .btn-delete { display: none !important; }
+
+/* Dark Theme Variables */
+body.dark-theme {
+    background-color: #0f172a;
+    color: #cbd5e1;
+}
+body.dark-theme .main-panel {
+    background-color: #0f172a !important;
+}
+body.dark-theme .content {
+    background-color: #0f172a !important;
+}
+body.dark-theme .top-navbar {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155;
+}
+body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dark-theme .top-navbar .text-secondary, body.dark-theme .top-navbar .text-muted {
+    color: #cbd5e1 !important;
+}
+body.dark-theme .card, body.dark-theme .modal-content {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+body.dark-theme .card-body {
+    color: #cbd5e1;
+}
+body.dark-theme .table {
+    color: #cbd5e1;
+}
+body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-theme .table-primary th {
+    background-color: #334155 !important;
+    color: #cbd5e1 !important;
+    border-color: #475569;
+}
+body.dark-theme input.form-control, body.dark-theme select.form-select, body.dark-theme textarea.form-control {
+    background-color: #0f172a;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+body.dark-theme input.form-control:focus {
+    background-color: #0f172a;
+    color: #cbd5e1;
+}
+body.dark-theme .text-dark { color: #f8fafc !important; }
+body.dark-theme .bg-white { background-color: #1e293b !important; }
+body.dark-theme .bg-light { background-color: #334155 !important; }

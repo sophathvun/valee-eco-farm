@@ -1,0 +1,279 @@
+                <!-- Categories Tab -->
+                <div id="settings-categories-tab" class="settings-tab" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-success border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-success">ប្រភេទចំណូល</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="addIncomeCategoryForm" class="d-flex mb-3">
+                                        <input type="text" class="form-control me-2" id="newIncCatName" placeholder="ឈ្មោះប្រភេទចំណូលថ្មី..." required>
+                                        <button type="submit" class="btn btn-success">បញ្ចូល</button>
+                                    </form>
+                                    <ul class="list-group" id="incCatList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-danger border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-danger">ប្រភេទចំណាយ</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="addExpenseCategoryForm" class="d-flex mb-3">
+                                        <input type="text" class="form-control me-2" id="newExpCatName" placeholder="ឈ្មោះប្រភេទចំណាយថ្មី..." required>
+                                        <button type="submit" class="btn btn-danger">បញ្ចូល</button>
+                                    </form>
+                                    <ul class="list-group" id="expCatList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Farm Info Tab -->
+                <div id="settings-farm_info-tab" class="settings-tab" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-primary border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-primary">ព័ត៌មានកសិដ្ឋាន (Farm Info)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="systemSettingsForm">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">លេខទូរស័ព្ទ / Phone Number</label>
+                                                <input type="text" class="form-control" id="setSysPhone" placeholder="012 345 678">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">រូបសញ្ញា / Logo</label>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="assets/images/logo.png" id="previewSysLogo" alt="Preview" class="sys-logo border rounded p-1 me-2" width="60" height="60" style="object-fit: contain;">
+                                                    <div class="flex-grow-1">
+                                                        <input type="file" class="form-control" id="setSysLogo" accept="image/*" onchange="previewLogo(this)">
+                                                        <small class="text-muted">ជ្រើសរើសរូបភាពថ្មីដើម្បីប្តូរ Logo គ្រប់ទីកន្លែង</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">អាសយដ្ឋាន (ខ្មែរ)</label>
+                                                <textarea class="form-control" id="setSysAddrKh" rows="2" placeholder="ភូមិព្រីង ឃុំយាយម៉ៅ&#10;ស្រុកភ្នំស្រួច ខេត្តកំពង់ស្ពឺ"></textarea>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold">អាសយដ្ឋាន (English)</label>
+                                                <textarea class="form-control" id="setSysAddrEn" rows="2" placeholder="Phoum Pring, Khum Yeay Moa&#10;Srok Phnom Srouch, Kampong Speu"></textarea>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">រក្សាទុកការកំណត់ / Save Settings</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Structure Tab (Departments and Positions) -->
+                <div id="settings-emp_structure-tab" class="settings-tab" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-primary border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-primary">🏢 ផ្នែកការងារ (Departments)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="addDepartmentForm" class="d-flex mb-3">
+                                        <input type="text" class="form-control me-2" id="newDepartmentName" placeholder="ឈ្មោះផ្នែកថ្មី..." required>
+                                        <button type="submit" class="btn btn-primary">បញ្ចូល</button>
+                                    </form>
+                                    <ul class="list-group" id="departmentList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-secondary border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-secondary">👔 តួនាទីបុគ្គលិក (Positions)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="addPositionForm" class="d-flex mb-3">
+                                        <input type="text" class="form-control me-2" id="newPositionName" placeholder="ឈ្មោះតួនាទីថ្មី..." required>
+                                        <button type="submit" class="btn btn-secondary">បញ្ចូល</button>
+                                    </form>
+                                    <ul class="list-group" id="positionList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preparers Tab -->
+                <div id="settings-preparers-tab" class="settings-tab" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-info border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-info">ឈ្មោះអ្នករៀបចំរបាយការណ៍ (Report Preparers)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="addPreparerForm" class="d-flex mb-3">
+                                        <input type="text" class="form-control me-2" id="newPrepName" placeholder="ឧទាហរណ៍៖ សុខ សាន្ត..." required>
+                                        <button type="submit" class="btn btn-info text-white">បញ្ចូល</button>
+                                    </form>
+                                    <ul class="list-group" id="preparerList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Roles Tab -->
+                <div id="settings-roles-tab" class="settings-tab" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-dark border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-dark">គ្រប់គ្រងតួនាទី (Roles)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="addRoleForm" class="d-flex mb-3">
+                                        <input type="text" class="form-control me-2" id="newRoleName" placeholder="ឧទាហរណ៍៖ Admin, Manager, Staff..." required>
+                                        <button type="submit" class="btn btn-dark">បង្កើតតួនាទី</button>
+                                    </form>
+                                    <ul class="list-group" id="roleList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permissions Tab -->
+                <div id="settings-permissions-tab" class="settings-tab" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-warning border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-warning">កំណត់សិទ្ធិអ្នកប្រើប្រាស់ (Permissions per Role)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">ជ្រើសរើសតួនាទី (Select Role)</label>
+                                        <select class="form-select" id="roleSelectForPerms" onchange="loadPermissionsForRole()">
+                                            <option value="">-- សូមជ្រើសរើសតួនាទី --</option>
+                                        </select>
+                                    </div>
+                                    <div id="rolePermissionsContainer" style="display: none;">
+                                        <h6 class="fw-bold mb-3">ផ្តល់សិទ្ធិអនុញ្ញាតសម្រាប់តួនាទីនេះ៖</h6>
+                                        <form id="rolePermissionsForm">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="dashboard" id="rpermDash">
+                                                        <label class="form-check-label" for="rpermDash">ទំព័រដើម (មើលទិន្នន័យរួម)</label>
+                                                    </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="invoice_add" id="rpermInvAdd">
+                                                        <label class="form-check-label" for="rpermInvAdd">បង្កើតវិក្កយបត្រ (Invoice)</label>
+                                                    </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="invoice_list" id="rpermInvList">
+                                                        <label class="form-check-label" for="rpermInvList">បញ្ជីវិក្កយបត្រ (Invoice List)</label>
+                                                    </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="income" id="rpermInc">
+                                                        <label class="form-check-label" for="rpermInc">ទំព័រចំណូល (Income)</label>
+                                                    </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="expense" id="rpermExp">
+                                                        <label class="form-check-label" for="rpermExp">ទំព័រចំណាយ (Expense)</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="reports" id="rpermReports">
+                                                        <label class="form-check-label" for="rpermReports">របាយការណ៍ (Reports)</label>
+                                                    </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="settings" id="rpermSettings">
+                                                        <label class="form-check-label" for="rpermSettings">ការកំណត់ទូទៅ (Settings)</label>
+                                                    </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="employee_manage" id="rpermEmployee">
+                                                        <label class="form-check-label" for="rpermEmployee">គ្រប់គ្រងបុគ្គលិក (Employee)</label>
+                                                    </div>
+                                                    <hr class="my-2">
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="perm_add" id="rpermAdd">
+                                                        <label class="form-check-label text-success fw-bold" for="rpermAdd">សិទ្ធិបញ្ចូលទិន្នន័យ (Add Access)</label>
+                                                    </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="perm_edit" id="rpermEdit">
+                                                        <label class="form-check-label text-warning fw-bold" for="rpermEdit">សិទ្ធិកែប្រែទិន្នន័យ (Edit Access)</label>
+                                                    </div>
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input role-perm-checkbox" type="checkbox" value="perm_delete" id="rpermDelete">
+                                                        <label class="form-check-label text-danger fw-bold" for="rpermDelete">សិទ្ធិលុបទិន្នន័យ (Delete Access)</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-warning mt-3" onclick="saveRolePermissions()">រក្សាទុកសិទ្ធិ / Save Permissions</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="settings-users-tab" class="settings-tab" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-dark border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-dark">គ្រប់គ្រងគណនីបុគ្គលិក (Create User)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <h6 class="fw-bold mb-3">បញ្ចូលគណនីថ្មី</h6>
+                                            <form id="addUserForm">
+                                                <div class="mb-2">
+                                                    <input type="text" class="form-control" id="newUsername" placeholder="ឈ្មោះគណនី (Username)" required>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <input type="password" class="form-control" id="newUserPassword" placeholder="លេខសម្ងាត់ (Password)" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="fw-bold mb-1">ជ្រើសរើសតួនាទី (Role):</label>
+                                                    <select class="form-select" id="newUserRole" required>
+                                                        <option value="">-- សូមជ្រើសរើសតួនាទី --</option>
+                                                    </select>
+                                                </div>
+                                                <button type="submit" class="btn btn-dark w-100">បង្កើតគណនី</button>
+                                            </form>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <h6 class="fw-bold mb-3 mt-4 mt-md-0">បញ្ជីគណនី</h6>
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered text-center text-nowrap">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>ឈ្មោះគណនី</th>
+                                                            <th>តួនាទី</th>
+                                                            <th>សកម្មភាព</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="userListTable"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>

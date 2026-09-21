@@ -1,0 +1,79 @@
+                <div class="row">
+                    <div class="col-md-5 mb-4 write-only">
+                        <div class="card shadow-sm border-0 border-top border-success border-4">
+                            <div class="card-header bg-white">
+                                <h4 class="mb-0 text-success">បញ្ចូលទិន្នន័យចំណូលផ្ទាល់</h4>
+                            </div>
+                            <div class="card-body">
+                                <form id="incomeForm">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">រូបិយប័ណ្ណ</label>
+                                            <select class="form-select" id="inc-currency" required><option value="KHR">ប្រាក់រៀល (៛)</option><option value="USD">ដុល្លារអាមេរិក ($)</option></select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">ចំនួនទឹកប្រាក់</label>
+                                            <input type="number" class="form-control" id="inc-amount" required min="0" step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">កាលបរិច្ឆេទ</label>
+                                        <input type="date" class="form-control" id="inc-date" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">ប្រភេទចំណូល</label>
+                                        <select class="form-select" id="inc-category" required></select>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">កំណត់សម្គាល់</label>
+                                        <input type="text" class="form-control" id="inc-note" placeholder="ឧ. លក់ជ្រូក ៥ក្បាល">
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100 py-2 fs-5">រក្សាទុកចំណូល</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="card shadow-sm border-0 border-top border-success border-4">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 text-success fw-bold">ប្រវត្តិបញ្ចូលចំណូល</h5>
+                                <div class="custom-dropdown">
+                                    <button class="btn btn-sm btn-outline-success fw-bold dropbtn" onclick="this.parentElement.classList.toggle('show')">🖨️ ព្រីនរបាយការណ៍ ▼</button>
+                                    <div class="custom-dropdown-content">
+                                        <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printListReport('income');">🖨️ ព្រីនរបាយការណ៍នេះ</a>
+                                        <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើស \'Save as PDF\' នៅក្នុងផ្ទាំង Print បន្ទាប់។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#28a745'}).then((result) => { if(result.isConfirmed) printListReport('income'); });">💾 រក្សាទុករបាយការជា PDF</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body bg-light pb-2 pt-2 border-bottom">
+                                <div class="row align-items-end">
+                                    <div class="col-md-4">
+                                        <label class="form-label" style="font-size: 13px;">ចាប់ពីថ្ងៃទី (From)</label>
+                                        <input type="date" class="form-control form-control-sm" id="filter-inc-from" onchange="loadData()">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label" style="font-size: 13px;">ដល់ថ្ងៃទី (To)</label>
+                                        <input type="date" class="form-control form-control-sm" id="filter-inc-to" onchange="loadData()">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-sm btn-secondary w-100 mb-1" onclick="clearIncFilter()">សំអាត</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                                    <table class="table table-hover mb-0 text-center">
+                                        <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                                            <tr><th>ថ្ងៃទី</th><th>ប្រភេទ</th><th>ទឹកប្រាក់</th><th>កំណត់សម្គាល់</th></tr>
+                                        </thead>
+                                        <tbody id="recentIncomeList"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white text-end fw-bold border-top">
+                                សរុប (រៀល): <span id="list-inc-total-khr" class="text-success fs-5">៛0</span> &nbsp;|&nbsp; 
+                                សរុប (ដុល្លារ): <span id="list-inc-total-usd" class="text-success fs-5">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
