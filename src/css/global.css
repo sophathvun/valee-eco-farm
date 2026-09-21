@@ -37,15 +37,15 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
 .sidebar .sidebar-menu { padding: 0; margin-bottom: 20px; }
 .sidebar .sys-menu-item { margin-bottom: 0; border-left: 4px solid transparent; border-radius: 0; transition: all 0.2s; }
 .sidebar .sys-menu-item.active-group { background-color: #0f172a; border-left-color: #198754; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06); }
-.sidebar .nav-link { color: #94a3b8; padding: 12px 25px; font-size: 0.95rem; display: flex; align-items: center; transition: all 0.2s; border-radius: 0; }
-.sidebar .nav-link-icon { margin-right: 15px; font-size: 1.1rem; opacity: 0.7; width: 24px; text-align: center; }
+.sidebar .nav-link { color: #94a3b8; padding: 12px 15px; font-size: 0.95rem; display: flex; align-items: center; transition: all 0.2s; border-radius: 0; }
+.sidebar .nav-link-icon { margin-right: 12px; font-size: 1.1rem; opacity: 0.7; width: 24px; text-align: center; }
 .sidebar .nav-link:hover { background-color: #334155; color: #fff; }
 .sidebar .nav-link:hover .nav-link-icon { opacity: 1; }
 .sidebar .nav-link.active { color: #fff; font-weight: 600; background-color: #0f172a; border-left-color: #198754; }
 .sidebar .nav-link.active .nav-link-icon { opacity: 1; color: #fff; }
 
 /* Submenu */
-.sidebar .submenu-link { padding: 10px 25px 10px 64px; font-size: 0.85rem; margin-bottom: 0; border-radius: 0; }
+.sidebar .submenu-link { padding: 10px 15px 10px 48px; font-size: 0.85rem; margin-bottom: 0; border-radius: 0; }
 .sidebar .submenu-link.active { background-color: #1e293b; color: #198754; }
 
 /* Main Content Area */
