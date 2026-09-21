@@ -659,6 +659,7 @@ async function exportData() {
 // Initial Load
 checkLogin().then((isLoggedIn) => {
     loadCategories();
+    if(typeof loadUnits === 'function') loadUnits();
     loadPreparers();
     if(typeof loadUsersAndRoles === 'function') loadUsersAndRoles();
     addInvoiceRow();

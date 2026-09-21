@@ -199,4 +199,5 @@ body.dark-theme .custom-dropdown-content a:hover {
     background-color: #198754 !important;
     color: white !important;
     border-color: #146c43 !important;
+    font-weight: normal !important;
 }

@@ -139,7 +139,10 @@ window.switchSettingsTab = function(tabId) {
     }
     
     // load specific data based on tab
-    if (tabId === 'categories') loadCategories();
+    if (tabId === 'categories') {
+        loadCategories();
+        loadUnits();
+    }
     if (tabId === 'preparers') loadPreparers();
     if (tabId === 'roles') loadRoles();
     if (tabId === 'permissions') loadRolesForPerms();
@@ -414,6 +417,44 @@ async function deleteCategory(id) {
     }
 }
 
+// ====== UNIT MANAGEMENT ======
+async function loadUnits() {
+    let unitCount = await db.units.count();
+    if (unitCount === 0) {
+        const defaults = [{ name: 'Kg' }, { name: 'ក្បាល' }];
+        await db.units.bulkAdd(defaults);
+    }
+    
+    const allUnits = await db.units.toArray();
+    const list = document.getElementById('unitList');
+    if (list) {
+        list.innerHTML = '';
+        allUnits.forEach(u => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `<span>${u.name}</span>
+            <div>
+                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteUnit(${u.id})">លុប</button>
+            </div>`;
+            list.appendChild(li);
+        });
+    }
+}
+
+document.getElementById('addUnitForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await db.units.add({ name: document.getElementById('newUnitName').value });
+    document.getElementById('newUnitName').value = '';
+    loadUnits();
+});
+
+async function deleteUnit(id) {
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបឯកតានេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'});
+    if (res.isConfirmed) {
+        await db.units.delete(id);
+        loadUnits();
+    }
+}
 
 // ====== DEPARTMENT MANAGEMENT ======
 async function loadDepartments() {

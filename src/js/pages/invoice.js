@@ -3,15 +3,29 @@ let invoiceItemCount = 0;
 let editingInvoiceId = null;
 let editingTxId = null;
 
-function addInvoiceRow() {
+async function addInvoiceRow() {
     invoiceItemCount++;
     const tbody = document.getElementById('inv-items-body');
     const tr = document.createElement('tr');
     tr.id = `inv-row-${invoiceItemCount}`;
+    
+    let unitOptions = '<option value="">--</option>';
+    try {
+        const units = await db.units.toArray();
+        units.forEach(u => {
+            unitOptions += `<option value="${u.name}">${u.name}</option>`;
+        });
+    } catch(e) {}
+    
     tr.innerHTML = `
         <td><input type="text" class="form-control item-id" placeholder="ID"></td>
         <td><input type="text" class="form-control item-desc" placeholder="បរិយាយ..." required></td>
-        <td><input type="number" class="form-control item-mass" value="1" min="1" step="0.01" oninput="calculateInvoiceTotal()"></td>
+        <td style="min-width: 150px;">
+            <div class="input-group">
+                <input type="number" class="form-control item-mass" value="1" min="1" step="0.01" oninput="calculateInvoiceTotal()">
+                <select class="form-select item-unit" style="max-width: 80px;">${unitOptions}</select>
+            </div>
+        </td>
         <td><input type="number" class="form-control item-price" value="0" min="0" step="0.01" oninput="calculateInvoiceTotal()"></td>
         <td><input type="number" class="form-control item-total fw-bold" readonly value="0"></td>
         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">លុប</button></td>
@@ -98,6 +112,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             id: row.querySelector('.item-id').value,
             desc: row.querySelector('.item-desc').value,
             mass: parseFloat(row.querySelector('.item-mass').value) || 0,
+            unit: row.querySelector('.item-unit') ? row.querySelector('.item-unit').value : '',
             price: parseFloat(row.querySelector('.item-price').value) || 0,
             total: parseFloat(row.querySelector('.item-total').value) || 0
         });
@@ -167,7 +182,7 @@ function populateAndPrintInvoice(inv) {
                 <td>${index + 1}</td>
                 <td>${item.id}</td>
                 <td>${item.desc}</td>
-                <td>${item.mass}</td>
+                <td>${item.mass} ${item.unit || ''}</td>
                 <td>${formatCurrency(item.price, cur)}</td>
                 <td>${formatCurrency(item.total, cur)}</td>
             </tr>
@@ -253,14 +268,33 @@ async function editInvoice(id) {
     tbody.innerHTML = '';
     invoiceItemCount = 0;
     
+    let unitOptionsHtml = '<option value="">--</option>';
+    try {
+        const units = await db.units.toArray();
+        units.forEach(u => {
+            unitOptionsHtml += `<option value="${u.name}">${u.name}</option>`;
+        });
+    } catch(e) {}
+
     inv.items.forEach(item => {
         invoiceItemCount++;
         const tr = document.createElement('tr');
         tr.id = `inv-row-${invoiceItemCount}`;
+        
+        let customUnitOptions = unitOptionsHtml;
+        if (item.unit) {
+            customUnitOptions = customUnitOptions.replace(`value="${item.unit}"`, `value="${item.unit}" selected`);
+        }
+
         tr.innerHTML = `
             <td><input type="text" class="form-control item-id" placeholder="ID" value="${item.id || ''}"></td>
             <td><input type="text" class="form-control item-desc" placeholder="បរិយាយ..." required value="${item.desc}"></td>
-            <td><input type="number" class="form-control item-mass" min="1" step="0.01" oninput="calculateInvoiceTotal()" value="${item.mass}"></td>
+            <td style="min-width: 150px;">
+                <div class="input-group">
+                    <input type="number" class="form-control item-mass" min="1" step="0.01" oninput="calculateInvoiceTotal()" value="${item.mass}">
+                    <select class="form-select item-unit" style="max-width: 80px;">${customUnitOptions}</select>
+                </div>
+            </td>
             <td><input type="number" class="form-control item-price" min="0" step="0.01" oninput="calculateInvoiceTotal()" value="${item.price}"></td>
             <td><input type="number" class="form-control item-total fw-bold" readonly value="${item.total}"></td>
             <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})">លុប</button></td>

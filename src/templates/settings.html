@@ -1,7 +1,7 @@
                 <!-- Categories Tab -->
                 <div id="settings-categories-tab" class="settings-tab" style="display: none;">
                     <div class="row">
-                        <div class="col-md-6 mb-4">
+                        <div class="col-md-4 mb-4">
                             <div class="card shadow-sm border-0 border-top border-success border-4">
                                 <div class="card-header bg-white">
                                     <h5 class="mb-0 text-success">ប្រភេទចំណូល</h5>
@@ -15,7 +15,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-4">
+                        <div class="col-md-4 mb-4">
                             <div class="card shadow-sm border-0 border-top border-danger border-4">
                                 <div class="card-header bg-white">
                                     <h5 class="mb-0 text-danger">ប្រភេទចំណាយ</h5>
@@ -26,6 +26,20 @@
                                         <button type="submit" class="btn btn-danger">បញ្ចូល</button>
                                     </form>
                                     <ul class="list-group" id="expCatList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-primary border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-primary">ឯកតា (Units)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="addUnitForm" class="d-flex mb-3">
+                                        <input type="text" class="form-control me-2" id="newUnitName" placeholder="ឈ្មោះឯកតាថ្មី (ឧ. Kg)..." required>
+                                        <button type="submit" class="btn btn-primary">បញ្ចូល</button>
+                                    </form>
+                                    <ul class="list-group" id="unitList"></ul>
                                 </div>
                             </div>
                         </div>

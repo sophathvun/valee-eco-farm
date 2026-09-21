@@ -76,5 +76,6 @@ const db = {
     employees: new FirebaseStore('employees'),
     roles: new FirebaseStore('roles'),
     departments: new FirebaseStore('departments'),
-    positions: new FirebaseStore('positions')
+    positions: new FirebaseStore('positions'),
+    units: new FirebaseStore('units')
 };
