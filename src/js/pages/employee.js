@@ -20,6 +20,7 @@ async function loadEmployees() {
             <td><img src="${emp.photo || ''}" style="width:50px; height:50px; object-fit:cover; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></td>
             <td class="fw-bold">${emp.name}</td>
             <td>${emp.gender}</td>
+            <td>${emp.department || ''}</td>
             <td>${emp.position}</td>
             <td><span class="badge bg-secondary">${typeLabel}</span></td>
             <td>${emp.phone}</td>
@@ -44,7 +45,8 @@ window.editEmployee = async function(id) {
     document.getElementById('emp-gender').value = emp.gender;
     document.getElementById('emp-dob').value = emp.dob;
     document.getElementById('emp-phone').value = emp.phone;
-    document.getElementById('emp-position').value = emp.position;
+    document.getElementById('emp-department').value = emp.department || '';
+    document.getElementById('emp-position').value = emp.position || '';
     document.getElementById('emp-salary').value = emp.salary;
     document.getElementById('emp-type').value = emp.type || 'Full-Time';
     document.getElementById('emp-wage-type').value = emp.wageType || 'Monthly';
@@ -83,13 +85,14 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         const gender = document.getElementById('emp-gender').value;
         const dob = document.getElementById('emp-dob').value;
         const phone = document.getElementById('emp-phone').value.trim();
-        const position = document.getElementById('emp-position').value.trim();
+        const department = document.getElementById('emp-department').value;
+        const position = document.getElementById('emp-position').value;
         const type = document.getElementById('emp-type').value;
         const wageType = document.getElementById('emp-wage-type').value;
         const salary = parseFloat(document.getElementById('emp-salary').value);
         const photo = document.getElementById('emp-photo-preview').src;
 
-        const data = { name, gender, dob, phone, position, type, wageType, salary, photo };
+        const data = { name, gender, dob, phone, department, position, type, wageType, salary, photo };
         if (editingEmployeeId) {
             await db.employees.update(editingEmployeeId, data);
         } else {
@@ -213,3 +216,27 @@ window.editEmployee = async function(id) {
 
 const empForm = document.getElementById('employeeForm');
 if(empForm) empForm.addEventListener('reset', () => { setTimeout(updatePhotoPlaceholder, 10); });
+
+window.loadDepartmentsForEmp = async function() {
+    const all = await db.departments.toArray();
+    const select = document.getElementById('emp-department');
+    if (!select) return;
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">-- ជ្រើសរើសផ្នែក --</option>';
+    all.forEach(d => {
+        select.appendChild(new Option(d.name, d.name));
+    });
+    if(currentVal) select.value = currentVal;
+};
+
+window.loadPositionsForEmp = async function() {
+    const all = await db.positions.toArray();
+    const select = document.getElementById('emp-position');
+    if (!select) return;
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">-- ជ្រើសរើសតួនាទី --</option>';
+    all.forEach(p => {
+        select.appendChild(new Option(p.name, p.name));
+    });
+    if(currentVal) select.value = currentVal;
+};

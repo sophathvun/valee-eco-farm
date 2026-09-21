@@ -34,18 +34,18 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
 /* Sidebar Styles (Tabler Inspired) */
 .sidebar { min-width: 260px; max-width: 260px; background-color: #1e293b; color: #cbd5e1; transition: all 0.3s; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; border-right: 1px solid #0f172a; }
 .sidebar .brand { padding: 15px 20px; border-bottom: 1px solid #334155; }
-.sidebar .sidebar-menu { padding: 0 10px; margin-bottom: 20px; }
-.sidebar .sys-menu-item { margin-bottom: 4px; border-left: 4px solid transparent; border-radius: 0 8px 8px 0; transition: all 0.2s; }
-.sidebar .sys-menu-item.active-group { background-color: #0f172a; border-left-color: #198754; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06); padding-bottom: 6px; }
-.sidebar .nav-link { color: #94a3b8; padding: 10px 15px; font-size: 0.95rem; display: flex; align-items: center; transition: all 0.2s; border-radius: 0 8px 8px 0; }
-.sidebar .nav-link-icon { margin-right: 12px; font-size: 1.1rem; opacity: 0.7; }
+.sidebar .sidebar-menu { padding: 0; margin-bottom: 20px; }
+.sidebar .sys-menu-item { margin-bottom: 0; border-left: 4px solid transparent; border-radius: 0; transition: all 0.2s; }
+.sidebar .sys-menu-item.active-group { background-color: #0f172a; border-left-color: #198754; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06); }
+.sidebar .nav-link { color: #94a3b8; padding: 12px 25px; font-size: 0.95rem; display: flex; align-items: center; transition: all 0.2s; border-radius: 0; }
+.sidebar .nav-link-icon { margin-right: 15px; font-size: 1.1rem; opacity: 0.7; width: 24px; text-align: center; }
 .sidebar .nav-link:hover { background-color: #334155; color: #fff; }
 .sidebar .nav-link:hover .nav-link-icon { opacity: 1; }
-.sidebar .nav-link.active { color: #fff; font-weight: 600; }
+.sidebar .nav-link.active { color: #fff; font-weight: 600; background-color: #0f172a; border-left-color: #198754; }
 .sidebar .nav-link.active .nav-link-icon { opacity: 1; color: #fff; }
 
 /* Submenu */
-.sidebar .submenu-link { padding: 8px 15px 8px 45px; font-size: 0.85rem; margin-bottom: 2px; border-radius: 8px; }
+.sidebar .submenu-link { padding: 10px 25px 10px 64px; font-size: 0.85rem; margin-bottom: 0; border-radius: 0; }
 .sidebar .submenu-link.active { background-color: #1e293b; color: #198754; }
 
 /* Main Content Area */
@@ -139,12 +139,28 @@ body.dark-theme .card-body {
     color: #cbd5e1;
 }
 body.dark-theme .table {
-    color: #cbd5e1;
+    color: #cbd5e1 !important;
+    --bs-table-bg: #1e293b;
+    --bs-table-striped-bg: #0f172a;
+    --bs-table-hover-bg: #334155;
+    --bs-table-border-color: #334155;
+}
+body.dark-theme .table td, body.dark-theme .table th {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+    border-color: #334155 !important;
 }
 body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-theme .table-primary th {
     background-color: #334155 !important;
     color: #cbd5e1 !important;
-    border-color: #475569;
+    border-color: #475569 !important;
+}
+body.dark-theme .swal2-popup {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+}
+body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
+    color: #cbd5e1 !important;
 }
 body.dark-theme input.form-control, body.dark-theme select.form-select, body.dark-theme textarea.form-control {
     background-color: #0f172a;
@@ -158,3 +174,29 @@ body.dark-theme input.form-control:focus {
 body.dark-theme .text-dark { color: #f8fafc !important; }
 body.dark-theme .bg-white { background-color: #1e293b !important; }
 body.dark-theme .bg-light { background-color: #334155 !important; }
+body.dark-theme .btn-light {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+    color: #cbd5e1 !important;
+}
+body.dark-theme .btn-light:hover {
+    background-color: #475569 !important;
+    color: #fff !important;
+}
+body.dark-theme .custom-dropdown-content {
+    background-color: #1e293b;
+    border-color: #334155;
+}
+body.dark-theme .custom-dropdown-content a {
+    color: #cbd5e1;
+    border-bottom-color: #334155;
+}
+body.dark-theme .custom-dropdown-content a:hover {
+    background-color: #334155;
+    color: #fff;
+}
+.table-darkgreen th {
+    background-color: #198754 !important;
+    color: white !important;
+    border-color: #146c43 !important;
+}

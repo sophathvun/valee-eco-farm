@@ -1,6 +1,11 @@
 // ====== PRINT LIST REPORTS ======
 async function printListReport(type) {
-    const allTx = await db.transactions.orderBy('date').toArray();
+    let allTx = await db.transactions.toArray();
+    allTx.sort((a, b) => {
+        let dateA = a.date || '';
+        let dateB = b.date || '';
+        return dateA.localeCompare(dateB);
+    });
     let filtered = allTx.filter(tx => tx.type === type);
     
     let fromDate, toDate, title;
@@ -160,7 +165,7 @@ async function generateReport() {
     document.getElementById('reportSummaryText').textContent = summaryText;
 
     const allTx = await db.transactions.toArray();
-    const filtered = allTx.filter(tx => tx.date.startsWith(prefix));
+    const filtered = allTx.filter(tx => tx.date && tx.date.startsWith(prefix));
 
     let incKHR = 0, incUSD = 0, expKHR = 0, expUSD = 0;
     
@@ -655,12 +660,14 @@ async function exportData() {
 checkLogin().then((isLoggedIn) => {
     loadCategories();
     loadPreparers();
-    loadUsers();
+    if(typeof loadUsersAndRoles === 'function') loadUsersAndRoles();
     addInvoiceRow();
     generateInvoiceNumber();
     loadInvoices();
     loadData();
     loadEmployees();
+    if(typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
+    if(typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
 });
 
 // Auto-update PWA logic

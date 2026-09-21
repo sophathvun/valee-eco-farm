@@ -1,6 +1,11 @@
 // ====== DASHBOARD & LIST DATA ======
 async function loadData() {
-    const allTx = await db.transactions.orderBy('date').reverse().toArray();
+    let allTx = await db.transactions.toArray();
+    allTx.sort((a, b) => {
+        let dateA = a.date || '';
+        let dateB = b.date || '';
+        return dateB.localeCompare(dateA);
+    });
     
     const tbody = document.getElementById('transactionList');
     if (tbody) tbody.innerHTML = '';
@@ -92,7 +97,7 @@ async function loadData() {
             }
         }
 
-        if (tx.date.startsWith(currentMonthPrefix)) {
+        if (tx.date && tx.date.startsWith(currentMonthPrefix)) {
             if (tx.type === 'income') cur === 'USD' ? totalIncomeUSD += tx.amount : totalIncomeKHR += tx.amount;
             else cur === 'USD' ? totalExpenseUSD += tx.amount : totalExpenseKHR += tx.amount;
         }

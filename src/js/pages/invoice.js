@@ -194,7 +194,12 @@ function clearInvoiceFilters() {
 }
 
 async function loadInvoices() {
-    let allInvoices = await db.invoices.orderBy('date').reverse().toArray();
+    let allInvoices = await db.invoices.toArray();
+    allInvoices.sort((a, b) => {
+        let dateA = a.date || '';
+        let dateB = b.date || '';
+        return dateB.localeCompare(dateA);
+    });
     
     const searchNo = document.getElementById('search-inv-no') ? document.getElementById('search-inv-no').value.trim().toLowerCase() : '';
     const fromDate = document.getElementById('search-inv-from') ? document.getElementById('search-inv-from').value : '';
@@ -242,7 +247,7 @@ async function editInvoice(id) {
     document.getElementById('inv-date').value = inv.date;
     document.getElementById('inv-customer').value = inv.customer;
     document.getElementById('inv-address').value = inv.address || '';
-    document.getElementById('inv-currency').value = inv.currency || 'USD';
+    document.getElementById('inv-currency').value = inv.currency || 'KHR';
     
     const tbody = document.getElementById('inv-items-body');
     tbody.innerHTML = '';
