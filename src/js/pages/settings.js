@@ -669,30 +669,36 @@ document.addEventListener('change', function(e) {
 async function compressImage(base64Str, maxWidth = 300, maxHeight = 300) {
     return new Promise((resolve) => {
         let img = new Image();
-        img.src = base64Str;
+        img.crossOrigin = "Anonymous"; // just in case
         img.onload = () => {
-            let canvas = document.createElement('canvas');
-            let width = img.width;
-            let height = img.height;
+            try {
+                let canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
 
-            if (width > height) {
-                if (width > maxWidth) {
-                    height = Math.round(height * (maxWidth / width));
-                    width = maxWidth;
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round(height * (maxWidth / width));
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round(width * (maxHeight / height));
+                        height = maxHeight;
+                    }
                 }
-            } else {
-                if (height > maxHeight) {
-                    width = Math.round(width * (maxHeight / height));
-                    height = maxHeight;
-                }
+                canvas.width = Math.max(1, width);
+                canvas.height = Math.max(1, height);
+                let ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/webp', 0.8));
+            } catch (e) {
+                console.error("Canvas compression error:", e);
+                resolve(base64Str); // Fallback on error
             }
-            canvas.width = width;
-            canvas.height = height;
-            let ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL('image/png', 0.8));
         };
         img.onerror = () => resolve(base64Str); // Fallback
+        img.src = base64Str;
     });
 }
 
@@ -701,20 +707,30 @@ window.saveBranding = async function() {
     try {
         const brandData = { id: 1 };
         
-        const loginImg = document.getElementById('previewLoginLogo').src;
-        brandData.loginLogo = loginImg.includes('assets/images/logo.png') ? '' : await compressImage(loginImg, 400, 400);
+        const loginEl = document.getElementById('previewLoginLogo');
+        if (loginEl) {
+            brandData.loginLogo = loginEl.src.includes('assets/images/logo.png') ? '' : await compressImage(loginEl.src, 400, 400);
+        }
 
-        const sidebarImg = document.getElementById('previewSidebarLogo').src;
-        brandData.sidebarLogo = sidebarImg.includes('assets/images/logo.png') ? '' : await compressImage(sidebarImg, 200, 200);
+        const sidebarEl = document.getElementById('previewSidebarLogo');
+        if (sidebarEl) {
+            brandData.sidebarLogo = sidebarEl.src.includes('assets/images/logo.png') ? '' : await compressImage(sidebarEl.src, 200, 200);
+        }
 
-        const sidebarDarkImg = document.getElementById('previewSidebarLogoDark').src;
-        brandData.sidebarLogoDark = sidebarDarkImg.includes('assets/images/logo.png') ? '' : await compressImage(sidebarDarkImg, 200, 200);
+        const sidebarDarkEl = document.getElementById('previewSidebarLogoDark');
+        if (sidebarDarkEl) {
+            brandData.sidebarLogoDark = sidebarDarkEl.src.includes('assets/images/logo.png') ? '' : await compressImage(sidebarDarkEl.src, 200, 200);
+        }
 
-        const faviconImg = document.getElementById('previewFavicon').src;
-        brandData.favicon = faviconImg.includes('assets/images/logo.png') ? '' : await compressImage(faviconImg, 64, 64);
+        const faviconEl = document.getElementById('previewFavicon');
+        if (faviconEl) {
+            brandData.favicon = faviconEl.src.includes('assets/images/logo.png') ? '' : await compressImage(faviconEl.src, 64, 64);
+        }
 
-        const mobileImg = document.getElementById('previewMobileIcon').src;
-        brandData.mobileIcon = mobileImg.includes('assets/images/logo.png') ? '' : await compressImage(mobileImg, 192, 192);
+        const mobileEl = document.getElementById('previewMobileIcon');
+        if (mobileEl) {
+            brandData.mobileIcon = mobileEl.src.includes('assets/images/logo.png') ? '' : await compressImage(mobileEl.src, 192, 192);
+        }
 
         const existing = await db.brandSettings.get(1);
         if (existing) {
