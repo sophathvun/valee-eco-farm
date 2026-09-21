@@ -173,14 +173,14 @@ function logoutUser() {
 
 function hasPermission(perm) {
     if (!currentUser) return false;
-    if (currentUser.username === 'admin') return true;
+    if (currentUser.username.toLowerCase() === 'admin') return true;
     return currentUser.permissions && currentUser.permissions.includes(perm);
 }
 
 // Helper function for RBAC
 function hasPermission(perm) {
     if (!currentUser) return false;
-    if (currentUser.username === 'admin') return true;
+    if (currentUser.username.toLowerCase() === 'admin') return true;
     return currentUser.permissions && currentUser.permissions.includes(perm);
 }
 
@@ -192,14 +192,14 @@ window.applyPermissions = function() {
     // Hide menus
     document.querySelectorAll('.sys-menu-item').forEach(el => {
         const p = el.getAttribute('data-perm');
-        if (p && !perms.includes(p) && currentUser.username !== 'admin') {
+        if (p && !perms.includes(p) && currentUser.username.toLowerCase() !== 'admin') {
             el.style.display = 'none';
         } else {
             el.style.display = 'block';
         }
     });
 
-    if (currentUser.username !== 'admin' && !perms.includes('write')) {
+    if (currentUser.username.toLowerCase() !== 'admin' && !perms.includes('write')) {
         document.body.classList.add('readonly-mode');
     } else {
         document.body.classList.remove('readonly-mode');
@@ -498,7 +498,7 @@ async function loadUsers() {
             <td class="fw-bold">${u.username}</td>
             <td><small>${permsKhmer.join(', ')}</small></td>
             <td>
-                ${u.username !== 'admin' ? `
+                ${u.username.toLowerCase() !== 'admin' ? `
                     <button class="btn btn-sm btn-outline-warning" onclick="editUser(${u.id})">កែប្រែ</button>
                     <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(${u.id})">លុប</button>
                 ` : '<span class="badge bg-secondary">មិនអាចកែប្រែ/លុបបាន</span>'}
