@@ -99,6 +99,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     const invNo = document.getElementById('inv-no').value;
     const date = document.getElementById('inv-date').value;
     const customer = document.getElementById('inv-customer').value;
+    const phone = document.getElementById('inv-phone').value;
     const address = document.getElementById('inv-address').value;
     const category = document.getElementById('inv-income-category').value;
     const currency = document.getElementById('inv-currency').value;
@@ -118,7 +119,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
         });
     });
 
-    let savedInv = { invNo, date, customer, address, items, subtotal, delivery, grandTotal, currency };
+    let savedInv = { invNo, date, customer, phone, address, items, subtotal, delivery, grandTotal, currency };
 
     if (editingInvoiceId) {
         if (editingTxId) {
@@ -169,6 +170,7 @@ function populateAndPrintInvoice(inv) {
     document.getElementById('p-inv-date').textContent = formattedDate;
     document.getElementById('p-inv-no').textContent = inv.invNo;
     document.getElementById('p-inv-customer').textContent = inv.customer;
+    document.getElementById('p-inv-phone').textContent = inv.phone || '';
     document.getElementById('p-inv-address').textContent = inv.address || '';
 
     const pTbody = document.getElementById('p-inv-items');
@@ -235,6 +237,7 @@ async function loadInvoices() {
                 <td>${formatKhmerDate(inv.date)}</td>
                 <td>${inv.invNo}</td>
                 <td>${inv.customer}</td>
+                <td>${inv.phone || ''}</td>
                 <td class="fw-bold text-success">${formatCurrency(inv.grandTotal, cur)}</td>
                 <td>
                     <button class="btn btn-sm btn-info text-white" onclick="reprintInvoice(${inv.id})">ព្រីន (Print)</button>
@@ -261,6 +264,7 @@ async function editInvoice(id) {
     document.getElementById('inv-no').value = inv.invNo;
     document.getElementById('inv-date').value = inv.date;
     document.getElementById('inv-customer').value = inv.customer;
+    document.getElementById('inv-phone').value = inv.phone || '';
     document.getElementById('inv-address').value = inv.address || '';
     document.getElementById('inv-currency').value = inv.currency || 'KHR';
     
