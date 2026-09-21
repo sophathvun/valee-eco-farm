@@ -109,21 +109,24 @@ document.getElementById('addPreparerForm').addEventListener('submit', async (e) 
     e.preventDefault();
     await db.preparers.add({ name: document.getElementById('newPrepName').value });
     document.getElementById('newPrepName').value = '';
+    Swal.fire({icon: 'success', text: 'បញ្ចូលអ្នករៀបចំជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
     loadPreparers();
 });
 
 async function editPreparer(id, oldName) {
-    const newName = prompt('សូមបញ្ចូលឈ្មោះអ្នករៀបចំថ្មី៖', oldName);
+    const newName = prompt('សូមបញ្ចូលឈ្មោះអ្នករៀបចំរបាយការណ៍ថ្មី', oldName);
     if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
         await db.preparers.update(id, { name: newName.trim() });
+        Swal.fire({icon: 'success', text: 'កែប្រែអ្នករៀបចំជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadPreparers();
     }
 }
 
 async function deletePreparer(id) {
-    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបឈ្មោះនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបឈ្មោះនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'});
     if (res.isConfirmed) {
         await db.preparers.delete(id);
+        Swal.fire({icon: 'success', text: 'លុបអ្នករៀបចំជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadPreparers();
     }
 }
@@ -412,6 +415,7 @@ document.getElementById('addIncomeCategoryForm').addEventListener('submit', asyn
     e.preventDefault();
     await db.categories.add({ type: 'income', name: document.getElementById('newIncCatName').value });
     document.getElementById('newIncCatName').value = '';
+    Swal.fire({icon: 'success', text: 'បញ្ចូលប្រភេទទិន្នន័យជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
     loadCategories();
 });
 
@@ -419,6 +423,7 @@ document.getElementById('addExpenseCategoryForm').addEventListener('submit', asy
     e.preventDefault();
     await db.categories.add({ type: 'expense', name: document.getElementById('newExpCatName').value });
     document.getElementById('newExpCatName').value = '';
+    Swal.fire({icon: 'success', text: 'បញ្ចូលប្រភេទទិន្នន័យជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
     loadCategories();
 });
 
@@ -463,6 +468,7 @@ async function deleteCategory(id) {
     const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបប្រភេទនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
     if (res.isConfirmed) {
         await db.categories.delete(id);
+        Swal.fire({icon: 'success', text: 'លុបប្រភេទទិន្នន័យជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadCategories();
     }
 }
@@ -495,6 +501,7 @@ document.getElementById('addUnitForm')?.addEventListener('submit', async (e) => 
     e.preventDefault();
     await db.units.add({ name: document.getElementById('newUnitName').value });
     document.getElementById('newUnitName').value = '';
+    Swal.fire({icon: 'success', text: 'បញ្ចូលឯកតាជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
     loadUnits();
 });
 
@@ -502,6 +509,7 @@ async function deleteUnit(id) {
     const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបឯកតានេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'});
     if (res.isConfirmed) {
         await db.units.delete(id);
+        Swal.fire({icon: 'success', text: 'លុបឯកតាជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadUnits();
     }
 }

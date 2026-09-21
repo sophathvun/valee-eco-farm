@@ -39,6 +39,7 @@ async function deleteTransaction(id) {
     const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
     if (res.isConfirmed) {
         await db.transactions.delete(id);
+        Swal.fire({icon: 'success', text: 'លុបប្រតិបត្តិការជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadData();
     }
 }

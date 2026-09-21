@@ -126,12 +126,14 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             await db.transactions.update(editingTxId, { amount: grandTotal, currency: currency, date: date, category: category, note: `វិក្កយបត្រ N°: ${invNo} - ភ្ញៀវ: ${customer}` });
         }
         await db.invoices.update(editingInvoiceId, savedInv);
+        Swal.fire({icon: 'success', text: 'កែប្រែវិក្កយបត្រជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
     } else {
         const txId = await db.transactions.add({ 
             type: 'income', amount: grandTotal, currency: currency, date: date, category: category, note: `វិក្កយបត្រ N°: ${invNo} - ភ្ញៀវ: ${customer}` 
         });
         savedInv.txId = txId;
         await db.invoices.add(savedInv);
+        Swal.fire({icon: 'success', text: 'រក្សាទុកវិក្កយបត្រជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
     }
 
     populateAndPrintInvoice(savedInv);
@@ -322,6 +324,7 @@ async function deleteInvoice(id) {
             await db.transactions.delete(inv.txId);
         }
         await db.invoices.delete(id);
+        Swal.fire({icon: 'success', text: 'លុបវិក្កយបត្រជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadInvoices();
         loadData();
     }

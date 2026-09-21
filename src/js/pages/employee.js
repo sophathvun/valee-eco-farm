@@ -69,6 +69,7 @@ window.deleteEmployee = async function(id) {
     });
     if (res.isConfirmed) {
         await db.employees.delete(id);
+        Swal.fire({icon: 'success', text: 'លុបបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadEmployees();
     }
 };
@@ -95,8 +96,10 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         const data = { name, gender, dob, phone, department, position, type, wageType, salary, photo };
         if (editingEmployeeId) {
             await db.employees.update(editingEmployeeId, data);
+            Swal.fire({icon: 'success', text: 'កែប្រែទិន្នន័យបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         } else {
             await db.employees.add(data);
+            Swal.fire({icon: 'success', text: 'រក្សាទុកទិន្នន័យបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         }
         
         document.getElementById('employeeForm').reset();
