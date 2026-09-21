@@ -56,7 +56,6 @@ async function loadData() {
                 <td>${tx.category}</td>
                 <td class="${tx.type === 'income' ? 'text-success' : 'text-danger'}">${formatCurrency(tx.amount, cur)}</td>
                 <td>${tx.note}</td>
-                <td><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})">\u179b\u17bb\u1794</button></td>
             `;
             tbody.appendChild(tr);
         }
