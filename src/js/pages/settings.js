@@ -170,6 +170,11 @@ async function loadUsersAndRoles() {
     const tbody = document.getElementById('userListTable');
     if (!tbody) return;
     tbody.innerHTML = '';
+
+    // Identify the original admin (the one with the lowest ID)
+    const admins = allUsers.filter(u => u.username.toLowerCase() === 'admin');
+    admins.sort((a,b) => a.id - b.id);
+    const originalAdminId = admins.length > 0 ? admins[0].id : null;
     
     allUsers.forEach(u => {
         const tr = document.createElement('tr');
@@ -181,9 +186,9 @@ async function loadUsersAndRoles() {
             roleName = 'Admin';
         }
         
-        const isAdmin = u.username.toLowerCase() === 'admin';
+        const isOriginalAdmin = (u.id === originalAdminId);
         const isChecked = u.isActive !== false ? 'checked' : '';
-        const disabled = isAdmin ? 'disabled' : '';
+        const disabled = isOriginalAdmin ? 'disabled' : '';
         
         let statusToggle = `
             <div class="form-check form-switch d-flex justify-content-center align-items-center mb-0">
@@ -196,13 +201,10 @@ async function loadUsersAndRoles() {
             <td><span class="badge bg-primary">${roleName}</span></td>
             <td>${statusToggle}</td>
             <td>
-                ${u.username.toLowerCase() !== 'admin' ? `
+                ${!isOriginalAdmin ? `
                     <button class="btn btn-sm btn-outline-warning btn-edit" onclick="editUser(${u.id})">កែប្រែ</button>
                     <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteUser(${u.id})">លុប</button>
-                ` : `
-                    <button class="btn btn-sm btn-outline-warning btn-edit" onclick="editUser(${u.id})">កែប្រែ</button>
-                    <span class="badge bg-secondary">មិនអាចលុបបាន</span>
-                `}
+                ` : '<span class="text-muted">No actions</span>'}
             </td>
         `;
         tbody.appendChild(tr);
