@@ -389,31 +389,61 @@
                                 </div>
                                 <div class="card-body">
                                     <form id="brandingForm">
-                                        <div class="row">
-                                            <div class="col-md-3 mb-3 text-center">
-                                                <label class="form-label fw-bold d-block">Login Logo</label>
-                                                <img id="previewLoginLogo" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 100px; height: 100px; object-fit: contain;">
-                                                <input type="file" class="form-control form-control-sm" id="inputLoginLogo" accept="image/*">
+                                        <div class="row g-2">
+                                            <div class="col-md-2 mb-3 text-center">
+                                                <div class="border rounded p-3 d-flex flex-column align-items-center justify-content-between h-100 branding-dropzone" data-target="inputLoginLogo" style="border: 2px dashed #ccc !important; background: #f8f9fa; cursor: pointer;">
+                                                    <label class="form-label fw-bold d-block mb-2" style="font-size: 13px;">Login Logo</label>
+                                                    <img id="previewLoginLogo" src="assets/images/logo.png" class="mb-2" style="width: 80px; height: 80px; object-fit: contain;">
+                                                    <div class="mt-auto" style="z-index: 2;">
+                                                        <input type="file" id="inputLoginLogo" accept="image/*" style="display: none;">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); document.getElementById('inputLoginLogo').click()">✏️</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteBrandingLogo('LoginLogo')">🗑️</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="col-md-2 mb-3 text-center">
-                                                <label class="form-label fw-bold d-block" style="font-size: 13px;">Sidebar Logo (Light)</label>
-                                                <img id="previewSidebarLogo" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 80px; height: 80px; object-fit: contain;">
-                                                <input type="file" class="form-control form-control-sm" id="inputSidebarLogo" accept="image/*">
+                                                <div class="border rounded p-3 d-flex flex-column align-items-center justify-content-between h-100 branding-dropzone" data-target="inputSidebarLogo" style="border: 2px dashed #ccc !important; background: #f8f9fa; cursor: pointer;">
+                                                    <label class="form-label fw-bold d-block mb-2" style="font-size: 13px;">Sidebar (Light)</label>
+                                                    <img id="previewSidebarLogo" src="assets/images/logo.png" class="mb-2" style="width: 80px; height: 80px; object-fit: contain;">
+                                                    <div class="mt-auto" style="z-index: 2;">
+                                                        <input type="file" id="inputSidebarLogo" accept="image/*" style="display: none;">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); document.getElementById('inputSidebarLogo').click()">✏️</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteBrandingLogo('SidebarLogo')">🗑️</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="col-md-2 mb-3 text-center">
-                                                <label class="form-label fw-bold d-block" style="font-size: 13px;">Sidebar Logo (Dark)</label>
-                                                <img id="previewSidebarLogoDark" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 80px; height: 80px; object-fit: contain;">
-                                                <input type="file" class="form-control form-control-sm" id="inputSidebarLogoDark" accept="image/*">
+                                                <div class="border rounded p-3 d-flex flex-column align-items-center justify-content-between h-100 branding-dropzone" data-target="inputSidebarLogoDark" style="border: 2px dashed #ccc !important; background: #f8f9fa; cursor: pointer;">
+                                                    <label class="form-label fw-bold d-block mb-2" style="font-size: 13px;">Sidebar (Dark)</label>
+                                                    <img id="previewSidebarLogoDark" src="assets/images/logo.png" class="mb-2" style="width: 80px; height: 80px; object-fit: contain;">
+                                                    <div class="mt-auto" style="z-index: 2;">
+                                                        <input type="file" id="inputSidebarLogoDark" accept="image/*" style="display: none;">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); document.getElementById('inputSidebarLogoDark').click()">✏️</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteBrandingLogo('SidebarLogoDark')">🗑️</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="col-md-3 mb-3 text-center">
-                                                <label class="form-label fw-bold d-block">Favicon (Browser Tab)</label>
-                                                <img id="previewFavicon" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 64px; height: 64px; object-fit: contain;">
-                                                <input type="file" class="form-control form-control-sm" id="inputFavicon" accept="image/*">
+                                                <div class="border rounded p-3 d-flex flex-column align-items-center justify-content-between h-100 branding-dropzone" data-target="inputFavicon" style="border: 2px dashed #ccc !important; background: #f8f9fa; cursor: pointer;">
+                                                    <label class="form-label fw-bold d-block mb-2" style="font-size: 13px;">Favicon (Browser Tab)</label>
+                                                    <img id="previewFavicon" src="assets/images/logo.png" class="mb-2" style="width: 64px; height: 64px; object-fit: contain;">
+                                                    <div class="mt-auto" style="z-index: 2;">
+                                                        <input type="file" id="inputFavicon" accept="image/*" style="display: none;">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); document.getElementById('inputFavicon').click()">✏️</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteBrandingLogo('Favicon')">🗑️</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="col-md-3 mb-3 text-center">
-                                                <label class="form-label fw-bold d-block">Mobile App Icon</label>
-                                                <img id="previewMobileIcon" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 100px; height: 100px; object-fit: contain;">
-                                                <input type="file" class="form-control form-control-sm" id="inputMobileIcon" accept="image/*">
+                                                <div class="border rounded p-3 d-flex flex-column align-items-center justify-content-between h-100 branding-dropzone" data-target="inputMobileIcon" style="border: 2px dashed #ccc !important; background: #f8f9fa; cursor: pointer;">
+                                                    <label class="form-label fw-bold d-block mb-2" style="font-size: 13px;">Shortcut Icon (App/PWA)</label>
+                                                    <img id="previewMobileIcon" src="assets/images/logo.png" class="mb-2" style="width: 80px; height: 80px; object-fit: contain;">
+                                                    <div class="mt-auto" style="z-index: 2;">
+                                                        <input type="file" id="inputMobileIcon" accept="image/*" style="display: none;">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); document.getElementById('inputMobileIcon').click()">✏️</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteBrandingLogo('MobileIcon')">🗑️</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="text-end mt-3 border-top pt-3">

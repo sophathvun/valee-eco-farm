@@ -93,6 +93,32 @@ async function applyBranding() {
                     document.getElementsByTagName('head')[0].appendChild(appleLink);
                 }
                 appleLink.href = brand.mobileIcon;
+
+                // Dynamically create manifest.json for PWA / Android shortcut
+                const manifest = {
+                    "name": "Valee Eco Farm",
+                    "short_name": "Valee",
+                    "start_url": ".",
+                    "display": "standalone",
+                    "background_color": "#1e293b",
+                    "theme_color": "#198754",
+                    "icons": [
+                        {
+                            "src": brand.mobileIcon,
+                            "sizes": "192x192 512x512",
+                            "type": "image/png"
+                        }
+                    ]
+                };
+                const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+                const manifestURL = URL.createObjectURL(manifestBlob);
+                let manifestLink = document.querySelector("link[rel='manifest']");
+                if (!manifestLink) {
+                    manifestLink = document.createElement('link');
+                    manifestLink.rel = 'manifest';
+                    document.getElementsByTagName('head')[0].appendChild(manifestLink);
+                }
+                manifestLink.href = manifestURL;
             }
         }
     } catch (e) {

@@ -731,3 +731,59 @@ window.saveBranding = async function() {
         Swal.fire({ icon: 'error', title: 'បរាជ័យ', text: 'មានបញ្ហាក្នុងការរក្សាទុក។' });
     }
 };
+
+// Handle Drag & Drop for Branding Logos
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.branding-dropzone').forEach(zone => {
+        zone.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+                const targetId = zone.getAttribute('data-target');
+                if (targetId) document.getElementById(targetId).click();
+            }
+        });
+        
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.style.backgroundColor = '#e9ecef';
+            zone.style.borderColor = '#0d6efd';
+        });
+        
+        zone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            zone.style.backgroundColor = '#f8f9fa';
+            zone.style.borderColor = '#ccc';
+        });
+        
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.style.backgroundColor = '#f8f9fa';
+            zone.style.borderColor = '#ccc';
+            
+            const targetId = zone.getAttribute('data-target');
+            if (targetId && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                const input = document.getElementById(targetId);
+                input.files = e.dataTransfer.files;
+                const event = new Event('change', { bubbles: true });
+                input.dispatchEvent(event);
+            }
+        });
+    });
+});
+
+window.deleteBrandingLogo = function(type) {
+    Swal.fire({
+        title: 'បញ្ជាក់',
+        text: 'តើអ្នកពិតជាចង់លុបរូបភាពនេះមែនទេ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'លុប',
+        cancelButtonText: 'បោះបង់'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('preview' + type).src = 'assets/images/logo.png';
+            document.getElementById('input' + type).value = '';
+        }
+    });
+};
