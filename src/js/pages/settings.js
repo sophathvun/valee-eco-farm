@@ -181,9 +181,12 @@ async function loadUsersAndRoles() {
             roleName = 'Admin';
         }
         
+        let statusBadge = u.isActive === false ? '<span class="badge bg-danger">OFF</span>' : '<span class="badge bg-success">ON</span>';
+
         tr.innerHTML = `
             <td class="fw-bold">${u.username}</td>
             <td><span class="badge bg-primary">${roleName}</span></td>
+            <td>${statusBadge}</td>
             <td>
                 ${u.username.toLowerCase() !== 'admin' ? `
                     <button class="btn btn-sm btn-outline-warning btn-edit" onclick="editUser(${u.id})">កែប្រែ</button>
@@ -208,17 +211,41 @@ window.editUser = async function(id) {
         document.getElementById('newUserRole').value = user.roleId;
     }
     
+    const statusCheckbox = document.getElementById('newUserStatus');
+    const statusLabel = document.getElementById('newUserStatusLabel');
+    if (user.isActive === false) {
+        statusCheckbox.checked = false;
+        statusLabel.textContent = 'OFF';
+        statusLabel.className = 'form-check-label ms-2 fw-bold text-danger';
+    } else {
+        statusCheckbox.checked = true;
+        statusLabel.textContent = 'ON';
+        statusLabel.className = 'form-check-label ms-2 fw-bold text-success';
+    }
+    
     editingUserId = id;
     const btn = document.querySelector('#addUserForm button[type="submit"]');
-    btn.textContent = 'រក្សាទុកការកែប្រែ (Update)';
+    btn.textContent = 'កែប្រែគណនី (Update)';
     btn.classList.replace('btn-dark', 'btn-warning');
 };
+
+document.getElementById('newUserStatus')?.addEventListener('change', (e) => {
+    const lbl = document.getElementById('newUserStatusLabel');
+    if (e.target.checked) {
+        lbl.textContent = 'ON';
+        lbl.className = 'form-check-label ms-2 fw-bold text-success';
+    } else {
+        lbl.textContent = 'OFF';
+        lbl.className = 'form-check-label ms-2 fw-bold text-danger';
+    }
+});
 
 document.getElementById('addUserForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = document.getElementById('newUsername').value.trim();
     const password = document.getElementById('newUserPassword').value.trim();
     const roleId = document.getElementById('newUserRole').value;
+    const isActive = document.getElementById('newUserStatus').checked;
     
     if (!roleId) {
         Swal.fire({icon: 'info', text: 'សូមជ្រើសរើសតួនាទី!', confirmButtonText: 'យល់ព្រម'});
@@ -231,19 +258,22 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
             Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
             return;
         }
-        await db.users.update(editingUserId, { username, password, roleId: parseInt(roleId) });
-        Swal.fire({icon: 'info', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
+        await db.users.update(editingUserId, { username, password, roleId: parseInt(roleId), isActive });
+        Swal.fire({icon: 'info', text: 'កែប្រែគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
     } else {
         const exists = await db.users.where('username').equalsIgnoreCase(username).count();
         if (exists > 0) {
             Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
             return;
         }
-        await db.users.add({ username, password, roleId: parseInt(roleId) });
+        await db.users.add({ username, password, roleId: parseInt(roleId), isActive });
         Swal.fire({icon: 'info', text: 'បង្កើតគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
     }
     
     document.getElementById('addUserForm').reset();
+    document.getElementById('newUserStatus').checked = true;
+    document.getElementById('newUserStatusLabel').textContent = 'ON';
+    document.getElementById('newUserStatusLabel').className = 'form-check-label ms-2 fw-bold text-success';
     editingUserId = null;
     const btn = document.querySelector('#addUserForm button[type="submit"]');
     btn.textContent = 'បង្កើតគណនី';

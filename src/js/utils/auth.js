@@ -40,6 +40,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const allUsers = await db.users.toArray();
         const user = allUsers.find(x => x.username.toLowerCase() === u.toLowerCase() && x.password === p);
         if (user) {
+            if (user.isActive === false) {
+                Swal.fire('បដិសេធ', 'គណនីរបស់អ្នកត្រូវបានបិទ (Inactive)។', 'error');
+                return;
+            }
             if (user.roleId) {
                 const role = await db.roles.get(user.roleId);
                 if (role) user.permissions = role.permissions || [];
