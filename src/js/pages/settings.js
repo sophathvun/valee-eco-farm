@@ -553,3 +553,21 @@ window.deletePosition = async function(id) {
         if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
     }
 };
+// Auto-check parent menu if child submenu is checked
+document.addEventListener('change', function(e) {
+    if (e.target && e.target.classList.contains('role-perm-checkbox')) {
+        const val = e.target.value;
+        if (e.target.checked) {
+            if (val.startsWith('reports_')) document.getElementById('rpermReports').checked = true;
+            if (val.startsWith('settings_')) document.getElementById('rpermSettings').checked = true;
+        } else {
+            // If parent unchecked, uncheck all children
+            if (val === 'reports') {
+                document.querySelectorAll('.role-perm-checkbox[value^="reports_"]').forEach(cb => cb.checked = false);
+            }
+            if (val === 'settings') {
+                document.querySelectorAll('.role-perm-checkbox[value^="settings_"]').forEach(cb => cb.checked = false);
+            }
+        }
+    }
+});
