@@ -66,6 +66,7 @@ async function initializeApp() {
 document.addEventListener('DOMContentLoaded', initializeApp);
 async function applyBranding() {
     try {
+        if (!db.brandSettings) db.brandSettings = new FirebaseStore('brandSettings');
         const brand = await db.brandSettings.get(1);
         if (brand) {
             if (brand.loginLogo) {

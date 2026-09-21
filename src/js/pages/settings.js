@@ -637,6 +637,7 @@ document.addEventListener('change', function(e) {
 
 async function loadBranding() {
     try {
+        if (!db.brandSettings) db.brandSettings = new FirebaseStore('brandSettings');
         const brand = await db.brandSettings.get(1);
         if (brand) {
             if (brand.loginLogo) document.getElementById('previewLoginLogo').src = brand.loginLogo;
@@ -705,6 +706,7 @@ async function compressImage(base64Str, maxWidth = 300, maxHeight = 300) {
 window.saveBranding = async function() {
     Swal.fire({ title: 'កំពុងរក្សាទុក...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     try {
+        if (!db.brandSettings) db.brandSettings = new FirebaseStore('brandSettings');
         const brandData = { id: 1 };
         
         const loginEl = document.getElementById('previewLoginLogo');
@@ -743,7 +745,7 @@ window.saveBranding = async function() {
         
     } catch (error) {
         console.error("Error saving branding:", error);
-        Swal.fire({ icon: 'error', title: 'បរាជ័យ', text: 'មានបញ្ហាក្នុងការរក្សាទុក។' });
+        Swal.fire({ icon: 'error', title: 'បរាជ័យ', text: 'មានបញ្ហាក្នុងការរក្សាទុក។ (' + error.message + ')' });
     }
 };
 
