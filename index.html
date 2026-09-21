@@ -34,7 +34,7 @@
     <div id="login-view" style="display: flex; height: 100vh; align-items: center; justify-content: center; background-color: #343a40;">
         <div class="card shadow-lg" style="width: 400px; max-width: 90%;">
             <div class="card-body p-4 text-center">
-                <img src="assets/images/logo.png" alt="Logo" width="80" height="80" class="mb-3 rounded-circle bg-light p-2 sys-logo">
+                <img src="assets/images/logo.png" alt="Logo" width="80" height="80" id="loginLogoImg" class="mb-3 rounded-circle bg-light p-2 sys-logo">
                 <h4 class="mb-4 text-primary fw-bold" style="font-family: 'Khmer OS Muol Light', cursive;">វ៉ាលេអេកូហ្វាម</h4>
                 <form id="loginForm">
                     <div class="mb-3 text-start">
@@ -55,7 +55,7 @@
         <!-- Sidebar -->
         <nav class="sidebar">
             <div class="brand d-flex align-items-center">
-                <img src="assets/images/logo.png" alt="Logo" width="40" height="40" class="me-3 rounded-circle sys-logo">
+                <img src="assets/images/logo.png" alt="Logo" width="40" height="40" id="sidebarLogoImg" class="me-3 rounded-circle sys-logo">
                 <div class="lh-1">
                     <span class="brand-title fw-bold text-white d-block mb-1" style="font-family: 'Khmer OS Muol Light', cursive; font-size: 0.85rem;">វ៉ាលេអេកូហ្វាម</span>
                     <small class="brand-subtitle text-muted" style="font-size: 0.7rem;">VALLEY ECO FARM</small>
@@ -155,6 +155,9 @@
                         </li>
                         <li class="nav-item sys-menu-item" data-perm="settings_emp_structure">
                             <a href="#" class="nav-link submenu-link" id="nav-settings-emp_structure" onclick="showTab('settings', 'emp_structure');">🏢 រចនាសម្ព័ន្ធបុគ្គលិក (Emp Structure)</a>
+                        </li>
+                        <li class="nav-item sys-menu-item" data-perm="settings_branding">
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-branding" onclick="showTab('settings', 'branding');">🎨 ការកំណត់យីហោ (Branding)</a>
                         </li>
                       </ul>
                   </li>

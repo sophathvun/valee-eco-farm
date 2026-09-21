@@ -150,6 +150,7 @@ window.switchSettingsTab = function(tabId) {
     if (tabId === 'roles') loadRoles();
     if (tabId === 'permissions') loadRolesForPerms();
     if (tabId === 'users') loadUsersAndRoles();
+    if (tabId === 'branding') loadBranding();
     if (tabId === 'emp_structure') {
         loadDepartments();
         loadPositions();
@@ -629,3 +630,104 @@ document.addEventListener('change', function(e) {
         }
     }
 });
+
+// ==========================================
+// Branding Settings
+// ==========================================
+
+async function loadBranding() {
+    try {
+        const brand = await db.brandSettings.get(1);
+        if (brand) {
+            if (brand.loginLogo) document.getElementById('previewLoginLogo').src = brand.loginLogo;
+            if (brand.sidebarLogo) document.getElementById('previewSidebarLogo').src = brand.sidebarLogo;
+            if (brand.sidebarLogoDark) document.getElementById('previewSidebarLogoDark').src = brand.sidebarLogoDark;
+            if (brand.favicon) document.getElementById('previewFavicon').src = brand.favicon;
+            if (brand.mobileIcon) document.getElementById('previewMobileIcon').src = brand.mobileIcon;
+        }
+    } catch (error) {
+        console.error("Error loading branding:", error);
+    }
+}
+
+// Handle file input changes for previews
+['LoginLogo', 'SidebarLogo', 'SidebarLogoDark', 'Favicon', 'MobileIcon'].forEach(type => {
+    const input = document.getElementById('input' + type);
+    if (input) {
+        input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview' + type).src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+
+async function compressImage(base64Str, maxWidth = 300, maxHeight = 300) {
+    return new Promise((resolve) => {
+        let img = new Image();
+        img.src = base64Str;
+        img.onload = () => {
+            let canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height = Math.round(height * (maxWidth / width));
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width = Math.round(width * (maxHeight / height));
+                    height = maxHeight;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/png', 0.8));
+        };
+        img.onerror = () => resolve(base64Str); // Fallback
+    });
+}
+
+window.saveBranding = async function() {
+    Swal.fire({ title: 'កំពុងរក្សាទុក...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    try {
+        const brandData = { id: 1 };
+        
+        const loginImg = document.getElementById('previewLoginLogo').src;
+        if (!loginImg.includes('assets/images/logo.png')) brandData.loginLogo = await compressImage(loginImg, 400, 400);
+
+        const sidebarImg = document.getElementById('previewSidebarLogo').src;
+        if (!sidebarImg.includes('assets/images/logo.png')) brandData.sidebarLogo = await compressImage(sidebarImg, 200, 200);
+
+        const sidebarDarkImg = document.getElementById('previewSidebarLogoDark').src;
+        if (!sidebarDarkImg.includes('assets/images/logo.png')) brandData.sidebarLogoDark = await compressImage(sidebarDarkImg, 200, 200);
+
+        const faviconImg = document.getElementById('previewFavicon').src;
+        if (!faviconImg.includes('assets/images/logo.png')) brandData.favicon = await compressImage(faviconImg, 64, 64);
+
+        const mobileImg = document.getElementById('previewMobileIcon').src;
+        if (!mobileImg.includes('assets/images/logo.png')) brandData.mobileIcon = await compressImage(mobileImg, 192, 192);
+
+        const existing = await db.brandSettings.get(1);
+        if (existing) {
+            await db.brandSettings.update(1, brandData);
+        } else {
+            await db.brandSettings.add(brandData);
+        }
+        
+        Swal.fire({ icon: 'success', title: 'ជោគជ័យ!', text: 'ការកំណត់យីហោត្រូវបានរក្សាទុក។ សូម Refresh (Ctrl+Shift+R) ដើម្បីឃើញការផ្លាស់ប្តូរ។' });
+        
+    } catch (error) {
+        console.error("Error saving branding:", error);
+        Swal.fire({ icon: 'error', title: 'បរាជ័យ', text: 'មានបញ្ហាក្នុងការរក្សាទុក។' });
+    }
+};

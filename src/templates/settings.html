@@ -378,3 +378,50 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Branding Tab -->
+                <div id="settings-branding-tab" class="settings-tab" style="display: none;">
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-info border-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0 text-info">🎨 ការកំណត់យីហោ (Branding Settings)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="brandingForm">
+                                        <div class="row">
+                                            <div class="col-md-3 mb-3 text-center">
+                                                <label class="form-label fw-bold d-block">Login Logo</label>
+                                                <img id="previewLoginLogo" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 100px; height: 100px; object-fit: contain;">
+                                                <input type="file" class="form-control form-control-sm" id="inputLoginLogo" accept="image/*">
+                                            </div>
+                                            <div class="col-md-2 mb-3 text-center">
+                                                <label class="form-label fw-bold d-block" style="font-size: 13px;">Sidebar Logo (Light)</label>
+                                                <img id="previewSidebarLogo" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 80px; height: 80px; object-fit: contain;">
+                                                <input type="file" class="form-control form-control-sm" id="inputSidebarLogo" accept="image/*">
+                                            </div>
+                                            <div class="col-md-2 mb-3 text-center">
+                                                <label class="form-label fw-bold d-block" style="font-size: 13px;">Sidebar Logo (Dark)</label>
+                                                <img id="previewSidebarLogoDark" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 80px; height: 80px; object-fit: contain;">
+                                                <input type="file" class="form-control form-control-sm" id="inputSidebarLogoDark" accept="image/*">
+                                            </div>
+                                            <div class="col-md-3 mb-3 text-center">
+                                                <label class="form-label fw-bold d-block">Favicon (Browser Tab)</label>
+                                                <img id="previewFavicon" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 64px; height: 64px; object-fit: contain;">
+                                                <input type="file" class="form-control form-control-sm" id="inputFavicon" accept="image/*">
+                                            </div>
+                                            <div class="col-md-3 mb-3 text-center">
+                                                <label class="form-label fw-bold d-block">Mobile App Icon</label>
+                                                <img id="previewMobileIcon" src="assets/images/logo.png" class="img-thumbnail mb-2" style="width: 100px; height: 100px; object-fit: contain;">
+                                                <input type="file" class="form-control form-control-sm" id="inputMobileIcon" accept="image/*">
+                                            </div>
+                                        </div>
+                                        <div class="text-end mt-3 border-top pt-3">
+                                            <button type="button" class="btn btn-primary" onclick="saveBranding()">រក្សាទុក (Save Branding)</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>

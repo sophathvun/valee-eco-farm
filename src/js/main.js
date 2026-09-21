@@ -13,6 +13,7 @@ const viewsToLoad = [
 ];
 
 async function initializeApp() {
+    await applyBranding();
     const container = document.getElementById('main-content-container');
     
     // 1. Fetch and inject all HTML templates
@@ -63,3 +64,39 @@ async function initializeApp() {
 
 // Start the app
 document.addEventListener('DOMContentLoaded', initializeApp);
+async function applyBranding() {
+    try {
+        const brand = await db.brandSettings.get(1);
+        if (brand) {
+            if (brand.loginLogo) {
+                const ll = document.getElementById('loginLogoImg');
+                if(ll) ll.src = brand.loginLogo;
+            }
+            if (brand.sidebarLogo) {
+                const sl = document.getElementById('sidebarLogoImg');
+                if(sl) sl.src = brand.sidebarLogo;
+            }
+            if (brand.favicon) {
+                let link = document.querySelector("link[rel~='icon']");
+                if (!link) {
+                    link = document.createElement('link');
+                    link.rel = 'icon';
+                    document.getElementsByTagName('head')[0].appendChild(link);
+                }
+                link.href = brand.favicon;
+            }
+            if (brand.mobileIcon) {
+                let appleLink = document.querySelector("link[rel='apple-touch-icon']");
+                if (!appleLink) {
+                    appleLink = document.createElement('link');
+                    appleLink.rel = 'apple-touch-icon';
+                    document.getElementsByTagName('head')[0].appendChild(appleLink);
+                }
+                appleLink.href = brand.mobileIcon;
+            }
+        }
+    } catch (e) {
+        console.error('Error applying branding on load:', e);
+    }
+}
+
