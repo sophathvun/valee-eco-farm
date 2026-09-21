@@ -665,7 +665,7 @@ checkLogin().then((isLoggedIn) => {
     generateInvoiceNumber();
     loadInvoices();
     loadData();
-    loadEmployees();
+    if(typeof loadEmployees === 'function') loadEmployees();
     if(typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
     if(typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
 });

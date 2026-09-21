@@ -240,3 +240,6 @@ window.loadPositionsForEmp = async function() {
     });
     if(currentVal) select.value = currentVal;
 };
+
+// Auto-load employees when this script loads (since it loads after the init block in reports.js)
+loadEmployees();
