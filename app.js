@@ -86,7 +86,8 @@ const db = {
     categories: new FirebaseStore('categories'),
     invoices: new FirebaseStore('invoices'),
     preparers: new FirebaseStore('preparers'),
-    users: new FirebaseStore('users')
+    users: new FirebaseStore('users'),
+    employees: new FirebaseStore('employees')
 };
 
 let myChart = null;
@@ -118,7 +119,7 @@ async function checkLogin() {
         });
     }
 
-    const sessionUser = sessionStorage.getItem('currentUser');
+    const sessionUser = localStorage.getItem('currentUser');
     if (sessionUser) {
         currentUser = JSON.parse(sessionUser);
         document.getElementById('login-view').style.display = 'none';
@@ -142,7 +143,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const allUsers = await db.users.toArray();
     const user = allUsers.find(x => x.username === u && x.password === p);
     if (user) {
-        sessionStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('currentUser', JSON.stringify(user));
         currentUser = user;
         document.getElementById('loginForm').reset();
         document.getElementById('login-view').style.display = 'none';
@@ -159,12 +160,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         else if (hasPermission('settings')) showTab('settings');
         
     } else {
-        alert('ឈ្មោះគណនី ឬ លេខសម្ងាត់មិនត្រឹមត្រូវទេ!');
+        Swal.fire({icon: 'info', text: 'ឈ្មោះគណនី ឬ លេខសម្ងាត់មិនត្រឹមត្រូវទេ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
     }
 });
 
 function logoutUser() {
-    sessionStorage.removeItem('currentUser');
+    localStorage.removeItem('currentUser');
     currentUser = null;
     document.getElementById('login-view').style.display = 'flex';
     document.getElementById('main-wrapper').style.display = 'none';
@@ -218,13 +219,14 @@ window.importData = function() {
                 const data = JSON.parse(event.target.result);
                 if(data && Array.isArray(data)) {
                     await db.transactions.bulkAdd(data);
-                    alert("✅ ទាញទិន្នន័យចូលជោគជ័យ! សូម Refresh វេបសាយ។");
-                    loadData();
+                    Swal.fire({icon: 'info', text: "✅ ទាញទិន្នន័យចូលជោគជ័យ! សូម Refresh វេបសាយ។", confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+                    loadEmployees();
+    loadData();
                 } else {
-                    alert("❌ ឯកសារមិនត្រឹមត្រូវ!");
+                    Swal.fire({icon: 'info', text: "❌ ឯកសារមិនត្រឹមត្រូវ!", confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
                 }
             } catch(err) {
-                alert("❌ បរាជ័យក្នុងការទាញទិន្នន័យ៖ " + err.message);
+                Swal.fire({icon: 'info', text: "❌ បរាជ័យក្នុងការទាញទិន្នន័យ៖ " + err.message, confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
             }
         };
         reader.readAsText(file);
@@ -304,7 +306,8 @@ function showTab(tabId) {
         'income': 'បញ្ចូលទិន្នន័យចំណូលផ្ទាល់',
         'expense': 'បញ្ចូលទិន្នន័យចំណាយ',
         'reports': 'របាយការណ៍',
-        'settings': 'ការកំណត់ប្រព័ន្ធទូទៅ'
+        'settings': 'ការកំណត់ប្រព័ន្ធទូទៅ',
+        'employee': '\u1782\u17d2\u179a\u1794\u17cb\u1782\u17d2\u179a\u1784\u1794\u17bb\u1782\u17d2\u1782\u179b\u17b7\u1780'
     };
     const pageTitle = document.getElementById('page-title');
     if (pageTitle) pageTitle.textContent = titles[tabId];
@@ -459,7 +462,8 @@ async function editPreparer(id, oldName) {
 }
 
 async function deletePreparer(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបឈ្មោះនេះមែនទេ?')) {
+    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបឈ្មោះនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    if (res.isConfirmed) {
         await db.preparers.delete(id);
         loadPreparers();
     }
@@ -485,6 +489,8 @@ async function loadUsers() {
         if (u.permissions.includes('expense')) permsKhmer.push('ទំព័រចំណាយ');
         if (u.permissions.includes('reports')) permsKhmer.push('របាយការណ៍');
         if (u.permissions.includes('settings')) permsKhmer.push('ការកំណត់');
+        if (u.permissions.includes('employee_manage')) permsKhmer.push('\u1782\u17d2\u179a\u1794\u17cb\u1782\u17d2\u179a\u1784\u1794\u17bb\u1782\u17d2\u1782\u179b\u17b7\u1780');
+        if (u.permissions.includes('employee_manage')) permsKhmer.push('គ្ឆល៍គ្ឆគលឆ្ឆម់ខ');
         if (!u.permissions.includes('write')) permsKhmer.push('(អត់សិទ្ធិកែប្រែ)');
         if (permsKhmer.length >= 7 && u.permissions.includes('write')) permsKhmer = ['មានសិទ្ធិទាំងអស់ (Admin)'];
         
@@ -530,7 +536,7 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
     });
     
     if (perms.length === 0) {
-        alert('សូមជ្រើសរើសសិទ្ធិយ៉ាងហោចណាស់មួយ!');
+        Swal.fire({icon: 'info', text: 'សូមជ្រើសរើសសិទ្ធិយ៉ាងហោចណាស់មួយ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
         return;
     }
     
@@ -538,20 +544,20 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
         // Update existing user
         const exists = await db.users.where('username').equalsIgnoreCase(username).first();
         if (exists && exists.id !== editingUserId) {
-            alert('ឈ្មោះគណនីនេះមានរួចហើយ!');
+            Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
             return;
         }
         await db.users.update(editingUserId, { username, password, permissions: perms });
-        alert('កែប្រែបានជោគជ័យ!');
+        Swal.fire({icon: 'info', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
     } else {
         // Create new user
         const exists = await db.users.where('username').equalsIgnoreCase(username).count();
         if (exists > 0) {
-            alert('ឈ្មោះគណនីនេះមានរួចហើយ!');
+            Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
             return;
         }
         await db.users.add({ username, password, permissions: perms });
-        alert('បង្កើតគណនីបានជោគជ័យ!');
+        Swal.fire({icon: 'info', text: 'បង្កើតគណនីបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
     }
     
     // Reset form
@@ -565,7 +571,8 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
 });
 
 window.deleteUser = async function(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបគណនីនេះមែនទេ?')) {
+    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបគណនីនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    if (res.isConfirmed) {
         await db.users.delete(id);
         loadUsers();
     }
@@ -617,13 +624,14 @@ async function editCategory(id, oldName) {
         await db.categories.update(id, { name: finalName });
         const txsToUpdate = await db.transactions.where('category').equals(oldName).toArray();
         for (let tx of txsToUpdate) await db.transactions.update(tx.id, { category: finalName });
-        alert('កែប្រែបានជោគជ័យ!');
+        Swal.fire({icon: 'info', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
         loadCategories(); loadData();
     }
 }
 
 async function deleteCategory(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបប្រភេទនេះមែនទេ?')) {
+    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបប្រភេទនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    if (res.isConfirmed) {
         await db.categories.delete(id);
         loadCategories();
     }
@@ -705,10 +713,12 @@ function resetInvoiceForm() {
 
 document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const subBtn = e.target.querySelector('button[type="submit"]'); if (subBtn) { subBtn.disabled = true; subBtn.dataset.oh = subBtn.innerHTML; subBtn.innerHTML = 'ដំណើរការ...'; }
+    try {
     
     const rows = document.querySelectorAll('#inv-items-body tr');
     if (rows.length === 0) {
-        alert('សូមបញ្ចូលទំនិញយ៉ាងហោចណាស់មួយ!'); return;
+        Swal.fire({icon: 'info', text: 'សូមបញ្ចូលទំនិញយ៉ាងហោចណាស់មួយ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'}); return;
     }
 
     const invNo = document.getElementById('inv-no').value;
@@ -751,6 +761,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     resetInvoiceForm();
     loadInvoices();
     loadData();
+    } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
 });
 
 function printElement(elId) {
@@ -900,7 +911,8 @@ async function editInvoice(id) {
 }
 
 async function deleteInvoice(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបវិក្កយបត្រនេះមែនទេ? (ទិន្នន័យចំណូលដែលពាក់ព័ន្ធវានឹងត្រូវលុបចោលដូចគ្នា)')) {
+    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបវិក្កយបត្រនេះមែនទេ? (ទិន្នន័យចំណូលដែលពាក់ព័ន្ធវានឹងត្រូវលុបចោលដូចគ្នា)', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    if (res.isConfirmed) {
         const inv = await db.invoices.get(id);
         if (inv && inv.txId) {
             await db.transactions.delete(inv.txId);
@@ -915,36 +927,43 @@ async function deleteInvoice(id) {
 // ====== TRANSACTIONS ======
 document.getElementById('incomeForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const subBtn = e.target.querySelector('button[type="submit"]'); if (subBtn) { subBtn.disabled = true; subBtn.dataset.oh = subBtn.innerHTML; subBtn.innerHTML = 'ដំណើរការ...'; }
+    try {
     const currency = document.getElementById('inc-currency').value;
     const amount = parseFloat(document.getElementById('inc-amount').value);
     const date = document.getElementById('inc-date').value;
     const category = document.getElementById('inc-category').value;
     const note = document.getElementById('inc-note').value;
     
-    await db.transactions.add({ type: 'income', amount, currency, date, category, note });
+    if (editingIncomeId) { await db.transactions.update(editingIncomeId, { amount, currency, date, category, note }); editingIncomeId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b'; } else { await db.transactions.add({ type: 'income', amount, currency, date, category, note }); }
     document.getElementById('inc-amount').value = '';
     document.getElementById('inc-note').value = '';
-    alert('រក្សាទុកចំណូលបានជោគជ័យ!');
+    Swal.fire({icon: 'info', text: 'រក្សាទុកចំណូលបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
     loadData();
+    } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
 });
 
 document.getElementById('expenseForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const subBtn = e.target.querySelector('button[type="submit"]'); if (subBtn) { subBtn.disabled = true; subBtn.dataset.oh = subBtn.innerHTML; subBtn.innerHTML = 'ដំណើរការ...'; }
+    try {
     const currency = document.getElementById('exp-currency').value;
     const amount = parseFloat(document.getElementById('exp-amount').value);
     const date = document.getElementById('exp-date').value;
     const category = document.getElementById('exp-category').value;
     const note = document.getElementById('exp-note').value;
     
-    await db.transactions.add({ type: 'expense', amount, currency, date, category, note });
+    if (editingExpenseId) { await db.transactions.update(editingExpenseId, { amount, currency, date, category, note }); editingExpenseId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799'; } else { await db.transactions.add({ type: 'expense', amount, currency, date, category, note }); }
     document.getElementById('exp-amount').value = '';
     document.getElementById('exp-note').value = '';
-    alert('រក្សាទុកចំណាយបានជោគជ័យ!');
+    Swal.fire({icon: 'info', text: 'រក្សាទុកចំណាយបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
     loadData();
+    } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
 });
 
 async function deleteTransaction(id) {
-    if(confirm('តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?')) {
+    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    if (res.isConfirmed) {
         await db.transactions.delete(id);
         loadData();
     }
@@ -1016,7 +1035,7 @@ async function loadData() {
                 <td>${tx.category}</td>
                 <td class="${tx.type === 'income' ? 'text-success' : 'text-danger'}">${formatCurrency(tx.amount, cur)}</td>
                 <td>${tx.note}</td>
-                <td>${hasPermission('write') ? `<button class="btn btn-sm btn-danger" onclick="deleteTransaction(${tx.id})">លុប</button>` : ''}</td>
+                <td>${hasPermission('write') ? `<button class="btn btn-sm btn-danger" onclick="deleteTransaction(${tx.id})">\u179b\u17bb\u1794</button>` : ''}</td>
             `;
             tbody.appendChild(tr);
         }
@@ -1033,7 +1052,7 @@ async function loadData() {
                 if (incCount < limit) {
                     incCount++;
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${formatKhmerDate(tx.date)}</td><td>${tx.category}</td><td class="text-success fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td>`;
+                    tr.innerHTML = `<td>${formatKhmerDate(tx.date)}</td><td>${tx.category}</td><td class="text-success fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td>${hasPermission('income_add') ? `<button class="btn btn-sm btn-warning me-1" onclick="editTransaction(${tx.id}, 'income')">\u1780\u17c2\u1794\u17d2\u179a\u17c2</button><button class="btn btn-sm btn-danger" onclick="deleteTransaction(${tx.id})">\u179b\u17bb\u1794</button>` : ''}</td>`;
                     incBody.appendChild(tr);
                 }
             }
@@ -1051,7 +1070,7 @@ async function loadData() {
                 if (expCount < limit) {
                     expCount++;
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${formatKhmerDate(tx.date)}</td><td>${tx.category}</td><td class="text-danger fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td>`;
+                    tr.innerHTML = `<td>${formatKhmerDate(tx.date)}</td><td>${tx.category}</td><td class="text-danger fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td>${hasPermission('expense_add') ? `<button class="btn btn-sm btn-warning me-1" onclick="editTransaction(${tx.id}, 'expense')">\u1780\u17c2\u1794\u17d2\u179a\u17c2</button><button class="btn btn-sm btn-danger" onclick="deleteTransaction(${tx.id})">\u179b\u17bb\u1794</button>` : ''}</td>`;
                     expBody.appendChild(tr);
                 }
             }
@@ -1749,6 +1768,7 @@ checkLogin().then((isLoggedIn) => {
     generateInvoiceNumber();
     loadInvoices();
     loadData();
+    loadEmployees();
 });
 
 // Auto-update PWA logic
@@ -1761,3 +1781,278 @@ if ('serviceWorker' in navigator) {
         }
     });
 }
+// PWA Install Logic
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installBtn = document.getElementById('installAppBtn');
+    if (installBtn) {
+        installBtn.style.display = 'block';
+        installBtn.addEventListener('click', async () => {
+            installBtn.style.display = 'none';
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+        });
+    }
+});
+window.addEventListener('appinstalled', (evt) => {
+    const installBtn = document.getElementById('installAppBtn');
+    if (installBtn) installBtn.style.display = 'none';
+});
+let editingIncomeId = null;
+let editingExpenseId = null;
+
+async function editTransaction(id, type) {
+    const tx = await db.transactions.get(id);
+    if (!tx) return;
+    
+    if (tx.note && tx.note.includes('\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a')) {
+        Swal.fire({icon: 'info', text: '\u1794\u17d2\u179a\u178f\u17b7\u1794\u178f\u17d2\u178f\u17b7\u1780\u17b6\u179a\u1793\u17c1\u17c7\u1794\u1784\u17d2\u1780\u17be\u178f\u1796\u17b8\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a\u17d4 \u179f\u17bc\u1798\u1791\u17c5\u1780\u17c2\u1794\u17d2\u179a\u17c2\u1780\u17d2\u1793\u17bb\u1784\u1795\u17d2\u1791\u17b6\u17c6\u1784\u1794\u1789\u17d2\u1787\u17b8\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a\u179c\u17b7\u1789!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+        return;
+    }
+    if (type === 'income') {
+        editingIncomeId = id;
+        document.getElementById('inc-date').value = tx.date;
+        document.getElementById('inc-category').value = tx.category;
+        document.getElementById('inc-amount').value = tx.amount;
+        document.getElementById('inc-currency').value = tx.currency || 'KHR';
+        document.getElementById('inc-note').value = tx.note;
+        
+        const btn = document.querySelector('#incomeForm button[type="submit"]');
+        if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b (Update)';
+        
+        showTab('income');
+    } else if (type === 'expense') {
+        editingExpenseId = id;
+        document.getElementById('exp-date').value = tx.date;
+        document.getElementById('exp-category').value = tx.category;
+        document.getElementById('exp-amount').value = tx.amount;
+        document.getElementById('exp-currency').value = tx.currency || 'KHR';
+        document.getElementById('exp-note').value = tx.note;
+        
+        const btn = document.querySelector('#expenseForm button[type="submit"]');
+        if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799 (Update)';
+        
+        showTab('expense');
+    }
+}
+
+
+
+// ====== EMPLOYEE MANAGEMENT ======
+let editingEmployeeId = null;
+
+async function loadEmployees() {
+    const allEmps = await db.employees.toArray();
+    const tbody = document.getElementById('employeeList');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    allEmps.forEach(emp => {
+        const tr = document.createElement('tr');
+        const typeLabel = emp.type || 'Full-Time';
+        let wageSuffix = '';
+        const wageType = emp.wageType || 'Monthly';
+        if (wageType === 'Monthly') wageSuffix = '/ \u1781\u17c2';
+        else if (wageType === 'Daily') wageSuffix = '/ \u1790\u17d2\u1784\u17c3';
+        else if (wageType === 'Hourly') wageSuffix = '/ \u1798\u17c9\u17c4\u1784';
+        
+        tr.innerHTML = `
+            <td><img src="${emp.photo || ''}" style="width:50px; height:50px; object-fit:cover; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></td>
+            <td class="fw-bold">${emp.name}</td>
+            <td>${emp.gender}</td>
+            <td>${emp.position}</td>
+            <td><span class="badge bg-secondary">${typeLabel}</span></td>
+            <td>${emp.phone}</td>
+            <td class="text-info fw-bold">${formatCurrency(emp.salary, 'USD')} <small class="text-muted">${wageSuffix}</small></td>
+            <td>
+                ${hasPermission('employee_manage') ? `
+                <button class="btn btn-sm btn-outline-warning me-1" onclick="editEmployee(${emp.id})">\u1780\u17c2\u1794\u17d2\u179a\u17c2</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteEmployee(${emp.id})">\u179b\u17bb\u1794</button>
+                ` : '' }
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+window.editEmployee = async function(id) {
+    const emp = await db.employees.get(id);
+    if (!emp) return;
+    
+    editingEmployeeId = id;
+    document.getElementById('emp-name').value = emp.name;
+    document.getElementById('emp-gender').value = emp.gender;
+    document.getElementById('emp-dob').value = emp.dob;
+    document.getElementById('emp-phone').value = emp.phone;
+    document.getElementById('emp-position').value = emp.position;
+    document.getElementById('emp-salary').value = emp.salary;
+    document.getElementById('emp-type').value = emp.type || 'Full-Time';
+    document.getElementById('emp-wage-type').value = emp.wageType || 'Monthly';
+    if(emp.photo) document.getElementById('emp-photo-preview').src = emp.photo; else document.getElementById('emp-photo-preview').removeAttribute('src');
+    
+    document.querySelector('#employeeForm button[type="submit"]').innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780 (Update)';
+    showTab('employee');
+};
+
+window.deleteEmployee = async function(id) {
+    const res = await Swal.fire({
+        title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb',
+        text: '\u178f\u17be\u17a2\u17d2\u1793\u1780\u1796\u17b7\u178f\u1787\u17b6\u1785\u1784\u17cb\u179b\u17bb\u1794\u1798\u17c2\u1793\u1791\u17c1?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798',
+        cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'
+    });
+    if (res.isConfirmed) {
+        await db.employees.delete(id);
+        loadEmployees();
+    }
+};
+
+document.getElementById('employeeForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.querySelector('#employeeForm button[type=submit]');
+    btn.disabled = true;
+    const origText = btn.innerHTML;
+    btn.innerHTML = '\u1780\u17c6\u1796\u17bb\u1784\u178a\u17c6\u178e\u17be\u179a\u1780\u17b6\u179a...';
+    
+    try {
+        const name = document.getElementById('emp-name').value.trim();
+        const gender = document.getElementById('emp-gender').value;
+        const dob = document.getElementById('emp-dob').value;
+        const phone = document.getElementById('emp-phone').value.trim();
+        const position = document.getElementById('emp-position').value.trim();
+        const type = document.getElementById('emp-type').value;
+        const wageType = document.getElementById('emp-wage-type').value;
+        const salary = parseFloat(document.getElementById('emp-salary').value);
+        const photo = document.getElementById('emp-photo-preview').src;
+
+        const data = { name, gender, dob, phone, position, type, wageType, salary, photo };
+        if (editingEmployeeId) {
+            await db.employees.update(editingEmployeeId, data);
+        } else {
+            await db.employees.add(data);
+        }
+        
+        document.getElementById('employeeForm').reset();
+        document.getElementById('emp-type').value = 'Full-Time';
+        document.getElementById('emp-wage-type').value = 'Monthly';
+        editingEmployeeId = null;
+        document.getElementById('emp-photo-preview').removeAttribute('src');
+        btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780';
+        loadEmployees();
+        Swal.fire('\u1787\u17c4\u1782\u1787\u17d0\u1799', '\u1787\u17c4\u1782\u1787\u17d0\u1799!', 'success');
+    } catch(err) {
+        console.error(err);
+        Swal.fire({icon: 'error', text: 'Error: ' + err.message, confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+    } finally {
+        btn.disabled = false;
+        if (btn.innerHTML === '\u1780\u17c6\u1796\u17bb\u1784\u178a\u17c6\u178e\u17be\u179a\u1780\u17b6\u179a...') {
+            btn.innerHTML = origText;
+        }
+    }
+});
+
+// ====== PHOTO UPLOAD, DRAG & DROP & CROPPER ======
+let cropper = null;
+const dropzone = document.getElementById('emp-photo-dropzone');
+const photoInput = document.getElementById('emp-photo');
+const cropperModalEl = document.getElementById('cropperModal');
+let cropperModal = null;
+if (typeof bootstrap !== 'undefined' && cropperModalEl) {
+    cropperModal = new bootstrap.Modal(cropperModalEl);
+}
+
+// Hide placeholder if src exists
+function updatePhotoPlaceholder() {
+    const preview = document.getElementById('emp-photo-preview');
+    const placeholder = document.getElementById('emp-photo-placeholder');
+    if(preview && placeholder) {
+        if (preview.getAttribute('src') && preview.getAttribute('src').length > 10) {
+            placeholder.style.display = 'none';
+            preview.style.display = 'block';
+        } else {
+            placeholder.style.display = 'flex';
+            preview.style.display = 'none';
+        }
+    }
+}
+updatePhotoPlaceholder();
+
+if (dropzone && photoInput) {
+    dropzone.addEventListener('click', () => photoInput.click());
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.remove('bg-light'); dropzone.classList.add('bg-info', 'bg-opacity-10'); });
+    dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.classList.add('bg-light'); dropzone.classList.remove('bg-info', 'bg-opacity-10'); });
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('bg-light');
+        dropzone.classList.remove('bg-info', 'bg-opacity-10');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleFileSelect(e.dataTransfer.files[0]);
+        }
+    });
+
+    photoInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+        photoInput.value = ''; 
+    });
+}
+
+function handleFileSelect(file) {
+    if (!file.type.startsWith('image/')) {
+        Swal.fire({icon: 'error', text: '\u179f\u17bc\u1798\u1787\u17d2\u179a\u17be\u179f\u179a\u17be\u179f\u17af\u1780\u179f\u17b6\u179a\u1787\u17b6\u179a\u17bc\u1794\u1797\u17b6\u1796!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = document.getElementById('cropper-image');
+        if(img) img.src = e.target.result;
+        if(cropperModal) cropperModal.show();
+    };
+    reader.readAsDataURL(file);
+}
+
+if(cropperModalEl) {
+    cropperModalEl.addEventListener('shown.bs.modal', () => {
+        const image = document.getElementById('cropper-image');
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(image, { aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 0.9, restore: false, guides: true, center: true, highlight: false, cropBoxMovable: true, cropBoxResizable: true, toggleDragModeOnDblclick: false });
+    });
+
+    cropperModalEl.addEventListener('hidden.bs.modal', () => {
+        if (cropper) { cropper.destroy(); cropper = null; }
+    });
+}
+
+const btnRotL = document.getElementById('crop-rotate-left'); if(btnRotL) btnRotL.addEventListener('click', () => { if (cropper) cropper.rotate(-90); });
+const btnRotR = document.getElementById('crop-rotate-right'); if(btnRotR) btnRotR.addEventListener('click', () => { if (cropper) cropper.rotate(90); });
+const btnZoomI = document.getElementById('crop-zoom-in'); if(btnZoomI) btnZoomI.addEventListener('click', () => { if (cropper) cropper.zoom(0.1); });
+const btnZoomO = document.getElementById('crop-zoom-out'); if(btnZoomO) btnZoomO.addEventListener('click', () => { if (cropper) cropper.zoom(-0.1); });
+const btnSave = document.getElementById('crop-save-btn'); 
+if(btnSave) {
+    btnSave.addEventListener('click', () => {
+        if (!cropper) return;
+        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        const prev = document.getElementById('emp-photo-preview');
+        if(prev) prev.src = dataUrl;
+        updatePhotoPlaceholder();
+        if(cropperModal) cropperModal.hide();
+    });
+}
+
+const originalEditEmployee = window.editEmployee;
+window.editEmployee = async function(id) {
+    if(originalEditEmployee) await originalEditEmployee(id);
+    updatePhotoPlaceholder();
+};
+
+const empForm = document.getElementById('employeeForm');
+if(empForm) empForm.addEventListener('reset', () => { setTimeout(updatePhotoPlaceholder, 10); });

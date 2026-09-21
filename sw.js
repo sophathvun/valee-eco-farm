@@ -1,12 +1,12 @@
-const CACHE_NAME = 'pigfarm-v5';
+const CACHE_NAME = 'pigfarm-v12';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './app.js',
     './manifest.json',
     './assets/bootstrap.min.css',
-    'https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js',
-    'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js',
+    'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js',
+    'https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js',
     './assets/chart.umd.min.js'
 ];
 
@@ -21,33 +21,33 @@ self.addEventListener('install', event => {
     );
 });
 
+// Network-first strategy for development to avoid stale cached JS
 self.addEventListener('fetch', event => {
+    if (event.request.method !== 'GET') return;
+    
     event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Return cached version if found
-                if (response) {
-                    return response;
-                }
-                // Otherwise fetch from network
-                return fetch(event.request);
-            })
+        fetch(event.request).then(response => {
+            return caches.open(CACHE_NAME).then(cache => {
+                cache.put(event.request, response.clone());
+                return response;
+            });
+        }).catch(() => {
+            return caches.match(event.request);
+        })
     );
 });
 
 self.addEventListener('activate', event => {
     const cacheWhitelist = [CACHE_NAME];
-    self.skipWaiting();
     event.waitUntil(
         caches.keys().then(cacheNames => {
-            self.clients.claim();
-        return Promise.all(
+            return Promise.all(
                 cacheNames.map(cacheName => {
                     if (cacheWhitelist.indexOf(cacheName) === -1) {
                         return caches.delete(cacheName);
                     }
                 })
             );
-        })
+        }).then(() => self.clients.claim())
     );
 });
