@@ -181,12 +181,20 @@ async function loadUsersAndRoles() {
             roleName = 'Admin';
         }
         
-        let statusBadge = u.isActive === false ? '<span class="badge bg-danger">OFF</span>' : '<span class="badge bg-success">ON</span>';
+        const isAdmin = u.username.toLowerCase() === 'admin';
+        const isChecked = u.isActive !== false ? 'checked' : '';
+        const disabled = isAdmin ? 'disabled' : '';
+        
+        let statusToggle = `
+            <div class="form-check form-switch d-flex justify-content-center align-items-center mb-0">
+                <input class="form-check-input" type="checkbox" ${isChecked} ${disabled} onchange="toggleUserStatus(${u.id}, this.checked)" style="transform: scale(1.2); cursor: pointer;">
+            </div>
+        `;
 
         tr.innerHTML = `
             <td class="fw-bold">${u.username}</td>
             <td><span class="badge bg-primary">${roleName}</span></td>
-            <td>${statusBadge}</td>
+            <td>${statusToggle}</td>
             <td>
                 ${u.username.toLowerCase() !== 'admin' ? `
                     <button class="btn btn-sm btn-outline-warning btn-edit" onclick="editUser(${u.id})">កែប្រែ</button>
@@ -281,6 +289,16 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
     
     loadUsersAndRoles();
 });
+
+window.toggleUserStatus = async function(id, isActive) {
+    try {
+        await db.users.update(id, { isActive });
+        // Optional: show a small toast, but doing it silently is fine since UI updates immediately
+    } catch (error) {
+        console.error('Error toggling user status:', error);
+        loadUsersAndRoles(); // revert UI if failed
+    }
+};
 
 window.deleteUser = async function(id) {
     const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបគណនីនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'});
