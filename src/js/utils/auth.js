@@ -165,34 +165,32 @@ function loadSystemSettings() {
     const sysAddrKh = localStorage.getItem('sysAddrKh') || 'ភូមិព្រីង ឃុំយាយម៉ៅ\nស្រុកភ្នំស្រួច ខេត្តកំពង់ស្ពឺ';
     const sysAddrEn = localStorage.getItem('sysAddrEn') || 'Phoum Pring, Khum Yeay Moa\nSrok Phnom Srouch, Kampong Speu';
     const sysPreparer = localStorage.getItem('sysPreparer') || '';
-    const sysLogo = localStorage.getItem('sysLogo'); // Base64 if exists
 
     // Populate Settings Form
     const pInput = document.getElementById('setSysPhone');
     const khInput = document.getElementById('setSysAddrKh');
     const enInput = document.getElementById('setSysAddrEn');
-    const prepInput = document.getElementById('setSysPreparer');
+
     if (pInput) pInput.value = sysPhone;
     if (khInput) khInput.value = sysAddrKh;
     if (enInput) enInput.value = sysAddrEn;
-    if (prepInput) prepInput.value = sysPreparer;
+    if (document.getElementById('setSysPreparer')) document.getElementById('setSysPreparer').value = sysPreparer;
 
-    // Apply to UI (Invoice & System)
-    const uiPhone = document.getElementById('sys-phone');
-    if (uiPhone) uiPhone.innerHTML = sysPhone.replace(/\n/g, '<br>');
-    
-    const uiAddrKh = document.getElementById('sys-addr-kh');
-    if (uiAddrKh) uiAddrKh.innerHTML = sysAddrKh.replace(/\n/g, '<br>');
-    
-    const uiAddrEn = document.getElementById('sys-addr-en');
-    if (uiAddrEn) uiAddrEn.innerHTML = sysAddrEn.replace(/\n/g, '<br>');
+    // Apply texts
+    document.querySelectorAll('.sys-phone').forEach(el => el.textContent = sysPhone);
+    document.querySelectorAll('.sys-addr-kh').forEach(el => {
+        el.innerHTML = sysAddrKh.replace(/\n/g, '<br>');
+    });
+    document.querySelectorAll('.sys-addr-en').forEach(el => {
+        el.innerHTML = sysAddrEn.replace(/\n/g, '<br>');
+    });
 
     // Apply Preparer
     document.querySelectorAll('.sys-preparer').forEach(el => el.textContent = sysPreparer);
 
-    // Apply Logo if custom logo is set
-    if (sysLogo) {
-        document.querySelectorAll('.sys-logo').forEach(img => img.src = sysLogo);
+    // Apply Branding from Firebase (Re-invoke applyBranding to ensure it overrides)
+    if (typeof applyBranding === 'function') {
+        applyBranding();
     }
 }
 loadSystemSettings();

@@ -127,3 +127,4 @@ async function applyBranding() {
     }
 }
 
+window.applyBranding = applyBranding;

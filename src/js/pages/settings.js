@@ -804,3 +804,31 @@ window.deleteBrandingLogo = function(type) {
         }
     });
 };
+// Force update directly after save
+const origSaveBranding = window.saveBranding;
+window.saveBranding = async function() {
+    await origSaveBranding();
+    // After save, try to apply immediately without refresh
+    try {
+        if (typeof applyBranding === 'function') {
+            await applyBranding();
+        } else {
+            // fallback if applyBranding not globally exposed
+            const brand = await db.brandSettings.get(1);
+            if (brand) {
+                if (brand.loginLogo) {
+                    const ll = document.getElementById('loginLogoImg');
+                    if(ll) ll.src = brand.loginLogo;
+                }
+                if (brand.sidebarLogo) {
+                    const sl = document.getElementById('sidebarLogoImg');
+                    if(sl) sl.src = brand.sidebarLogo;
+                }
+                if (brand.favicon) {
+                    let link = document.querySelector("link[rel~='icon']");
+                    if (link) link.href = brand.favicon;
+                }
+            }
+        }
+    } catch(e){}
+}
