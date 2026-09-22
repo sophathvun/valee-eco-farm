@@ -1,6 +1,24 @@
 // ====== EMPLOYEE MANAGEMENT ======
 let editingEmployeeId = null;
 
+window.generateEmpCode = async function() {
+    const all = await db.employees.toArray();
+    let maxId = 0;
+    all.forEach(emp => {
+        if (emp.code && emp.code.startsWith('VEF-')) {
+            const numStr = emp.code.replace('VEF-', '');
+            const num = parseInt(numStr, 10);
+            if (!isNaN(num) && num > maxId) {
+                maxId = num;
+            }
+        }
+    });
+    maxId++;
+    const code = 'VEF-' + maxId.toString().padStart(4, '0');
+    const input = document.getElementById('emp-code');
+    if(input) input.value = code;
+};
+
 async function loadEmployees() {
     const allEmps = await db.employees.toArray();
     const tbody = document.getElementById('employeeList');
@@ -18,6 +36,7 @@ async function loadEmployees() {
         
         tr.innerHTML = `
             <td><img src="${emp.photo || ''}" style="width:50px; height:50px; object-fit:cover; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></td>
+            <td class="fw-bold text-primary">${emp.code || 'N/A'}</td>
             <td class="fw-bold">${emp.name}</td>
             <td>${emp.gender}</td>
             <td>${emp.department || ''}</td>
@@ -41,6 +60,7 @@ window.editEmployee = async function(id) {
     if (!emp) return;
     
     editingEmployeeId = id;
+    document.getElementById('emp-code').value = emp.code || '';
     document.getElementById('emp-name').value = emp.name;
     document.getElementById('emp-gender').value = emp.gender;
     document.getElementById('emp-dob').value = emp.dob;
@@ -82,6 +102,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
     btn.innerHTML = '\u1780\u17c6\u1796\u17bb\u1784\u178a\u17c6\u178e\u17be\u179a\u1780\u17b6\u179a...';
     
     try {
+        const code = document.getElementById('emp-code').value.trim();
         const name = document.getElementById('emp-name').value.trim();
         const gender = document.getElementById('emp-gender').value;
         const dob = document.getElementById('emp-dob').value;
@@ -93,13 +114,20 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         const salary = parseFloat(document.getElementById('emp-salary').value);
         const photo = document.getElementById('emp-photo-preview').src;
 
-        const data = { name, gender, dob, phone, department, position, type, wageType, salary, photo };
+        const allEmps = await db.employees.toArray();
+        const isDuplicate = allEmps.some(e => e.code === code && e.id !== editingEmployeeId);
+        if (isDuplicate) {
+            Swal.fire({icon: 'error', text: 'អត្តលេខនេះមានរួចហើយ សូមបញ្ចូលអត្តលេខផ្សេង!', confirmButtonText: 'យល់ព្រម'});
+            return;
+        }
+
+        const data = { code, name, gender, dob, phone, department, position, type, wageType, salary, photo };
         if (editingEmployeeId) {
             await db.employees.update(editingEmployeeId, data);
-            Swal.fire({icon: 'success', text: 'កែប្រែទិន្នន័យបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+            Swal.fire({icon: 'success', text: 'អាប់ដេតព័ត៌មានបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         } else {
             await db.employees.add(data);
-            Swal.fire({icon: 'success', text: 'រក្សាទុកទិន្នន័យបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+            Swal.fire({icon: 'success', text: 'បន្ថែមបុគ្គលិកថ្មីជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         }
         
         document.getElementById('employeeForm').reset();
@@ -107,7 +135,8 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         document.getElementById('emp-wage-type').value = 'Monthly';
         editingEmployeeId = null;
         document.getElementById('emp-photo-preview').removeAttribute('src');
-        btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780';
+        btn.innerHTML = 'រក្សាទុក';
+        if(typeof generateEmpCode === 'function') generateEmpCode();
         loadEmployees();
         Swal.fire('\u1787\u17c4\u1782\u1787\u17d0\u1799', '\u1787\u17c4\u1782\u1787\u17d0\u1799!', 'success');
     } catch(err) {
@@ -246,3 +275,17 @@ window.loadPositionsForEmp = async function() {
 
 // Auto-load employees when this script loads (since it loads after the init block in reports.js)
 loadEmployees();
+// Generate Employee ID on load
+if (typeof generateEmpCode === 'function') generateEmpCode();
+
+// Ensure code is generated when Employee tab is clicked
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const link = document.getElementById('nav-employee');
+        if (link) {
+            link.addEventListener('click', () => {
+                if (!editingEmployeeId && typeof generateEmpCode === 'function') generateEmpCode();
+            });
+        }
+    }, 1000); // Wait for DOM injection
+});

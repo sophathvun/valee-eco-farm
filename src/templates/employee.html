@@ -3,7 +3,7 @@
                         <div class="card shadow-sm border-info">
                             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 text-info fw-bold"><span class="text-info">👨‍💼</span> បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី</h5>
-                                <button class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('employeeForm').reset(); editingEmployeeId=null; document.getElementById('emp-photo-preview').removeAttribute('src'); if(typeof updatePhotoPlaceholder==='function') updatePhotoPlaceholder(); document.querySelector('#employeeForm button[type=submit]').innerHTML='រក្សាទុក';">សំអាត (Clear)</button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('employeeForm').reset(); editingEmployeeId=null; document.getElementById('emp-photo-preview').removeAttribute('src'); if(typeof updatePhotoPlaceholder==='function') updatePhotoPlaceholder(); document.querySelector('#employeeForm button[type=submit]').innerHTML='\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780'; if(typeof generateEmpCode==='function') generateEmpCode();">សម្អាត (Clear)</button>
                             </div>
                             <div class="card-body">
                                 <form id="employeeForm">
@@ -22,7 +22,11 @@
                                         <div class="col-md-8">
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ឈ្មោះបុគ្គលិក (Name)</label>
+                                                    <label class="form-label fw-bold">អត្តលេខ (Emp ID)</label>
+                                                    <input type="text" class="form-control" id="emp-code" required placeholder="Ex: VEF-0001">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label fw-bold">ឈ្មោះ (Name)</label>
                                                     <input type="text" class="form-control" id="emp-name" required>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
@@ -90,6 +94,7 @@
                                 <thead class="table-info">
                                     <tr>
                                         <th>រូបថត</th>
+                                        <th>អត្តលេខ</th>
                                         <th>ឈ្មោះបុគ្គលិក</th>
                                         <th>ភេទ</th>
                                         <th>ផ្នែកការងារ</th>
