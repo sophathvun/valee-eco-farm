@@ -8,11 +8,35 @@
     /* Default Print (e.g. Invoice) */
     body:not(.printing-report) .wrapper, body:not(.printing-report) .sidebar, body:not(.printing-report) .content, body:not(.printing-report) .view-section { display: none !important; }
     
-    /* Report Print Mode */
+        /* Report Print Mode */
+    body.printing-report, body.printing-report html {
+        background-color: #fff !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
     body.printing-report .sidebar, body.printing-report header, body.printing-report .top-navbar { display: none !important; }
-    body.printing-report .wrapper, body.printing-report .content { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+    
+    body.printing-report .main-panel,
+    body.printing-report .wrapper,
+    body.printing-report .content,
+    body.printing-report .card,
+    body.printing-report .card-body,
+    body.printing-report .container-fluid {
+        background: #fff !important;
+        background-color: #fff !important;
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+    
     body.printing-report .view-section:not(.active) { display: none !important; }
-    body.printing-report .view-section.active { display: block !important; }
+    body.printing-report .view-section.active { display: block !important; overflow: visible !important; }
 
     .print-container { display: none !important; }
     #print-area-invoice.print-template, #print-area-report.print-template, #print-area-analytics.print-template, #print-area-att-report.print-template { 
@@ -30,6 +54,7 @@
     .page-break-after { page-break-after: always; break-after: page; }
     /* Fix table-responsive cutting off content during print */
     .table-responsive { overflow: visible !important; }
+    #rep-attendance-table-container, #report-tables-wrapper { overflow: visible !important; height: auto !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: none !important; }
     /* Disable sticky positioning which breaks print layout */
     .col-emp, .col-total-p, .col-total-a, .col-total-l, .col-total-header { position: static !important; }
 
@@ -48,6 +73,9 @@
         margin: 0 auto !important;
     }
 }
+
+
+
 
 
 
