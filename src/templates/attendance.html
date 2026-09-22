@@ -3,7 +3,7 @@
         <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
             <h5 class="mb-0 text-primary fw-bold">📅 គ្រប់គ្រងវត្តមានបុគ្គលិក (Attendance Management)</h5>
             <div class="d-flex align-items-center gap-2">
-                <input type="date" class="form-control" id="attendanceDate">
+                <input type="date" class="form-control" id="attendanceDate" onchange="loadAttendance()">
                 <button class="btn btn-primary" onclick="loadAttendance()"><i class="bi bi-search"></i></button>
                 <button class="btn btn-success ms-2" onclick="saveAllAttendance()">
                     <i class="bi bi-save"></i> រក្សាទុកវត្តមាន
@@ -37,3 +37,4 @@
         </div>
     </div>
 </div>
+
