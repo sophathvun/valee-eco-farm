@@ -51,7 +51,8 @@ async function initializeApp() {
         'src/js/pages/dashboard.js',
         'src/js/pages/reports.js',
         'src/js/pages/employee.js',
-        'src/js/pages/attendance.js'
+        'src/js/pages/attendance.js',
+        'src/js/pages/attendance-report.js'
     ];
 
     for (let src of scriptsToLoad) {
@@ -137,6 +138,7 @@ async function applyBranding() {
 }
 
 window.applyBranding = applyBranding;
+
 
 
 
