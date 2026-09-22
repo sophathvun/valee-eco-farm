@@ -71,6 +71,10 @@ class FirebaseStore {
         if(!id) return;
         await this.col.doc(id.toString()).delete(); 
     }
+    async first() {
+        const snap = await this.col.limit(1).get();
+        return snap.empty ? null : snap.docs[0].data();
+    }
     async toArray() { 
         const snap = await this.col.get(); 
         return snap.docs.map(d => d.data()); 
