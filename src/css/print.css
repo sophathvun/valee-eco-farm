@@ -28,5 +28,26 @@
     .print-template * { visibility: visible; }
     @page { margin: 10mm; size: landscape; }
     .page-break-after { page-break-after: always; break-after: page; }
+    /* Fix table-responsive cutting off content during print */
+    .table-responsive { overflow: visible !important; }
+    /* Disable sticky positioning which breaks print layout */
+    .col-emp, .col-total-p, .col-total-a, .col-total-l, .col-total-header { position: static !important; }
+
+    
+    /* Shrink font and padding for matrix tables */
+    .print-table th, .print-table td {
+        padding: 0.1rem !important;
+        font-size: 8px !important;
+    }
+    
+    .print-table .att-cell {
+        width: 18px !important;
+        height: 18px !important;
+        line-height: 18px !important;
+        font-size: 8px !important;
+        margin: 0 auto !important;
+    }
 }
+
+
 
