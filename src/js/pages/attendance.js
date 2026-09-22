@@ -28,10 +28,6 @@ window.loadAttendance = async function() {
 
     let employees = await db.employees.toArray();
     
-    // Fetch all attendance for this month. 
-    // Since Firebase doesn't support 'startsWith' easily without complex queries,
-    // and we only have a simple wrapper, we fetch ALL attendance and filter locally.
-    // In a real huge app, we'd add a "month" field to the DB. For now, filter in memory.
     let allRecords = await db.attendance.toArray();
     let records = allRecords.filter(r => r.date && r.date.startsWith(monthVal));
 
@@ -73,6 +69,9 @@ function renderAttendanceTable(employees) {
         return;
     }
 
+    const todayObj = new Date();
+    const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
+
     employees.forEach(emp => {
         const tr = document.createElement('tr');
         
@@ -91,19 +90,29 @@ function renderAttendanceTable(employees) {
 
         for (let d = 1; d <= currentDaysInMonth; d++) {
             const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            const rec = currentAttendanceData[emp.id][dateStr] || { morning: 'P', afternoon: 'P' }; // Default to P
+            const isFuture = dateStr > todayStr;
+            const rec = currentAttendanceData[emp.id][dateStr];
+            
+            let mVal = rec ? rec.morning : (isFuture ? '' : 'P');
+            let aVal = rec ? rec.afternoon : (isFuture ? '' : 'P');
             
             // Tally totals
-            if (rec.morning === 'P') totalP += 0.5;
-            if (rec.morning === 'A') totalA += 0.5;
-            if (rec.morning === 'L') totalL += 0.5;
+            if (mVal === 'P') totalP += 0.5;
+            if (mVal === 'A') totalA += 0.5;
+            if (mVal === 'L') totalL += 0.5;
             
-            if (rec.afternoon === 'P') totalP += 0.5;
-            if (rec.afternoon === 'A') totalA += 0.5;
-            if (rec.afternoon === 'L') totalL += 0.5;
+            if (aVal === 'P') totalP += 0.5;
+            if (aVal === 'A') totalA += 0.5;
+            if (aVal === 'L') totalL += 0.5;
 
-            html += `<td class="border-start p-1"><div class="att-cell att-${rec.morning}" onclick="toggleAtt('${emp.id}', '${dateStr}', 'morning', this)">${rec.morning}</div></td>
-                     <td class="border-end p-1"><div class="att-cell att-${rec.afternoon}" onclick="toggleAtt('${emp.id}', '${dateStr}', 'afternoon', this)">${rec.afternoon}</div></td>`;
+            let mClick = isFuture ? '' : `onclick="toggleAtt('${emp.id}', '${dateStr}', 'morning', this)"`;
+            let aClick = isFuture ? '' : `onclick="toggleAtt('${emp.id}', '${dateStr}', 'afternoon', this)"`;
+            
+            let mClass = mVal ? mVal : 'none';
+            let aClass = aVal ? aVal : 'none';
+
+            html += `<td class="border-start p-1"><div class="att-cell att-${mClass}" ${mClick}>${mVal}</div></td>
+                     <td class="border-end p-1"><div class="att-cell att-${aClass}" ${aClick}>${aVal}</div></td>`;
         }
 
         html += `<td class="col-total col-total-p text-success fw-bold p-1" id="tot-p-${emp.id}">${totalP}</td>
@@ -116,38 +125,53 @@ function renderAttendanceTable(employees) {
 }
 
 window.toggleAtt = function(empId, dateStr, shift, el) {
+    // Extra safety: Check if future date
+    const todayObj = new Date();
+    const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
+    if (dateStr > todayStr) return;
+
     const states = ['P', 'A', 'L'];
     let currentState = el.innerText.trim();
-    let nextIdx = (states.indexOf(currentState) + 1) % states.length;
-    let nextState = states[nextIdx];
+    if (!currentState) currentState = 'P'; // If somehow empty, default to P on first click
+    else {
+        let nextIdx = (states.indexOf(currentState) + 1) % states.length;
+        currentState = states[nextIdx];
+    }
     
     // Update UI
-    el.innerText = nextState;
-    el.className = `att-cell att-${nextState}`;
+    el.innerText = currentState;
+    el.className = `att-cell att-${currentState}`;
     
     // Update Data
     if (!currentAttendanceData[empId][dateStr]) {
         currentAttendanceData[empId][dateStr] = { morning: 'P', afternoon: 'P' };
     }
-    currentAttendanceData[empId][dateStr][shift] = nextState;
+    currentAttendanceData[empId][dateStr][shift] = currentState;
     
     // Recalculate totals for this employee
     recalcTotals(empId);
 };
 
 function recalcTotals(empId) {
+    const todayObj = new Date();
+    const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
+
     let totalP = 0, totalA = 0, totalL = 0;
     for (let d = 1; d <= currentDaysInMonth; d++) {
         const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const rec = currentAttendanceData[empId][dateStr] || { morning: 'P', afternoon: 'P' };
+        const isFuture = dateStr > todayStr;
+        const rec = currentAttendanceData[empId][dateStr];
         
-        if (rec.morning === 'P') totalP += 0.5;
-        if (rec.morning === 'A') totalA += 0.5;
-        if (rec.morning === 'L') totalL += 0.5;
+        let mVal = rec ? rec.morning : (isFuture ? '' : 'P');
+        let aVal = rec ? rec.afternoon : (isFuture ? '' : 'P');
         
-        if (rec.afternoon === 'P') totalP += 0.5;
-        if (rec.afternoon === 'A') totalA += 0.5;
-        if (rec.afternoon === 'L') totalL += 0.5;
+        if (mVal === 'P') totalP += 0.5;
+        if (mVal === 'A') totalA += 0.5;
+        if (mVal === 'L') totalL += 0.5;
+        
+        if (aVal === 'P') totalP += 0.5;
+        if (aVal === 'A') totalA += 0.5;
+        if (aVal === 'L') totalL += 0.5;
     }
     
     document.getElementById(`tot-p-${empId}`).innerText = totalP;
@@ -168,9 +192,12 @@ window.saveAllAttendance = async function() {
     btn.disabled = true;
 
     try {
+        const todayObj = new Date();
+        const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
+
         let employees = await db.employees.toArray();
         let allRecords = await db.attendance.toArray();
-        let existingMap = {}; // Format: "empId_YYYY-MM-DD" -> docId
+        let existingMap = {}; 
         allRecords.forEach(r => {
             if (r.date && r.date.startsWith(monthVal)) {
                 existingMap[`${r.empId}_${r.date}`] = r;
@@ -183,12 +210,14 @@ window.saveAllAttendance = async function() {
         employees.forEach(emp => {
             for (let d = 1; d <= currentDaysInMonth; d++) {
                 const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const isFuture = dateStr > todayStr;
                 const rec = currentAttendanceData[emp.id][dateStr];
                 
-                // Only save if explicitly modified, OR if it already exists, OR we can just save all.
-                // Assuming P is default, we should save everything in the matrix for accuracy.
-                let mVal = rec ? rec.morning : 'P';
-                let aVal = rec ? rec.afternoon : 'P';
+                let mVal = rec ? rec.morning : (isFuture ? '' : 'P');
+                let aVal = rec ? rec.afternoon : (isFuture ? '' : 'P');
+                
+                // Do not save future empty days
+                if (isFuture && !rec) continue; 
                 
                 let data = {
                     date: dateStr,
@@ -196,7 +225,7 @@ window.saveAllAttendance = async function() {
                     empName: emp.name,
                     morning: mVal,
                     afternoon: aVal,
-                    note: '' // Note is removed from matrix for space, can add back later if needed
+                    note: '' 
                 };
 
                 let ext = existingMap[`${emp.id}_${dateStr}`];
@@ -205,14 +234,13 @@ window.saveAllAttendance = async function() {
                         batchUpdates.push({ id: ext.id, data: data });
                     }
                 } else {
-                    if (mVal !== 'P' || aVal !== 'P') { // Optimization: only save non-P defaults to save DB space
+                    if (mVal !== 'P' || aVal !== 'P') { 
                         batchAdds.push(data);
                     }
                 }
             }
         });
 
-        // Execute saves
         for (let obj of batchAdds) {
             await db.attendance.add(obj);
         }
@@ -229,5 +257,3 @@ window.saveAllAttendance = async function() {
     btn.innerHTML = oldText;
     btn.disabled = false;
 };
-
-
