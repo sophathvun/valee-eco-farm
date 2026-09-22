@@ -521,6 +521,7 @@ async function loadUnits() {
             li.className = 'list-group-item d-flex justify-content-between align-items-center';
             li.innerHTML = `<span>${u.name}</span>
             <div>
+                <button class="btn btn-sm btn-outline-primary btn-edit me-1" onclick="editUnit(${u.id}, '${u.name.replace(/'/g, "\\'")}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button>
                 <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteUnit(${u.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button>
             </div>`;
             list.appendChild(li);
@@ -532,15 +533,37 @@ document.getElementById('addUnitForm')?.addEventListener('submit', async (e) => 
     e.preventDefault();
     await db.units.add({ name: document.getElementById('newUnitName').value });
     document.getElementById('newUnitName').value = '';
-    Swal.fire({icon: 'success', text: 'áž”áž‰áŸ’áž…áž¼áž›áž¯áž€ážáž¶áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+    Swal.fire({icon: 'success', text: 'បញ្ចូលឯកតាជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
     loadUnits();
 });
 
+async function editUnit(id, oldName) {
+    const res = await Swal.fire({
+        title: 'កែប្រែឯកតា',
+        input: 'text',
+        inputValue: oldName,
+        showCancelButton: true,
+        confirmButtonText: 'រក្សាទុក',
+        cancelButtonText: 'បោះបង់',
+        inputValidator: (value) => {
+            if (!value || value.trim() === '') return 'សូមបញ្ចូលឈ្មោះឯកតាថ្មី!';
+        }
+    });
+    if (res.isConfirmed) {
+        const newName = res.value;
+        if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
+            await db.units.update(id, { name: newName.trim() });
+            Swal.fire({icon: 'success', text: 'កែប្រែឯកតាជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+            loadUnits();
+        }
+    }
+}
+
 async function deleteUnit(id) {
-    const res = await Swal.fire({title: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹', text: 'ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”áž¯áž€ážáž¶áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', cancelButtonText: 'áž”áŸ„áŸ‡áž”áž„áŸ‹'});
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបឯកតានេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'});
     if (res.isConfirmed) {
         await db.units.delete(id);
-        Swal.fire({icon: 'success', text: 'áž›áž»áž”áž¯áž€ážáž¶áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+        Swal.fire({icon: 'success', text: 'លុបឯកតាជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadUnits();
     }
 }
