@@ -1,0 +1,60 @@
+﻿<div class="row">
+    <div class="col-12 mb-3 d-print-none">
+        <div class="card shadow-sm border-0 border-top border-primary border-4">
+            <div class="card-body py-3">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold mb-1">ពីថ្ងៃទី (From Date)</label>
+                        <input type="date" class="form-control form-control-sm" id="repAttFrom">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold mb-1">ដល់ថ្ងៃទី (To Date)</label>
+                        <input type="date" class="form-control form-control-sm" id="repAttTo">
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button class="btn btn-primary btn-sm px-3" onclick="generateAttendanceReport()">
+                            <i class="bi bi-search"></i> ស្វែងរក
+                        </button>
+                        <button class="btn btn-secondary btn-sm px-3 ms-2" onclick="window.print()">
+                            <i class="bi bi-printer"></i> បោះពុម្ព / PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 print-template" id="print-area-att-report">
+        <div class="card shadow-sm border-0 print-no-border">
+            <div class="card-header bg-white border-bottom d-none d-print-block text-center py-4">
+                <h4 class="mb-1 text-primary fw-bold" id="brand-name-report-att">VALEE ECO FARM</h4>
+                <h5 class="mb-2">របាយការណ៍វត្តមានបុគ្គលិក (Attendance Report)</h5>
+                <p class="mb-0 text-muted" id="repAttDateText"></p>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered align-middle text-center mb-0 print-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">ល.រ</th>
+                                <th class="text-start">ឈ្មោះបុគ្គលិក (Employee Name)</th>
+                                <th>អត្តលេខ (Code)</th>
+                                <th>តួនាទី (Position)</th>
+                                <th class="text-success">វត្តមាន (P)</th>
+                                <th class="text-danger">អវត្តមាន (A)</th>
+                                <th class="text-warning">ច្បាប់ (L)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repAttList">
+                            <tr>
+                                <td colspan="7" class="text-muted py-4">សូមជ្រើសរើសកាលបរិច្ឆេទ រួចចុចប៊ូតុងស្វែងរក</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

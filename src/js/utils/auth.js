@@ -266,7 +266,8 @@ window.showTab = function(tabId, subId = null) {
         'reports': 'របាយការណ៍',
         'settings': 'ការកំណត់ទូទៅ',
         'employee': 'បញ្ជីបុគ្គលិក',
-        'attendance': 'គ្រប់គ្រងវត្តមាន'
+        'attendance': 'គ្រប់គ្រងវត្តមាន',
+        'attendance-report': 'របាយការណ៍វត្តមាន'
     };
     
     const subTitles = {
@@ -282,7 +283,8 @@ window.showTab = function(tabId, subId = null) {
         'emp_structure': 'រចនាសម្ព័ន្ធបុគ្គលិក',
         'shifts': 'ម៉ោងធ្វើការ',
         'list': 'បញ្ជីបុគ្គលិក',
-        'attendance': 'គ្រប់គ្រងវត្តមាន'
+        'attendance': 'គ្រប់គ្រងវត្តមាន',
+        'attendance-report': 'របាយការណ៍វត្តមាន'
     };
     
     const icons = {
@@ -356,5 +358,6 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
 
 

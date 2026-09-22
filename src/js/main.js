@@ -10,6 +10,7 @@ const viewsToLoad = [
     'reports',
     'employee',
     'attendance',
+    'attendance-report',
     'settings'
 ];
 
@@ -136,5 +137,6 @@ async function applyBranding() {
 }
 
 window.applyBranding = applyBranding;
+
 
 
