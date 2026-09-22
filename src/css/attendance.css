@@ -1,1 +1,76 @@
 ﻿/* Attendance specific styles */
+
+#attendance-table-container {
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.att-table th, .att-table td {
+    white-space: nowrap;
+    padding: 0.25rem 0.15rem; /* Compact padding */
+    font-size: 0.85rem;
+}
+
+/* Sticky first column (Employee Name) */
+.att-table th:first-child, .att-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background-color: #fff;
+    min-width: 250px;
+}
+.att-table thead th:first-child {
+    background-color: #198754; /* Match table-darkgreen */
+    z-index: 3;
+}
+
+/* Sticky last columns (Totals) */
+.att-table th.col-total, .att-table td.col-total {
+    position: sticky;
+    right: 0;
+    z-index: 2;
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+.att-table thead th.col-total {
+    background-color: #198754;
+    z-index: 3;
+}
+.att-table th.col-total-p, .att-table td.col-total-p { right: 80px; }
+.att-table th.col-total-a, .att-table td.col-total-a { right: 40px; }
+.att-table th.col-total-l, .att-table td.col-total-l { right: 0px; }
+
+/* Interactive cell styling */
+.att-cell {
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.att-cell:hover {
+    filter: brightness(0.9);
+}
+
+.att-P {
+    background-color: #198754; /* Success Green */
+    color: white;
+}
+.att-A {
+    background-color: #dc3545; /* Danger Red */
+    color: white;
+}
+.att-L {
+    background-color: #ffc107; /* Warning Yellow */
+    color: black;
+}
+.att-none {
+    background-color: #e9ecef; /* Light gray for no data */
+    color: transparent;
+}
