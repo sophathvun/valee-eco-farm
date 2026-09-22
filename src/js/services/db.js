@@ -27,7 +27,7 @@ function validateAndSanitize(obj) {
         if (typeof obj[key] === 'string') {
             obj[key] = obj[key].trim(); // Automatically trim whitespace
             // Block known Mojibake or system corrupted text patterns to protect DB
-            if (obj[key].includes('') || obj[key].includes('A_') || obj[key].includes('áž')) {
+            if (obj[key].includes('\uFFFD') || obj[key].includes('A_') || obj[key].includes('áž')) {
                 throw new Error(`ទិន្នន័យមានផ្ទុកតួអក្សរមិនត្រឹមត្រូវឬខូច (Mojibake detected in: ${key}). សូមកែតម្រូវមុនពេល Save!`);
             }
         } else if (typeof obj[key] === 'object' && obj[key] !== null) {
