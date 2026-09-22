@@ -60,7 +60,7 @@ function renderAttendanceTable(employees) {
         tr2 += `<th class="border-start"><small>ព្រឹក</small></th><th class="border-end"><small>ល្ងាច</small></th>`;
     }
     
-    tr1 += `<th colspan="3" class="col-total">សរុប (Total)</th></tr>`;
+    tr1 += `<th colspan="3" class="col-total col-total-header">សរុប (Total)</th></tr>`;
     tr2 += `<th class="col-total col-total-p text-success"><small>P</small></th>
             <th class="col-total col-total-a text-danger"><small>A</small></th>
             <th class="col-total col-total-l text-warning"><small>L</small></th></tr>`;
@@ -229,4 +229,5 @@ window.saveAllAttendance = async function() {
     btn.innerHTML = oldText;
     btn.disabled = false;
 };
+
 

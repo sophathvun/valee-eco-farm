@@ -1,6 +1,4 @@
-﻿/* Attendance specific styles */
-
-#attendance-table-container {
+﻿#attendance-table-container {
     max-height: 70vh;
     overflow: auto;
 }
@@ -27,15 +25,26 @@
 /* Sticky last columns (Totals) */
 .att-table th.col-total, .att-table td.col-total {
     position: sticky;
-    right: 0;
     z-index: 2;
     background-color: #f8f9fa;
     font-weight: bold;
+    min-width: 40px;
+    max-width: 40px;
+    box-sizing: border-box;
+    text-align: center;
 }
 .att-table thead th.col-total {
     background-color: #198754;
     z-index: 3;
 }
+
+/* Top header total needs to span exactly 120px to cover P (40) + A (40) + L (40) */
+.att-table thead th.col-total-header {
+    min-width: 120px !important;
+    max-width: 120px !important;
+    right: 0px !important;
+}
+
 .att-table th.col-total-p, .att-table td.col-total-p { right: 80px; }
 .att-table th.col-total-a, .att-table td.col-total-a { right: 40px; }
 .att-table th.col-total-l, .att-table td.col-total-l { right: 0px; }
@@ -74,4 +83,3 @@
     background-color: #e9ecef; /* Light gray for no data */
     color: transparent;
 }
-
