@@ -12,14 +12,14 @@
 }
 
 /* Sticky first column (Employee Name) */
-.att-table th:first-child, .att-table td:first-child {
+.att-table .col-emp {
     position: sticky;
     left: 0;
     z-index: 2;
     background-color: #fff;
     min-width: 250px;
 }
-.att-table thead th:first-child {
+.att-table thead .col-emp {
     background-color: #198754; /* Match table-darkgreen */
     z-index: 3;
 }
@@ -74,3 +74,4 @@
     background-color: #e9ecef; /* Light gray for no data */
     color: transparent;
 }
+

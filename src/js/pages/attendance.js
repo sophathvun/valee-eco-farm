@@ -52,7 +52,7 @@ function renderAttendanceTable(employees) {
     if (!thead || !tbody) return;
 
     // Build Header
-    let tr1 = `<tr><th rowspan="2" class="align-middle">បុគ្គលិក (Employee)</th>`;
+    let tr1 = `<tr><th rowspan="2" class="align-middle col-emp">បុគ្គលិក (Employee)</th>`;
     let tr2 = `<tr>`;
     
     for (let d = 1; d <= currentDaysInMonth; d++) {
@@ -77,7 +77,7 @@ function renderAttendanceTable(employees) {
         const tr = document.createElement('tr');
         
         let html = `
-            <td class="text-start align-middle">
+            <td class="text-start align-middle col-emp">
                 <div class="d-flex align-items-center">
                     <img src="${emp.photo || 'assets/default-avatar.png'}" class="rounded-circle me-2 border" style="width: 30px; height: 30px; object-fit: cover;">
                     <div style="line-height: 1.2;">
@@ -229,3 +229,4 @@ window.saveAllAttendance = async function() {
     btn.innerHTML = oldText;
     btn.disabled = false;
 };
+
