@@ -249,6 +249,13 @@ const originalEditEmployee = window.editEmployee;
 window.editEmployee = async function(id) {
     if(originalEditEmployee) await originalEditEmployee(id);
     updatePhotoPlaceholder();
+    
+    // Show the modal manually since edit button doesn't have data-bs-toggle
+    const modalEl = document.getElementById('employeeModal');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    }
 };
 
 const empForm = document.getElementById('employeeForm');
@@ -294,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000); // Wait for DOM injection
 });
+
 
 
 
