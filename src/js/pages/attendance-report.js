@@ -167,3 +167,11 @@ window.generateAttendanceReport = async function() {
         tbody.innerHTML = `<tr><td colspan="3" class="text-danger py-4">មានបញ្ហាក្នុងការទាញយកទិន្នន័យ</td></tr>`;
     }
 };
+
+
+window.printAttReport = function() {
+    document.body.classList.add('printing-report');
+    window.print();
+    setTimeout(() => document.body.classList.remove('printing-report'), 1000);
+};
+

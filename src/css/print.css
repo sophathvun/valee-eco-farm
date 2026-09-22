@@ -4,13 +4,27 @@
 }
 @media print {
     body { background-color: #fff; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .wrapper, .sidebar, .content, .view-section { display: none !important; }
+    
+    /* Default Print (e.g. Invoice) */
+    body:not(.printing-report) .wrapper, body:not(.printing-report) .sidebar, body:not(.printing-report) .content, body:not(.printing-report) .view-section { display: none !important; }
+    
+    /* Report Print Mode */
+    body.printing-report .sidebar, body.printing-report header, body.printing-report .top-navbar { display: none !important; }
+    body.printing-report .wrapper, body.printing-report .content { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+    body.printing-report .view-section:not(.active) { display: none !important; }
+    body.printing-report .view-section.active { display: block !important; }
+
     .print-container { display: none !important; }
     #print-area-invoice.print-template, #print-area-report.print-template, #print-area-analytics.print-template, #print-area-att-report.print-template { 
         display: block !important; 
         position: absolute; left: 0; top: 0; width: 100%; 
     }
+    
+    /* If printing report, the template is IN flow, not absolute, so we override absolute if it's inside the wrapper */
+    body.printing-report #print-area-att-report.print-template {
+        position: static !important;
+    }
+
     .print-template * { visibility: visible; }
     @page { margin: 10mm; }
 }
-
