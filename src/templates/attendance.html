@@ -1,0 +1,39 @@
+﻿<div class="row">
+    <div class="card shadow-sm border-0 border-top border-primary border-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="mb-0 text-primary fw-bold">📅 គ្រប់គ្រងវត្តមានបុគ្គលិក (Attendance Management)</h5>
+            <div class="d-flex align-items-center gap-2">
+                <input type="date" class="form-control" id="attendanceDate">
+                <button class="btn btn-primary" onclick="loadAttendance()"><i class="bi bi-search"></i></button>
+                <button class="btn btn-success ms-2" onclick="saveAllAttendance()">
+                    <i class="bi bi-save"></i> រក្សាទុកវត្តមាន
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle text-center mb-0">
+                    <thead class="table-darkgreen">
+                        <tr>
+                            <th rowspan="2" class="align-middle" style="width: 250px;">បុគ្គលិក (Employee)</th>
+                            <th colspan="3">វេនព្រឹក (Morning Shift)</th>
+                            <th colspan="3">វេនរសៀល (Afternoon Shift)</th>
+                            <th rowspan="2" class="align-middle">កំណត់សម្គាល់ (Note)</th>
+                        </tr>
+                        <tr>
+                            <th class="text-success"><small>វត្តមាន (P)</small></th>
+                            <th class="text-danger"><small>អវត្តមាន (A)</small></th>
+                            <th class="text-warning"><small>ច្បាប់ (L)</small></th>
+                            <th class="text-success"><small>វត្តមាន (P)</small></th>
+                            <th class="text-danger"><small>អវត្តមាន (A)</small></th>
+                            <th class="text-warning"><small>ច្បាប់ (L)</small></th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceList">
+                        <!-- Rows dynamically generated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

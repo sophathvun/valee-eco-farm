@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pigfarm-v17';
+﻿const CACHE_NAME = 'pigfarm-v18';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -51,3 +51,4 @@ self.addEventListener('activate', event => {
         }).then(() => self.clients.claim())
     );
 });
+

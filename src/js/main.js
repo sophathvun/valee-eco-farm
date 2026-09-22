@@ -1,4 +1,4 @@
-// main.js - Application Entry Point
+﻿// main.js - Application Entry Point
 
 // List of templates to load in order
 const viewsToLoad = [
@@ -9,6 +9,7 @@ const viewsToLoad = [
     'expense',
     'reports',
     'employee',
+    'attendance',
     'settings'
 ];
 
@@ -134,3 +135,4 @@ async function applyBranding() {
 }
 
 window.applyBranding = applyBranding;
+

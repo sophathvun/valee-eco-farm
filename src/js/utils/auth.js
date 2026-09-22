@@ -1,4 +1,4 @@
-// ======= AUTHENTICATION LOGIC =======
+﻿// ======= AUTHENTICATION LOGIC =======
 let currentUser = null;
 
 async function checkLogin() {
@@ -265,7 +265,8 @@ window.showTab = function(tabId, subId = null) {
         'expense': 'ចំណាយ',
         'reports': 'របាយការណ៍',
         'settings': 'ការកំណត់ទូទៅ',
-        'employee': 'គ្រប់គ្រងបុគ្គលិក'
+        'employee': 'បញ្ជីបុគ្គលិក',
+        'attendance': 'គ្រប់គ្រងវត្តមាន'
     };
     
     const subTitles = {
@@ -317,11 +318,11 @@ window.showTab = function(tabId, subId = null) {
     }
     
     if (tabId === 'employee') {
-        if (subId) {
-            if (typeof switchEmployeeTab === 'function') switchEmployeeTab(subId);
-        } else {
-            if (typeof switchEmployeeTab === 'function') switchEmployeeTab('list');
-        }
+        if (typeof loadEmployees === 'function') loadEmployees();
+    }
+    
+    if (tabId === 'attendance') {
+        if (typeof initAttendance === 'function') initAttendance();
     }
 }
 
@@ -355,3 +356,5 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
+
