@@ -318,7 +318,7 @@ window.initAttendance = function() {
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
-        dateInput.value = ${yyyy}-${mm}-${dd};
+        dateInput.value = `${yyyy}-${mm}-${dd}`;
     }
     loadAttendance();
 };
@@ -349,12 +349,12 @@ window.loadAttendance = async function() {
         // Helper to generate radio buttons
         const genRadio = (shift, val, colorClass) => {
             const checked = rec[shift] === val ? 'checked' : '';
-            return <input type="radio" class="btn-check att-${shift}-${emp.id}" name="att_${shift}_${emp.id}" id="att_${shift}_${val}_${emp.id}" value="${val}" ${checked} autocomplete="off">
-                    <label class="btn btn-outline-${colorClass} btn-sm p-1" style="width: 28px; height: 28px;" for="att_${shift}_${val}_${emp.id}">${val}</label>;
+            return `<input type="radio" class="btn-check att-${shift}-${emp.id}" name="att_${shift}_${emp.id}" id="att_${shift}_${val}_${emp.id}" value="${val}" ${checked} autocomplete="off">
+                    <label class="btn btn-outline-${colorClass} btn-sm p-1" style="width: 28px; height: 28px;" for="att_${shift}_${val}_${emp.id}">${val}</label>`;
         };
 
         const tr = document.createElement('tr');
-        tr.innerHTML = 
+        tr.innerHTML = `
             <td class="text-start align-middle">
                 <div class="d-flex align-items-center">
                     <img src="${emp.photo || 'assets/default-avatar.png'}" class="rounded-circle me-2 border" style="width: 40px; height: 40px; object-fit: cover;">
@@ -376,7 +376,7 @@ window.loadAttendance = async function() {
             <td>
                 <input type="text" class="form-control form-control-sm text-center att-note-${emp.id}" placeholder="..." value="${rec.note || ''}">
             </td>
-        ;
+        `;
         tbody.appendChild(tr);
     });
 };
@@ -400,9 +400,9 @@ window.saveAllAttendance = async function() {
         existingRecords.forEach(r => existingMap[r.empId] = r);
 
         for (let emp of employees) {
-            let mRadio = document.querySelector(input[name="att_morning_${emp.id}"]:checked);
-            let aRadio = document.querySelector(input[name="att_afternoon_${emp.id}"]:checked);
-            let noteInput = document.querySelector(.att-note-${emp.id});
+            let mRadio = document.querySelector(`input[name="att_morning_${emp.id}"]:checked`);
+            let aRadio = document.querySelector(`input[name="att_afternoon_${emp.id}"]:checked`);
+            let noteInput = document.querySelector(`.att-note-${emp.id}`);
 
             let data = {
                 date: date,
