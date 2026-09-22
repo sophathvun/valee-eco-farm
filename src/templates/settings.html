@@ -46,6 +46,44 @@
                     </div>
                 </div>
 
+                <!-- Shifts Tab -->
+                <div id="settings-shifts-tab" class="settings-tab" style="display: none;">
+                    <div class="card shadow-sm border-0 mb-4" style="max-width: 600px;">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0 text-dark">ការកំណត់ម៉ោងចេញចូលធ្វើការ (Work Shifts)</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="shiftsForm">
+                                <h6 class="text-primary mb-3">វេនព្រឹក (Morning Shift)</h6>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">ម៉ោងចូល (Check-In)</label>
+                                        <input type="time" class="form-control" id="morningIn" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ម៉ោងចេញ (Check-Out)</label>
+                                        <input type="time" class="form-control" id="morningOut" required>
+                                    </div>
+                                </div>
+                                <h6 class="text-primary mb-3 mt-4">វេនរសៀល (Afternoon Shift)</h6>
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">ម៉ោងចូល (Check-In)</label>
+                                        <input type="time" class="form-control" id="afternoonIn" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">ម៉ោងចេញ (Check-Out)</label>
+                                        <input type="time" class="form-control" id="afternoonOut" required>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save"></i> រក្សាទុក</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Farm Info Tab -->
                 <div id="settings-farm_info-tab" class="settings-tab" style="display: none;">
                     <div class="row">

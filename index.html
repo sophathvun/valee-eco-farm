@@ -126,10 +126,21 @@
                     </ul>
                 </li>
                 <li class="nav-item sys-menu-item" data-perm="employee_manage">
-                    <a href="#" class="nav-link" id="nav-employee" onclick="showTab('employee')">
-                        <span class="nav-link-icon">👨‍💼</span>
-                        <span class="nav-link-title">គ្រប់គ្រងបុគ្គលិក</span>
+                    <a href="#" class="nav-link d-flex justify-content-between align-items-center" id="nav-employee" onclick="showTab('employee'); const sm = document.getElementById('employeeSubmenu'); const i = document.getElementById('employeeIcon'); if(sm.style.display==='none'){sm.style.display='block';i.textContent='▲';}else{sm.style.display='none';i.textContent='▼';}">
+                        <div>
+                            <span class="nav-link-icon">👨‍💼</span>
+                            <span class="nav-link-title">គ្រប់គ្រងបុគ្គលិក</span>
+                        </div>
+                        <span id="employeeIcon" class="submenu-indicator" style="font-size: 0.7rem; opacity: 0.8;">▼</span>
                     </a>
+                    <ul class="nav flex-column" id="employeeSubmenu" style="display: none; background-color: #1a2234;">
+                        <li class="nav-item sys-menu-item" data-perm="employee_manage">
+                            <a href="#" class="nav-link submenu-link" id="nav-employee-list" onclick="showTab('employee', 'list');">📋 បញ្ជីបុគ្គលិក</a>
+                        </li>
+                        <li class="nav-item sys-menu-item" data-perm="employee_manage">
+                            <a href="#" class="nav-link submenu-link" id="nav-employee-attendance" onclick="showTab('employee', 'attendance');">📅 គ្រប់គ្រងវត្តមាន</a>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item sys-menu-item" data-perm="settings">
                     <a href="#" class="nav-link d-flex justify-content-between align-items-center" id="nav-settings" onclick="showTab('settings'); const sm = document.getElementById('settingsSubmenu'); const i = document.getElementById('settingsIcon'); if(sm.style.display==='none'){sm.style.display='block';i.textContent='▲';}else{sm.style.display='none';i.textContent='▼';}">
@@ -141,7 +152,10 @@
                     </a>
                     <ul class="nav flex-column" id="settingsSubmenu" style="display: none; background-color: #1a2234;">
                         <li class="nav-item sys-menu-item" data-perm="settings_categories">
-                            <a href="#" class="nav-link submenu-link" id="nav-settings-categories" onclick="showTab('settings', 'categories');">🏷️ ប្រភេទចំណូល/ចំណាយ</a>
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-categories" onclick="showTab('settings', 'categories');">🗂️ ប្រភេទចំណូល/ចំណាយ</a>
+                        </li>
+                        <li class="nav-item sys-menu-item" data-perm="settings_shifts">
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-shifts" onclick="showTab('settings', 'shifts');">⏰ ម៉ោងធ្វើការ</a>
                         </li>
                         <li class="nav-item sys-menu-item" data-perm="settings_preparers">
                             <a href="#" class="nav-link submenu-link" id="nav-settings-preparers" onclick="showTab('settings', 'preparers');">📝 អ្នករៀបចំរបាយការណ៍</a>

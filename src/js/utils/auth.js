@@ -278,7 +278,10 @@ window.showTab = function(tabId, subId = null) {
         'users': 'បង្កើតអ្នកប្រើប្រាស់',
         'permissions': 'សិទ្ធិអ្នកប្រើប្រាស់',
         'roles': 'តួនាទី',
-        'emp_structure': 'រចនាសម្ព័ន្ធបុគ្គលិក'
+        'emp_structure': 'រចនាសម្ព័ន្ធបុគ្គលិក',
+        'shifts': 'ម៉ោងធ្វើការ',
+        'list': 'បញ្ជីបុគ្គលិក',
+        'attendance': 'គ្រប់គ្រងវត្តមាន'
     };
     
     const icons = {
@@ -311,6 +314,14 @@ window.showTab = function(tabId, subId = null) {
     if (tabId === 'settings') {
         if (subId) currentSettingsTab = subId;
         if (typeof switchSettingsTab === 'function') switchSettingsTab(currentSettingsTab);
+    }
+    
+    if (tabId === 'employee') {
+        if (subId) {
+            if (typeof switchEmployeeTab === 'function') switchEmployeeTab(subId);
+        } else {
+            if (typeof switchEmployeeTab === 'function') switchEmployeeTab('list');
+        }
     }
 }
 

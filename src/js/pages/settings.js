@@ -155,7 +155,49 @@ window.switchSettingsTab = function(tabId) {
         loadDepartments();
         loadPositions();
     }
+    if (tabId === 'shifts') {
+        loadShifts();
+    }
 }
+
+// ====== SHIFT MANAGEMENT ======
+async function loadShifts() {
+    const shiftSettings = await db.workShifts.first() || { morningIn: '07:00', morningOut: '11:00', afternoonIn: '13:00', afternoonOut: '17:00' };
+    document.getElementById('morningIn').value = shiftSettings.morningIn;
+    document.getElementById('morningOut').value = shiftSettings.morningOut;
+    document.getElementById('afternoonIn').value = shiftSettings.afternoonIn;
+    document.getElementById('afternoonOut').value = shiftSettings.afternoonOut;
+}
+
+document.getElementById('shiftsForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '...';
+    btn.disabled = true;
+    
+    const settings = {
+        morningIn: document.getElementById('morningIn').value,
+        morningOut: document.getElementById('morningOut').value,
+        afternoonIn: document.getElementById('afternoonIn').value,
+        afternoonOut: document.getElementById('afternoonOut').value
+    };
+    
+    try {
+        const existing = await db.workShifts.first();
+        if (existing) {
+            await db.workShifts.update(existing.id, settings);
+        } else {
+            await db.workShifts.add(settings);
+        }
+        Swal.fire({icon: 'success', text: 'រក្សាទុកការកំណត់ម៉ោងធ្វើការជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+    } catch (error) {
+        Swal.fire({icon: 'error', text: 'បរាជ័យក្នុងការរក្សាទុក!', confirmButtonText: 'យល់ព្រម'});
+    }
+    
+    btn.innerHTML = oldHtml;
+    btn.disabled = false;
+});
 
 // ====== USER MANAGEMENT ======
 let editingUserId = null;
