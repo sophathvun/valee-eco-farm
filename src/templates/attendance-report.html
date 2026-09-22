@@ -28,27 +28,18 @@
         <div class="card shadow-sm border-0 print-no-border">
             <div class="card-header bg-white border-bottom d-none d-print-block text-center py-4">
                 <h4 class="mb-1 text-primary fw-bold" id="brand-name-report-att">VALEE ECO FARM</h4>
-                <h5 class="mb-2">របាយការណ៍វត្តមានបុគ្គលិក (Attendance Report)</h5>
+                <h5 class="mb-2">របាយការណ៍វត្តមានបុគ្គលិកលម្អិត (Detailed Attendance Report)</h5>
                 <p class="mb-0 text-muted" id="repAttDateText"></p>
             </div>
             <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered align-middle text-center mb-0 print-table">
-                        <thead class="table-light">
+                <div class="table-responsive" id="rep-attendance-table-container">
+                    <table class="table table-hover table-bordered align-middle text-center mb-0 att-table print-table">
+                        <thead class="table-darkgreen" id="repAttHead">
                             <tr>
-                                <th style="width: 50px;">ល.រ</th>
-                                <th class="text-start">ឈ្មោះបុគ្គលិក (Employee Name)</th>
-                                <th>អត្តលេខ (Code)</th>
-                                <th>តួនាទី (Position)</th>
-                                <th class="text-success">វត្តមាន (P)</th>
-                                <th class="text-danger">អវត្តមាន (A)</th>
-                                <th class="text-warning">ច្បាប់ (L)</th>
+                                <th class="py-4 text-muted">សូមជ្រើសរើសកាលបរិច្ឆេទ រួចចុចប៊ូតុងស្វែងរក</th>
                             </tr>
                         </thead>
                         <tbody id="repAttList">
-                            <tr>
-                                <td colspan="7" class="text-muted py-4">សូមជ្រើសរើសកាលបរិច្ឆេទ រួចចុចប៊ូតុងស្វែងរក</td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -56,5 +47,3 @@
         </div>
     </div>
 </div>
-
-
