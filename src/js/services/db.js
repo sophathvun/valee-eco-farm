@@ -21,12 +21,29 @@ class FirebaseQuery {
     }
 }
 
+function validateAndSanitize(obj) {
+    if (typeof obj !== 'object' || obj === null) return obj;
+    for (let key in obj) {
+        if (typeof obj[key] === 'string') {
+            obj[key] = obj[key].trim(); // Automatically trim whitespace
+            // Block known Mojibake or system corrupted text patterns to protect DB
+            if (obj[key].includes('') || obj[key].includes('A_') || obj[key].includes('áž')) {
+                throw new Error(`ទិន្នន័យមានផ្ទុកតួអក្សរមិនត្រឹមត្រូវឬខូច (Mojibake detected in: ${key}). សូមកែតម្រូវមុនពេល Save!`);
+            }
+        } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+            validateAndSanitize(obj[key]);
+        }
+    }
+    return obj;
+}
+
 class FirebaseStore {
     constructor(collectionName) {
         this.col = firestore.collection(collectionName);
     }
     async count() { const snap = await this.col.get(); return snap.size; }
     async add(obj) { 
+        validateAndSanitize(obj);
         if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
         await this.col.doc(obj.id.toString()).set(obj); 
         return obj.id; 
@@ -34,6 +51,7 @@ class FirebaseStore {
     async bulkAdd(arr) { 
         const batch = firestore.batch();
         arr.forEach(obj => {
+            validateAndSanitize(obj);
             if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
             batch.set(this.col.doc(obj.id.toString()), obj);
         });
@@ -46,6 +64,7 @@ class FirebaseStore {
     }
     async update(id, obj) { 
         if(!id) return;
+        validateAndSanitize(obj);
         await this.col.doc(id.toString()).update(obj); 
     }
     async delete(id) { 
