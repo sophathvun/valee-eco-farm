@@ -1,4 +1,4 @@
-﻿// ====== ATTENDANCE REPORT ======
+// ====== ATTENDANCE REPORT ======
 
 window.initAttendanceReport = function() {
     const fromInput = document.getElementById('repAttFrom');
@@ -18,13 +18,24 @@ window.initAttendanceReport = function() {
         generateAttendanceReport();
     }
     
-    if (typeof db !== 'undefined' && db.settings) {
-        db.settings.get('branding').then(res => {
-            if (res && res.appName) {
-                const el = document.getElementById('brand-name-report-att');
-                if (el) el.innerText = res.appName;
-            }
-        });
+    if (typeof db !== 'undefined') {
+        if (db.settings) {
+            db.settings.get('branding').then(res => {
+                if (res && res.appName) {
+                    const el = document.getElementById('brand-name-report-att');
+                    if (el) el.innerText = res.appName;
+                }
+            });
+        }
+        if (db.brandSettings) {
+            db.brandSettings.get(1).then(brand => {
+                const logoEl = document.getElementById('brand-logo-report-att');
+                if (brand && brand.reportLogo && logoEl) {
+                    logoEl.src = brand.reportLogo;
+                    logoEl.style.display = 'block';
+                }
+            });
+        }
     }
 };
 
@@ -203,3 +214,4 @@ window.printAttReport = function() {
     window.print();
     setTimeout(() => document.body.classList.remove('printing-report'), 1000);
 };
+

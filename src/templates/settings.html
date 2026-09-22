@@ -1,4 +1,4 @@
-                <!-- Categories Tab -->
+﻿                <!-- Categories Tab -->
                 <div id="settings-categories-tab" class="settings-tab" style="display: none;">
                     <div class="row">
                         <div class="col-md-4 mb-4">
@@ -428,6 +428,17 @@
                                 <div class="card-body">
                                     <form id="brandingForm">
                                         <div class="row g-2">
+                                                                                        <div class="col-md-2 mb-3 text-center">
+                                                <div class="border rounded p-3 d-flex flex-column align-items-center justify-content-between h-100 branding-dropzone" data-target="inputReportLogo" style="border: 2px dashed #ccc !important; background: #f8f9fa; cursor: pointer;">
+                                                    <label class="form-label fw-bold d-block mb-2" style="font-size: 13px;">Report Logo</label>
+                                                    <img id="previewReportLogo" src="assets/images/logo.png" class="mb-2" style="width: 80px; height: 80px; object-fit: contain;">
+                                                    <div class="mt-auto" style="z-index: 2;">
+                                                        <input type="file" id="inputReportLogo" accept="image/*" style="display: none;">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation(); document.getElementById('inputReportLogo').click()">ប្តូរ</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteBrandingLogo('ReportLogo')">លុប</button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="col-md-2 mb-3 text-center">
                                                 <div class="border rounded p-3 d-flex flex-column align-items-center justify-content-between h-100 branding-dropzone" data-target="inputLoginLogo" style="border: 2px dashed #ccc !important; background: #f8f9fa; cursor: pointer;">
                                                     <label class="form-label fw-bold d-block mb-2" style="font-size: 13px;">Login Logo</label>
@@ -493,3 +504,4 @@
                         </div>
                     </div>
                 </div>
+

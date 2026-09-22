@@ -1,4 +1,4 @@
-// ====== CATEGORY MANAGEMENT ======
+﻿// ====== CATEGORY MANAGEMENT ======
 async function loadCategories() {
     let allCats = await db.categories.toArray();
     let hasGarbled = allCats.some(c => c.name && c.name.includes('Ã¡Å¾'));
@@ -749,6 +749,7 @@ async function loadBranding() {
         if (!db.brandSettings) db.brandSettings = new FirebaseStore('brandSettings');
         const brand = await db.brandSettings.get(1);
         if (brand) {
+            if (brand.reportLogo) document.getElementById('previewReportLogo').src = brand.reportLogo;
             if (brand.loginLogo) document.getElementById('previewLoginLogo').src = brand.loginLogo;
             if (brand.sidebarLogo) document.getElementById('previewSidebarLogo').src = brand.sidebarLogo;
             if (brand.sidebarLogoDark) document.getElementById('previewSidebarLogoDark').src = brand.sidebarLogoDark;
@@ -762,7 +763,7 @@ async function loadBranding() {
 
 // Handle file input changes for previews using event delegation
 document.addEventListener('change', function(e) {
-    const ids = ['inputLoginLogo', 'inputSidebarLogo', 'inputSidebarLogoDark', 'inputFavicon', 'inputMobileIcon'];
+    const ids = ['inputReportLogo', 'inputLoginLogo', 'inputSidebarLogo', 'inputSidebarLogoDark', 'inputFavicon', 'inputMobileIcon'];
     if (ids.includes(e.target.id)) {
         const file = e.target.files[0];
         if (file) {
@@ -818,6 +819,11 @@ window.saveBranding = async function() {
         if (!db.brandSettings) db.brandSettings = new FirebaseStore('brandSettings');
         const brandData = { id: 1 };
         
+        const reportEl = document.getElementById('previewReportLogo');
+        if (reportEl) {
+            brandData.reportLogo = reportEl.src.includes('assets/images/logo.png') ? '' : await compressImage(reportEl.src, 400, 400);
+        }
+
         const loginEl = document.getElementById('previewLoginLogo');
         if (loginEl) {
             brandData.loginLogo = loginEl.src.includes('assets/images/logo.png') ? '' : await compressImage(loginEl.src, 400, 400);
@@ -941,4 +947,5 @@ window.saveBranding = async function() {
         }
     } catch(e){}
 }
+
 
