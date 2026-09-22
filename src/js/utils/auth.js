@@ -224,7 +224,8 @@ window.showTab = function(tabId, subId = null) {
     
     // Close other submenus
     document.querySelectorAll('.sidebar .nav.flex-column[id$="Submenu"]').forEach(sm => {
-        if (sm.id !== tabId + 'Submenu') {
+        const activeLink = document.getElementById('nav-' + tabId);
+        if (sm.id !== tabId + 'Submenu' && (!activeLink || !sm.contains(activeLink))) {
             sm.style.display = 'none';
             const iconId = sm.id.replace('Submenu', 'Icon');
             const icon = document.getElementById(iconId);
@@ -358,6 +359,8 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
+
 
 
 
