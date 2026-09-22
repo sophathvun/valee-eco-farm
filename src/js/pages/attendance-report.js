@@ -1,4 +1,16 @@
-// ====== ATTENDANCE REPORT ======
+﻿// ====== ATTENDANCE REPORT ======
+
+function formatKhmerDate(dateStr) {
+    const [y, m, d] = dateStr.split('-');
+    const khmerMonths = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+    const khmerNumbers = ["០", "១", "២", "៣", "៤", "៥", "៦", "៧", "៨", "៩"];
+    
+    let kD = d.split('').map(char => khmerNumbers[parseInt(char)]).join('');
+    let kY = y.split('').map(char => khmerNumbers[parseInt(char)]).join('');
+    let kM = khmerMonths[parseInt(m) - 1];
+    
+    return ${kD}  ;
+}
 
 window.initAttendanceReport = function() {
     const fromInput = document.getElementById('repAttFrom');
@@ -214,4 +226,5 @@ window.printAttReport = function() {
     window.print();
     setTimeout(() => document.body.classList.remove('printing-report'), 1000);
 };
+
 
