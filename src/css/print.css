@@ -1,4 +1,4 @@
-﻿/* print.css */
+/* print.css */
 @media screen {
     .print-container { display: none !important; }
 }
@@ -48,6 +48,16 @@
     body.printing-report #print-area-att-report.print-template {
         position: static !important;
     }
+    
+    /* Hide other print areas (invoice, etc.) when printing attendance report */
+    body.printing-report #print-area-invoice,
+    body.printing-report #print-area-report,
+    body.printing-report #print-area-analytics {
+        display: none !important;
+    }
+    
+    /* Hide filter bar when printing */
+    body.printing-report .d-print-none { display: none !important; }
 
     .print-template * { visibility: visible; }
     @page { margin: 10mm; size: landscape; }
