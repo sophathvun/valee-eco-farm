@@ -26,5 +26,7 @@
     }
 
     .print-template * { visibility: visible; }
-    @page { margin: 10mm; }
+    @page { margin: 10mm; size: landscape; }
+    .page-break-after { page-break-after: always; break-after: page; }
 }
+

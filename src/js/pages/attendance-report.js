@@ -14,12 +14,10 @@ window.initAttendanceReport = function() {
         toInput.value = `${yyyy}-${mm}-${String(lastDay).padStart(2, '0')}`;
     }
     
-    // Auto generate on load
     if (typeof generateAttendanceReport === 'function') {
         generateAttendanceReport();
     }
     
-    // Setup branding text for print
     if (typeof db !== 'undefined' && db.settings) {
         db.settings.get('branding').then(res => {
             if (res && res.appName) {
@@ -33,8 +31,7 @@ window.initAttendanceReport = function() {
 window.generateAttendanceReport = async function() {
     const from = document.getElementById('repAttFrom').value;
     const to = document.getElementById('repAttTo').value;
-    const thead = document.getElementById('repAttHead');
-    const tbody = document.getElementById('repAttList');
+    const wrapper = document.getElementById('report-tables-wrapper');
     const dateText = document.getElementById('repAttDateText');
     
     if (!from || !to) {
@@ -55,8 +52,8 @@ window.generateAttendanceReport = async function() {
     const diffTime = Math.abs(endD - startD);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     
-    if (diffDays > 62) {
-        Swal.fire('បម្រាម', 'សូមជ្រើសរើសចន្លោះពេលមិនលើសពី ២ខែ ដើម្បីកុំអោយតារាងធំពេក!', 'warning');
+    if (diffDays > 93) {
+        Swal.fire('បម្រាម', 'សូមជ្រើសរើសចន្លោះពេលមិនលើសពី ៣ខែ!', 'warning');
         return;
     }
     
@@ -65,19 +62,17 @@ window.generateAttendanceReport = async function() {
     }
     
     try {
-        tbody.innerHTML = `<tr><td class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
+        wrapper.innerHTML = `<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>`;
         
         let employees = await db.employees.toArray();
         if (employees.length === 0) {
-            thead.innerHTML = `<tr><th class="py-4 text-muted">មិនមានទិន្នន័យបុគ្គលិកទេ</th></tr>`;
-            tbody.innerHTML = '';
+            wrapper.innerHTML = `<div class="text-center py-4 text-muted">មិនមានទិន្នន័យបុគ្គលិកទេ</div>`;
             return;
         }
         
         let allAtt = await db.attendance.toArray();
         let records = allAtt.filter(r => r.date >= from && r.date <= to);
         
-        // agg[empId][dateStr] = { morning: 'P', afternoon: 'A' }
         let agg = {};
         employees.forEach(emp => { agg[emp.id] = {}; });
         records.forEach(r => {
@@ -86,92 +81,125 @@ window.generateAttendanceReport = async function() {
             }
         });
         
-        // Build Header
-        let tr1 = `<tr><th rowspan="2" class="align-middle col-emp">បុគ្គលិក (Employee)</th>`;
-        let tr2 = `<tr>`;
-        
         let daysArray = [];
         let curD = new Date(startD);
         while (curD <= endD) {
             let yy = curD.getFullYear();
             let mm = String(curD.getMonth() + 1).padStart(2, '0');
             let dd = String(curD.getDate()).padStart(2, '0');
-            let dateStr = `${yy}-${mm}-${dd}`;
-            daysArray.push(dateStr);
-            
-            tr1 += `<th colspan="2" class="border-start border-end">${dd}/${mm}</th>`;
-            tr2 += `<th class="border-start"><small>ព្រឹក</small></th><th class="border-end"><small>ល្ងាច</small></th>`;
-            
+            daysArray.push(`${yy}-${mm}-${dd}`);
             curD.setDate(curD.getDate() + 1);
         }
-        
-        tr1 += `<th colspan="3" class="col-total col-total-header">សរុប (Total)</th></tr>`;
-        tr2 += `<th class="col-total col-total-p text-success"><small>P</small></th>
-                <th class="col-total col-total-a text-danger"><small>A</small></th>
-                <th class="col-total col-total-l text-warning"><small>L</small></th></tr>`;
-                
-        thead.innerHTML = tr1 + tr2;
-        tbody.innerHTML = '';
+
+        // Chunk days into groups of 15
+        const chunkedDays = [];
+        for (let i = 0; i < daysArray.length; i += 15) {
+            chunkedDays.push(daysArray.slice(i, i + 15));
+        }
 
         const todayObj = new Date();
         const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
 
-        employees.forEach(emp => {
-            const tr = document.createElement('tr');
+        let finalHtml = '';
+
+        chunkedDays.forEach((chunk, chunkIdx) => {
+            // Build Header for this chunk
+            let tr1 = `<tr><th rowspan="2" class="align-middle col-emp">បុគ្គលិក (Employee)</th>`;
+            let tr2 = `<tr>`;
             
-            let html = `
-                <td class="text-start align-middle col-emp">
-                    <div class="d-flex align-items-center">
-                        <img src="${emp.photo || 'assets/default-avatar.png'}" class="rounded-circle me-2 border" style="width: 30px; height: 30px; object-fit: cover;">
-                        <div style="line-height: 1.2;">
-                            <div class="fw-bold text-dark" style="font-size: 0.85rem;">${emp.name}</div>
-                            <div class="text-muted" style="font-size: 0.7rem;">${emp.code || ''}</div>
+            chunk.forEach(dateStr => {
+                const parts = dateStr.split('-');
+                tr1 += `<th colspan="2" class="border-start border-end">${parts[2]}/${parts[1]}</th>`;
+                tr2 += `<th class="border-start"><small>ព្រឹក</small></th><th class="border-end"><small>ល្ងាច</small></th>`;
+            });
+            
+            tr1 += `<th colspan="3" class="col-total col-total-header">សរុប (Total)</th></tr>`;
+            tr2 += `<th class="col-total col-total-p text-success"><small>P</small></th>
+                    <th class="col-total col-total-a text-danger"><small>A</small></th>
+                    <th class="col-total col-total-l text-warning"><small>L</small></th></tr>`;
+            
+            let tbodyHtml = '';
+
+            employees.forEach(emp => {
+                let html = `
+                    <tr>
+                    <td class="text-start align-middle col-emp">
+                        <div class="d-flex align-items-center">
+                            <img src="${emp.photo || 'assets/default-avatar.png'}" class="rounded-circle me-2 border" style="width: 30px; height: 30px; object-fit: cover;">
+                            <div style="line-height: 1.2;">
+                                <div class="fw-bold text-dark" style="font-size: 0.85rem;">${emp.name}</div>
+                                <div class="text-muted" style="font-size: 0.7rem;">${emp.code || ''}</div>
+                            </div>
                         </div>
-                    </div>
-                </td>`;
+                    </td>`;
+                    
+                // For Totals, we sum up across ALL days in the entire range, not just this chunk!
+                // So the user sees the grand total for the period on every chunk table.
+                let totalP = 0, totalA = 0, totalL = 0;
+                for (let d of daysArray) {
+                    const rec = agg[emp.id][d];
+                    const isF = d > todayStr;
+                    let m = rec ? rec.morning : (isF ? '' : 'P');
+                    let a = rec ? rec.afternoon : (isF ? '' : 'P');
+                    
+                    if (m === 'P') totalP += 0.5;
+                    if (m === 'A') totalA += 0.5;
+                    if (m === 'L') totalL += 0.5;
+                    if (a === 'P') totalP += 0.5;
+                    if (a === 'A') totalA += 0.5;
+                    if (a === 'L') totalL += 0.5;
+                }
+
+                chunk.forEach(dateStr => {
+                    const isFuture = dateStr > todayStr;
+                    const rec = agg[emp.id][dateStr];
+                    
+                    let mVal = rec ? rec.morning : (isFuture ? '' : 'P');
+                    let aVal = rec ? rec.afternoon : (isFuture ? '' : 'P');
+                    
+                    let mClass = mVal ? mVal : 'none';
+                    let aClass = aVal ? aVal : 'none';
+
+                    html += `<td class="border-start p-1"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
+                             <td class="border-end p-1"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
+                });
+
+                html += `<td class="col-total col-total-p text-success fw-bold p-1">${totalP}</td>
+                         <td class="col-total col-total-a text-danger fw-bold p-1">${totalA}</td>
+                         <td class="col-total col-total-l text-warning fw-bold p-1">${totalL}</td>
+                    </tr>`;
                 
-            let totalP = 0, totalA = 0, totalL = 0;
+                tbodyHtml += html;
+            });
 
-            for (let dateStr of daysArray) {
-                const isFuture = dateStr > todayStr;
-                const rec = agg[emp.id][dateStr];
-                
-                let mVal = rec ? rec.morning : (isFuture ? '' : 'P');
-                let aVal = rec ? rec.afternoon : (isFuture ? '' : 'P');
-                
-                if (mVal === 'P') totalP += 0.5;
-                if (mVal === 'A') totalA += 0.5;
-                if (mVal === 'L') totalL += 0.5;
-                
-                if (aVal === 'P') totalP += 0.5;
-                if (aVal === 'A') totalA += 0.5;
-                if (aVal === 'L') totalL += 0.5;
-
-                let mClass = mVal ? mVal : 'none';
-                let aClass = aVal ? aVal : 'none';
-
-                html += `<td class="border-start p-1"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
-                         <td class="border-end p-1"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
-            }
-
-            html += `<td class="col-total col-total-p text-success fw-bold p-1">${totalP}</td>
-                     <td class="col-total col-total-a text-danger fw-bold p-1">${totalA}</td>
-                     <td class="col-total col-total-l text-warning fw-bold p-1">${totalL}</td>`;
-
-            tr.innerHTML = html;
-            tbody.appendChild(tr);
+            // Page break for printing (except last table)
+            const pbClass = (chunkIdx < chunkedDays.length - 1) ? 'page-break-after' : '';
+            
+            finalHtml += `
+                <div class="${pbClass} mb-4">
+                    <table class="table table-hover table-bordered align-middle text-center mb-0 att-table print-table">
+                        <thead class="table-darkgreen">
+                            ${tr1}
+                            ${tr2}
+                        </thead>
+                        <tbody>
+                            ${tbodyHtml}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         });
+        
+        wrapper.innerHTML = finalHtml;
         
     } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="3" class="text-danger py-4">មានបញ្ហាក្នុងការទាញយកទិន្នន័យ</td></tr>`;
+        wrapper.innerHTML = `<div class="text-danger py-4 text-center">មានបញ្ហាក្នុងការទាញយកទិន្នន័យ</div>`;
     }
 };
-
 
 window.printAttReport = function() {
     document.body.classList.add('printing-report');
     window.print();
     setTimeout(() => document.body.classList.remove('printing-report'), 1000);
 };
-
