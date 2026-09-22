@@ -1,4 +1,4 @@
-﻿// ====== ATTENDANCE REPORT ======
+// ====== ATTENDANCE REPORT ======
 
 function formatKhmerDate(dateStr) {
     const [y, m, d] = dateStr.split('-');
@@ -9,7 +9,7 @@ function formatKhmerDate(dateStr) {
     let kY = y.split('').map(char => khmerNumbers[parseInt(char)]).join('');
     let kM = khmerMonths[parseInt(m) - 1];
     
-    return ${kD}  ;
+    return `${kD} ${kM} ${kY}`;
 }
 
 window.initAttendanceReport = function() {
@@ -81,7 +81,7 @@ window.generateAttendanceReport = async function() {
     }
     
     if (dateText) {
-        dateText.innerText = `គិតចាប់ពីថ្ងៃទី ${fD}/${fM}/${fY} ដល់ថ្ងៃទី ${tD}/${tM}/${tY}`;
+        dateText.innerText = `គិតចាប់ពីថ្ងៃទី ${formatKhmerDate(from)} ដល់ថ្ងៃទី ${formatKhmerDate(to)}`;
     }
     
     try {
@@ -226,5 +226,7 @@ window.printAttReport = function() {
     window.print();
     setTimeout(() => document.body.classList.remove('printing-report'), 1000);
 };
+
+
 
 

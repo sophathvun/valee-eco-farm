@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pigfarm-v39';
+const CACHE_NAME = 'pigfarm-v40';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
