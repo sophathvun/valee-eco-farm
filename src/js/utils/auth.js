@@ -48,6 +48,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 const role = await db.roles.get(user.roleId);
                 if (role) user.permissions = role.permissions || [];
             }
+            
+            // Set online status
+            user.isOnline = true;
+            try { await db.users.update(user.id, { isOnline: true }); } catch (e) {}
+
             localStorage.setItem('currentUser', JSON.stringify(user));
             currentUser = user;
             document.getElementById('loginForm').reset();
@@ -72,7 +77,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     }
 });
 
-function logoutUser() {
+async function logoutUser() {
+    if (currentUser) {
+        try { await db.users.update(currentUser.id, { isOnline: false }); } catch (e) {}
+    }
     localStorage.removeItem('currentUser');
     currentUser = null;
     document.getElementById('login-view').style.display = 'flex';
@@ -327,3 +335,12 @@ function formatKhmerDate(dateStr) {
     return `${day} ${khmerMonths[monthIndex]} ${year}`;
 }
 
+
+// Handle browser close or refresh to set offline status
+window.addEventListener('beforeunload', () => {
+    if (currentUser && currentUser.id) {
+        // Use keepalive fetch or simple firestore call. Since we are using Firebase Web SDK, a direct call might not complete.
+        // It's best effort.
+        try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
+    }
+});
