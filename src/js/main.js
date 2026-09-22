@@ -72,10 +72,16 @@ async function applyBranding() {
             if (brand.loginLogo) {
                 const ll = document.getElementById('loginLogoImg');
                 if(ll) ll.src = brand.loginLogo;
+                localStorage.setItem('cachedLoginLogo', brand.loginLogo);
+            } else {
+                localStorage.removeItem('cachedLoginLogo');
             }
             if (brand.sidebarLogo) {
                 const sl = document.getElementById('sidebarLogoImg');
                 if(sl) sl.src = brand.sidebarLogo;
+                localStorage.setItem('cachedSidebarLogo', brand.sidebarLogo);
+            } else {
+                localStorage.removeItem('cachedSidebarLogo');
             }
             if (brand.favicon) {
                 let link = document.querySelector("link[rel~='icon']");
