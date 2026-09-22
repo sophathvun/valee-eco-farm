@@ -1,11 +1,13 @@
                 <div class="row">
-                    <div class="col-md-12 mb-4">
-                        <div class="card shadow-sm border-info">
-                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 text-info fw-bold"><span class="text-info">👨‍💼</span> បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី</h5>
-                                <button class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('employeeForm').reset(); editingEmployeeId=null; document.getElementById('emp-photo-preview').removeAttribute('src'); if(typeof updatePhotoPlaceholder==='function') updatePhotoPlaceholder(); document.querySelector('#employeeForm button[type=submit]').innerHTML='\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780'; if(typeof generateEmpCode==='function') generateEmpCode();">សម្អាត (Clear)</button>
+                <!-- Modal for Employee Form -->
+                <div class="modal fade" id="employeeModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-info text-white">
+                                <h5 class="modal-title fw-bold">បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="card-body">
+                            <div class="modal-body">
                                 <form id="employeeForm">
                                     <div class="row">
                                         <div class="col-md-4 text-center mb-3">
@@ -85,8 +87,9 @@
                 </div>
 
                 <div class="card shadow-sm border-primary">
-                    <div class="card-header bg-white">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 text-primary fw-bold">បញ្ជីបុគ្គលិក (Employee List)</h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#employeeModal" onclick="document.getElementById('employeeForm').reset(); editingEmployeeId=null; document.getElementById('emp-photo-preview').removeAttribute('src'); if(typeof updatePhotoPlaceholder==='function') updatePhotoPlaceholder(); document.querySelector('#employeeForm button[type=submit]').innerHTML='\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780'; if(typeof generateEmpCode==='function') generateEmpCode();"><i class="bi bi-plus-lg"></i> បន្ថែមបុគ្គលិកថ្មី</button>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">

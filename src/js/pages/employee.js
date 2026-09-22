@@ -1,4 +1,4 @@
-// ====== EMPLOYEE MANAGEMENT ======
+﻿// ====== EMPLOYEE MANAGEMENT ======
 let editingEmployeeId = null;
 
 window.generateEmpCode = async function() {
@@ -89,7 +89,7 @@ window.deleteEmployee = async function(id) {
     });
     if (res.isConfirmed) {
         await db.employees.delete(id);
-        Swal.fire({icon: 'success', text: 'លុបបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+        Swal.fire({icon: 'success', text: 'áž›áž»áž”áž”áž»áž‚áŸ’áž‚áž›áž·áž€áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
         loadEmployees();
     }
 };
@@ -117,17 +117,17 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         const allEmps = await db.employees.toArray();
         const isDuplicate = allEmps.some(e => e.code === code && e.id !== editingEmployeeId);
         if (isDuplicate) {
-            Swal.fire({icon: 'error', text: 'អត្តលេខនេះមានរួចហើយ សូមបញ្ចូលអត្តលេខផ្សេង!', confirmButtonText: 'យល់ព្រម'});
+            Swal.fire({icon: 'error', text: 'áž¢ážáŸ’ážáž›áŸážáž“áŸáŸ‡áž˜áž¶áž“ážšáž½áž…áž áž¾áž™ ážŸáž¼áž˜áž”áž‰áŸ’áž…áž¼áž›áž¢ážáŸ’ážáž›áŸážáž•áŸ’ážŸáŸáž„!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜'});
             return;
         }
 
         const data = { code, name, gender, dob, phone, department, position, type, wageType, salary, photo };
         if (editingEmployeeId) {
             await db.employees.update(editingEmployeeId, data);
-            Swal.fire({icon: 'success', text: 'អាប់ដេតព័ត៌មានបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+            Swal.fire({icon: 'success', text: 'áž¢áž¶áž”áŸ‹ážŠáŸážáž–áŸážáŸŒáž˜áž¶áž“áž”áž»áž‚áŸ’áž‚áž›áž·áž€áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
         } else {
             await db.employees.add(data);
-            Swal.fire({icon: 'success', text: 'បន្ថែមបុគ្គលិកថ្មីជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+            Swal.fire({icon: 'success', text: 'áž”áž“áŸ’ážáŸ‚áž˜áž”áž»áž‚áŸ’áž‚áž›áž·áž€ážáŸ’áž˜áž¸áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
         }
         
         document.getElementById('employeeForm').reset();
@@ -135,9 +135,14 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         document.getElementById('emp-wage-type').value = 'Monthly';
         editingEmployeeId = null;
         document.getElementById('emp-photo-preview').removeAttribute('src');
-        btn.innerHTML = 'រក្សាទុក';
+        btn.innerHTML = 'ážšáž€áŸ’ážŸáž¶áž‘áž»áž€';
         if(typeof generateEmpCode === 'function') generateEmpCode();
         loadEmployees();
+        const modalEl = document.getElementById('employeeModal');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+        }
         Swal.fire('\u1787\u17c4\u1782\u1787\u17d0\u1799', '\u1787\u17c4\u1782\u1787\u17d0\u1799!', 'success');
     } catch(err) {
         console.error(err);
@@ -254,7 +259,7 @@ window.loadDepartmentsForEmp = async function() {
     const select = document.getElementById('emp-department');
     if (!select) return;
     const currentVal = select.value;
-    select.innerHTML = '<option value="">-- ជ្រើសរើសផ្នែក --</option>';
+    select.innerHTML = '<option value="">-- áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸáž•áŸ’áž“áŸ‚áž€ --</option>';
     all.forEach(d => {
         select.appendChild(new Option(d.name, d.name));
     });
@@ -266,7 +271,7 @@ window.loadPositionsForEmp = async function() {
     const select = document.getElementById('emp-position');
     if (!select) return;
     const currentVal = select.value;
-    select.innerHTML = '<option value="">-- ជ្រើសរើសតួនាទី --</option>';
+    select.innerHTML = '<option value="">-- áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸážáž½áž“áž¶áž‘áž¸ --</option>';
     all.forEach(p => {
         select.appendChild(new Option(p.name, p.name));
     });
@@ -289,3 +294,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000); // Wait for DOM injection
 });
+
