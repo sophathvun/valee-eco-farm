@@ -479,27 +479,41 @@ document.getElementById('systemSettingsForm').addEventListener('submit', (e) => 
         reader.readAsDataURL(fileInput.files[0]);
     } else {
         loadSystemSettings();
-        Swal.fire('áž‡áŸ„áž‚áž‡áŸáž™!', 'áž€áž¶ážšáž€áŸ†ážŽážáŸ‹áž”áŸ’ážšáž–áŸáž“áŸ’áž’ážáŸ’ážšáž¼ážœáž”áž¶áž“ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áŸ”', 'success');
+        Swal.fire('áž‡áŸ„áž‚áž‡áŸ áž™!', 'áž€áž¶ážšáž€â€‹áž†ážŽáž áŸ‹áž”áŸ’ážšáž–áŸ áž“áŸ’áž’áž áŸ’ážšáž¼ážœáž”áž¶áž“ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áŸ”', 'success');
     }
 });
 
 async function editCategory(id, oldName) {
-    const newName = prompt('ážŸáž¼áž˜áž”áž‰áŸ’áž…áž¼áž›ážˆáŸ’áž˜áŸ„áŸ‡áž”áŸ’ážšáž—áŸáž‘ážáŸ’áž˜áž¸áŸ–', oldName);
-    if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
-        const finalName = newName.trim();
-        await db.categories.update(id, { name: finalName });
-        const txsToUpdate = await db.transactions.where('category').equals(oldName).toArray();
-        for (let tx of txsToUpdate) await db.transactions.update(tx.id, { category: finalName });
-        Swal.fire({icon: 'info', text: 'áž€áŸ‚áž”áŸ’ážšáŸ‚áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
-        loadCategories(); loadData();
+    const res = await Swal.fire({
+        title: 'កែប្រែឈ្មោះប្រភេទ',
+        input: 'text',
+        inputValue: oldName,
+        showCancelButton: true,
+        confirmButtonText: 'រក្សាទុក',
+        cancelButtonText: 'បោះបង់',
+        inputValidator: (value) => {
+            if (!value || value.trim() === '') return 'សូមបញ្ចូលឈ្មោះប្រភេទថ្មី!';
+        }
+    });
+    if (res.isConfirmed) {
+        const newName = res.value;
+        if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
+            const finalName = newName.trim();
+            await db.categories.update(id, { name: finalName });
+            const txsToUpdate = await db.transactions.where('category').equals(oldName).toArray();
+            for (let tx of txsToUpdate) await db.transactions.update(tx.id, { category: finalName });
+            Swal.fire({icon: 'success', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+            loadCategories(); 
+            if(typeof loadData === 'function') loadData();
+        }
     }
 }
 
 async function deleteCategory(id) {
-    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”áž”áŸ’ážšáž—áŸáž‘áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបប្រភេទនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'});
     if (res.isConfirmed) {
         await db.categories.delete(id);
-        Swal.fire({icon: 'success', text: 'áž›áž»áž”áž”áŸ’ážšáž—áŸáž‘áž‘áž·áž“áŸ’áž“áž“áŸáž™áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+        Swal.fire({icon: 'success', text: 'លុបប្រភេទជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadCategories();
     }
 }
