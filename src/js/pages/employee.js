@@ -429,3 +429,4 @@ window.saveAllAttendance = async function() {
     btn.innerHTML = oldText;
     btn.disabled = false;
 };
+
