@@ -9,4 +9,4 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const firestore = firebase.firestore();
-firestore.enablePersistence({synchronizeTabs:true}).catch(console.error);
+

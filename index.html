@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="km">
 <head>
     <meta charset="UTF-8">
@@ -403,7 +403,11 @@
     <script type="module" src="src/js/main.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(reg => { console.log('Service Worker បានជោគជ័យ'); }).catch(err => { console.log('Service Worker បរាជ័យ', err); });
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
         }
     </script>
 </body>
