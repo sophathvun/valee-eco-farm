@@ -44,6 +44,7 @@ async function initializeApp() {
         'src/js/config/firebase-config.js',
         'src/js/services/db.js',
         'src/js/utils/utils.js',
+        'src/js/utils/print-util.js',
         'src/js/utils/auth.js',
         'src/js/pages/settings.js',
         'src/js/pages/invoice.js',
@@ -138,6 +139,7 @@ async function applyBranding() {
 }
 
 window.applyBranding = applyBranding;
+
 
 
 
