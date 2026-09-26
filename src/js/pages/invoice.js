@@ -1,4 +1,4 @@
-// ====== INVOICE LOGIC ======
+﻿// ====== INVOICE LOGIC ======
 let invoiceItemCount = 0;
 let editingInvoiceId = null;
 let editingTxId = null;
@@ -164,7 +164,7 @@ function printElement(elId, orientation = 'portrait') {
 
     document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
     document.getElementById(elId).classList.add('print-template');
-    window.print();
+    setTimeout(() => window.print(), 300);
 }
 
 async function populateAndPrintInvoice(inv) {
@@ -348,6 +348,7 @@ async function deleteInvoice(id) {
         loadData();
     }
 }
+
 
 
 

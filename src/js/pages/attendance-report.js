@@ -230,9 +230,11 @@ window.printAttReport = function() {
     }
     style.innerHTML = '@media print { @page { size: A4 landscape; margin: 10mm; } }';
     document.body.classList.add('printing-report');
-    window.print();
+    setTimeout(() => { window.print(); setTimeout(() => document.body.classList.remove('printing-report'), 1000); }, 300);
     setTimeout(() => document.body.classList.remove('printing-report'), 1000);
 };;
+
+
 
 
 
