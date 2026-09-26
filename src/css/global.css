@@ -249,3 +249,95 @@ body.dark-theme .custom-dropdown-content a:hover {
 .form-switch .form-check-input:checked:focus {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
 }
+
+
+/* ===== LOGIN REDESIGN ===== */
+.login-wrapper {
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background-color: #eef2f6;
+    padding: 20px;
+}
+.login-card {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    max-width: 900px;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+}
+.login-left {
+    flex: 1;
+    padding: 60px 50px;
+    background-color: #ffffff;
+}
+.login-right {
+    flex: 1;
+    background: linear-gradient(135deg, #f05a28, #f5a623);
+    padding: 50px;
+}
+.login-left #loginLogoImg {
+    width: 100%;
+    max-width: 180px;
+    max-height: 80px;
+    object-fit: contain;
+}
+.login-input-group .form-control, .login-input-group .input-group-text {
+    border-color: #e2e8f0;
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+    box-shadow: none !important;
+}
+.login-input-group .form-control {
+    border-radius: 10px;
+}
+.login-input-group .input-group-text:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.login-input-group .input-group-text:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.login-input-group .form-control:focus {
+    border-color: #f05a28;
+}
+.btn-login {
+    background-color: #f05a28;
+    color: #fff;
+    border-radius: 25px;
+    padding: 0.7rem;
+    border: none;
+    font-size: 1.1rem;
+}
+.btn-login:hover {
+    background-color: #e04a18;
+    color: #fff;
+}
+.btn-login-outline {
+    border: 1px solid #fff;
+    color: #fff;
+}
+.btn-login-outline:hover {
+    background-color: #fff;
+    color: #f05a28;
+}
+
+@media (max-width: 768px) {
+    .login-wrapper {
+        background-color: #fff;
+        align-items: flex-start;
+        padding: 20px;
+    }
+    .login-card {
+        box-shadow: none !important;
+        max-width: 100%;
+    }
+    .login-left {
+        padding: 20px 0;
+    }
+}
