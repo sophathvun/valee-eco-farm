@@ -1,4 +1,4 @@
-// ====== PRINT LIST REPORTS ======
+﻿// ====== PRINT LIST REPORTS ======
 async function printListReport(type) {
     let allTx = await db.transactions.toArray();
     allTx.sort((a, b) => {
@@ -48,7 +48,7 @@ async function printListReport(type) {
             <tr>
                 <td>${index + 1}</td>
                 <td>${formatKhmerDate(tx.date)}</td>
-                <td>${tx.category}</td>
+                <td>${tx.category} <span class="badge bg-secondary ms-1" style="font-size: 0.7rem;">${tx.paymentMethod === "Bank" ? "Bank" : "Cash"}</span></td>
                 <td>${tx.note}</td>
                 <td class="text-end fw-bold ${type === 'income' ? 'text-success' : 'text-danger'}">${formatCurrency(tx.amount, cur)}</td>
             </tr>
@@ -176,7 +176,7 @@ async function generateReport() {
 
     filtered.forEach(tx => {
         const cur = tx.currency || 'KHR';
-        let amountKHR = cur === 'USD' ? tx.amount * 4000 : tx.amount;
+        let amountKHR = cur === 'USD' ? tx.amount * (window.sysExchangeRate || 4100) : tx.amount;
 
         // Breakdown logic
         let key = '', label = '';
@@ -718,6 +718,7 @@ async function editTransaction(id, type) {
         document.getElementById('inc-category').value = tx.category;
         document.getElementById('inc-amount').value = tx.amount;
         document.getElementById('inc-currency').value = tx.currency || 'KHR';
+        document.getElementById('inc-method').value = tx.paymentMethod || 'Cash';
         document.getElementById('inc-note').value = tx.note;
         
         const btn = document.querySelector('#incomeForm button[type="submit"]');
@@ -730,6 +731,7 @@ async function editTransaction(id, type) {
         document.getElementById('exp-category').value = tx.category;
         document.getElementById('exp-amount').value = tx.amount;
         document.getElementById('exp-currency').value = tx.currency || 'KHR';
+        document.getElementById('exp-method').value = tx.paymentMethod || 'Cash';
         document.getElementById('exp-note').value = tx.note;
         
         const btn = document.querySelector('#expenseForm button[type="submit"]');
@@ -738,6 +740,9 @@ async function editTransaction(id, type) {
         showTab('expense');
     }
 }
+
+
+
 
 
 

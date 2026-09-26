@@ -15,8 +15,8 @@ async function loadData() {
     const expBody = document.getElementById('recentExpenseList');
     if (expBody) expBody.innerHTML = '';
     
-    let totalIncomeKHR = 0, totalExpenseKHR = 0;
-    let totalIncomeUSD = 0, totalExpenseUSD = 0;
+    let incCashUSD = 0, incCashKHR = 0, incBankUSD = 0, incBankKHR = 0;
+    let expCashUSD = 0, expCashKHR = 0, expBankUSD = 0, expBankKHR = 0;
     
     let listIncTotalKHR = 0, listIncTotalUSD = 0;
     let listExpTotalKHR = 0, listExpTotalUSD = 0;
@@ -53,7 +53,7 @@ async function loadData() {
             tr.innerHTML = `
                 <td>${formatEngDate(tx.date)}</td>
                 <td><span class="badge ${tx.type === 'income' ? 'bg-success' : 'bg-danger'}">${tx.type === 'income' ? 'ចំណូល' : 'ចំណាយ'}</span></td>
-                <td>${tx.category}</td>
+                <td>${tx.category} <span class="badge bg-secondary ms-1" style="font-size: 0.7rem;">${tx.paymentMethod === "Bank" ? "Bank" : "Cash"}</span></td>
                 <td class="${tx.type === 'income' ? 'text-success' : 'text-danger'}">${formatCurrency(tx.amount, cur)}</td>
                 <td>${tx.note}</td>
             `;
@@ -72,7 +72,7 @@ async function loadData() {
                 if (incCount < limit) {
                     incCount++;
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${formatEngDate(tx.date)}</td><td>${tx.category}</td><td class="text-success fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td class="text-end">${hasPermission('income') ? `<div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-warning btn-edit" onclick="editTransaction(${tx.id}, 'income')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></div>` : ''}</td>`;
+                    tr.innerHTML = `<td>${formatEngDate(tx.date)}</td><td>${tx.category} <span class="badge bg-secondary ms-1" style="font-size: 0.7rem;">${tx.paymentMethod === "Bank" ? "Bank" : "Cash"}</span></td><td class="text-success fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td class="text-end">${hasPermission('income') ? `<div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-warning btn-edit" onclick="editTransaction(${tx.id}, 'income')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></div>` : ''}</td>`;
                     incBody.appendChild(tr);
                 }
             }
@@ -90,30 +90,67 @@ async function loadData() {
                 if (expCount < limit) {
                     expCount++;
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${formatEngDate(tx.date)}</td><td>${tx.category}</td><td class="text-danger fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td class="text-end">${hasPermission('expense') ? `<div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-warning btn-edit" onclick="editTransaction(${tx.id}, 'expense')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></div>` : ''}</td>`;
+                    tr.innerHTML = `<td>${formatEngDate(tx.date)}</td><td>${tx.category} <span class="badge bg-secondary ms-1" style="font-size: 0.7rem;">${tx.paymentMethod === "Bank" ? "Bank" : "Cash"}</span></td><td class="text-danger fw-bold">${formatCurrency(tx.amount, cur)}</td><td>${tx.note}</td><td class="text-end">${hasPermission('expense') ? `<div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-warning btn-edit" onclick="editTransaction(${tx.id}, 'expense')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></div>` : ''}</td>`;
                     expBody.appendChild(tr);
                 }
             }
         }
 
-        if (tx.date && tx.date.startsWith(currentMonthPrefix)) {
-            if (tx.type === 'income') cur === 'USD' ? totalIncomeUSD += tx.amount : totalIncomeKHR += tx.amount;
-            else cur === 'USD' ? totalExpenseUSD += tx.amount : totalExpenseKHR += tx.amount;
+                if (tx.date && tx.date.startsWith(currentMonthPrefix)) {
+            const method = tx.paymentMethod || 'Cash';
+            if (tx.type === 'income') {
+                if (cur === 'USD' && method === 'Cash') incCashUSD += tx.amount;
+                if (cur === 'KHR' && method === 'Cash') incCashKHR += tx.amount;
+                if (cur === 'USD' && method === 'Bank') incBankUSD += tx.amount;
+                if (cur === 'KHR' && method === 'Bank') incBankKHR += tx.amount;
+            } else {
+                if (cur === 'USD' && method === 'Cash') expCashUSD += tx.amount;
+                if (cur === 'KHR' && method === 'Cash') expCashKHR += tx.amount;
+                if (cur === 'USD' && method === 'Bank') expBankUSD += tx.amount;
+                if (cur === 'KHR' && method === 'Bank') expBankKHR += tx.amount;
+            }
         }
 
         if (chartData[tx.date] !== undefined) {
-            let amountInChart = cur === 'USD' ? tx.amount * 4000 : tx.amount;
+            let amountInChart = cur === 'USD' ? tx.amount * (window.sysExchangeRate || 4100) : tx.amount;
             chartData[tx.date][tx.type] += amountInChart;
         }
     });
 
-    if(document.getElementById('totalIncomeKHR')) {
-        document.getElementById('totalIncomeKHR').textContent = formatCurrency(totalIncomeKHR, 'KHR');
-        document.getElementById('totalIncomeUSD').textContent = formatCurrency(totalIncomeUSD, 'USD');
-        document.getElementById('totalExpenseKHR').textContent = formatCurrency(totalExpenseKHR, 'KHR');
-        document.getElementById('totalExpenseUSD').textContent = formatCurrency(totalExpenseUSD, 'USD');
-        document.getElementById('totalBalanceKHR').textContent = formatCurrency(totalIncomeKHR - totalExpenseKHR, 'KHR');
-        document.getElementById('totalBalanceUSD').textContent = formatCurrency(totalIncomeUSD - totalExpenseUSD, 'USD');
+    if(document.getElementById('totalIncUnifiedUSD')) {
+        const rate = window.sysExchangeRate || 4100;
+        
+        // Income
+        const totalIncCashUnified = incCashUSD + (incCashKHR / rate);
+        const totalIncBankUnified = incBankUSD + (incBankKHR / rate);
+        const totalIncUSD = totalIncCashUnified + totalIncBankUnified;
+        
+        document.getElementById('totalIncCash').textContent = formatCurrency(incCashUSD, 'USD') + ' | ' + formatCurrency(incCashKHR, 'KHR');
+        document.getElementById('totalIncBank').textContent = formatCurrency(incBankUSD, 'USD') + ' | ' + formatCurrency(incBankKHR, 'KHR');
+        document.getElementById('totalIncUnifiedUSD').textContent = formatCurrency(totalIncUSD, 'USD');
+        document.getElementById('totalIncUnifiedKHR').textContent = formatCurrency(totalIncUSD * rate, 'KHR');
+        
+        // Expense
+        const totalExpCashUnified = expCashUSD + (expCashKHR / rate);
+        const totalExpBankUnified = expBankUSD + (expBankKHR / rate);
+        const totalExpUSD = totalExpCashUnified + totalExpBankUnified;
+        
+        document.getElementById('totalExpCash').textContent = formatCurrency(expCashUSD, 'USD') + ' | ' + formatCurrency(expCashKHR, 'KHR');
+        document.getElementById('totalExpBank').textContent = formatCurrency(expBankUSD, 'USD') + ' | ' + formatCurrency(expBankKHR, 'KHR');
+        document.getElementById('totalExpUnifiedUSD').textContent = formatCurrency(totalExpUSD, 'USD');
+        document.getElementById('totalExpUnifiedKHR').textContent = formatCurrency(totalExpUSD * rate, 'KHR');
+        
+        // Balance
+        const balCashUSD = incCashUSD - expCashUSD;
+        const balCashKHR = incCashKHR - expCashKHR;
+        const balBankUSD = incBankUSD - expBankUSD;
+        const balBankKHR = incBankKHR - expBankKHR;
+        const totalBalUSD = totalIncUSD - totalExpUSD;
+        
+        document.getElementById('totalBalCash').textContent = formatCurrency(balCashUSD, 'USD') + ' | ' + formatCurrency(balCashKHR, 'KHR');
+        document.getElementById('totalBalBank').textContent = formatCurrency(balBankUSD, 'USD') + ' | ' + formatCurrency(balBankKHR, 'KHR');
+        document.getElementById('totalBalUnifiedUSD').textContent = formatCurrency(totalBalUSD, 'USD');
+        document.getElementById('totalBalUnifiedKHR').textContent = formatCurrency(totalBalUSD * rate, 'KHR');
     }
     
     if(document.getElementById('list-inc-total-khr')) {
@@ -125,5 +162,9 @@ async function loadData() {
 
     updateChart(chartData);
 }
+
+
+
+
 
 

@@ -176,6 +176,7 @@ function loadSystemSettings() {
     const sysAddrKh = localStorage.getItem('sysAddrKh') || 'ភូមិព្រីង ឃុំយាយម៉ៅ\nស្រុកភ្នំស្រួច ខេត្តកំពង់ស្ពឺ';
     const sysAddrEn = localStorage.getItem('sysAddrEn') || 'Phoum Pring, Khum Yeay Moa\nSrok Phnom Srouch, Kampong Speu';
     const sysPreparer = localStorage.getItem('sysPreparer') || '';
+    window.sysExchangeRate = parseFloat(localStorage.getItem('sysExchangeRate')) || 4100;
 
     // Populate Settings Form
     const pInput = document.getElementById('setSysPhone');
@@ -186,6 +187,7 @@ function loadSystemSettings() {
     if (khInput) khInput.value = sysAddrKh;
     if (enInput) enInput.value = sysAddrEn;
     if (document.getElementById('setSysPreparer')) document.getElementById('setSysPreparer').value = sysPreparer;
+    if (document.getElementById('setExchangeRate')) document.getElementById('setExchangeRate').value = window.sysExchangeRate;
 
     // Apply texts
     document.querySelectorAll('.sys-phone').forEach(el => el.textContent = sysPhone);
@@ -381,6 +383,7 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
 
 
 

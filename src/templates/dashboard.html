@@ -1,64 +1,54 @@
-                <div class="row mb-4">
+﻿                                <div class="row mb-4">
                     <div class="col-md-4">
                         <div class="card card-income shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title text-success">ចំណូលខែនេះ</h5>
-                                <h3 id="totalIncomeKHR" class="mb-0">៛0</h3>
-                                <h5 id="totalIncomeUSD" class="text-success mt-1">$0</h5>
+                                <h5 class="card-title text-success mb-3">ចំណូលប្រចាំខែ</h5>
+                                <div class="d-flex justify-content-between mb-1" style="font-size: 0.9rem;">
+                                    <span class="text-muted">សាច់ប្រាក់ (Cash):</span>
+                                    <span class="fw-bold" id="totalIncCash"></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3 border-bottom pb-2" style="font-size: 0.9rem;">
+                                    <span class="text-muted">ធនាគារ (Bank):</span>
+                                    <span class="fw-bold" id="totalIncBank"></span>
+                                </div>
+                                <h3 id="totalIncUnifiedUSD" class="mb-0 text-success">.00</h3>
+                                <small class="text-muted" id="totalIncUnifiedKHR">៛0</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card card-expense shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title text-danger">ចំណាយខែនេះ</h5>
-                                <h3 id="totalExpenseKHR" class="mb-0">៛0</h3>
-                                <h5 id="totalExpenseUSD" class="text-danger mt-1">$0</h5>
+                                <h5 class="card-title text-danger mb-3">ចំណាយប្រចាំខែ</h5>
+                                <div class="d-flex justify-content-between mb-1" style="font-size: 0.9rem;">
+                                    <span class="text-muted">សាច់ប្រាក់ (Cash):</span>
+                                    <span class="fw-bold" id="totalExpCash"></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3 border-bottom pb-2" style="font-size: 0.9rem;">
+                                    <span class="text-muted">ធនាគារ (Bank):</span>
+                                    <span class="fw-bold" id="totalExpBank"></span>
+                                </div>
+                                <h3 id="totalExpUnifiedUSD" class="mb-0 text-danger">.00</h3>
+                                <small class="text-muted" id="totalExpUnifiedKHR">៛0</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card card-balance shadow-sm mb-3">
                             <div class="card-body">
-                                <h5 class="card-title text-primary">ប្រាក់ចំណេញខែនេះ</h5>
-                                <h3 id="totalBalanceKHR" class="mb-0">៛0</h3>
-                                <h5 id="totalBalanceUSD" class="text-primary mt-1">$0</h5>
+                                <h5 class="card-title text-primary mb-3">ប្រាក់ចំណេញប្រចាំខែ</h5>
+                                <div class="d-flex justify-content-between mb-1" style="font-size: 0.9rem;">
+                                    <span class="text-muted">សាច់ប្រាក់ (Cash):</span>
+                                    <span class="fw-bold" id="totalBalCash"></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3 border-bottom pb-2" style="font-size: 0.9rem;">
+                                    <span class="text-muted">ធនាគារ (Bank):</span>
+                                    <span class="fw-bold" id="totalBalBank"></span>
+                                </div>
+                                <h3 id="totalBalUnifiedUSD" class="mb-0 text-primary">.00</h3>
+                                <small class="text-muted" id="totalBalUnifiedKHR">៛0</small>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-12 mb-4">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-success text-white">ក្រាហ្វរបាយការណ៍ ៧ ថ្ងៃចុងក្រោយ</div>
-                            <div class="card-body">
-                                <canvas id="myChart" height="60"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                                <span>ប្រវត្តិប្រតិបត្តិការថ្មីៗ (៥០ ចុងក្រោយ)</span>
-                                <button class="btn btn-sm btn-light" onclick="exportData()">ទាញយកទិន្នន័យបម្រុងទុក</button>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-striped table-hover mb-0 text-center">
-                                        <thead class="table-darkgreen">
-                                            <tr>
-                                                <th>ថ្ងៃទី</th>
-                                                <th>ប្រភេទ</th>
-                                                <th>ឈ្មោះ</th>
-                                                <th>ទឹកប្រាក់</th>
-                                                <th>កំណត់សម្គាល់</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="transactionList"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>

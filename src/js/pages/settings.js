@@ -1,4 +1,4 @@
-// ====== CATEGORY MANAGEMENT ======
+﻿// ====== CATEGORY MANAGEMENT ======
 async function loadCategories() {
     let allCats = await db.categories.toArray();
     let hasGarbled = allCats.some(c => c.name && c.name.includes('Ã¡Å¾'));
@@ -507,11 +507,13 @@ document.getElementById('addExpenseCategoryForm').addEventListener('submit', asy
 document.getElementById('systemSettingsForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const phone = document.getElementById('setSysPhone').value;
+    const exRate = document.getElementById('setExchangeRate') ? document.getElementById('setExchangeRate').value : '';
     const addrKh = document.getElementById('setSysAddrKh').value;
     const addrEn = document.getElementById('setSysAddrEn').value;
     const fileInput = document.getElementById('setSysLogo');
     
     localStorage.setItem('sysPhone', phone);
+    if (exRate) localStorage.setItem('sysExchangeRate', exRate);
     localStorage.setItem('sysAddrKh', addrKh);
     localStorage.setItem('sysAddrEn', addrEn);
 
@@ -951,6 +953,7 @@ window.saveBranding = async function() {
         }
     } catch(e){}
 }
+
 
 
 
