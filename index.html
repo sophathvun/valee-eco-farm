@@ -51,7 +51,7 @@
                 <h3 class="text-center fw-bold mb-1" style="color: #333;">Username Login</h3>
                 <p class="text-center text-muted mb-4" style="font-size: 0.9rem;">Sign in with your system username.</p>
                 
-                <form id="loginForm">
+                <form id="loginForm" onsubmit="event.preventDefault(); if(window.loginUser) window.loginUser(); else console.error('loginUser not defined');">
                     <div class="mb-3 text-start">
                         <label class="form-label text-muted mb-1" style="font-size: 0.85rem;">Username</label>
                         <div class="input-group login-input-group">
@@ -461,6 +461,7 @@
     </button>
   </body>
 </html>
+
 
 
 

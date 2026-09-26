@@ -31,8 +31,7 @@ async function checkLogin() {
 
 // Removed checkLogin() call because it is correctly called at the bottom of reports.js!
 
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+window.loginUser = async function() {
     const u = document.getElementById('loginUsername').value.trim();
     const p = document.getElementById('loginPassword').value.trim();
     
@@ -77,7 +76,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         Swal.fire({icon: 'error', title: 'Database Error', text: err.message, confirmButtonText: 'យល់ព្រម'});
         console.error(err);
     }
-});
+};
 
 window.logoutUser = logoutUser;
 async function logoutUser() {
@@ -381,6 +380,8 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
+
 
 
 
