@@ -1,4 +1,4 @@
-﻿// ====== CATEGORY MANAGEMENT ======
+// ====== CATEGORY MANAGEMENT ======
 async function loadCategories() {
     let allCats = await db.categories.toArray();
     let hasGarbled = allCats.some(c => c.name && c.name.includes('Ã¡Å¾'));
@@ -464,15 +464,7 @@ window.saveRolePermissions = async function() {
     await db.roles.update(parseInt(roleId), { permissions: perms });
     Swal.fire('ជោគជ័យ', 'សិទ្ធិត្រូវបានរក្សាទុក!', 'success');
 }
-    
-    const perms = [];
-    document.querySelectorAll('.role-perm-checkbox:checked').forEach(cb => {
-        perms.push(cb.value);
-    });
-    
-    await db.roles.update(parseInt(roleId), { permissions: perms });
-    Swal.fire('áž‡áŸ„áž‚áž‡áŸ áž™', 'ážŸáž·áž‘áŸ’áž’áž·áž áŸ’ážšáž¼ážœáž”áž¶áž“ážšáž€áŸ’ážŸáž¶áž‘áž»áž€!', 'success');
-}
+
 
 document.getElementById('addIncomeCategoryForm').addEventListener('submit', async (e) => {
     e.preventDefault();
