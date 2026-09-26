@@ -1,4 +1,4 @@
-// ====== INVOICE LOGIC ======
+﻿// ====== INVOICE LOGIC ======
 let invoiceItemCount = 0;
 let editingInvoiceId = null;
 let editingTxId = null;
@@ -26,8 +26,8 @@ async function addInvoiceRow() {
                 <select class="form-select item-unit" style="max-width: 80px;">${unitOptions}</select>
             </div>
         </td>
-        <td><input type="number" class="form-control item-price" value="0" min="0" step="0.01" oninput="calculateInvoiceTotal()"></td>
-        <td><input type="number" class="form-control item-total fw-bold" readonly value="0"></td>
+        <td><input type="text" inputmode="decimal" class="form-control item-price" onfocus="this.value = parseCurrencyStr(this.value) || ''" onblur="this.value = formatCurrency(parseCurrencyStr(this.value), document.getElementById('inv-currency').value)" value="0" min="0" step="0.01" oninput="calculateInvoiceTotal()"></td>
+        <td><input type="text" class="form-control item-total fw-bold" readonly value="0"></td>
         <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></td>
     `;
     tbody.appendChild(tr);
@@ -39,20 +39,27 @@ function removeInvoiceRow(rowId) {
     calculateInvoiceTotal();
 }
 
+window.parseCurrencyStr = function parseCurrencyStr(val) { if(!val) return 0; return parseFloat(val.toString().replace(/[^0-9.-]+/g, '')) || 0; }
 function calculateInvoiceTotal() {
     let subtotal = 0;
+    const cur = document.getElementById('inv-currency').value;
     const rows = document.querySelectorAll('#inv-items-body tr');
     rows.forEach(row => {
         const mass = parseFloat(row.querySelector('.item-mass').value) || 0;
-        const price = parseFloat(row.querySelector('.item-price').value) || 0;
+        const price = parseCurrencyStr(row.querySelector('.item-price').value);
         const totalInput = row.querySelector('.item-total');
         const rowTotal = mass * price;
-        totalInput.value = rowTotal;
+        totalInput.value = formatCurrency(rowTotal, cur);
         subtotal += rowTotal;
     });
 
+    document.getElementById('inv-subtotal').value = formatCurrency(subtotal, cur);
+    const delivery = parseCurrencyStr(document.getElementById('inv-delivery').value);
+    document.getElementById('inv-grandtotal').value = formatCurrency(subtotal + delivery, cur);
+});
+
     document.getElementById('inv-subtotal').value = subtotal;
-    const delivery = parseFloat(document.getElementById('inv-delivery').value) || 0;
+    const delivery = parseCurrencyStr(document.getElementById('inv-delivery').value);
     document.getElementById('inv-grandtotal').value = subtotal + delivery;
 }
 
@@ -103,9 +110,9 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     const address = document.getElementById('inv-address').value;
     const category = document.getElementById('inv-income-category').value;
     const currency = document.getElementById('inv-currency').value;
-    const subtotal = parseFloat(document.getElementById('inv-subtotal').value) || 0;
-    const delivery = parseFloat(document.getElementById('inv-delivery').value) || 0;
-    const grandTotal = parseFloat(document.getElementById('inv-grandtotal').value) || 0;
+    const subtotal = parseCurrencyStr(document.getElementById('inv-subtotal').value);
+    const delivery = parseCurrencyStr(document.getElementById('inv-delivery').value);
+    const grandTotal = parseCurrencyStr(document.getElementById('inv-grandtotal').value);
 
     let items = [];
     rows.forEach(row => {
@@ -114,8 +121,8 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             desc: row.querySelector('.item-desc').value,
             mass: parseFloat(row.querySelector('.item-mass').value) || 0,
             unit: row.querySelector('.item-unit') ? row.querySelector('.item-unit').value : '',
-            price: parseFloat(row.querySelector('.item-price').value) || 0,
-            total: parseFloat(row.querySelector('.item-total').value) || 0
+            price: parseCurrencyStr(row.querySelector('.item-price').value),
+            total: parseCurrencyStr(row.querySelector('.item-total').value)
         });
     });
 
@@ -315,8 +322,8 @@ async function editInvoice(id) {
                     <select class="form-select item-unit" style="max-width: 80px;">${customUnitOptions}</select>
                 </div>
             </td>
-            <td><input type="number" class="form-control item-price" min="0" step="0.01" oninput="calculateInvoiceTotal()" value="${item.price}"></td>
-            <td><input type="number" class="form-control item-total fw-bold" readonly value="${item.total}"></td>
+            <td><input type="text" inputmode="decimal" class="form-control item-price" onfocus="this.value = parseCurrencyStr(this.value) || ''" onblur="this.value = formatCurrency(parseCurrencyStr(this.value), document.getElementById('inv-currency').value)" min="0" step="0.01" oninput="calculateInvoiceTotal()" value="${item.price}"></td>
+            <td><input type="text" class="form-control item-total fw-bold" readonly value="${item.total}"></td>
             <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></td>
         `;
         tbody.appendChild(tr);
@@ -325,6 +332,9 @@ async function editInvoice(id) {
     document.getElementById('inv-subtotal').value = inv.subtotal;
     document.getElementById('inv-delivery').value = inv.delivery || 0;
     document.getElementById('inv-grandtotal').value = inv.grandTotal;
+    
+    calculateInvoiceTotal();
+    document.querySelectorAll('.item-price, #inv-delivery').forEach(el => el.value = formatCurrency(parseCurrencyStr(el.value), inv.currency || 'KHR'));
     
     document.getElementById('btn-save-invoice').textContent = 'កែប្រែ & ព្រីនវិក្កយបត្រ (Update & Print)';
     showTab('invoice');
@@ -343,6 +353,13 @@ async function deleteInvoice(id) {
         loadData();
     }
 }
+
+
+
+
+
+
+
 
 
 
