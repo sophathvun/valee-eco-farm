@@ -36,7 +36,8 @@ window.loginUser = async function() {
     const p = document.getElementById('loginPassword').value.trim();
     
     try {
-        const allUsers = await db.users.toArray();
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timed out. Please check your internet.')), 10000));
+        const allUsers = await Promise.race([db.users.toArray(), timeout]);
         const user = allUsers.find(x => x.username.toLowerCase() === u.toLowerCase() && x.password === p);
         if (user) {
             if (user.isActive === false) {
@@ -50,7 +51,7 @@ window.loginUser = async function() {
             
             // Set online status
             user.isOnline = true;
-            try { await db.users.update(user.id, { isOnline: true }); } catch (e) {}
+            db.users.update(user.id, { isOnline: true }).catch(() => {});
 
             localStorage.setItem('currentUser', JSON.stringify(user));
             currentUser = user;
@@ -380,6 +381,8 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
+
 
 
 
