@@ -1,4 +1,4 @@
-// ======= AUTHENTICATION LOGIC =======
+﻿// ======= AUTHENTICATION LOGIC =======
 let currentUser = null;
 
 async function checkLogin() {
@@ -77,14 +77,15 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     }
 });
 
+window.logoutUser = logoutUser;
 async function logoutUser() {
     if (currentUser) {
-        try { await db.users.update(currentUser.id, { isOnline: false }); } catch (e) {}
+        db.users.update(currentUser.id, { isOnline: false }).catch(() => {});
     }
+    console.log('Logging out...');
     localStorage.removeItem('currentUser');
     currentUser = null;
-    document.getElementById('login-view').style.display = 'flex';
-    document.getElementById('main-wrapper').style.display = 'none';
+    window.location.reload();
 }
 
 function hasPermission(perm) {
@@ -370,6 +371,10 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
+
+
+
 
 
 
