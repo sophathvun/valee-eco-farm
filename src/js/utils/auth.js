@@ -73,7 +73,7 @@ window.loginUser = async function() {
             Swal.fire({icon: 'info', text: 'ឈ្មោះគណនី ឬ លេខសម្ងាត់មិនត្រឹមត្រូវទេ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
         }
     } catch (err) {
-        Swal.fire({icon: 'error', title: 'Database Error', text: err.message, confirmButtonText: 'យល់ព្រម'});
+        if (typeof Swal !== 'undefined') Swal.fire({icon: 'error', title: 'Database Error', text: err.message, confirmButtonText: 'យល់ព្រម'}); else alert('Database Error: ' + err.message);
         console.error(err);
     }
 };
@@ -380,6 +380,9 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
+
+
 
 
 
