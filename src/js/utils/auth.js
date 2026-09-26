@@ -337,6 +337,17 @@ function formatCurrency(amount, currency) {
     return `៛${formatted}`;
 }
 
+function formatEngDate(dateStr) {
+    if (!dateStr || dateStr.length !== 10) return dateStr;
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const year = parts[0];
+    const monthIndex = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10).toString().padStart(2, '0');
+    return `--`;
+}
+
 function formatKhmerDate(dateStr) {
     if (!dateStr || dateStr.length !== 10) return dateStr;
     const parts = dateStr.split('-');
@@ -359,6 +370,7 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
 
 
 
