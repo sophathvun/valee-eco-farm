@@ -1,4 +1,4 @@
-﻿// main.js - Application Entry Point
+// main.js - Application Entry Point
 
 // List of templates to load in order
 const viewsToLoad = [
@@ -63,6 +63,30 @@ async function initializeApp() {
             script.onload = resolve;
             script.onerror = reject;
             document.body.appendChild(script);
+        });
+    }
+    
+    // Initialize Flatpickr for all date inputs
+    if (typeof flatpickr !== 'undefined') {
+        const originalValueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+        Object.defineProperty(HTMLInputElement.prototype, 'value', {
+            set: function(val) {
+                originalValueSetter.call(this, val);
+                if (this._flatpickr) this._flatpickr.setDate(val, false);
+            }
+        });
+        const originalValueAsDateSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'valueAsDate').set;
+        Object.defineProperty(HTMLInputElement.prototype, 'valueAsDate', {
+            set: function(val) {
+                originalValueAsDateSetter.call(this, val);
+                if (this._flatpickr) this._flatpickr.setDate(val, false);
+            }
+        });
+
+        flatpickr('input[type="date"]', {
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd-M-Y'
         });
     }
 }
@@ -139,6 +163,7 @@ async function applyBranding() {
 }
 
 window.applyBranding = applyBranding;
+
 
 
 
