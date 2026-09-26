@@ -1,4 +1,4 @@
-﻿// ======= AUTHENTICATION LOGIC =======
+// ======= AUTHENTICATION LOGIC =======
 let currentUser = null;
 
 async function checkLogin() {
@@ -345,7 +345,7 @@ function formatEngDate(dateStr) {
     const year = parts[0];
     const monthIndex = parseInt(parts[1], 10) - 1;
     const day = parseInt(parts[2], 10).toString().padStart(2, '0');
-    return `--`;
+    return `${day}-${months[monthIndex]}-${year}`;
 }
 
 function formatKhmerDate(dateStr) {
