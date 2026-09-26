@@ -235,6 +235,14 @@ window.showTab = function(tabId, subId = null) {
     });
     
     document.getElementById(tabId + '-view').classList.add('active');
+
+    // Auto-close sidebar on mobile
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar && sidebar.classList.contains('mobile-open')) {
+        sidebar.classList.remove('mobile-open');
+        const bd = document.getElementById('sidebarBackdrop');
+        if(bd) bd.classList.remove('show');
+    }
     
     // Main nav-link
     const mainNav = document.getElementById('nav-' + tabId);
@@ -371,6 +379,7 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
 
 
 
