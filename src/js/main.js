@@ -169,3 +169,61 @@ window.applyBranding = applyBranding;
 
 
 
+
+
+// PWA Install Logic
+window.deferredPrompt = null;
+const isIos = () => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /iphone|ipad|ipod/.test(userAgent);
+};
+const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+window.checkPWAStatus = function() {
+    if (localStorage.getItem('currentUser')) {
+        if (isIos() && !isInStandaloneMode()) {
+            const btn = document.getElementById('pwa-install-btn');
+            if (btn) btn.style.display = 'flex';
+        } else if (window.deferredPrompt) {
+            const btn = document.getElementById('pwa-install-btn');
+            if (btn) btn.style.display = 'flex';
+        }
+    }
+};
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.deferredPrompt = e;
+    checkPWAStatus();
+});
+
+const installBtn = document.getElementById('pwa-install-btn');
+if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+        if (isIos()) {
+            Swal.fire({
+                title: 'Install on iOS',
+                html: 'To install on your iPhone/iPad:<br><br>1. Tap the <b>Share</b> button at the bottom of Safari.<br>2. Scroll down and tap <b>Add to Home Screen</b>.',
+                icon: 'info',
+                confirmButtonText: 'Got it'
+            });
+        } else if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+            const { outcome } = await window.deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                installBtn.style.display = 'none';
+            }
+            window.deferredPrompt = null;
+        }
+    });
+}
+
+window.addEventListener('appinstalled', () => {
+    if (installBtn) installBtn.style.display = 'none';
+    window.deferredPrompt = null;
+});
+
+// Run once on load for iOS
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(checkPWAStatus, 1000);
+});

@@ -67,6 +67,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             else if (hasPermission('expense')) showTab('expense');
             else if (hasPermission('reports')) showTab('reports');
             else if (hasPermission('settings')) showTab('settings');
+
+            if (typeof window.checkPWAStatus === 'function') window.checkPWAStatus();
             
         } else {
             Swal.fire({icon: 'info', text: 'ឈ្មោះគណនី ឬ លេខសម្ងាត់មិនត្រឹមត្រូវទេ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
@@ -379,6 +381,8 @@ window.addEventListener('beforeunload', () => {
         try { db.users.update(currentUser.id, { isOnline: false }); } catch(e){}
     }
 });
+
+
 
 
 

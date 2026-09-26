@@ -1,14 +1,19 @@
 ﻿{
-  "name": "កម្មវិធីកត់ត្រាចំណូលចំណាយកសិដ្ឋាន",
-  "short_name": "កសិដ្ឋានជ្រូក",
-  "start_url": "./index.html",
+  "name": "Valee Eco Farm System",
+  "short_name": "Valee Farm",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "theme_color": "#2e7d32",
   "icons": [
     {
-      "src": "./logo.png",
-      "sizes": "192x192 512x512",
+      "src": "assets/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/images/logo.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
