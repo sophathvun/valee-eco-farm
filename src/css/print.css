@@ -90,3 +90,7 @@
 
 
 
+
+@media print {
+    .swal2-container { display: none !important; }
+}
