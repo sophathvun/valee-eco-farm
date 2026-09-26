@@ -446,12 +446,24 @@ window.loadPermissionsForRole = async function() {
 
 window.saveRolePermissions = async function() {
     const roleId = document.getElementById('roleSelectForPerms').value;
-    if(!roleId) return;
-    const role = await db.roles.get(parseInt(roleId));
-    if(role.name.toLowerCase() === 'admin') {
-        Swal.fire('áž”ážŠáž·ážŸáŸáž’', 'áž˜áž·áž“áž¢áž¶áž…áž€áŸ‚áž”áŸ’ážšáŸ‚ážŸáž·áž‘áŸ’áž’áž· Admin áž”áž¶áž“áž‘áŸ!', 'error');
+    if(!roleId) {
+        Swal.fire('បម្រាម', 'សូមជ្រើសរើសតួនាទីជាមុនសិន!', 'warning');
         return;
     }
+    const role = await db.roles.get(parseInt(roleId));
+    if(role.name.toLowerCase() === 'admin') {
+        Swal.fire('បដិសេធ', 'មិនអាចកែប្រែសិទ្ធិ Admin បានទេ!', 'error');
+        return;
+    }
+    
+    const perms = [];
+    document.querySelectorAll('.role-perm-checkbox:checked').forEach(cb => {
+        perms.push(cb.value);
+    });
+    
+    await db.roles.update(parseInt(roleId), { permissions: perms });
+    Swal.fire('ជោគជ័យ', 'សិទ្ធិត្រូវបានរក្សាទុក!', 'success');
+}
     
     const perms = [];
     document.querySelectorAll('.role-perm-checkbox:checked').forEach(cb => {
@@ -947,5 +959,6 @@ window.saveBranding = async function() {
         }
     } catch(e){}
 }
+
 
 
