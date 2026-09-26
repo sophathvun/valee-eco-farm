@@ -1,4 +1,4 @@
-/* print.css */
+﻿/* print.css */
 @media screen {
     .print-container { display: none !important; }
 }
@@ -60,7 +60,7 @@
     body.printing-report .d-print-none { display: none !important; }
 
     .print-template * { visibility: visible; }
-    @page { margin: 10mm; size: landscape; }
+    
     .page-break-after { page-break-after: always; break-after: page; }
     /* Fix table-responsive cutting off content during print */
     .table-responsive { overflow: visible !important; }
@@ -83,6 +83,7 @@
         margin: 0 auto !important;
     }
 }
+
 
 
 

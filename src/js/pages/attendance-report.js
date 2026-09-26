@@ -1,4 +1,4 @@
-// ====== ATTENDANCE REPORT ======
+﻿// ====== ATTENDANCE REPORT ======
 
 function formatKhmerDate(dateStr) {
     const [y, m, d] = dateStr.split('-');
@@ -222,10 +222,18 @@ window.generateAttendanceReport = async function() {
 };
 
 window.printAttReport = function() {
+    let style = document.getElementById('dynamic-print-orientation');
+    if (!style) {
+        style = document.createElement('style');
+        style.id = 'dynamic-print-orientation';
+        document.head.appendChild(style);
+    }
+    style.innerHTML = '@media print { @page { size: A4 landscape; margin: 10mm; } }';
     document.body.classList.add('printing-report');
     window.print();
     setTimeout(() => document.body.classList.remove('printing-report'), 1000);
-};
+};;
+
 
 
 

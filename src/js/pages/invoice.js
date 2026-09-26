@@ -143,7 +143,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
 });
 
-function printElement(elId) {
+function printElement(elId, orientation = 'portrait') {
     const now = new Date();
     const y = now.getFullYear();
     const m = String(now.getMonth() + 1).padStart(2, '0');
@@ -152,12 +152,26 @@ function printElement(elId) {
     const finalDate = `ធ្វើនៅថ្ងៃទី ${todayStr[0]} ខែ${todayStr[1]} ឆ្នាំ${todayStr[2]}`;
     document.querySelectorAll('.sys-print-date').forEach(el => el.textContent = finalDate);
 
+    let style = document.getElementById('dynamic-print-orientation');
+    if (!style) {
+        style = document.createElement('style');
+        style.id = 'dynamic-print-orientation';
+        document.head.appendChild(style);
+    }
+    style.innerHTML = `@media print { @page { size: A4 ${orientation}; margin: 10mm; } }`;
+
     document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
     document.getElementById(elId).classList.add('print-template');
     window.print();
 }
 
-function populateAndPrintInvoice(inv) {
+async function populateAndPrintInvoice(inv) {
+    try {
+        const brand = await db.brandSettings.get(1);
+        if (brand && brand.reportLogo) {
+            document.querySelector('#print-area-invoice .sys-logo').src = brand.reportLogo;
+        }
+    } catch(e) {}
     let formattedDate = inv.date;
     if (formattedDate && formattedDate.length === 10) {
         const parts = formattedDate.split('-');
@@ -329,5 +343,6 @@ async function deleteInvoice(id) {
         loadData();
     }
 }
+
 
 
