@@ -1,4 +1,4 @@
-/* global.css */
+﻿/* global.css */
 @font-face {
     font-family: 'Khmer OS Siemreap';
     src: url('../../assets/fonts/KhmerOSsiemreap.ttf') format('truetype');
@@ -277,7 +277,7 @@ body.dark-theme .custom-dropdown-content a:hover {
 }
 .login-right {
     flex: 1;
-    background: linear-gradient(135deg, #f05a28, #f5a623);
+    background: linear-gradient(135deg, #2e7d32, #66bb6a);
     padding: 50px;
 }
 .login-left #loginLogoImg {
@@ -304,10 +304,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     border-bottom-right-radius: 10px;
 }
 .login-input-group .form-control:focus {
-    border-color: #f05a28;
+    border-color: #2e7d32;
 }
 .btn-login {
-    background-color: #f05a28;
+    background-color: #2e7d32;
     color: #fff;
     border-radius: 25px;
     padding: 0.7rem;
@@ -315,7 +315,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     font-size: 1.1rem;
 }
 .btn-login:hover {
-    background-color: #e04a18;
+    background-color: #1b5e20;
     color: #fff;
 }
 .btn-login-outline {
@@ -324,7 +324,7 @@ body.dark-theme .custom-dropdown-content a:hover {
 }
 .btn-login-outline:hover {
     background-color: #fff;
-    color: #f05a28;
+    color: #2e7d32;
 }
 
 @media (max-width: 768px) {
@@ -341,3 +341,4 @@ body.dark-theme .custom-dropdown-content a:hover {
         padding: 20px 0;
     }
 }
+
