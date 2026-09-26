@@ -1,4 +1,4 @@
-﻿// ====== INVOICE LOGIC ======
+// ====== INVOICE LOGIC ======
 let invoiceItemCount = 0;
 let editingInvoiceId = null;
 let editingTxId = null;
@@ -56,11 +56,6 @@ function calculateInvoiceTotal() {
     document.getElementById('inv-subtotal').value = formatCurrency(subtotal, cur);
     const delivery = parseCurrencyStr(document.getElementById('inv-delivery').value);
     document.getElementById('inv-grandtotal').value = formatCurrency(subtotal + delivery, cur);
-});
-
-    document.getElementById('inv-subtotal').value = subtotal;
-    const delivery = parseCurrencyStr(document.getElementById('inv-delivery').value);
-    document.getElementById('inv-grandtotal').value = subtotal + delivery;
 }
 
 async function generateInvoiceNumber() {
