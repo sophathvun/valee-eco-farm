@@ -7,12 +7,12 @@
     
     // We use document.write so it creates a clean document
     printWin.document.open();
-    printWin.document.write(
+    printWin.document.write(`
         <!DOCTYPE html>
         <html>
         <head>
             <meta charset="utf-8">
-            <title>\</title>
+            <title>${title}</title>
             <link rel="stylesheet" href="assets/bootstrap.min.css">
             <style>
                 @import url('assets/fonts/KhmerOSmuollight.ttf');
@@ -34,7 +34,7 @@
                 
                 /* Standardize report sizes */
                 @page {
-                    size: \;
+                    size: ${orientation === 'landscape' ? 'A4 landscape' : 'A4 portrait'};
                     margin: 10mm;
                 }
                 
@@ -52,7 +52,7 @@
             </style>
         </head>
         <body>
-            \
+            ${htmlContent}
             <script>
                 // Wait a moment for fonts and images to load before printing
                 window.onload = function() {
@@ -64,9 +64,8 @@
             </script>
         </body>
         </html>
-    );
+    `);
     printWin.document.close();
 }
 
 window.openPrintWindow = openPrintWindow;
-
