@@ -160,8 +160,11 @@ async function loadData() {
         document.getElementById('list-exp-total-usd').textContent = formatCurrency(listExpTotalUSD, 'USD');
     }
 
+    const rateDisplays = document.querySelectorAll('.rate-display');
+    rateDisplays.forEach(el => el.textContent = (window.sysExchangeRate || 4100).toLocaleString('en-US'));
     updateChart(chartData);
 }
+
 
 
 
