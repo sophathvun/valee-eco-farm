@@ -705,41 +705,48 @@ window.editingIncomeId = null;
 window.editingExpenseId = null;
 
 window.editTransaction = async function(id, type) {
-    const tx = await db.transactions.get(id);
-    if (!tx) return;
-    
-    if (tx.note && tx.note.includes('\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a')) {
-        Swal.fire({icon: 'info', text: '\u1794\u17d2\u179a\u178f\u17b7\u1794\u178f\u17d2\u178f\u17b7\u1780\u17b6\u179a\u1793\u17c1\u17c7\u1794\u1784\u17d2\u1780\u17be\u178f\u1796\u17b8\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a\u17d4 \u179f\u17bc\u1798\u1791\u17c5\u1780\u17c2\u1794\u17d2\u179a\u17c2\u1780\u17d2\u1793\u17bb\u1784\u1795\u17d2\u1791\u17b6\u17c6\u1784\u1794\u1789\u17d2\u1787\u17b8\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a\u179c\u17b7\u1789!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
-        return;
-    }
-    if (type === 'income') {
-        window.editingIncomeId = id;
-        document.getElementById('inc-date').value = tx.date;
-        document.getElementById('inc-category').value = tx.category;
-        document.getElementById('inc-amount').value = tx.amount;
-        document.getElementById('inc-currency').value = tx.currency || 'KHR';
-        document.getElementById('inc-exchange-rate').value = tx.exchangeRate || window.sysExchangeRate || 4100;
-        document.getElementById('inc-method').value = tx.paymentMethod || 'Cash';
-        document.getElementById('inc-note').value = tx.note;
+    try {
+        const tx = await db.transactions.get(id);
+        if (!tx) {
+            Swal.fire('Error', 'Transaction not found', 'error');
+            return;
+        }
         
-        const btn = document.querySelector('#incomeForm button[type="submit"]');
-        if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b (Update)';
-        
-        showTab('income');
-    } else if (type === 'expense') {
-        window.editingExpenseId = id;
-        document.getElementById('exp-date').value = tx.date;
-        document.getElementById('exp-category').value = tx.category;
-        document.getElementById('exp-amount').value = tx.amount;
-        document.getElementById('exp-currency').value = tx.currency || 'KHR';
-        document.getElementById('exp-exchange-rate').value = tx.exchangeRate || window.sysExchangeRate || 4100;
-        document.getElementById('exp-method').value = tx.paymentMethod || 'Cash';
-        document.getElementById('exp-note').value = tx.note;
-        
-        const btn = document.querySelector('#expenseForm button[type="submit"]');
-        if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799 (Update)';
-        
-        showTab('expense');
+        if (tx.note && tx.note.includes('\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a')) {
+            Swal.fire({icon: 'info', text: '\u1794\u17d2\u179a\u178f\u17b7\u1794\u178f\u17d2\u178f\u17b7\u1780\u17b6\u179a\u1793\u17c1\u17c7\u1794\u1784\u17d2\u1780\u17be\u178f\u1796\u17b8\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a\u17d4 \u179f\u17bc\u1798\u1791\u17c5\u1780\u17c2\u1794\u17d2\u179a\u17c2\u1780\u17d2\u1793\u17bb\u1784\u1795\u17d2\u1791\u17b6\u17c6\u1784\u1794\u1789\u17d2\u1787\u17b8\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a\u179c\u17b7\u1789!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+            return;
+        }
+        if (type === 'income') {
+            window.editingIncomeId = id;
+            if(document.getElementById('inc-date')) document.getElementById('inc-date').value = tx.date;
+            if(document.getElementById('inc-category')) document.getElementById('inc-category').value = tx.category;
+            if(document.getElementById('inc-amount')) document.getElementById('inc-amount').value = tx.amount;
+            if(document.getElementById('inc-currency')) document.getElementById('inc-currency').value = tx.currency || 'KHR';
+            if(document.getElementById('inc-exchange-rate')) document.getElementById('inc-exchange-rate').value = tx.exchangeRate || window.sysExchangeRate || 4100;
+            if(document.getElementById('inc-method')) document.getElementById('inc-method').value = tx.paymentMethod || 'Cash';
+            if(document.getElementById('inc-note')) document.getElementById('inc-note').value = tx.note;
+            
+            const btn = document.querySelector('#incomeForm button[type="submit"]');
+            if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b (Update)';
+            
+            showTab('income');
+        } else if (type === 'expense') {
+            window.editingExpenseId = id;
+            if(document.getElementById('exp-date')) document.getElementById('exp-date').value = tx.date;
+            if(document.getElementById('exp-category')) document.getElementById('exp-category').value = tx.category;
+            if(document.getElementById('exp-amount')) document.getElementById('exp-amount').value = tx.amount;
+            if(document.getElementById('exp-currency')) document.getElementById('exp-currency').value = tx.currency || 'KHR';
+            if(document.getElementById('exp-exchange-rate')) document.getElementById('exp-exchange-rate').value = tx.exchangeRate || window.sysExchangeRate || 4100;
+            if(document.getElementById('exp-method')) document.getElementById('exp-method').value = tx.paymentMethod || 'Cash';
+            if(document.getElementById('exp-note')) document.getElementById('exp-note').value = tx.note;
+            
+            const btn = document.querySelector('#expenseForm button[type="submit"]');
+            if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799 (Update)';
+            
+            showTab('expense');
+        }
+    } catch(err) {
+        Swal.fire('Error', err.message, 'error');
     }
 }
 
