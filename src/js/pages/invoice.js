@@ -105,6 +105,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     const address = document.getElementById('inv-address').value;
     const category = document.getElementById('inv-income-category').value;
     const currency = document.getElementById('inv-currency').value;
+    const method = document.getElementById('inv-method').value;
     const subtotal = parseCurrencyStr(document.getElementById('inv-subtotal').value);
     const delivery = parseCurrencyStr(document.getElementById('inv-delivery').value);
     const grandTotal = parseCurrencyStr(document.getElementById('inv-grandtotal').value);
@@ -121,17 +122,17 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
         });
     });
 
-    let savedInv = { invNo, date, customer, phone, address, items, subtotal, delivery, grandTotal, currency };
+    let savedInv = { invNo, date, customer, phone, address, items, subtotal, delivery, grandTotal, currency, method };
 
     if (editingInvoiceId) {
         if (editingTxId) {
-            await db.transactions.update(editingTxId, { amount: grandTotal, currency: currency, date: date, category: category, note: `វិក្កយបត្រ N°: ${invNo} - ភ្ញៀវ: ${customer}` });
+            await db.transactions.update(editingTxId, { amount: grandTotal, currency: currency, paymentMethod: method, date: date, category: category, note: `វិក្កយបត្រ N°: ${invNo} - ភ្ញៀវ: ${customer}` });
         }
         await db.invoices.update(editingInvoiceId, savedInv);
         Swal.fire({icon: 'success', text: 'កែប្រែវិក្កយបត្រជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
     } else {
         const txId = await db.transactions.add({ 
-            type: 'income', amount: grandTotal, currency: currency, date: date, category: category, note: `វិក្កយបត្រ N°: ${invNo} - ភ្ញៀវ: ${customer}` 
+            type: 'income', amount: grandTotal, currency: currency, paymentMethod: method, date: date, category: category, note: `វិក្កយបត្រ N°: ${invNo} - ភ្ញៀវ: ${customer}` 
         });
         savedInv.txId = txId;
         await db.invoices.add(savedInv);
@@ -285,6 +286,7 @@ async function editInvoice(id) {
     document.getElementById('inv-phone').value = inv.phone || '';
     document.getElementById('inv-address').value = inv.address || '';
     document.getElementById('inv-currency').value = inv.currency || 'KHR';
+    document.getElementById('inv-method').value = inv.method || 'Cash';
     
     const tbody = document.getElementById('inv-items-body');
     tbody.innerHTML = '';
