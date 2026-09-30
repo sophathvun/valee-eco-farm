@@ -117,7 +117,7 @@ async function loadData() {
         }
     });
 
-    if(document.getElementById('totalIncUnifiedUSD')) {
+    if(document.getElementById('totalIncUnified')) {
         const rate = window.sysExchangeRate || 4100;
         
         // Income
@@ -127,8 +127,7 @@ async function loadData() {
         
         document.getElementById('totalIncCash').textContent = formatCurrency(incCashUSD, 'USD') + ' | ' + formatCurrency(incCashKHR, 'KHR');
         document.getElementById('totalIncBank').textContent = formatCurrency(incBankUSD, 'USD') + ' | ' + formatCurrency(incBankKHR, 'KHR');
-        document.getElementById('totalIncUnifiedUSD').textContent = formatCurrency(totalIncUSD, 'USD');
-        document.getElementById('totalIncUnifiedKHR').textContent = formatCurrency(totalIncUSD * rate, 'KHR');
+        document.getElementById('totalIncUnified').textContent = formatCurrency(totalIncUSD, 'USD') + ' | ' + formatCurrency(totalIncUSD * rate, 'KHR');
         
         // Expense
         const totalExpCashUnified = expCashUSD + (expCashKHR / rate);
@@ -137,8 +136,7 @@ async function loadData() {
         
         document.getElementById('totalExpCash').textContent = formatCurrency(expCashUSD, 'USD') + ' | ' + formatCurrency(expCashKHR, 'KHR');
         document.getElementById('totalExpBank').textContent = formatCurrency(expBankUSD, 'USD') + ' | ' + formatCurrency(expBankKHR, 'KHR');
-        document.getElementById('totalExpUnifiedUSD').textContent = formatCurrency(totalExpUSD, 'USD');
-        document.getElementById('totalExpUnifiedKHR').textContent = formatCurrency(totalExpUSD * rate, 'KHR');
+        document.getElementById('totalExpUnified').textContent = formatCurrency(totalExpUSD, 'USD') + ' | ' + formatCurrency(totalExpUSD * rate, 'KHR');
         
         // Balance
         const balCashUSD = incCashUSD - expCashUSD;
@@ -149,8 +147,7 @@ async function loadData() {
         
         document.getElementById('totalBalCash').textContent = formatCurrency(balCashUSD, 'USD') + ' | ' + formatCurrency(balCashKHR, 'KHR');
         document.getElementById('totalBalBank').textContent = formatCurrency(balBankUSD, 'USD') + ' | ' + formatCurrency(balBankKHR, 'KHR');
-        document.getElementById('totalBalUnifiedUSD').textContent = formatCurrency(totalBalUSD, 'USD');
-        document.getElementById('totalBalUnifiedKHR').textContent = formatCurrency(totalBalUSD * rate, 'KHR');
+        document.getElementById('totalBalUnified').textContent = formatCurrency(totalBalUSD, 'USD') + ' | ' + formatCurrency(totalBalUSD * rate, 'KHR');
     }
     
     if(document.getElementById('list-inc-total-khr')) {
@@ -164,6 +161,7 @@ async function loadData() {
     rateDisplays.forEach(el => el.textContent = (window.sysExchangeRate || 4100).toLocaleString('en-US'));
     updateChart(chartData);
 }
+
 
 
 
