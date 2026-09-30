@@ -94,3 +94,6 @@
 @media print {
     .swal2-container { display: none !important; }
 }
+
+/* Hide PWA Install button during print */
+#pwa-install-btn { display: none !important; }
