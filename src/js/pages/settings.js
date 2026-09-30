@@ -504,6 +504,17 @@ document.getElementById('addExpenseCategoryForm').addEventListener('submit', asy
     }
 });
 
+document.getElementById('setExchangeRateForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const exRate = document.getElementById('setExchangeRate').value;
+    if (exRate) {
+        localStorage.setItem('sysExchangeRate', exRate);
+        window.sysExchangeRate = parseFloat(exRate);
+        Swal.fire('ជោគជ័យ!', 'អត្រាប្តូរប្រាក់ត្រូវបានរក្សាទុក!', 'success');
+        if (typeof loadData === 'function') loadData(); // refresh dashboard if loaded
+    }
+});
+
 document.getElementById('systemSettingsForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const phone = document.getElementById('setSysPhone').value;
