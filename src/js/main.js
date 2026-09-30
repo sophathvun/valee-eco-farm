@@ -1,4 +1,4 @@
-// main.js - Application Entry Point
+﻿// main.js - Application Entry Point
 
 // List of templates to load in order
 const viewsToLoad = [
@@ -181,12 +181,12 @@ const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.n
 
 window.checkPWAStatus = function() {
     if (localStorage.getItem('currentUser')) {
+        const btn = document.getElementById('pwa-install-btn');
+        if (!btn) return;
         if (isIos() && !isInStandaloneMode()) {
-            const btn = document.getElementById('pwa-install-btn');
-            if (btn) btn.style.display = 'flex';
+            btn.style.display = 'flex';
         } else if (window.deferredPrompt) {
-            const btn = document.getElementById('pwa-install-btn');
-            if (btn) btn.style.display = 'flex';
+            btn.style.display = 'flex';
         }
     }
 };
@@ -197,10 +197,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
     checkPWAStatus();
 });
 
-const installBtn = document.getElementById('pwa-install-btn');
-if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-        if (isIos()) {
+document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('#pwa-install-btn');
+    if (btn) {
+        if (typeof isIos === 'function' && isIos()) {
             Swal.fire({
                 title: 'Install on iOS',
                 html: 'To install on your iPhone/iPad:<br><br>1. Tap the <b>Share</b> button at the bottom of Safari.<br>2. Scroll down and tap <b>Add to Home Screen</b>.',
@@ -208,18 +208,31 @@ if (installBtn) {
                 confirmButtonText: 'Got it'
             });
         } else if (window.deferredPrompt) {
-            window.deferredPrompt.prompt();
-            const { outcome } = await window.deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                installBtn.style.display = 'none';
+            try {
+                window.deferredPrompt.prompt();
+                const { outcome } = await window.deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    btn.style.display = 'none';
+                }
+                window.deferredPrompt = null;
+            } catch (err) {
+                console.error("PWA Prompt error:", err);
+                window.deferredPrompt = null;
             }
-            window.deferredPrompt = null;
+        } else {
+            Swal.fire({
+                title: 'Install App',
+                html: 'Please use your browser menu (usually three dots in the top right) and select <b>"Install app"</b> or <b>"Add to Home screen"</b>.',
+                icon: 'info',
+                confirmButtonText: 'Got it'
+            });
         }
-    });
-}
+    }
+});
 
 window.addEventListener('appinstalled', () => {
-    if (installBtn) installBtn.style.display = 'none';
+    const btn = document.getElementById('pwa-install-btn');
+    if (btn) btn.style.display = 'none';
     window.deferredPrompt = null;
 });
 
@@ -227,3 +240,4 @@ window.addEventListener('appinstalled', () => {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(checkPWAStatus, 1000);
 });
+
