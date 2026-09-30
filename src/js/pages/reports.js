@@ -729,6 +729,7 @@ window.editTransaction = async function(id, type) {
             const btn = document.querySelector('#incomeForm button[type="submit"]');
             if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b (Update)';
             
+            if(document.getElementById('inc-amount')) document.getElementById('inc-amount').dispatchEvent(new Event('change'));
             showTab('income');
         } else if (type === 'expense') {
             window.editingExpenseId = id;
@@ -743,6 +744,7 @@ window.editTransaction = async function(id, type) {
             const btn = document.querySelector('#expenseForm button[type="submit"]');
             if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799 (Update)';
             
+            if(document.getElementById('exp-amount')) document.getElementById('exp-amount').dispatchEvent(new Event('change'));
             showTab('expense');
         }
     } catch(err) {

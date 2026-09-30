@@ -15,6 +15,7 @@ document.getElementById('incomeForm').addEventListener('submit', async (e) => {
     
     if (window.editingIncomeId) { await db.transactions.update(window.editingIncomeId, { amount, currency, paymentMethod, exchangeRate, date, category, note }); window.editingIncomeId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b'; } else { await db.transactions.add({ type: 'income', amount, currency, paymentMethod, exchangeRate, date, category, note }); }
     document.getElementById('inc-amount').value = '';
+if(document.getElementById('inc-converted-amount')) document.getElementById('inc-converted-amount').textContent = '';
 document.getElementById('inc-note').value = '';
 document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
     Swal.fire({icon: 'info', text: 'រក្សាទុកចំណូលបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
@@ -36,6 +37,7 @@ document.getElementById('expenseForm').addEventListener('submit', async (e) => {
     
     if (window.editingExpenseId) { await db.transactions.update(window.editingExpenseId, { amount, currency, paymentMethod, exchangeRate, date, category, note }); window.editingExpenseId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799'; } else { await db.transactions.add({ type: 'expense', amount, currency, paymentMethod, exchangeRate, date, category, note }); }
     document.getElementById('exp-amount').value = '';
+if(document.getElementById('exp-converted-amount')) document.getElementById('exp-converted-amount').textContent = '';
 document.getElementById('exp-note').value = '';
 document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
     Swal.fire({icon: 'info', text: 'រក្សាទុកចំណាយបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
@@ -67,3 +69,40 @@ function clearExpFilter() {
 
 
 
+
+
+// Real-time conversion display
+function attachConversionListeners(prefix) {
+    const amountEl = document.getElementById(prefix + '-amount');
+    const currencyEl = document.getElementById(prefix + '-currency');
+    const rateEl = document.getElementById(prefix + '-exchange-rate');
+    const convertedEl = document.getElementById(prefix + '-converted-amount');
+
+    if (!amountEl || !currencyEl || !rateEl || !convertedEl) return;
+
+    function updateConversion() {
+        const amount = parseFloat(amountEl.value) || 0;
+        if (amount === 0) {
+            convertedEl.textContent = '';
+            return;
+        }
+        const currency = currencyEl.value;
+        const rate = parseFloat(rateEl.value) || window.sysExchangeRate || 4100;
+
+        if (currency === 'KHR') {
+            const usd = amount / rate;
+            convertedEl.textContent = '= ' + formatCurrency(usd, 'USD');
+        } else {
+            const khr = amount * rate;
+            convertedEl.textContent = '= ' + formatCurrency(khr, 'KHR');
+        }
+    }
+
+    amountEl.addEventListener('input', updateConversion);
+    currencyEl.addEventListener('change', updateConversion);
+    rateEl.addEventListener('input', updateConversion);
+    amountEl.addEventListener('change', updateConversion); // for programmatic triggers
+}
+
+attachConversionListeners('inc');
+attachConversionListeners('exp');
