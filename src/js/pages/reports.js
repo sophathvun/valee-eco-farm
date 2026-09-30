@@ -36,27 +36,85 @@ async function printListReport(type) {
     const tbody = document.getElementById('p-rep-items');
     tbody.innerHTML = '';
     
-    let totalKHR = 0;
-    let totalUSD = 0;
+    let cashKhr = 0, cashUsd = 0, bankKhr = 0, bankUsd = 0;
 
     filtered.forEach((tx, index) => {
         const cur = tx.currency || 'KHR';
-        if (cur === 'USD') totalUSD += tx.amount;
-        else totalKHR += tx.amount;
+        const method = tx.paymentMethod || 'Cash';
+        
+        let ck = '-', cu = '-', bk = '-', bu = '-';
+        let amtStr = formatCurrency(tx.amount, cur);
+        
+        if (method === 'Bank') {
+            if (cur === 'USD') { bu = amtStr; bankUsd += tx.amount; }
+            else { bk = amtStr; bankKhr += tx.amount; }
+        } else {
+            if (cur === 'USD') { cu = amtStr; cashUsd += tx.amount; }
+            else { ck = amtStr; cashKhr += tx.amount; }
+        }
 
         tbody.innerHTML += `
             <tr>
                 <td>${index + 1}</td>
                 <td>${formatKhmerDate(tx.date)}</td>
-                <td>${tx.category} <span class="badge bg-secondary ms-1" style="font-size: 0.7rem;">${tx.paymentMethod === "Bank" ? "Bank" : "Cash"}</span></td>
-                <td>${tx.note}</td>
-                <td class="text-end fw-bold ${type === 'income' ? 'text-success' : 'text-danger'}">${formatCurrency(tx.amount, cur)}</td>
+                <td>${tx.category}</td>
+                <td>${ck}</td>
+                <td>${cu}</td>
+                <td>${bk}</td>
+                <td>${bu}</td>
+                <td>${tx.note || ''}</td>
             </tr>
         `;
     });
 
-    document.getElementById('p-rep-total-khr').textContent = formatCurrency(totalKHR, 'KHR');
-    document.getElementById('p-rep-total-usd').textContent = formatCurrency(totalUSD, 'USD');
+    let listRate = window.sysExchangeRate || 4100;
+    
+   
+    const thead = document.getElementById('p-rep-thead');
+    const colorClass = type === 'income' ? 'text-success' : 'text-danger';
+    
+    if (type === 'income') {
+        thead.className = 'table-darkgreen';
+    } else {
+        thead.className = 'table-darkred';
+    }
+
+    // Totals by column
+    let elKhr = document.getElementById('p-rep-cash-khr');
+    let elUsd = document.getElementById('p-rep-cash-usd');
+    let elBkKhr = document.getElementById('p-rep-bank-khr');
+    let elBkUsd = document.getElementById('p-rep-bank-usd');
+    
+    elKhr.textContent = formatCurrency(cashKhr, 'KHR');
+    elUsd.textContent = formatCurrency(cashUsd, 'USD');
+    elBkKhr.textContent = formatCurrency(bankKhr, 'KHR');
+    elBkUsd.textContent = formatCurrency(bankUsd, 'USD');
+    
+    elKhr.className = `text-center ${colorClass}`;
+    elUsd.className = `text-center ${colorClass}`;
+    elBkKhr.className = `text-center ${colorClass}`;
+    elBkUsd.className = `text-center ${colorClass}`;
+
+    // Subtotals
+
+    let cashTotalUsd = cashUsd + (cashKhr / listRate);
+    let cashTotalKhr = cashKhr + (cashUsd * listRate);
+    let bankTotalUsd = bankUsd + (bankKhr / listRate);
+    let bankTotalKhr = bankKhr + (bankUsd * listRate);
+    
+    let cashSubEl = document.getElementById('p-rep-cash-subtotal');
+    cashSubEl.textContent = `${formatCurrency(cashTotalUsd, 'USD')} = ${formatCurrency(cashTotalKhr, 'KHR')}`;
+    cashSubEl.className = `text-center ${colorClass}`;
+    let bankSubEl = document.getElementById('p-rep-bank-subtotal');
+    bankSubEl.textContent = `${formatCurrency(bankTotalUsd, 'USD')} = ${formatCurrency(bankTotalKhr, 'KHR')}`;
+    bankSubEl.className = `text-center ${colorClass}`;
+
+    // Grand Total
+    let grandTotalUsd = cashTotalUsd + bankTotalUsd;
+    let grandTotalKhr = cashTotalKhr + bankTotalKhr;
+    let grandEl = document.getElementById('p-rep-grand-total');
+    grandEl.textContent = `${formatCurrency(grandTotalUsd, 'USD')} = ${formatCurrency(grandTotalKhr, 'KHR')}`;
+    grandEl.className = `text-center fw-bolder ${colorClass}`;
 
     printElement('print-area-report');
 }
