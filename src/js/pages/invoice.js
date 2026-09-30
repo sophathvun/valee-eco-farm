@@ -203,15 +203,15 @@ async function populateAndPrintInvoice(inv) {
                 <td>${item.id}</td>
                 <td>${item.desc}</td>
                 <td>${item.mass} ${item.unit || ''}</td>
-                <td>${formatCurrency(item.price, cur)}</td>
-                <td>${formatCurrency(item.total, cur)}</td>
+                <td class="text-end">${formatCurrency(item.price, cur)}</td>
+                <td class="text-end">${formatCurrency(item.total, cur)}</td>
             </tr>
         `;
     });
 
     const emptyRowsNeeded = 10 - inv.items.length;
     for(let i=0; i<emptyRowsNeeded; i++) {
-        pTbody.innerHTML += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>`;
+        pTbody.innerHTML += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td class="text-end"></td><td class="text-end"></td></tr>`;
     }
 
     document.getElementById('p-inv-subtotal').textContent = formatCurrency(inv.subtotal, cur);
