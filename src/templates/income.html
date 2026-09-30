@@ -33,16 +33,36 @@
                 <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                     <table class="table table-sm table-hover mb-0 text-center align-middle" style="font-size: 0.85rem;">
                         <thead class="table-darkgreen" style="position: sticky; top: 0; z-index: 1;">
-                            <tr><th>កាលបរិច្ឆេទ</th><th>ប្រភេទ</th><th>ចំនួនទឹកប្រាក់</th><th>កំណត់សម្គាល់</th><th style="width: 80px;"></th></tr>
+                            <tr>
+                                <th rowspan="2" class="align-middle">កាលបរិច្ឆេទ</th>
+                                <th rowspan="2" class="align-middle">ប្រភេទ</th>
+                                <th colspan="2" class="text-center border-bottom-0">សាច់ប្រាក់</th>
+                                <th colspan="2" class="text-center border-bottom-0">ធនាគារ</th>
+                                <th rowspan="2" class="align-middle">កំណត់សម្គាល់</th>
+                                <th rowspan="2" class="align-middle" style="width: 80px;"></th>
+                            </tr>
+                            <tr>
+                                <th class="text-center border-top-0">៛</th>
+                                <th class="text-center border-top-0">$</th>
+                                <th class="text-center border-top-0">៛</th>
+                                <th class="text-center border-top-0">$</th>
+                            </tr>
                         </thead>
                         <tbody id="recentIncomeList"></tbody>
+                        <tfoot class="table-light fw-bold border-top" style="position: sticky; bottom: 0; z-index: 1;">
+                            <tr>
+                                <td colspan="2" class="text-end">សរុប៖</td>
+                                <td id="list-inc-cash-khr" class="text-success text-center">៛0</td>
+                                <td id="list-inc-cash-usd" class="text-success text-center"><tbody id="recentIncomeList"></tbody>.00</td>
+                                <td id="list-inc-bank-khr" class="text-success text-center">៛0</td>
+                                <td id="list-inc-bank-usd" class="text-success text-center"><tbody id="recentIncomeList"></tbody>.00</td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
-            <div class="card-footer bg-white text-end fw-bold border-top">
-                សរុប (រៀល): <span id="list-inc-total-khr" class="text-success fs-5">៛0</span> &nbsp;|&nbsp; 
-                សរុប (ដុល្លារ): <span id="list-inc-total-usd" class="text-success fs-5">$0.00</span>
-            </div>
+            
         </div>
     </div>
 </div>
