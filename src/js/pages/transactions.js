@@ -1,11 +1,15 @@
 ﻿// ====== TRANSACTIONS ======
+document.addEventListener('DOMContentLoaded', () => {
+    if(document.getElementById('inc-exchange-rate')) document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
+    if(document.getElementById('exp-exchange-rate')) document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
+});
 document.getElementById('incomeForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const subBtn = e.target.querySelector('button[type="submit"]'); if (subBtn) { subBtn.disabled = true; subBtn.dataset.oh = subBtn.innerHTML; subBtn.innerHTML = 'ដំណើរការ...'; }
     try {
     const currency = document.getElementById('inc-currency').value;
     const paymentMethod = document.getElementById('inc-method').value;
-    const exchangeRate = window.sysExchangeRate || 4100;
+    const exchangeRate = parseFloat(document.getElementById('inc-exchange-rate').value) || window.sysExchangeRate || 4100;
     const amount = parseFloat(document.getElementById('inc-amount').value);
     const date = document.getElementById('inc-date').value;
     const category = document.getElementById('inc-category').value;
@@ -13,7 +17,8 @@ document.getElementById('incomeForm').addEventListener('submit', async (e) => {
     
     if (editingIncomeId) { await db.transactions.update(editingIncomeId, { amount, currency, paymentMethod, exchangeRate, date, category, note }); editingIncomeId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b'; } else { await db.transactions.add({ type: 'income', amount, currency, paymentMethod, exchangeRate, date, category, note }); }
     document.getElementById('inc-amount').value = '';
-    document.getElementById('inc-note').value = '';
+document.getElementById('inc-note').value = '';
+document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
     Swal.fire({icon: 'info', text: 'រក្សាទុកចំណូលបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
     loadData();
     } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
@@ -25,7 +30,7 @@ document.getElementById('expenseForm').addEventListener('submit', async (e) => {
     try {
     const currency = document.getElementById('exp-currency').value;
     const paymentMethod = document.getElementById('exp-method').value;
-    const exchangeRate = window.sysExchangeRate || 4100;
+    const exchangeRate = parseFloat(document.getElementById('exp-exchange-rate').value) || window.sysExchangeRate || 4100;
     const amount = parseFloat(document.getElementById('exp-amount').value);
     const date = document.getElementById('exp-date').value;
     const category = document.getElementById('exp-category').value;
@@ -33,7 +38,8 @@ document.getElementById('expenseForm').addEventListener('submit', async (e) => {
     
     if (editingExpenseId) { await db.transactions.update(editingExpenseId, { amount, currency, paymentMethod, exchangeRate, date, category, note }); editingExpenseId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799'; } else { await db.transactions.add({ type: 'expense', amount, currency, paymentMethod, exchangeRate, date, category, note }); }
     document.getElementById('exp-amount').value = '';
-    document.getElementById('exp-note').value = '';
+document.getElementById('exp-note').value = '';
+document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
     Swal.fire({icon: 'info', text: 'រក្សាទុកចំណាយបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
     loadData();
     } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }

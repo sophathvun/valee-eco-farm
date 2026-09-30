@@ -718,6 +718,7 @@ async function editTransaction(id, type) {
         document.getElementById('inc-category').value = tx.category;
         document.getElementById('inc-amount').value = tx.amount;
         document.getElementById('inc-currency').value = tx.currency || 'KHR';
+        document.getElementById('inc-exchange-rate').value = tx.exchangeRate || window.sysExchangeRate || 4100;
         document.getElementById('inc-method').value = tx.paymentMethod || 'Cash';
         document.getElementById('inc-note').value = tx.note;
         
@@ -731,6 +732,7 @@ async function editTransaction(id, type) {
         document.getElementById('exp-category').value = tx.category;
         document.getElementById('exp-amount').value = tx.amount;
         document.getElementById('exp-currency').value = tx.currency || 'KHR';
+        document.getElementById('exp-exchange-rate').value = tx.exchangeRate || window.sysExchangeRate || 4100;
         document.getElementById('exp-method').value = tx.paymentMethod || 'Cash';
         document.getElementById('exp-note').value = tx.note;
         

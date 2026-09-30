@@ -112,7 +112,7 @@ async function loadData() {
         }
 
         if (chartData[tx.date] !== undefined) {
-            let amountInChart = cur === 'USD' ? tx.amount * (window.sysExchangeRate || 4100) : tx.amount;
+            let amountInChart = cur === 'USD' ? tx.amount * (tx.exchangeRate || window.sysExchangeRate || 4100) : tx.amount;
             chartData[tx.date][tx.type] += amountInChart;
         }
     });
