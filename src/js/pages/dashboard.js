@@ -18,8 +18,8 @@ async function loadData() {
     let incCashUSD = 0, incCashKHR = 0, incBankUSD = 0, incBankKHR = 0;
     let expCashUSD = 0, expCashKHR = 0, expBankUSD = 0, expBankKHR = 0;
     
-    let listIncTotalKHR = 0, listIncTotalUSD = 0;
-    let listExpTotalKHR = 0, listExpTotalUSD = 0;
+    let incCashKhr = 0, incCashUsd = 0, incBankKhr = 0, incBankUsd = 0;
+    let expCashKhr = 0, expCashUsd = 0, expBankKhr = 0, expBankUsd = 0;
     
     const chartData = {};
     const today = new Date();
@@ -164,12 +164,15 @@ async function loadData() {
         document.getElementById('totalBalUnified').textContent = formatCurrency(totalBalUSD, 'USD') + ' | ' + formatCurrency(totalBalUSD * rate, 'KHR');
     }
     
-    if(document.getElementById('list-inc-total-khr')) {
-        document.getElementById('list-inc-total-khr').textContent = formatCurrency(listIncTotalKHR, 'KHR');
-        document.getElementById('list-inc-total-usd').textContent = formatCurrency(listIncTotalUSD, 'USD');
-        document.getElementById('list-exp-total-khr').textContent = formatCurrency(listExpTotalKHR, 'KHR');
-        document.getElementById('list-exp-total-usd').textContent = formatCurrency(listExpTotalUSD, 'USD');
-    }
+    if(document.getElementById('list-inc-cash-khr')) document.getElementById('list-inc-cash-khr').textContent = formatCurrency(incCashKhr, 'KHR');
+    if(document.getElementById('list-inc-cash-usd')) document.getElementById('list-inc-cash-usd').textContent = formatCurrency(incCashUsd, 'USD');
+    if(document.getElementById('list-inc-bank-khr')) document.getElementById('list-inc-bank-khr').textContent = formatCurrency(incBankKhr, 'KHR');
+    if(document.getElementById('list-inc-bank-usd')) document.getElementById('list-inc-bank-usd').textContent = formatCurrency(incBankUsd, 'USD');
+
+    if(document.getElementById('list-exp-cash-khr')) document.getElementById('list-exp-cash-khr').textContent = formatCurrency(expCashKhr, 'KHR');
+    if(document.getElementById('list-exp-cash-usd')) document.getElementById('list-exp-cash-usd').textContent = formatCurrency(expCashUsd, 'USD');
+    if(document.getElementById('list-exp-bank-khr')) document.getElementById('list-exp-bank-khr').textContent = formatCurrency(expBankKhr, 'KHR');
+    if(document.getElementById('list-exp-bank-usd')) document.getElementById('list-exp-bank-usd').textContent = formatCurrency(expBankUsd, 'USD');
 
     const rateDisplays = document.querySelectorAll('.rate-display');
     rateDisplays.forEach(el => el.textContent = (window.sysExchangeRate || 4100).toLocaleString('en-US'));
