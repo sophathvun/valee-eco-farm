@@ -1,8 +1,6 @@
 ﻿// ====== TRANSACTIONS ======
-document.addEventListener('DOMContentLoaded', () => {
-    if(document.getElementById('inc-exchange-rate')) document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
-    if(document.getElementById('exp-exchange-rate')) document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
-});
+if(document.getElementById('inc-exchange-rate')) document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
+if(document.getElementById('exp-exchange-rate')) document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
 document.getElementById('incomeForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const subBtn = e.target.querySelector('button[type="submit"]'); if (subBtn) { subBtn.disabled = true; subBtn.dataset.oh = subBtn.innerHTML; subBtn.innerHTML = 'ដំណើរការ...'; }

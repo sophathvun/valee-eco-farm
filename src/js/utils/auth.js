@@ -222,6 +222,14 @@ window.previewLogo = function(input) {
 let currentSettingsTab = 'categories';
 
 window.showTab = function(tabId, subId = null) {
+    if (tabId === 'income') {
+        const incEx = document.getElementById('inc-exchange-rate');
+        if (incEx && !incEx.value) incEx.value = window.sysExchangeRate || 4100;
+    }
+    if (tabId === 'expense') {
+        const expEx = document.getElementById('exp-exchange-rate');
+        if (expEx && !expEx.value) expEx.value = window.sysExchangeRate || 4100;
+    }
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
     

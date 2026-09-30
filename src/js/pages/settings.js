@@ -510,6 +510,8 @@ document.getElementById('setExchangeRateForm').addEventListener('submit', (e) =>
     if (exRate) {
         localStorage.setItem('sysExchangeRate', exRate);
         window.sysExchangeRate = parseFloat(exRate);
+        if(document.getElementById('inc-exchange-rate')) document.getElementById('inc-exchange-rate').value = window.sysExchangeRate;
+        if(document.getElementById('exp-exchange-rate')) document.getElementById('exp-exchange-rate').value = window.sysExchangeRate;
         Swal.fire('ជោគជ័យ!', 'អត្រាប្តូរប្រាក់ត្រូវបានរក្សាទុក!', 'success');
         if (typeof loadData === 'function') loadData(); // refresh dashboard if loaded
     }
