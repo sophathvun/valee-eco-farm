@@ -422,7 +422,9 @@ async function generateReport() {
         updateSpecificChart(isInc ? 'incReportChart' : 'expReportChart', isInc ? incData : expData, isInc ? 'ចំណូល' : 'ចំណាយ', isInc ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)');
     }
     
-    function updateReportChart(chartData) {
+    }
+
+function updateReportChart(chartData) {
     const ctx = document.getElementById('reportChart');
     if(!ctx) return;
     

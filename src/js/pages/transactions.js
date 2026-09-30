@@ -56,10 +56,9 @@ async function deleteTransaction(id) {
     if (res.isConfirmed) {
         try {
             await db.transactions.delete(id);
-            Swal.fire({icon: 'success', text: '\u179b\u17bb\u1794\u1791\u17b7\u1793\u17d2\u1793\u1793\u17d0\u1799\u1794\u17b6\u1793\u1787\u17c4\u1782\u1787\u17d0\u1799!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', timer: 1500});
+            Swal.fire({icon: 'success', text: 'លុបទិន្នន័យបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', timer: 1500});
             loadData();
-        } catch(err) { Swal.fire('បញ្ហា', err.message, 'error'); } text: 'លុបប្រតិបត្តិការជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
-        loadData();
+        } catch(err) { Swal.fire('បញ្ហា', err.message, 'error'); }
     }
 }
 
