@@ -22,7 +22,8 @@ document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4
     const incModalEl = document.getElementById('incomeModal');
     if (incModalEl) { const m = bootstrap.Modal.getInstance(incModalEl); if(m) m.hide(); }
     loadData();
-    } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
+    } catch (err) { Swal.fire('បញ្ហា', err.message, 'error'); console.error(err); }
+    finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
 });
 
 document.getElementById('expenseForm').addEventListener('submit', async (e) => {
@@ -46,14 +47,18 @@ document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4
     const expModalEl = document.getElementById('expenseModal');
     if (expModalEl) { const m = bootstrap.Modal.getInstance(expModalEl); if(m) m.hide(); }
     loadData();
-    } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
+    } catch (err) { Swal.fire('បញ្ហា', err.message, 'error'); console.error(err); }
+    finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
 });
 
 async function deleteTransaction(id) {
     const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
     if (res.isConfirmed) {
-        await db.transactions.delete(id);
-        Swal.fire({icon: 'success', text: 'លុបប្រតិបត្តិការជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
+        try {
+            await db.transactions.delete(id);
+            Swal.fire({icon: 'success', text: '\u179b\u17bb\u1794\u1791\u17b7\u1793\u17d2\u1793\u1793\u17d0\u1799\u1794\u17b6\u1793\u1787\u17c4\u1782\u1787\u17d0\u1799!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', timer: 1500});
+            loadData();
+        } catch(err) { Swal.fire('បញ្ហា', err.message, 'error'); } text: 'លុបប្រតិបត្តិការជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadData();
     }
 }

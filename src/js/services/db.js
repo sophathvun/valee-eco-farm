@@ -1,3 +1,11 @@
+
+function withTimeout(promise, ms = 10000) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('បណ្តាញអ៊ីនធឺណិតមានបញ្ហា ឬយឺតខ្លាំង (Network Timeout)')), ms))
+    ]);
+}
+
 class FirebaseQuery {
     constructor(query) { this.query = query; }
     reverse() { this.shouldReverse = true; return this; }
@@ -45,7 +53,7 @@ class FirebaseStore {
     async add(obj) { 
         validateAndSanitize(obj);
         if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
-        await this.col.doc(obj.id.toString()).set(obj); 
+        await withTimeout(this.col.doc(obj.id.toString()).set(obj)); 
         return obj.id; 
     }
     async bulkAdd(arr) { 
@@ -65,11 +73,11 @@ class FirebaseStore {
     async update(id, obj) { 
         if(!id) return;
         validateAndSanitize(obj);
-        await this.col.doc(id.toString()).update(obj); 
+        await withTimeout(this.col.doc(id.toString()).update(obj)); 
     }
     async delete(id) { 
         if(!id) return;
-        await this.col.doc(id.toString()).delete(); 
+        await withTimeout(this.col.doc(id.toString()).delete()); 
     }
     async first() {
         const snap = await this.col.limit(1).get();
