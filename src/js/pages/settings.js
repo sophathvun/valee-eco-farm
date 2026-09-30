@@ -10,12 +10,12 @@ async function loadCategories() {
     let catCount = await db.categories.count();
     if (catCount === 0) {
         const defaults = [
-            { type: 'income', name: 'áž›áž€áŸ‹áž‡áŸ’ážšáž¼áž€ážŸáž¶áž…áŸ‹' }, { type: 'income', name: 'áž›áž€áŸ‹áž€áž¼áž“áž‡áŸ’ážšáž¼áž€' },
-            { type: 'income', name: 'áž›áž€áŸ‹áž‡áž¸ (áž›áž¶áž˜áž€áž‡áŸ’ážšáž¼áž€)' }, { type: 'income', name: 'áž•áŸ’ážŸáŸáž„áŸ—' },
-            { type: 'expense', name: 'áž…áŸ†ážŽáž¸áž‡áŸ’ážšáž¼áž€' }, { type: 'expense', name: 'ážáŸ’áž“áž¶áŸ†ážŸáž„áŸ’áž€áž¼ážœ áž“áž·áž„ážœáŸ‰áž¶áž€áŸ‹ážŸáž¶áŸ†áž„' },
-            { type: 'expense', name: 'áž”áŸ’ážšáž¶áž€áŸ‹ážáŸ‚áž”áž»áž‚áŸ’áž‚áž›áž·áž€' }, { type: 'expense', name: 'ážáŸ’áž›áŸƒáž‘áž¹áž€ áž“áž·áž„áž—áŸ’áž›áž¾áž„' },
-            { type: 'expense', name: 'ážáŸ’áž›áŸƒážŠáž¹áž€áž‡áž‰áŸ’áž‡áž¼áž“' }, { type: 'expense', name: 'áž‘áž·áž‰áž€áž¼áž“áž‡áŸ’ážšáž¼áž€' },
-            { type: 'expense', name: 'áž•áŸ’ážŸáŸáž„áŸ—' }
+            { type: 'income', name: 'លក់ជ្រូកសាច់' }, { type: 'income', name: 'លក់កូនជ្រូក' },
+            { type: 'income', name: 'លក់ជី (លាមកជ្រូក)' }, { type: 'income', name: 'ផ្សេងៗ' },
+            { type: 'expense', name: 'ចំណីជ្រូក' }, { type: 'expense', name: 'ថ្នាំសង្កូវ និងវ៉ាក់សាំង' },
+            { type: 'expense', name: 'ប្រាក់ខែបុគ្គលិក' }, { type: 'expense', name: 'ថ្លៃទឹក និងភ្លើង' },
+            { type: 'expense', name: 'ថ្លៃដឹកជញ្ជូន' }, { type: 'expense', name: 'ទិញកូនជ្រូក' },
+            { type: 'expense', name: 'ផ្សេងៗ' }
         ];
         await db.categories.bulkAdd(defaults);
     }
@@ -69,7 +69,7 @@ async function loadPreparers() {
     }
     let pCount = await db.preparers.count();
     if (pCount === 0) {
-        await db.preparers.bulkAdd([{name: 'ážŸáž»áž ážŸáž¶áž“áŸ’áž'}]);
+        await db.preparers.bulkAdd([{name: 'សុខ សាន្ត'}]);
     }
     const all = await db.preparers.toArray();
     
@@ -109,24 +109,24 @@ document.getElementById('addPreparerForm').addEventListener('submit', async (e) 
     e.preventDefault();
     await db.preparers.add({ name: document.getElementById('newPrepName').value });
     document.getElementById('newPrepName').value = '';
-    Swal.fire({icon: 'success', text: 'áž”áž‰áŸ’áž…áž¼áž›áž¢áŸ’áž“áž€ážšáŸ€áž”áž…áŸ†áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+    Swal.fire({icon: 'success', text: 'បញ្ចូលអ្នករៀបចំជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
     loadPreparers();
 });
 
 async function editPreparer(id, oldName) {
-    const newName = prompt('ážŸáž¼áž˜áž”áž‰áŸ’áž…áž¼áž›ážˆáŸ’áž˜áŸ„áŸ‡áž¢áŸ’áž“áž€ážšáŸ€áž”áž…áŸ†ážšáž”áž¶áž™áž€áž¶ážšážŽáŸážáŸ’áž˜áž¸', oldName);
+    const newName = prompt('សូមបញ្ចូលឈ្មោះអ្នករៀបចំរបាយការណ៍ថ្មី', oldName);
     if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
         await db.preparers.update(id, { name: newName.trim() });
-        Swal.fire({icon: 'success', text: 'áž€áŸ‚áž”áŸ’ážšáŸ‚áž¢áŸ’áž“áž€ážšáŸ€áž”áž…áŸ†áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+        Swal.fire({icon: 'success', text: 'កែប្រែអ្នករៀបចំជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadPreparers();
     }
 }
 
 async function deletePreparer(id) {
-    const res = await Swal.fire({title: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹', text: 'ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”ážˆáŸ’áž˜áŸ„áŸ‡áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', cancelButtonText: 'áž”áŸ„áŸ‡áž”áž„áŸ‹'});
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបឈ្មោះនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'});
     if (res.isConfirmed) {
         await db.preparers.delete(id);
-        Swal.fire({icon: 'success', text: 'áž›áž»áž”áž¢áŸ’áž“áž€ážšáŸ€áž”áž…áŸ†áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+        Swal.fire({icon: 'success', text: 'លុបអ្នករៀបចំជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadPreparers();
     }
 }
@@ -206,7 +206,7 @@ async function loadUsersAndRoles() {
     const roles = await db.roles.toArray();
     const roleSelect = document.getElementById('newUserRole');
     if (roleSelect) {
-        roleSelect.innerHTML = '<option value="">-- ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸážáž½áž“áž¶áž‘áž¸ --</option>';
+        roleSelect.innerHTML = '<option value="">-- សូមជ្រើសរើសតួនាទី --</option>';
         roles.forEach(r => {
             roleSelect.appendChild(new Option(r.name, r.id));
         });
@@ -289,7 +289,7 @@ window.editUser = async function(id) {
     
     editingUserId = id;
     const btn = document.querySelector('#addUserForm button[type="submit"]');
-    btn.textContent = 'áž€áŸ‚áž”áŸ’ážšáŸ‚áž‚ážŽáž“áž¸ (Update)';
+    btn.textContent = 'កែប្រែគណនី (Update)';
     btn.classList.replace('btn-dark', 'btn-warning');
 };
 
@@ -312,26 +312,26 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
     const isActive = document.getElementById('newUserStatus').checked;
     
     if (!roleId) {
-        Swal.fire({icon: 'info', text: 'ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸážáž½áž“áž¶áž‘áž¸!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜'});
+        Swal.fire({icon: 'info', text: 'សូមជ្រើសរើសតួនាទី!', confirmButtonText: 'យល់ព្រម'});
         return;
     }
     
     if (editingUserId) {
         const exists = await db.users.where('username').equalsIgnoreCase(username).first();
         if (exists && exists.id !== editingUserId) {
-            Swal.fire({icon: 'info', text: 'ážˆáŸ’áž˜áŸ„áŸ‡áž‚ážŽáž“áž¸áž“áŸáŸ‡áž˜áž¶áž“ážšáž½áž…áž áž¾áž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜'});
+            Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
             return;
         }
         await db.users.update(editingUserId, { username, password, roleId: parseInt(roleId), isActive });
-        Swal.fire({icon: 'info', text: 'áž€áŸ‚áž”áŸ’ážšáŸ‚áž‚ážŽáž“áž¸áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜'});
+        Swal.fire({icon: 'info', text: 'កែប្រែគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
     } else {
         const exists = await db.users.where('username').equalsIgnoreCase(username).count();
         if (exists > 0) {
-            Swal.fire({icon: 'info', text: 'ážˆáŸ’áž˜áŸ„áŸ‡áž‚ážŽáž“áž¸áž“áŸáŸ‡áž˜áž¶áž“ážšáž½áž…áž áž¾áž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜'});
+            Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
             return;
         }
         await db.users.add({ username, password, roleId: parseInt(roleId), isActive });
-        Swal.fire({icon: 'info', text: 'áž”áž„áŸ’áž€áž¾ážáž‚ážŽáž“áž¸áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜'});
+        Swal.fire({icon: 'info', text: 'បង្កើតគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
     }
     
     document.getElementById('addUserForm').reset();
@@ -340,7 +340,7 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
     document.getElementById('newUserStatusLabel').className = 'form-check-label ms-2 fw-bold text-success';
     editingUserId = null;
     const btn = document.querySelector('#addUserForm button[type="submit"]');
-    btn.textContent = 'áž”áž„áŸ’áž€áž¾ážáž‚ážŽáž“áž¸';
+    btn.textContent = 'បង្កើតគណនី';
     btn.classList.replace('btn-warning', 'btn-dark');
     
     loadUsersAndRoles();
@@ -357,7 +357,7 @@ window.toggleUserStatus = async function(id, isActive) {
 };
 
 window.deleteUser = async function(id) {
-    const res = await Swal.fire({title: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹', text: 'ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”áž‚ážŽáž“áž¸áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', cancelButtonText: 'áž”áŸ„áŸ‡áž”áž„áŸ‹'});
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបគណនីនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់'});
     if (res.isConfirmed) {
         await db.users.delete(id);
         loadUsersAndRoles();
@@ -385,7 +385,7 @@ async function loadRoles() {
             <div>
                 ${r.name.toLowerCase() !== 'admin' ? `
                 <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteRole(${r.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button>
-                ` : `<span class="badge bg-secondary">áž˜áž·áž“áž¢áž¶áž…áž›áž»áž”áž”áž¶áž“</span>`}
+                ` : `<span class="badge bg-secondary">មិនអាចលុបបាន</span>`}
             </div>`;
         ul.appendChild(li);
     });
@@ -402,7 +402,7 @@ document.getElementById('addRoleForm')?.addEventListener('submit', async (e) => 
 });
 
 window.deleteRole = async function(id) {
-    const res = await Swal.fire({title: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹', text: 'ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”ážáž½áž“áž¶áž‘áž¸áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜'});
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបតួនាទីនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'យល់ព្រម'});
     if(res.isConfirmed) {
         await db.roles.delete(id);
         loadRoles();
@@ -414,7 +414,7 @@ async function loadRolesForPerms() {
     const roles = await db.roles.toArray();
     const select = document.getElementById('roleSelectForPerms');
     if(!select) return;
-    select.innerHTML = '<option value="">-- ážŸáž¼áž˜áž‡áŸ’ážšáž¾ážŸážšáž¾ážŸážáž½áž“áž¶áž‘áž¸ --</option>';
+    select.innerHTML = '<option value="">-- សូមជ្រើសរើសតួនាទី --</option>';
     roles.forEach(r => {
         select.appendChild(new Option(r.name, r.id));
     });
@@ -522,12 +522,12 @@ document.getElementById('systemSettingsForm').addEventListener('submit', (e) => 
         reader.onload = function(evt) {
             localStorage.setItem('sysLogo', evt.target.result);
             loadSystemSettings();
-            Swal.fire('áž‡áŸ„áž‚áž‡áŸáž™!', 'áž€áž¶ážšáž€áŸ†ážŽážáŸ‹áž”áŸ’ážšáž–áŸáž“áŸ’áž’ážáŸ’ážšáž¼ážœáž”áž¶áž“ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áŸ”', 'success');
+            Swal.fire('ជោគជ័យ!', 'ការកំណត់ប្រព័ន្ធត្រូវបានរក្សាទុក។', 'success');
         };
         reader.readAsDataURL(fileInput.files[0]);
     } else {
         loadSystemSettings();
-        Swal.fire('áž‡áŸ„áž‚áž‡áŸ áž™!', 'áž€áž¶ážšáž€â€‹áž†ážŽáž áŸ‹áž”áŸ’ážšáž–áŸ áž“áŸ’áž’áž áŸ’ážšáž¼ážœáž”áž¶áž“ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áŸ”', 'success');
+        Swal.fire('ជោគជ័យ!', 'ព័ត៌មានកសិដ្ឋានត្រូវបានរក្សាទុក!', 'success');
     }
 });
 
@@ -570,7 +570,7 @@ async function deleteCategory(id) {
 async function loadUnits() {
     let unitCount = await db.units.count();
     if (unitCount === 0) {
-        const defaults = [{ name: 'Kg' }, { name: 'áž€áŸ’áž”áž¶áž›' }];
+        const defaults = [{ name: 'Kg' }, { name: 'ក្បាល' }];
         await db.units.bulkAdd(defaults);
     }
     
@@ -654,24 +654,24 @@ document.getElementById('addDepartmentForm')?.addEventListener('submit', async (
     if (name) {
         await db.departments.add({ name });
         input.value = '';
-        Swal.fire({icon: 'success', text: 'áž”áž¶áž“áž”áž‰áŸ’áž…áž¼áž›ážŠáŸ„áž™áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+        Swal.fire({icon: 'success', text: 'បានបញ្ចូលដោយជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadDepartments();
         if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
     }
 });
 
 window.editDepartment = async function(id, oldName) {
-    const newName = prompt('ážŸáž¼áž˜áž”áž‰áŸ’áž…áž¼áž›ážˆáŸ’áž˜áŸ„áŸ‡áž•áŸ’áž“áŸ‚áž€ážáŸ’áž˜áž¸:', oldName);
+    const newName = prompt('សូមបញ្ចូលឈ្មោះផ្នែកថ្មី:', oldName);
     if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
         await db.departments.update(id, { name: newName.trim() });
-        Swal.fire({icon: 'info', text: 'áž€áŸ‚áž”áŸ’ážšáŸ‚áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+        Swal.fire({icon: 'info', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadDepartments();
         if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
     }
 };
 
 window.deleteDepartment = async function(id) {
-    const res = await Swal.fire({title: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹', text: 'ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”áž•áŸ’áž“áŸ‚áž€áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', cancelButtonText: 'áž”áŸ„áŸ‡áž”áž„áŸ‹', confirmButtonColor: '#d33'});
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបផ្នែកនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់', confirmButtonColor: '#d33'});
     if (res.isConfirmed) {
         await db.departments.delete(id);
         loadDepartments();
@@ -703,24 +703,24 @@ document.getElementById('addPositionForm')?.addEventListener('submit', async (e)
     if (name) {
         await db.positions.add({ name });
         input.value = '';
-        Swal.fire({icon: 'success', text: 'áž”áž¶áž“áž”áž‰áŸ’áž…áž¼áž›ážŠáŸ„áž™áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+        Swal.fire({icon: 'success', text: 'បានបញ្ចូលដោយជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadPositions();
         if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
     }
 });
 
 window.editPosition = async function(id, oldName) {
-    const newName = prompt('ážŸáž¼áž˜áž”áž‰áŸ’áž…áž¼áž›ážˆáŸ’áž˜áŸ„áŸ‡ážáž½áž“áž¶áž‘áž¸ážáŸ’áž˜áž¸:', oldName);
+    const newName = prompt('សូមបញ្ចូលឈ្មោះតួនាទីថ្មី:', oldName);
     if (newName && newName.trim() !== '' && newName.trim() !== oldName) {
         await db.positions.update(id, { name: newName.trim() });
-        Swal.fire({icon: 'info', text: 'áž€áŸ‚áž”áŸ’ážšáŸ‚áž”áž¶áž“áž‡áŸ„áž‚áž‡áŸáž™!', confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', timer: 1500});
+        Swal.fire({icon: 'info', text: 'កែប្រែបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadPositions();
         if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
     }
 };
 
 window.deletePosition = async function(id) {
-    const res = await Swal.fire({title: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹', text: 'ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”ážáž½áž“áž¶áž‘áž¸áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'áž™áž›áŸ‹áž–áŸ’ážšáž˜', cancelButtonText: 'áž”áŸ„áŸ‡áž”áž„áŸ‹', confirmButtonColor: '#d33'});
+    const res = await Swal.fire({title: 'បញ្ជាក់', text: 'តើអ្នកពិតជាចង់លុបតួនាទីនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'យល់ព្រម', cancelButtonText: 'បោះបង់', confirmButtonColor: '#d33'});
     if (res.isConfirmed) {
         await db.positions.delete(id);
         loadPositions();
@@ -820,7 +820,7 @@ async function compressImage(base64Str, maxWidth = 300, maxHeight = 300) {
 }
 
 window.saveBranding = async function() {
-    Swal.fire({ title: 'áž€áŸ†áž–áž»áž„ážšáž€áŸ’ážŸáž¶áž‘áž»áž€...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+    Swal.fire({ title: 'កំពុងរក្សាទុក...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
     try {
         if (!db.brandSettings) db.brandSettings = new FirebaseStore('brandSettings');
         const brandData = { id: 1 };
@@ -862,11 +862,11 @@ window.saveBranding = async function() {
             await db.brandSettings.add(brandData);
         }
         
-        Swal.fire({ icon: 'success', title: 'áž‡áŸ„áž‚áž‡áŸáž™!', text: 'áž€áž¶ážšáž€áŸ†ážŽážáŸ‹áž™áž¸áž áŸ„ážáŸ’ážšáž¼ážœáž”áž¶áž“ážšáž€áŸ’ážŸáž¶áž‘áž»áž€áŸ” ážŸáž¼áž˜ Refresh (Ctrl+Shift+R) ážŠáž¾áž˜áŸ’áž”áž¸ážƒáž¾áž‰áž€áž¶ážšáž•áŸ’áž›áž¶ážŸáŸ‹áž”áŸ’ážáž¼ážšáŸ”' });
+        Swal.fire({ icon: 'success', title: 'ជោគជ័យ!', text: 'ការកំណត់យីហោត្រូវបានរក្សាទុក។ សូម Refresh (Ctrl+Shift+R) ដើម្បីឃើញការផ្លាស់ប្តូរ។' });
         
     } catch (error) {
         console.error("Error saving branding:", error);
-        Swal.fire({ icon: 'error', title: 'áž”ážšáž¶áž‡áŸáž™', text: 'áž˜áž¶áž“áž”áž‰áŸ’áž áž¶áž€áŸ’áž“áž»áž„áž€áž¶ážšážšáž€áŸ’ážŸáž¶áž‘áž»áž€áŸ” (' + error.message + ')' });
+        Swal.fire({ icon: 'error', title: 'បរាជ័យ', text: 'មានបញ្ហាក្នុងការរក្សាទុក។ (' + error.message + ')' });
     }
 };
 
@@ -910,14 +910,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.deleteBrandingLogo = function(type) {
     Swal.fire({
-        title: 'áž”áž‰áŸ’áž‡áž¶áž€áŸ‹',
-        text: 'ážáž¾áž¢áŸ’áž“áž€áž–áž·ážáž‡áž¶áž…áž„áŸ‹áž›áž»áž”ážšáž¼áž”áž—áž¶áž–áž“áŸáŸ‡áž˜áŸ‚áž“áž‘áŸ?',
+        title: 'បញ្ជាក់',
+        text: 'តើអ្នកពិតជាចង់លុបរូបភាពនេះមែនទេ?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'áž›áž»áž”',
-        cancelButtonText: 'áž”áŸ„áŸ‡áž”áž„áŸ‹'
+        confirmButtonText: 'លុប',
+        cancelButtonText: 'បោះបង់'
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('preview' + type).src = 'assets/images/logo.png';
@@ -953,6 +953,7 @@ window.saveBranding = async function() {
         }
     } catch(e){}
 }
+
 
 
 
