@@ -1,4 +1,4 @@
-﻿/* global.css */
+/* global.css */
 @font-face {
     font-family: 'Khmer OS Siemreap';
     src: url('../../assets/fonts/KhmerOSsiemreap.ttf') format('truetype');
@@ -234,6 +234,20 @@ body.dark-theme .custom-dropdown-content a:hover {
     border-color: #146c43 !important;
     font-weight: normal !important;
 }
+.table-darkgreen th.th-cash-khr { background-color: #0fa874 !important; }
+.table-darkgreen th.th-cash-usd { background-color: #17a46a !important; }
+.table-darkgreen th.th-bank-khr { background-color: #1a6eb5 !important; }
+.table-darkgreen th.th-bank-usd { background-color: #1565a8 !important; }
+.table-darkred th {
+    background-color: #dc3545 !important;
+    color: white !important;
+    border-color: #b02a37 !important;
+    font-weight: normal !important;
+}
+.table-darkred th.th-cash-khr { background-color: #c0392b !important; }
+.table-darkred th.th-cash-usd { background-color: #b03a2e !important; }
+.table-darkred th.th-bank-khr { background-color: #e67e00 !important; }
+.table-darkred th.th-bank-usd { background-color: #d67200 !important; }
 
 /* Custom Toggle Switch Color (Green) */
 .form-switch .form-check-input:checked {
