@@ -15,9 +15,6 @@ async function loadData() {
     const expBody = document.getElementById('recentExpenseList');
     if (expBody) expBody.innerHTML = '';
     
-    let incCashUSD = 0, incCashKHR = 0, incBankUSD = 0, incBankKHR = 0;
-    let expCashUSD = 0, expCashKHR = 0, expBankUSD = 0, expBankKHR = 0;
-    
     let incCashKhr = 0, incCashUsd = 0, incBankKhr = 0, incBankUsd = 0;
     let expCashKhr = 0, expCashUsd = 0, expBankKhr = 0, expBankUsd = 0;
     
@@ -113,15 +110,15 @@ async function loadData() {
                 if (tx.date && tx.date.startsWith(currentMonthPrefix)) {
             const method = tx.paymentMethod || 'Cash';
             if (tx.type === 'income') {
-                if (cur === 'USD' && method === 'Cash') incCashUSD += tx.amount;
-                if (cur === 'KHR' && method === 'Cash') incCashKHR += tx.amount;
-                if (cur === 'USD' && method === 'Bank') incBankUSD += tx.amount;
-                if (cur === 'KHR' && method === 'Bank') incBankKHR += tx.amount;
+                if (cur === 'USD' && method === 'Cash') incCashUsd += tx.amount;
+                if (cur === 'KHR' && method === 'Cash') incCashKhr += tx.amount;
+                if (cur === 'USD' && method === 'Bank') incBankUsd += tx.amount;
+                if (cur === 'KHR' && method === 'Bank') incBankKhr += tx.amount;
             } else {
-                if (cur === 'USD' && method === 'Cash') expCashUSD += tx.amount;
-                if (cur === 'KHR' && method === 'Cash') expCashKHR += tx.amount;
-                if (cur === 'USD' && method === 'Bank') expBankUSD += tx.amount;
-                if (cur === 'KHR' && method === 'Bank') expBankKHR += tx.amount;
+                if (cur === 'USD' && method === 'Cash') expCashUsd += tx.amount;
+                if (cur === 'KHR' && method === 'Cash') expCashKhr += tx.amount;
+                if (cur === 'USD' && method === 'Bank') expBankUsd += tx.amount;
+                if (cur === 'KHR' && method === 'Bank') expBankKhr += tx.amount;
             }
         }
 
@@ -135,28 +132,28 @@ async function loadData() {
         const rate = window.sysExchangeRate || 4100;
         
         // Income
-        const totalIncCashUnified = incCashUSD + (incCashKHR / rate);
-        const totalIncBankUnified = incBankUSD + (incBankKHR / rate);
+        const totalIncCashUnified = incCashUsd + (incCashKhr / rate);
+        const totalIncBankUnified = incBankUsd + (incBankKhr / rate);
         const totalIncUSD = totalIncCashUnified + totalIncBankUnified;
         
-        document.getElementById('totalIncCash').textContent = formatCurrency(incCashUSD, 'USD') + ' | ' + formatCurrency(incCashKHR, 'KHR');
-        document.getElementById('totalIncBank').textContent = formatCurrency(incBankUSD, 'USD') + ' | ' + formatCurrency(incBankKHR, 'KHR');
+        document.getElementById('totalIncCash').textContent = formatCurrency(incCashUsd, 'USD') + ' | ' + formatCurrency(incCashKhr, 'KHR');
+        document.getElementById('totalIncBank').textContent = formatCurrency(incBankUsd, 'USD') + ' | ' + formatCurrency(incBankKhr, 'KHR');
         document.getElementById('totalIncUnified').textContent = formatCurrency(totalIncUSD, 'USD') + ' | ' + formatCurrency(totalIncUSD * rate, 'KHR');
         
         // Expense
-        const totalExpCashUnified = expCashUSD + (expCashKHR / rate);
-        const totalExpBankUnified = expBankUSD + (expBankKHR / rate);
+        const totalExpCashUnified = expCashUsd + (expCashKhr / rate);
+        const totalExpBankUnified = expBankUsd + (expBankKhr / rate);
         const totalExpUSD = totalExpCashUnified + totalExpBankUnified;
         
-        document.getElementById('totalExpCash').textContent = formatCurrency(expCashUSD, 'USD') + ' | ' + formatCurrency(expCashKHR, 'KHR');
-        document.getElementById('totalExpBank').textContent = formatCurrency(expBankUSD, 'USD') + ' | ' + formatCurrency(expBankKHR, 'KHR');
+        document.getElementById('totalExpCash').textContent = formatCurrency(expCashUsd, 'USD') + ' | ' + formatCurrency(expCashKhr, 'KHR');
+        document.getElementById('totalExpBank').textContent = formatCurrency(expBankUsd, 'USD') + ' | ' + formatCurrency(expBankKhr, 'KHR');
         document.getElementById('totalExpUnified').textContent = formatCurrency(totalExpUSD, 'USD') + ' | ' + formatCurrency(totalExpUSD * rate, 'KHR');
         
         // Balance
-        const balCashUSD = incCashUSD - expCashUSD;
-        const balCashKHR = incCashKHR - expCashKHR;
-        const balBankUSD = incBankUSD - expBankUSD;
-        const balBankKHR = incBankKHR - expBankKHR;
+        const balCashUSD = incCashUsd - expCashUsd;
+        const balCashKHR = incCashKhr - expCashKhr;
+        const balBankUSD = incBankUsd - expBankUsd;
+        const balBankKHR = incBankKhr - expBankKhr;
         const totalBalUSD = totalIncUSD - totalExpUSD;
         
         document.getElementById('totalBalCash').textContent = formatCurrency(balCashUSD, 'USD') + ' | ' + formatCurrency(balCashKHR, 'KHR');
