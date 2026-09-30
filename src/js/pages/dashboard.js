@@ -161,15 +161,41 @@ async function loadData() {
         document.getElementById('totalBalUnified').textContent = formatCurrency(totalBalUSD, 'USD') + ' | ' + formatCurrency(totalBalUSD * rate, 'KHR');
     }
     
+    const listRate = window.sysExchangeRate || 4100;
+
+    // ---- Income column totals ----
     if(document.getElementById('list-inc-cash-khr')) document.getElementById('list-inc-cash-khr').textContent = formatCurrency(incCashKhr, 'KHR');
     if(document.getElementById('list-inc-cash-usd')) document.getElementById('list-inc-cash-usd').textContent = formatCurrency(incCashUsd, 'USD');
     if(document.getElementById('list-inc-bank-khr')) document.getElementById('list-inc-bank-khr').textContent = formatCurrency(incBankKhr, 'KHR');
     if(document.getElementById('list-inc-bank-usd')) document.getElementById('list-inc-bank-usd').textContent = formatCurrency(incBankUsd, 'USD');
 
+    // ---- Income subtotals ----
+    const incCashTotalUsd = incCashUsd + (incCashKhr / listRate);
+    const incBankTotalUsd = incBankUsd + (incBankKhr / listRate);
+    const incGrandTotalUsd = incCashTotalUsd + incBankTotalUsd;
+    if(document.getElementById('list-inc-cash-subtotal'))
+        document.getElementById('list-inc-cash-subtotal').textContent = formatCurrency(incCashTotalUsd, 'USD') + ' = ' + formatCurrency(incCashTotalUsd * listRate, 'KHR');
+    if(document.getElementById('list-inc-bank-subtotal'))
+        document.getElementById('list-inc-bank-subtotal').textContent = formatCurrency(incBankTotalUsd, 'USD') + ' = ' + formatCurrency(incBankTotalUsd * listRate, 'KHR');
+    if(document.getElementById('list-inc-grand-total'))
+        document.getElementById('list-inc-grand-total').textContent = formatCurrency(incGrandTotalUsd, 'USD') + ' = ' + formatCurrency(incGrandTotalUsd * listRate, 'KHR');
+
+    // ---- Expense column totals ----
     if(document.getElementById('list-exp-cash-khr')) document.getElementById('list-exp-cash-khr').textContent = formatCurrency(expCashKhr, 'KHR');
     if(document.getElementById('list-exp-cash-usd')) document.getElementById('list-exp-cash-usd').textContent = formatCurrency(expCashUsd, 'USD');
     if(document.getElementById('list-exp-bank-khr')) document.getElementById('list-exp-bank-khr').textContent = formatCurrency(expBankKhr, 'KHR');
     if(document.getElementById('list-exp-bank-usd')) document.getElementById('list-exp-bank-usd').textContent = formatCurrency(expBankUsd, 'USD');
+
+    // ---- Expense subtotals ----
+    const expCashTotalUsd = expCashUsd + (expCashKhr / listRate);
+    const expBankTotalUsd = expBankUsd + (expBankKhr / listRate);
+    const expGrandTotalUsd = expCashTotalUsd + expBankTotalUsd;
+    if(document.getElementById('list-exp-cash-subtotal'))
+        document.getElementById('list-exp-cash-subtotal').textContent = formatCurrency(expCashTotalUsd, 'USD') + ' = ' + formatCurrency(expCashTotalUsd * listRate, 'KHR');
+    if(document.getElementById('list-exp-bank-subtotal'))
+        document.getElementById('list-exp-bank-subtotal').textContent = formatCurrency(expBankTotalUsd, 'USD') + ' = ' + formatCurrency(expBankTotalUsd * listRate, 'KHR');
+    if(document.getElementById('list-exp-grand-total'))
+        document.getElementById('list-exp-grand-total').textContent = formatCurrency(expGrandTotalUsd, 'USD') + ' = ' + formatCurrency(expGrandTotalUsd * listRate, 'KHR');
 
     const rateDisplays = document.querySelectorAll('.rate-display');
     rateDisplays.forEach(el => el.textContent = (window.sysExchangeRate || 4100).toLocaleString('en-US'));
