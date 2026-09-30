@@ -731,6 +731,8 @@ window.editTransaction = async function(id, type) {
             
             if(document.getElementById('inc-amount')) document.getElementById('inc-amount').dispatchEvent(new Event('change'));
             showTab('income');
+            const incModal = document.getElementById('incomeModal');
+            if(incModal) bootstrap.Modal.getOrCreateInstance(incModal).show();
         } else if (type === 'expense') {
             window.editingExpenseId = id;
             if(document.getElementById('exp-date')) document.getElementById('exp-date').value = tx.date;
@@ -746,6 +748,8 @@ window.editTransaction = async function(id, type) {
             
             if(document.getElementById('exp-amount')) document.getElementById('exp-amount').dispatchEvent(new Event('change'));
             showTab('expense');
+            const expModal = document.getElementById('expenseModal');
+            if(expModal) bootstrap.Modal.getOrCreateInstance(expModal).show();
         }
     } catch(err) {
         Swal.fire('Error', err.message, 'error');

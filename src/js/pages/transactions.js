@@ -19,6 +19,8 @@ if(document.getElementById('inc-converted-amount')) document.getElementById('inc
 document.getElementById('inc-note').value = '';
 document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
     Swal.fire({icon: 'info', text: 'រក្សាទុកចំណូលបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+    const incModalEl = document.getElementById('incomeModal');
+    if (incModalEl) { const m = bootstrap.Modal.getInstance(incModalEl); if(m) m.hide(); }
     loadData();
     } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
 });
@@ -41,6 +43,8 @@ if(document.getElementById('exp-converted-amount')) document.getElementById('exp
 document.getElementById('exp-note').value = '';
 document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
     Swal.fire({icon: 'info', text: 'រក្សាទុកចំណាយបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+    const expModalEl = document.getElementById('expenseModal');
+    if (expModalEl) { const m = bootstrap.Modal.getInstance(expModalEl); if(m) m.hide(); }
     loadData();
     } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
 });
@@ -106,3 +110,44 @@ function attachConversionListeners(prefix) {
 
 attachConversionListeners('inc');
 attachConversionListeners('exp');
+
+// Modal open handlers
+window.openIncomeModal = function() {
+    window.editingIncomeId = null;
+    const form = document.getElementById('incomeForm');
+    if(form) form.reset();
+    document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
+    if(document.getElementById('inc-converted-amount')) document.getElementById('inc-converted-amount').textContent = '';
+    const btn = document.querySelector('#incomeForm button[type="submit"]');
+    if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b'; // រក្សាទុកចំណូល
+    
+    // Default date to today
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+    if(document.getElementById('inc-date')) document.getElementById('inc-date').value = localISOTime;
+
+    const modalEl = document.getElementById('incomeModal');
+    if (modalEl) {
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    }
+};
+
+window.openExpenseModal = function() {
+    window.editingExpenseId = null;
+    const form = document.getElementById('expenseForm');
+    if(form) form.reset();
+    document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
+    if(document.getElementById('exp-converted-amount')) document.getElementById('exp-converted-amount').textContent = '';
+    const btn = document.querySelector('#expenseForm button[type="submit"]');
+    if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799'; // រក្សាទុកចំណាយ
+
+    // Default date to today
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
+    if(document.getElementById('exp-date')) document.getElementById('exp-date').value = localISOTime;
+    
+    const modalEl = document.getElementById('expenseModal');
+    if (modalEl) {
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    }
+};
