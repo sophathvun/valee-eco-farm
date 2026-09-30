@@ -71,15 +71,27 @@ async function initializeApp() {
         const originalValueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
         Object.defineProperty(HTMLInputElement.prototype, 'value', {
             set: function(val) {
+                if (this._isSettingValue) {
+                    originalValueSetter.call(this, val);
+                    return;
+                }
+                this._isSettingValue = true;
                 originalValueSetter.call(this, val);
                 if (this._flatpickr) this._flatpickr.setDate(val, false);
+                this._isSettingValue = false;
             }
         });
         const originalValueAsDateSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'valueAsDate').set;
         Object.defineProperty(HTMLInputElement.prototype, 'valueAsDate', {
             set: function(val) {
+                if (this._isSettingValueAsDate) {
+                    originalValueAsDateSetter.call(this, val);
+                    return;
+                }
+                this._isSettingValueAsDate = true;
                 originalValueAsDateSetter.call(this, val);
                 if (this._flatpickr) this._flatpickr.setDate(val, false);
+                this._isSettingValueAsDate = false;
             }
         });
 
