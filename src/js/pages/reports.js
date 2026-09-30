@@ -343,15 +343,17 @@ async function generateReport() {
         document.getElementById('repBalUSD').textContent = formatCurrency(incUSD - expUSD, 'USD');
         updateReportChart(chartData);
     } 
-    else if (currentReportTab === 'income') {
-        const tbody = document.getElementById('rep-inc-tbody');
+    else if (currentReportTab === 'income' || currentReportTab === 'expense') {
+        const isInc = currentReportTab === 'income';
+        const tbody = document.getElementById(isInc ? 'rep-inc-tbody' : 'rep-exp-tbody');
         tbody.innerHTML = '';
         
-        // Group by period (month/day) and then by category
         const groups = {};
         const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
         
-        filtered.filter(tx => tx.type === 'income').forEach(tx => {
+        let tCashKhr = 0, tCashUsd = 0, tBankKhr = 0, tBankUsd = 0;
+
+        filtered.filter(tx => tx.type === (isInc ? 'income' : 'expense')).forEach(tx => {
             let gKey = '', gLabel = '';
             if (month === 'all') {
                 gKey = tx.date.substring(0, 7);
@@ -361,90 +363,66 @@ async function generateReport() {
                 gLabel = `ថ្ងៃទី ${gKey.split('-')[2]}`;
             } else {
                 gKey = 'all';
-                gLabel = `ប្រចាំថ្ងៃទី ${day}`;
+                gLabel = `សកម្មភាពថ្ងៃទី ${day}`;
             }
             if (!groups[gKey]) groups[gKey] = { label: gLabel, cats: {} };
-            if (!groups[gKey].cats[tx.category]) groups[gKey].cats[tx.category] = { khr: 0, usd: 0 };
-            tx.currency === 'USD' ? groups[gKey].cats[tx.category].usd += tx.amount : groups[gKey].cats[tx.category].khr += tx.amount;
+            if (!groups[gKey].cats[tx.category]) groups[gKey].cats[tx.category] = { cKhr: 0, cUsd: 0, bKhr: 0, bUsd: 0 };
+            
+            const amt = tx.amount || 0;
+            const method = tx.paymentMethod || 'Cash';
+            if (method === 'Bank') {
+                if (tx.currency === 'USD') { groups[gKey].cats[tx.category].bUsd += amt; tBankUsd += amt; }
+                else { groups[gKey].cats[tx.category].bKhr += amt; tBankKhr += amt; }
+            } else {
+                if (tx.currency === 'USD') { groups[gKey].cats[tx.category].cUsd += amt; tCashUsd += amt; }
+                else { groups[gKey].cats[tx.category].cKhr += amt; tCashKhr += amt; }
+            }
         });
 
-        const thLabel = document.querySelector('#rep-tab-income thead th:nth-child(2)');
+        const thLabel = document.querySelector(`#rep-tab-${isInc ? 'income' : 'expense'} thead th:nth-child(2)`);
         if (thLabel) {
             if (month === 'all') thLabel.textContent = 'ខែ';
             else if (day === 'all') thLabel.textContent = 'កាលបរិច្ឆេទ';
-            else thLabel.textContent = 'ប្រភេទចំណូល';
+            else thLabel.textContent = 'កាលបរិច្ឆេទ';
         }
 
         let index = 1;
+        const colorClass = isInc ? 'text-success' : 'text-danger';
         Object.keys(groups).sort().forEach(gKey => {
             const grp = groups[gKey];
             if (month === 'all' || day === 'all') {
-                let totKhr = 0, totUsd = 0;
-                Object.values(grp.cats).forEach(c => { totKhr += c.khr; totUsd += c.usd; });
-                tbody.innerHTML += `<tr><td>${index++}</td><td class="text-start">${grp.label}</td><td class="text-success">${formatCurrency(totKhr, 'KHR')}</td><td class="text-success">${formatCurrency(totUsd, 'USD')}</td></tr>`;
+                let ck = 0, cu = 0, bk = 0, bu = 0;
+                Object.values(grp.cats).forEach(c => { ck += c.cKhr; cu += c.cUsd; bk += c.bKhr; bu += c.bUsd; });
+                
+                let tr = `<tr><td>${index++}</td><td class="text-start">${grp.label}</td>
+                <td class="${colorClass}">${formatCurrency(ck, 'KHR')}</td><td class="${colorClass}">${formatCurrency(cu, 'USD')}</td>
+                <td class="${colorClass}">${formatCurrency(bk, 'KHR')}</td><td class="${colorClass}">${formatCurrency(bu, 'USD')}</td>
+                <td class="fw-bold ${colorClass}">${formatCurrency(ck+bk, 'KHR')}</td><td class="fw-bold ${colorClass}">${formatCurrency(cu+bu, 'USD')}</td></tr>`;
+                tbody.innerHTML += tr;
             } else {
                 Object.keys(grp.cats).sort().forEach(cat => {
-                    tbody.innerHTML += `<tr><td>${index++}</td><td class="text-start">${cat}</td><td class="text-success">${formatCurrency(grp.cats[cat].khr, 'KHR')}</td><td class="text-success">${formatCurrency(grp.cats[cat].usd, 'USD')}</td></tr>`;
+                    let c = grp.cats[cat];
+                    let tr = `<tr><td>${index++}</td><td class="text-start">${cat}</td>
+                    <td class="${colorClass}">${formatCurrency(c.cKhr, 'KHR')}</td><td class="${colorClass}">${formatCurrency(c.cUsd, 'USD')}</td>
+                    <td class="${colorClass}">${formatCurrency(c.bKhr, 'KHR')}</td><td class="${colorClass}">${formatCurrency(c.bUsd, 'USD')}</td>
+                    <td class="fw-bold ${colorClass}">${formatCurrency(c.cKhr+c.bKhr, 'KHR')}</td><td class="fw-bold ${colorClass}">${formatCurrency(c.cUsd+c.bUsd, 'USD')}</td></tr>`;
+                    tbody.innerHTML += tr;
                 });
             }
         });
 
-        document.getElementById('rep-inc-grand-khr-tbl').textContent = formatCurrency(incKHR, 'KHR');
-        document.getElementById('rep-inc-grand-usd-tbl').textContent = formatCurrency(incUSD, 'USD');
-        updateSpecificChart('incReportChart', incData, 'ចំណូល', 'rgba(40, 167, 69, 0.7)');
-    }
-    else if (currentReportTab === 'expense') {
-        const tbody = document.getElementById('rep-exp-tbody');
-        tbody.innerHTML = '';
+        const prefix = isInc ? 'rep-inc' : 'rep-exp';
+        document.getElementById(`${prefix}-cash-khr-tbl`).textContent = formatCurrency(tCashKhr, 'KHR');
+        document.getElementById(`${prefix}-cash-usd-tbl`).textContent = formatCurrency(tCashUsd, 'USD');
+        document.getElementById(`${prefix}-bank-khr-tbl`).textContent = formatCurrency(tBankKhr, 'KHR');
+        document.getElementById(`${prefix}-bank-usd-tbl`).textContent = formatCurrency(tBankUsd, 'USD');
+        document.getElementById(`${prefix}-grand-khr-tbl`).textContent = formatCurrency(tCashKhr + tBankKhr, 'KHR');
+        document.getElementById(`${prefix}-grand-usd-tbl`).textContent = formatCurrency(tCashUsd + tBankUsd, 'USD');
         
-        const groups = {};
-        const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
-        
-        filtered.filter(tx => tx.type === 'expense').forEach(tx => {
-            let gKey = '', gLabel = '';
-            if (month === 'all') {
-                gKey = tx.date.substring(0, 7);
-                gLabel = `ខែ ${khmerMonths[parseInt(gKey.split('-')[1], 10) - 1]}`;
-            } else if (day === 'all') {
-                gKey = tx.date;
-                gLabel = `ថ្ងៃទី ${gKey.split('-')[2]}`;
-            } else {
-                gKey = 'all';
-                gLabel = `ប្រចាំថ្ងៃទី ${day}`;
-            }
-            if (!groups[gKey]) groups[gKey] = { label: gLabel, cats: {} };
-            if (!groups[gKey].cats[tx.category]) groups[gKey].cats[tx.category] = { khr: 0, usd: 0 };
-            tx.currency === 'USD' ? groups[gKey].cats[tx.category].usd += tx.amount : groups[gKey].cats[tx.category].khr += tx.amount;
-        });
-
-        const thLabel = document.querySelector('#rep-tab-expense thead th:nth-child(2)');
-        if (thLabel) {
-            if (month === 'all') thLabel.textContent = 'ខែ';
-            else if (day === 'all') thLabel.textContent = 'កាលបរិច្ឆេទ';
-            else thLabel.textContent = 'ប្រភេទចំណាយ';
-        }
-
-        let index = 1;
-        Object.keys(groups).sort().forEach(gKey => {
-            const grp = groups[gKey];
-            if (month === 'all' || day === 'all') {
-                let totKhr = 0, totUsd = 0;
-                Object.values(grp.cats).forEach(c => { totKhr += c.khr; totUsd += c.usd; });
-                tbody.innerHTML += `<tr><td>${index++}</td><td class="text-start">${grp.label}</td><td class="text-danger">${formatCurrency(totKhr, 'KHR')}</td><td class="text-danger">${formatCurrency(totUsd, 'USD')}</td></tr>`;
-            } else {
-                Object.keys(grp.cats).sort().forEach(cat => {
-                    tbody.innerHTML += `<tr><td>${index++}</td><td class="text-start">${cat}</td><td class="text-danger">${formatCurrency(grp.cats[cat].khr, 'KHR')}</td><td class="text-danger">${formatCurrency(grp.cats[cat].usd, 'USD')}</td></tr>`;
-                });
-            }
-        });
-
-        document.getElementById('rep-exp-grand-khr-tbl').textContent = formatCurrency(expKHR, 'KHR');
-        document.getElementById('rep-exp-grand-usd-tbl').textContent = formatCurrency(expUSD, 'USD');
-        updateSpecificChart('expReportChart', expData, 'ចំណាយ', 'rgba(220, 53, 69, 0.7)');
+        updateSpecificChart(isInc ? 'incReportChart' : 'expReportChart', isInc ? incData : expData, isInc ? 'ចំណូល' : 'ចំណាយ', isInc ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)');
     }
-}
-
-function updateReportChart(chartData) {
+    
+    function updateReportChart(chartData) {
     const ctx = document.getElementById('reportChart');
     if(!ctx) return;
     
@@ -516,31 +494,36 @@ async function printAnalyticsReport(printType = 'summary') {
         if (month === 'all') suffix = 'ប្រចាំឆ្នាំ';
         else if (day === 'all') suffix = 'ប្រចាំខែ';
         
-        // Filter by current report tab type (Income or Expense)
-        if (currentReportTab === 'income') {
+        if (currentReportTab === 'summary') {
+            titleEl.textContent = 'របាយការណ៍លម្អិតចំណូលចំណាយ' + suffix;
+        } else if (currentReportTab === 'income') {
+            titleEl.textContent = 'របាយការណ៍លម្អិតចំណូល' + suffix;
             filtered = filtered.filter(tx => tx.type === 'income');
-            titleEl.textContent = 'របាយការណ៍ប្រតិបត្តិការចំណូល' + suffix;
         } else if (currentReportTab === 'expense') {
+            titleEl.textContent = 'របាយការណ៍លម្អិតចំណាយ' + suffix;
             filtered = filtered.filter(tx => tx.type === 'expense');
-            titleEl.textContent = 'របាយការណ៍ប្រតិបត្តិការចំណាយ' + suffix;
-        } else {
-            titleEl.textContent = 'របាយការណ៍ប្រតិបត្តិការចំណូលចំណាយសរុប' + suffix;
         }
 
         let tableHTML = `
-            <table class="table table-bordered text-center mt-3" style="font-size:14px;">
-                <thead class="table-success">
+            <table class="table table-bordered table-sm text-center align-middle" style="font-size: 14px; border-color: #000;">
+                <thead class="table-darkgreen" style="border-color: #000;">
                     <tr>
-                        <th>ល.រ</th>
-                        <th>ប្រភេទ</th>
+                        <th rowspan="2" style="vertical-align: middle;">ល.រ</th>
+                        <th rowspan="2" style="vertical-align: middle;">ប្រភេទ/បរិយាយ</th>
                         ${currentReportTab === 'summary' ? `
-                            <th>ចំណូល (៛)</th>
-                            <th>ចំណូល ($)</th>
-                            <th>ចំណាយ (៛)</th>
-                            <th>ចំណាយ ($)</th>
+                            <th colspan="2">ចំណូល</th>
+                            <th colspan="2">ចំណាយ</th>
+                            </tr><tr>
+                            <th>៛</th><th>$</th>
+                            <th>៛</th><th>$</th>
                         ` : `
-                            <th>ទឹកប្រាក់ (៛)</th>
-                            <th>ទឹកប្រាក់ ($)</th>
+                            <th colspan="2">សាច់ប្រាក់</th>
+                            <th colspan="2">ធនាគារ</th>
+                            <th colspan="2">សរុប</th>
+                            </tr><tr>
+                            <th>៛</th><th>$</th>
+                            <th>៛</th><th>$</th>
+                            <th>៛</th><th>$</th>
                         `}
                     </tr>
                 </thead>
@@ -548,6 +531,7 @@ async function printAnalyticsReport(printType = 'summary') {
         `;
         let totalIncKhr = 0, totalIncUsd = 0;
         let totalExpKhr = 0, totalExpUsd = 0;
+        let totalCashKhr = 0, totalCashUsd = 0, totalBankKhr = 0, totalBankUsd = 0;
         
         const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
         const groupedByPeriod = {};
@@ -558,7 +542,7 @@ async function printAnalyticsReport(printType = 'summary') {
         });
 
         let globalIndex = 1;
-        const mainColspan = currentReportTab === 'summary' ? 6 : 4;
+        const mainColspan = currentReportTab === 'summary' ? 6 : 8;
 
         Object.keys(groupedByPeriod).sort().forEach(gKey => {
             let groupName = '';
@@ -570,36 +554,52 @@ async function printAnalyticsReport(printType = 'summary') {
                 groupName = `ថ្ងៃទី ${dParts[2]} ខែ ${khmerMonths[parseInt(dParts[1], 10) - 1]} ${dParts[0]}`;
             }
             
-            tableHTML += `<tr><td colspan="${mainColspan}" class="text-start fw-bold bg-light text-primary" style="font-size: 16px;">${groupName}</td></tr>`;
+            tableHTML += `<tr><td colspan="${mainColspan}" class="text-start fw-bold bg-light text-primary" style="font-size: 15px;">${groupName}</td></tr>`;
             
             const periodTxs = groupedByPeriod[gKey];
             const groupedByCat = {};
             let pIncKhr = 0, pIncUsd = 0, pExpKhr = 0, pExpUsd = 0;
+            let pCashKhr = 0, pCashUsd = 0, pBankKhr = 0, pBankUsd = 0;
             
             periodTxs.forEach(tx => {
                 const isUSD = tx.currency === 'USD';
+                const amt = tx.amount || 0;
+                const method = tx.paymentMethod || 'Cash';
+
                 if (tx.type === 'income') {
-                    if (isUSD) { totalIncUsd += tx.amount; pIncUsd += tx.amount; }
-                    else { totalIncKhr += tx.amount; pIncKhr += tx.amount; }
+                    if (isUSD) { totalIncUsd += amt; pIncUsd += amt; }
+                    else { totalIncKhr += amt; pIncKhr += amt; }
                 } else {
-                    if (isUSD) { totalExpUsd += tx.amount; pExpUsd += tx.amount; }
-                    else { totalExpKhr += tx.amount; pExpKhr += tx.amount; }
+                    if (isUSD) { totalExpUsd += amt; pExpUsd += amt; }
+                    else { totalExpKhr += amt; pExpKhr += amt; }
+                }
+
+                if (method === 'Bank') {
+                    if (isUSD) { totalBankUsd += amt; pBankUsd += amt; }
+                    else { totalBankKhr += amt; pBankKhr += amt; }
+                } else {
+                    if (isUSD) { totalCashUsd += amt; pCashUsd += amt; }
+                    else { totalCashKhr += amt; pCashKhr += amt; }
                 }
                 
-                if (!groupedByCat[tx.category]) groupedByCat[tx.category] = { txs: [], incKhr: 0, incUsd: 0, expKhr: 0, expUsd: 0 };
+                if (!groupedByCat[tx.category]) groupedByCat[tx.category] = { txs: [], incKhr: 0, incUsd: 0, expKhr: 0, expUsd: 0, cKhr: 0, cUsd: 0, bKhr: 0, bUsd: 0 };
                 groupedByCat[tx.category].txs.push(tx);
                 if (tx.type === 'income') {
-                    if (isUSD) groupedByCat[tx.category].incUsd += tx.amount; else groupedByCat[tx.category].incKhr += tx.amount;
+                    if (isUSD) groupedByCat[tx.category].incUsd += amt; else groupedByCat[tx.category].incKhr += amt;
                 } else {
-                    if (isUSD) groupedByCat[tx.category].expUsd += tx.amount; else groupedByCat[tx.category].expKhr += tx.amount;
+                    if (isUSD) groupedByCat[tx.category].expUsd += amt; else groupedByCat[tx.category].expKhr += amt;
+                }
+
+                if (method === 'Bank') {
+                    if (isUSD) groupedByCat[tx.category].bUsd += amt; else groupedByCat[tx.category].bKhr += amt;
+                } else {
+                    if (isUSD) groupedByCat[tx.category].cUsd += amt; else groupedByCat[tx.category].cKhr += amt;
                 }
             });
 
             Object.keys(groupedByCat).sort().forEach(cat => {
                 const ct = groupedByCat[cat];
                 const txType = ct.txs[0].type;
-                const tKhr = txType === 'income' ? ct.incKhr : ct.expKhr;
-                const tUsd = txType === 'income' ? ct.incUsd : ct.expUsd;
                 const cClass = txType === 'income' ? 'text-success' : 'text-danger';
                 
                 tableHTML += `
@@ -612,8 +612,12 @@ async function printAnalyticsReport(printType = 'summary') {
                             <td class="text-danger">${txType === 'expense' ? formatCurrency(ct.expKhr, 'KHR') : '-'}</td>
                             <td class="text-danger">${txType === 'expense' ? formatCurrency(ct.expUsd, 'USD') : '-'}</td>
                         ` : `
-                            <td class="${cClass}">${formatCurrency(tKhr, 'KHR')}</td>
-                            <td class="${cClass}">${formatCurrency(tUsd, 'USD')}</td>
+                            <td class="${cClass}">${formatCurrency(ct.cKhr, 'KHR')}</td>
+                            <td class="${cClass}">${formatCurrency(ct.cUsd, 'USD')}</td>
+                            <td class="${cClass}">${formatCurrency(ct.bKhr, 'KHR')}</td>
+                            <td class="${cClass}">${formatCurrency(ct.bUsd, 'USD')}</td>
+                            <td class="fw-bold ${cClass}">${formatCurrency(ct.cKhr+ct.bKhr, 'KHR')}</td>
+                            <td class="fw-bold ${cClass}">${formatCurrency(ct.cUsd+ct.bUsd, 'USD')}</td>
                         `}
                     </tr>
                 `;
@@ -631,14 +635,16 @@ async function printAnalyticsReport(printType = 'summary') {
                     </tr>
                 `;
             } else {
-                const pKhr = currentReportTab === 'income' ? pIncKhr : pExpKhr;
-                const pUsd = currentReportTab === 'income' ? pIncUsd : pExpUsd;
                 const cClass = currentReportTab === 'income' ? 'text-success' : 'text-danger';
                 tableHTML += `
                     <tr class="table-light fw-bold" style="font-size: 15px;">
                         <td colspan="2" class="text-end">សរុបប្រចាំ${groupName}:</td>
-                        <td class="${cClass}">${formatCurrency(pKhr, 'KHR')}</td>
-                        <td class="${cClass}">${formatCurrency(pUsd, 'USD')}</td>
+                        <td class="${cClass}">${formatCurrency(pCashKhr, 'KHR')}</td>
+                        <td class="${cClass}">${formatCurrency(pCashUsd, 'USD')}</td>
+                        <td class="${cClass}">${formatCurrency(pBankKhr, 'KHR')}</td>
+                        <td class="${cClass}">${formatCurrency(pBankUsd, 'USD')}</td>
+                        <td class="fw-bold ${cClass}">${formatCurrency(pCashKhr+pBankKhr, 'KHR')}</td>
+                        <td class="fw-bold ${cClass}">${formatCurrency(pCashUsd+pBankUsd, 'USD')}</td>
                     </tr>
                 `;
             }
@@ -665,14 +671,16 @@ async function printAnalyticsReport(printType = 'summary') {
             </tfoot></table>`;
         } else {
             const isInc = currentReportTab === 'income';
-            const totKhr = isInc ? totalIncKhr : totalExpKhr;
-            const totUsd = isInc ? totalIncUsd : totalExpUsd;
             const cClass = isInc ? 'text-success' : 'text-danger';
             tableHTML += `</tbody><tfoot class="table-success fw-bold" style="font-size: 16px;">
                 <tr>
                     <td colspan="2" class="text-end">${periodStr}</td>
-                    <td class="${cClass}">${formatCurrency(totKhr, 'KHR')}</td>
-                    <td class="${cClass}">${formatCurrency(totUsd, 'USD')}</td>
+                    <td class="${cClass}">${formatCurrency(totalCashKhr, 'KHR')}</td>
+                    <td class="${cClass}">${formatCurrency(totalCashUsd, 'USD')}</td>
+                    <td class="${cClass}">${formatCurrency(totalBankKhr, 'KHR')}</td>
+                    <td class="${cClass}">${formatCurrency(totalBankUsd, 'USD')}</td>
+                    <td class="fw-bold ${cClass}">${formatCurrency(totalCashKhr+totalBankKhr, 'KHR')}</td>
+                    <td class="fw-bold ${cClass}">${formatCurrency(totalCashUsd+totalBankUsd, 'USD')}</td>
                 </tr>
             </tfoot></table>`;
         }
@@ -702,7 +710,6 @@ async function printAnalyticsReport(printType = 'summary') {
     
     printElement('print-area-analytics');
 }
-
 async function exportData() {
     const allTx = await db.transactions.toArray();
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allTx));
