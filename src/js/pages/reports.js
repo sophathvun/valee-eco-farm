@@ -701,10 +701,10 @@ window.addEventListener('appinstalled', (evt) => {
     const installBtn = document.getElementById('installAppBtn');
     if (installBtn) installBtn.style.display = 'none';
 });
-let editingIncomeId = null;
-let editingExpenseId = null;
+window.editingIncomeId = null;
+window.editingExpenseId = null;
 
-async function editTransaction(id, type) {
+window.editTransaction = async function(id, type) {
     const tx = await db.transactions.get(id);
     if (!tx) return;
     
@@ -713,7 +713,7 @@ async function editTransaction(id, type) {
         return;
     }
     if (type === 'income') {
-        editingIncomeId = id;
+        window.editingIncomeId = id;
         document.getElementById('inc-date').value = tx.date;
         document.getElementById('inc-category').value = tx.category;
         document.getElementById('inc-amount').value = tx.amount;
@@ -727,7 +727,7 @@ async function editTransaction(id, type) {
         
         showTab('income');
     } else if (type === 'expense') {
-        editingExpenseId = id;
+        window.editingExpenseId = id;
         document.getElementById('exp-date').value = tx.date;
         document.getElementById('exp-category').value = tx.category;
         document.getElementById('exp-amount').value = tx.amount;

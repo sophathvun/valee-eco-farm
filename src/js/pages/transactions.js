@@ -13,7 +13,7 @@ document.getElementById('incomeForm').addEventListener('submit', async (e) => {
     const category = document.getElementById('inc-category').value;
     const note = document.getElementById('inc-note').value;
     
-    if (editingIncomeId) { await db.transactions.update(editingIncomeId, { amount, currency, paymentMethod, exchangeRate, date, category, note }); editingIncomeId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b'; } else { await db.transactions.add({ type: 'income', amount, currency, paymentMethod, exchangeRate, date, category, note }); }
+    if (window.editingIncomeId) { await db.transactions.update(window.editingIncomeId, { amount, currency, paymentMethod, exchangeRate, date, category, note }); window.editingIncomeId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b'; } else { await db.transactions.add({ type: 'income', amount, currency, paymentMethod, exchangeRate, date, category, note }); }
     document.getElementById('inc-amount').value = '';
 document.getElementById('inc-note').value = '';
 document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
@@ -34,7 +34,7 @@ document.getElementById('expenseForm').addEventListener('submit', async (e) => {
     const category = document.getElementById('exp-category').value;
     const note = document.getElementById('exp-note').value;
     
-    if (editingExpenseId) { await db.transactions.update(editingExpenseId, { amount, currency, paymentMethod, exchangeRate, date, category, note }); editingExpenseId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799'; } else { await db.transactions.add({ type: 'expense', amount, currency, paymentMethod, exchangeRate, date, category, note }); }
+    if (window.editingExpenseId) { await db.transactions.update(window.editingExpenseId, { amount, currency, paymentMethod, exchangeRate, date, category, note }); window.editingExpenseId = null; if(subBtn) subBtn.dataset.oh = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799'; } else { await db.transactions.add({ type: 'expense', amount, currency, paymentMethod, exchangeRate, date, category, note }); }
     document.getElementById('exp-amount').value = '';
 document.getElementById('exp-note').value = '';
 document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
