@@ -39,41 +39,56 @@
             <div class="card-body p-0">
                 <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                     <table class="table table-sm table-hover mb-0 text-center align-middle" style="font-size: 0.85rem;">
-                        <thead class="table-darkred" style="position: sticky; top: 0; z-index: 1;">
-                            <tr>
-                                <th rowspan="2" class="align-middle">កាលបរិច្ឆេទ</th>
-                                <th rowspan="2" class="align-middle">ប្រភេទ</th>
-                                <th colspan="2" class="text-center border-bottom-0 th-cash-khr">សាច់ប្រាក់</th>
-                                <th colspan="2" class="text-center border-bottom-0 th-bank-khr">ឧនាគារ</th>
-                                <th rowspan="2" class="align-middle">កំណត់សម្គាល់</th>
-                                <th rowspan="2" class="align-middle" style="width: 80px;"></th>
-                            </tr>
-                            <tr>
-                                <th class="text-center border-top-0 th-cash-khr">៛</th>
-                                <th class="text-center border-top-0 th-cash-usd">$</th>
-                                <th class="text-center border-top-0 th-bank-khr">៛</th>
-                                <th class="text-center border-top-0 th-bank-usd">$</th>
-                            </tr>
+                        <thead class="table-darkred" style="position: sticky; top: 0; z-index: 1;">
+
+                            <tr>
+
+                                <th rowspan="2" class="align-middle">កាលបរិច្ឆេទ</th>
+
+                                <th rowspan="2" class="align-middle">ប្រភេទ</th>
+
+                                <th colspan="2" class="text-center border-bottom-0 th-cash-khr">សាច់ប្រាក់</th>
+
+                                <th colspan="2" class="text-center border-bottom-0 th-bank-khr">ឧនាគារ</th>
+
+                                <th rowspan="2" class="align-middle">កំណត់សម្គាល់</th>
+
+                                <th rowspan="2" class="align-middle" style="width: 80px;"></th>
+
+                            </tr>
+
+                            <tr>
+
+                                <th class="text-center border-top-0 th-cash-khr">៛</th>
+
+                                <th class="text-center border-top-0 th-cash-usd">$</th>
+
+                                <th class="text-center border-top-0 th-bank-khr">៛</th>
+
+                                <th class="text-center border-top-0 th-bank-usd">$</th>
+
+                            </tr>
+
                         </thead>
                         <tbody id="recentExpenseList"></tbody>
                         <tfoot class="fw-bold border-top" style="position: sticky; bottom: 0; z-index: 1; font-size: 0.82rem;">
                             <tr class="table-light">
-                                <td colspan="2" class="text-end">&#x179F;&#x179A;&#x17BB;&#x1794;</td>
-                                <td id="list-exp-cash-khr" class="text-danger text-center">&#x17DB;0</td>
+                                <td colspan="2" class="text-end">សរុប</td>
+                                <td id="list-exp-cash-khr" class="text-danger text-center">៛0</td>
                                 <td id="list-exp-cash-usd" class="text-danger text-center">$0.00</td>
-                                <td id="list-exp-bank-khr" class="text-danger text-center">&#x17DB;0</td>
+                                <td id="list-exp-bank-khr" class="text-danger text-center">៛0</td>
                                 <td id="list-exp-bank-usd" class="text-danger text-center">$0.00</td>
                                 <td colspan="2"></td>
                             </tr>
                             <tr style="background-color:#f8d7da;">
-                                <td colspan="2" class="text-end text-danger">&#x179F;&#x179A;&#x17BB;&#x1794;&#x179F;&#x17B6;&#x1785;&#x17CB;&#x1794;&#x17D2;&#x179A;&#x17B6;&#x1780;</td>
-                                <td colspan="2" id="list-exp-cash-subtotal" class="text-danger text-center">$0.00 = &#x17DB;0</td>
-                                <td colspan="2" id="list-exp-bank-subtotal" class="text-danger text-center">$0.00 = &#x17DB;0</td>
+                                <td colspan="2" class="text-end text-danger">សរុបសាច់ប្រាក់</td>
+                                <td colspan="2" id="list-exp-cash-subtotal" class="text-danger text-center">$0.00 = ៛0</td>
+                                <td colspan="2" id="list-exp-bank-subtotal" class="text-danger text-center">$0.00 = ៛0</td>
                                 <td colspan="2"></td>
                             </tr>
                             <tr style="background-color:#f5c6cb;">
-                                <td colspan="2" class="text-end text-danger fw-bolder">&#x179F;&#x179A;&#x17BB;&#x1794;&#x179A;&#x179D;&#x1798;</td>
-                                <td colspan="4" id="list-exp-grand-total" class="text-danger text-center fw-bolder">$0.00 = &#x17DB;0</td>
+                                <td colspan="2" class="text-end text-danger fw-bolder">សរុបរួម</td>
+                                <td colspan="4" id="list-exp-grand-total" class="text-danger text-center fw-bolder">$0.00 = ៛0</td>
                                 <td colspan="2"></td>
                             </tr>
                         </tfoot>

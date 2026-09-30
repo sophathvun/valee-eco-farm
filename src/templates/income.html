@@ -32,48 +32,51 @@
                         <input type="date" class="form-control form-control-sm" id="filter-inc-to" onchange="loadData()">
                     </div>
                     <div class="col-md-4">
-                        <button class="btn btn-sm btn-secondary w-100 mb-1" onclick="clearIncFilter()">សំអាត</button>
+                        <button class="btn btn-sm btn-secondary w-100 mb-1" onclick="clearIncFilter()">សម្អាត</button>
                     </div>
                 </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
                     <table class="table table-sm table-hover mb-0 text-center align-middle" style="font-size: 0.85rem;">
-                        <thead class="table-darkgreen" style="position: sticky; top: 0; z-index: 1;">
-                            <tr>
-                                <th rowspan="2" class="align-middle">កាលបរិច្ឆេទ</th>
-                                <th rowspan="2" class="align-middle">ប្រភេទ</th>
-                                <th colspan="2" class="text-center border-bottom-0 th-cash-khr">សាច់ប្រាក់</th>
-                                <th colspan="2" class="text-center border-bottom-0 th-bank-khr">ឧនាគារ</th>
-                                <th rowspan="2" class="align-middle">កំណត់សម្គាល់</th>
-                                <th rowspan="2" class="align-middle" style="width: 80px;"></th>
-                            </tr>
-                            <tr>
-                                <th class="text-center border-top-0 th-cash-khr">៛</th>
-                                <th class="text-center border-top-0 th-cash-usd">$</th>
-                                <th class="text-center border-top-0 th-bank-khr">៛</th>
-                                <th class="text-center border-top-0 th-bank-usd">$</th>
-                            </tr>
+                        <thead class="table-darkgreen" style="position: sticky; top: 0; z-index: 1;">
+                            <tr>
+
+                                <th rowspan="2" class="align-middle">កាលបរិច្ឆេទ</th>
+                                <th rowspan="2" class="align-middle">ប្រភេទ</th>
+                                <th colspan="2" class="text-center border-bottom-0 th-cash-khr">សាច់ប្រាក់</th>
+                                <th colspan="2" class="text-center border-bottom-0 th-bank-khr">ធនាគារ</th>
+                                <th rowspan="2" class="align-middle">កំណត់សម្គាល់</th>
+                                <th rowspan="2" class="align-middle" style="width: 80px;"></th>
+
+                            </tr>
+                            <tr>
+                                <th class="text-center border-top-0 th-cash-khr">៛</th>
+                                <th class="text-center border-top-0 th-cash-usd">$</th>
+                                <th class="text-center border-top-0 th-bank-khr">៛</th>
+                                <th class="text-center border-top-0 th-bank-usd">$</th>
+
+                            </tr>
                         </thead>
                         <tbody id="recentIncomeList"></tbody>
                         <tfoot class="fw-bold border-top" style="position: sticky; bottom: 0; z-index: 1; font-size: 0.82rem;">
                             <tr class="table-light">
-                                <td colspan="2" class="text-end">&#x179F;&#x179A;&#x17BB;&#x1794;</td>
-                                <td id="list-inc-cash-khr" class="text-success text-center">&#x17DB;0</td>
+                                <td colspan="2" class="text-end">សរុប</td>
+                                <td id="list-inc-cash-khr" class="text-success text-center">៛0</td>
                                 <td id="list-inc-cash-usd" class="text-success text-center">$0.00</td>
-                                <td id="list-inc-bank-khr" class="text-success text-center">&#x17DB;0</td>
+                                <td id="list-inc-bank-khr" class="text-success text-center">៛0</td>
                                 <td id="list-inc-bank-usd" class="text-success text-center">$0.00</td>
                                 <td colspan="2"></td>
                             </tr>
                             <tr style="background-color:#d4edda;">
-                                <td colspan="2" class="text-end text-success">&#x179F;&#x179A;&#x17BB;&#x1794;&#x179F;&#x17B6;&#x1785;&#x17CB;&#x1794;&#x17D2;&#x179A;&#x17B6;&#x1780;</td>
-                                <td colspan="2" id="list-inc-cash-subtotal" class="text-success text-center">$0.00 = &#x17DB;0</td>
-                                <td colspan="2" id="list-inc-bank-subtotal" class="text-success text-center">$0.00 = &#x17DB;0</td>
+                                <td colspan="2" class="text-end text-success">សរុបសាច់ប្រាក់</td>
+                                <td colspan="2" id="list-inc-cash-subtotal" class="text-success text-center">$0.00 = ៛0</td>
+                                <td colspan="2" id="list-inc-bank-subtotal" class="text-success text-center">$0.00 = ៛0</td>
                                 <td colspan="2"></td>
                             </tr>
                             <tr style="background-color:#c3e6cb;">
-                                <td colspan="2" class="text-end text-success fw-bolder">&#x179F;&#x179A;&#x17BB;&#x1794;&#x179A;&#x179D;&#x1798;</td>
-                                <td colspan="4" id="list-inc-grand-total" class="text-success text-center fw-bolder">$0.00 = &#x17DB;0</td>
+                                <td colspan="2" class="text-end text-success fw-bolder">សរុបរួម</td>
+                                <td colspan="4" id="list-inc-grand-total" class="text-success text-center fw-bolder">$0.00 = ៛0</td>
                                 <td colspan="2"></td>
                             </tr>
                         </tfoot>
