@@ -47,6 +47,7 @@ async function loadData() {
         // Dashboard
         if (tbody && tbody.children.length < 50) {
             const tr = document.createElement('tr');
+                    tr.className = tx.type === 'income' ? 'tx-income' : 'tx-expense';
             tr.innerHTML = `
                 <td>${formatEngDate(tx.date)}</td>
                 <td><span class="badge ${tx.type === 'income' ? 'bg-success' : 'bg-danger'}">${tx.type === 'income' ? 'ចំណូល' : 'ចំណាយ'}</span></td>
@@ -68,6 +69,7 @@ async function loadData() {
                 if (incCount < limit) {
                     incCount++;
                     const tr = document.createElement('tr');
+                    tr.className = tx.type === 'income' ? 'tx-income' : 'tx-expense';
                     let ck = "-", cu = "-", bk = "-", bu = "-";
                     if (tx.paymentMethod === "Bank") {
                         if (cur === "USD") { bu = formatCurrency(tx.amount, "USD"); incBankUsd += tx.amount; }
@@ -93,6 +95,7 @@ async function loadData() {
                 if (expCount < limit) {
                     expCount++;
                     const tr = document.createElement('tr');
+                    tr.className = tx.type === 'income' ? 'tx-income' : 'tx-expense';
                     let ck = "-", cu = "-", bk = "-", bu = "-";
                     if (tx.paymentMethod === "Bank") {
                         if (cur === "USD") { bu = formatCurrency(tx.amount, "USD"); expBankUsd += tx.amount; }

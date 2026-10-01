@@ -4,18 +4,135 @@
     src: url('../../assets/fonts/KhmerOSsiemreap.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 @font-face {
     font-family: 'Khmer OS Muol Light';
     src: url('../../assets/fonts/KhmerOSmuollight.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 @font-face {
     font-family: 'Khmer OS Battambang';
     src: url('../../assets/fonts/KhmerOSbattambang.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 
 body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang', sans-serif; background-color: #f4f6f9; overflow-x: hidden; margin: 0; }
@@ -29,6 +146,45 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
 .invoice-title h2,
 .invoice-header-left h3 {
     font-family: 'Khmer OS Muol Light', cursive !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 
 /* Sidebar Styles (Tabler Inspired) */
@@ -105,6 +261,45 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     .row > [class^="col-"] { margin-bottom: 10px; }
     /* Adjust headers that might squish */
     .card-header.d-flex { flex-wrap: wrap; gap: 10px; }
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 
 /* Read Only Mode (Module Specific) */
@@ -150,26 +345,299 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
 body.dark-theme {
     background-color: #0f172a;
     color: #cbd5e1;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .main-panel {
     background-color: #0f172a !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .content {
     background-color: #0f172a !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .top-navbar {
     background-color: #1e293b !important;
     border-bottom: 1px solid #334155;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dark-theme .top-navbar .text-secondary, body.dark-theme .top-navbar .text-muted {
     color: #cbd5e1 !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .card, body.dark-theme .modal-content {
     background-color: #1e293b;
     border-color: #334155;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .card-body {
     color: #cbd5e1;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .table {
     color: #cbd5e1 !important;
@@ -177,32 +645,305 @@ body.dark-theme .table {
     --bs-table-striped-bg: #0f172a;
     --bs-table-hover-bg: #334155;
     --bs-table-border-color: #334155;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .table td, body.dark-theme .table th {
     background-color: #1e293b !important;
     color: #cbd5e1 !important;
     border-color: #334155 !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-theme .table-primary th {
     background-color: #334155 !important;
     color: #cbd5e1 !important;
     border-color: #475569 !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .swal2-popup {
     background-color: #1e293b !important;
     color: #cbd5e1 !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
     color: #cbd5e1 !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme input.form-control, body.dark-theme select.form-select, body.dark-theme textarea.form-control {
     background-color: #0f172a;
     border-color: #334155;
     color: #cbd5e1;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme input.form-control:focus {
     background-color: #0f172a;
     color: #cbd5e1;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .text-dark { color: #f8fafc !important; }
 body.dark-theme .bg-white { background-color: #1e293b !important; }
@@ -211,28 +952,262 @@ body.dark-theme .btn-light {
     background-color: #334155 !important;
     border-color: #475569 !important;
     color: #cbd5e1 !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .btn-light:hover {
     background-color: #475569 !important;
     color: #fff !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .custom-dropdown-content {
     background-color: #1e293b;
     border-color: #334155;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .custom-dropdown-content a {
     color: #cbd5e1;
     border-bottom-color: #334155;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 body.dark-theme .custom-dropdown-content a:hover {
     background-color: #334155;
     color: #fff;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .table-darkgreen th {
     background-color: #198754 !important;
     color: white !important;
     border-color: #146c43 !important;
     font-weight: normal !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .table-darkgreen th.th-cash-khr { background-color: #0fa874 !important; }
 .table-darkgreen th.th-cash-usd { background-color: #17a46a !important; }
@@ -243,6 +1218,45 @@ body.dark-theme .custom-dropdown-content a:hover {
     color: white !important;
     border-color: #b02a37 !important;
     font-weight: normal !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .table-darkred th.th-cash-khr { background-color: #c0392b !important; }
 .table-darkred th.th-cash-usd { background-color: #b03a2e !important; }
@@ -253,15 +1267,132 @@ body.dark-theme .custom-dropdown-content a:hover {
 .form-switch .form-check-input:checked {
     background-color: #198754 !important;
     border-color: #198754 !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .form-switch .form-check-input:focus {
     border-color: #198754;
     outline: 0;
     box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .form-switch .form-check-input:checked:focus {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 
 
@@ -273,6 +1404,45 @@ body.dark-theme .custom-dropdown-content a:hover {
     justify-content: center;
     background-color: #eef2f6;
     padding: 20px;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .login-card {
     display: flex;
@@ -283,42 +1453,393 @@ body.dark-theme .custom-dropdown-content a:hover {
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .login-left {
     flex: 1;
     padding: 60px 50px;
     background-color: #ffffff;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .login-right {
     flex: 1;
     background: linear-gradient(135deg, #2e7d32, #66bb6a);
     padding: 50px;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .login-left #loginLogoImg {
     width: 100%;
     max-width: 180px;
     max-height: 80px;
     object-fit: contain;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .login-input-group .form-control, .login-input-group .input-group-text {
     border-color: #e2e8f0;
     padding-top: 0.7rem;
     padding-bottom: 0.7rem;
     box-shadow: none !important;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .login-input-group .form-control {
     border-radius: 10px;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .login-input-group .input-group-text:first-child {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .login-input-group .input-group-text:last-child {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .login-input-group .form-control:focus {
     border-color: #2e7d32;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .btn-login {
     background-color: #2e7d32;
@@ -327,18 +1848,174 @@ body.dark-theme .custom-dropdown-content a:hover {
     padding: 0.7rem;
     border: none;
     font-size: 1.1rem;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .btn-login:hover {
     background-color: #1b5e20;
     color: #fff;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .btn-login-outline {
     border: 1px solid #fff;
     color: #fff;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .btn-login-outline:hover {
     background-color: #fff;
     color: #2e7d32;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 
 @media (max-width: 768px) {
@@ -354,6 +2031,45 @@ body.dark-theme .custom-dropdown-content a:hover {
     .login-left {
         padding: 20px 0;
     }
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 
 
@@ -365,9 +2081,87 @@ body.dark-theme .custom-dropdown-content a:hover {
     background-color: rgba(0,0,0,0.5);
     z-index: 1040;
     display: none;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .sidebar-backdrop.show {
     display: block;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 
 
@@ -384,6 +2178,45 @@ body.dark-theme .custom-dropdown-content a:hover {
     box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     z-index: 1040;
     padding-bottom: env(safe-area-inset-bottom);
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .mobile-bottom-nav .nav-item {
     display: flex;
@@ -396,23 +2229,218 @@ body.dark-theme .custom-dropdown-content a:hover {
     width: 20%;
     height: 100%;
     transition: all 0.2s ease;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .mobile-bottom-nav .nav-item i {
     font-size: 1.4rem;
     margin-bottom: 2px;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .mobile-bottom-nav .nav-item.active {
     color: #2e7d32;
     font-weight: bold;
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 .mobile-bottom-nav .nav-item.active i {
     transform: scale(1.1);
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 /* Adjust main content padding on mobile so bottom nav doesn't hide content */
 @media (max-width: 767px) {
     .main-panel {
         padding-bottom: 70px !important;
     }
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 
 
@@ -446,11 +2474,89 @@ body.dark-theme .custom-dropdown-content a:hover {
         padding-left: 0 !important;
         padding-right: 0 !important;
     }
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
+
 }
 
 @media (max-width: 767px) {
 
 
+
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
 
 }
 @media (max-width: 767px) {
@@ -594,5 +2700,44 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     /* Hide the empty "សរុប" td */
     .table-responsive tfoot td[colspan="2"]:first-child { display: none !important; }
+
+    /* Premium Numbering Ribbon */
+    #recentIncomeList, #recentExpenseList, #transactionList {
+        counter-reset: cardCounter;
+    }
+    
+    #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
+        counter-increment: cardCounter;
+        padding-top: 38px !important;
+        overflow: hidden; 
+    }
+    
+    #recentIncomeList tr::before, 
+    #recentExpenseList tr::before,
+    #transactionList tr::before {
+        content: counter(cardCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 4px 18px;
+        border-bottom-right-radius: 16px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+    
+    #recentExpenseList tr::before {
+        background: #dc3545; /* Expense Red */
+    }
+    
+    #transactionList tr.tx-income::before {
+        background: #198754;
+    }
+    #transactionList tr.tx-expense::before {
+        background: #dc3545;
+    }
 
 }
