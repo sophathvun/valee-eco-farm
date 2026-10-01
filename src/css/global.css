@@ -175,6 +175,34 @@
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 @font-face {
     font-family: 'Khmer OS Muol Light';
@@ -352,6 +380,34 @@
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 @font-face {
     font-family: 'Khmer OS Battambang';
@@ -528,6 +584,34 @@
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 
@@ -712,6 +796,34 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 
@@ -960,6 +1072,34 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 
 /* Read Only Mode (Module Specific) */
@@ -1176,6 +1316,34 @@ body.dark-theme {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .main-panel {
     background-color: #0f172a !important;
@@ -1350,6 +1518,34 @@ body.dark-theme .main-panel {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .content {
     background-color: #0f172a !important;
@@ -1523,6 +1719,34 @@ body.dark-theme .content {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 body.dark-theme .top-navbar {
@@ -1699,6 +1923,34 @@ body.dark-theme .top-navbar {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dark-theme .top-navbar .text-secondary, body.dark-theme .top-navbar .text-muted {
     color: #cbd5e1 !important;
@@ -1872,6 +2124,34 @@ body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dar
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 body.dark-theme .card, body.dark-theme .modal-content {
@@ -2048,6 +2328,34 @@ body.dark-theme .card, body.dark-theme .modal-content {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .card-body {
     color: #cbd5e1;
@@ -2221,6 +2529,34 @@ body.dark-theme .card-body {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 body.dark-theme .table {
@@ -2400,6 +2736,34 @@ body.dark-theme .table {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .table td, body.dark-theme .table th {
     background-color: #1e293b !important;
@@ -2575,6 +2939,34 @@ body.dark-theme .table td, body.dark-theme .table th {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-theme .table-primary th {
@@ -2752,6 +3144,34 @@ body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-them
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .swal2-popup {
     background-color: #1e293b !important;
@@ -2927,6 +3347,34 @@ body.dark-theme .swal2-popup {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
     color: #cbd5e1 !important;
@@ -3100,6 +3548,34 @@ body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 body.dark-theme input.form-control, body.dark-theme select.form-select, body.dark-theme textarea.form-control {
@@ -3277,6 +3753,34 @@ body.dark-theme input.form-control, body.dark-theme select.form-select, body.dar
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme input.form-control:focus {
     background-color: #0f172a;
@@ -3451,6 +3955,34 @@ body.dark-theme input.form-control:focus {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 body.dark-theme .text-dark { color: #f8fafc !important; }
@@ -3631,6 +4163,34 @@ body.dark-theme .btn-light {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .btn-light:hover {
     background-color: #475569 !important;
@@ -3805,6 +4365,34 @@ body.dark-theme .btn-light:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 body.dark-theme .custom-dropdown-content {
@@ -3981,6 +4569,34 @@ body.dark-theme .custom-dropdown-content {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .custom-dropdown-content a {
     color: #cbd5e1;
@@ -4156,6 +4772,34 @@ body.dark-theme .custom-dropdown-content a {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 body.dark-theme .custom-dropdown-content a:hover {
     background-color: #334155;
@@ -4330,6 +4974,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 .table-darkgreen th {
@@ -4507,6 +5179,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 .table-darkgreen th.th-cash-khr { background-color: #0fa874 !important; }
@@ -4689,6 +5389,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .table-darkred th.th-cash-khr { background-color: #c0392b !important; }
 .table-darkred th.th-cash-usd { background-color: #b03a2e !important; }
@@ -4870,6 +5598,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .form-switch .form-check-input:focus {
     border-color: #198754;
@@ -5047,6 +5803,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .form-switch .form-check-input:checked:focus {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
@@ -5220,6 +6004,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 
@@ -5403,6 +6215,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .login-card {
     display: flex;
@@ -5584,6 +6424,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .login-left {
     flex: 1;
@@ -5760,6 +6628,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .login-right {
     flex: 1;
@@ -5935,6 +6831,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 .login-left #loginLogoImg {
@@ -6113,6 +7037,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .login-input-group .form-control, .login-input-group .input-group-text {
     border-color: #e2e8f0;
@@ -6290,6 +7242,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .login-input-group .form-control {
     border-radius: 10px;
@@ -6463,6 +7443,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 .login-input-group .input-group-text:first-child {
@@ -6639,6 +7647,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .login-input-group .input-group-text:last-child {
     border-top-right-radius: 10px;
@@ -6814,6 +7850,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .login-input-group .form-control:focus {
     border-color: #2e7d32;
@@ -6987,6 +8051,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 .btn-login {
@@ -7167,6 +8259,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .btn-login:hover {
     background-color: #1b5e20;
@@ -7341,6 +8461,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 .btn-login-outline {
@@ -7517,6 +8665,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .btn-login-outline:hover {
     background-color: #fff;
@@ -7691,6 +8867,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 
@@ -7878,6 +9082,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 
 
@@ -8060,6 +9292,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .sidebar-backdrop.show {
     display: block;
@@ -8233,6 +9493,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 
@@ -8421,6 +9709,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .mobile-bottom-nav .nav-item {
     display: flex;
@@ -8604,6 +9920,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .mobile-bottom-nav .nav-item i {
     font-size: 1.4rem;
@@ -8778,6 +10122,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 .mobile-bottom-nav .nav-item.active {
@@ -8954,6 +10326,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 .mobile-bottom-nav .nav-item.active i {
     transform: scale(1.1);
@@ -9127,6 +10527,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 /* Adjust main content padding on mobile so bottom nav doesn't hide content */
@@ -9304,6 +10732,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 
@@ -9509,6 +10965,34 @@ body.dark-theme .custom-dropdown-content a:hover {
         color: white !important;
     }
 
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
 }
 
 @media (max-width: 767px) {
@@ -9685,6 +11169,34 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }
 @media (max-width: 767px) {
@@ -9968,5 +11480,33 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td * {
         color: white !important;
     }
+
+    /* Fourth row: Exchange Rate Note */
+    #recentIncomeList + tfoot tr:nth-child(4),
+    #recentExpenseList + tfoot tr:nth-child(4) {
+        padding: 0 15px 15px 15px; /* Only bottom padding to connect with row 3 */
+    }
+    #recentIncomeList + tfoot tr:nth-child(4) { background-color: #15803d !important; }
+    #recentExpenseList + tfoot tr:nth-child(4) { background-color: #b91c1c !important; }
+    
+    #recentIncomeList + tfoot tr:nth-child(4) td,
+    #recentExpenseList + tfoot tr:nth-child(4) td {
+        display: block !important;
+        text-align: right !important;
+        font-size: 13px !important;
+        color: rgba(255,255,255,0.7) !important;
+        font-style: italic;
+        padding: 0 !important;
+    }
+    
+    /* Make sure row 3 doesn't have bottom padding so it connects smoothly to row 4 */
+    #recentIncomeList + tfoot tr:nth-child(3),
+    #recentExpenseList + tfoot tr:nth-child(3) {
+        padding-bottom: 5px !important;
+    }
+    
+    /* Allow the first td of row 4 to be shown */
+    #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
+    #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
 }

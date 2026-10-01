@@ -182,6 +182,7 @@ async function loadData() {
         document.getElementById('list-inc-bank-subtotal').textContent = formatCurrency(incBankTotalUsd, 'USD') + ' = ' + formatCurrency(incBankTotalUsd * listRate, 'KHR');
     if(document.getElementById('list-inc-grand-total'))
         document.getElementById('list-inc-grand-total').textContent = formatCurrency(incGrandTotalUsd, 'USD') + ' = ' + formatCurrency(incGrandTotalUsd * listRate, 'KHR');
+    if(document.getElementById('list-inc-rate-note')) document.getElementById('list-inc-rate-note').textContent = `* អត្រាប្តូរប្រាក់៖ $1 = ៛${formatCurrency(listRate, 'KHR').replace('៛','')}`;
 
     // ---- Expense column totals ----
     if(document.getElementById('list-exp-cash-khr')) document.getElementById('list-exp-cash-khr').textContent = formatCurrency(expCashKhr, 'KHR');
@@ -199,6 +200,7 @@ async function loadData() {
         document.getElementById('list-exp-bank-subtotal').textContent = formatCurrency(expBankTotalUsd, 'USD') + ' = ' + formatCurrency(expBankTotalUsd * listRate, 'KHR');
     if(document.getElementById('list-exp-grand-total'))
         document.getElementById('list-exp-grand-total').textContent = formatCurrency(expGrandTotalUsd, 'USD') + ' = ' + formatCurrency(expGrandTotalUsd * listRate, 'KHR');
+    if(document.getElementById('list-exp-rate-note')) document.getElementById('list-exp-rate-note').textContent = `* អត្រាប្តូរប្រាក់៖ $1 = ៛${formatCurrency(listRate, 'KHR').replace('៛','')}`;
 
     const rateDisplays = document.querySelectorAll('.rate-display');
     rateDisplays.forEach(el => el.textContent = (window.sysExchangeRate || 4100).toLocaleString('en-US'));
