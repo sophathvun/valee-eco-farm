@@ -19,8 +19,12 @@
                             <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'ទាញយកជា PDF', text: 'សូមជ្រើសយក \'Save as PDF\' នៅកន្លែងជម្រើស Print ដើម្បីរក្សាទុក។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#28a745'}).then((result) => { if(result.isConfirmed) printListReport('income'); });">ទាញយករបាយការណ៍ជា PDF</a>
                         </div>
                     </div>
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#incomeFilterCollapse" aria-expanded="false">
+                        <i class="bi bi-funnel"></i>
+                    </button>
                 </div>
             </div>
+            <div class="collapse" id="incomeFilterCollapse">
             <div class="card-body bg-light pb-2 pt-2 border-bottom">
                 <div class="row align-items-end">
                     <div class="col-md-4">
@@ -35,6 +39,7 @@
                         <button class="btn btn-sm btn-secondary w-100 mb-1" onclick="clearIncFilter()">សម្អាត</button>
                     </div>
                 </div>
+            </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
