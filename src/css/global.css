@@ -55,10 +55,10 @@
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -91,7 +91,7 @@
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -103,7 +103,7 @@
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -141,10 +141,10 @@
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -260,10 +260,10 @@
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -296,7 +296,7 @@
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -308,7 +308,7 @@
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -346,10 +346,10 @@
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -465,10 +465,10 @@
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -501,7 +501,7 @@
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -513,7 +513,7 @@
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -551,10 +551,10 @@
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -677,10 +677,10 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -713,7 +713,7 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -725,7 +725,7 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -763,10 +763,10 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -828,7 +828,7 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
 }
 
 /* Sidebar Styles (Tabler Inspired) */
-.sidebar { min-width: 260px; max-width: 260px; background-color: #1e293b; color: #cbd5e1; transition: all 0.3s; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; border-right: 1px solid #0f172a; }
+.sidebar { min-width: 260px; max-width: 260px; background-color: var(--bs-body-color); color: #cbd5e1; transition: all 0.3s; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; border-right: 1px solid #0f172a; }
 .sidebar .brand { padding: 15px 20px; border-bottom: 1px solid #334155; }
 .sidebar .sidebar-menu { padding: 0; margin-bottom: 20px; }
 .sidebar .sys-menu-item { margin-bottom: 0; border-left: 4px solid transparent; border-radius: 0; transition: all 0.2s; }
@@ -842,7 +842,7 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
 
 /* Submenu */
 .sidebar .submenu-link { padding: 10px 15px 10px 48px; font-size: 0.85rem; margin-bottom: 0; border-radius: 0; }
-.sidebar .submenu-link.active { background-color: #1e293b; color: #198754; }
+.sidebar .submenu-link.active { background-color: var(--bs-body-color); color: #198754; }
 
 /* Main Content Area */
 .main-panel { height: 100vh; overflow: hidden; }
@@ -882,7 +882,7 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
 /* Dropdown */
 .custom-dropdown { position: relative; display: inline-block; }
 .custom-dropdown-content { display: none; position: absolute; right: 0; background-color: white; min-width: 250px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1000; border-radius: 8px; border: 1px solid #ddd; overflow: hidden; }
-.custom-dropdown-content a { color: #333; padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #eee; font-size: 14px; transition: 0.2s; text-align: left; }
+.custom-dropdown-content a { color: var(--bs-body-color); padding: 12px 16px; text-decoration: none; display: block; border-bottom: 1px solid #eee; font-size: 14px; transition: 0.2s; text-align: left; }
 .custom-dropdown-content a:last-child { border-bottom: none; }
 .custom-dropdown-content a:hover { background-color: #f8f9fa; color: #000; }
 .custom-dropdown.show .custom-dropdown-content { display: block; }
@@ -952,10 +952,10 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -988,7 +988,7 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -1000,7 +1000,7 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -1038,10 +1038,10 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -1196,10 +1196,10 @@ body.dark-theme {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -1232,7 +1232,7 @@ body.dark-theme {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -1244,7 +1244,7 @@ body.dark-theme {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -1282,10 +1282,10 @@ body.dark-theme {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -1398,10 +1398,10 @@ body.dark-theme .main-panel {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -1434,7 +1434,7 @@ body.dark-theme .main-panel {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -1446,7 +1446,7 @@ body.dark-theme .main-panel {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -1484,10 +1484,10 @@ body.dark-theme .main-panel {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -1600,10 +1600,10 @@ body.dark-theme .content {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -1636,7 +1636,7 @@ body.dark-theme .content {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -1648,7 +1648,7 @@ body.dark-theme .content {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -1686,10 +1686,10 @@ body.dark-theme .content {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -1803,10 +1803,10 @@ body.dark-theme .top-navbar {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -1839,7 +1839,7 @@ body.dark-theme .top-navbar {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -1851,7 +1851,7 @@ body.dark-theme .top-navbar {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -1889,10 +1889,10 @@ body.dark-theme .top-navbar {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -2005,10 +2005,10 @@ body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dar
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -2041,7 +2041,7 @@ body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dar
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -2053,7 +2053,7 @@ body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dar
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -2091,10 +2091,10 @@ body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dar
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -2155,7 +2155,7 @@ body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dar
 
 }
 body.dark-theme .card, body.dark-theme .modal-content {
-    background-color: #1e293b;
+    background-color: var(--bs-body-color);
     border-color: #334155;
     /* Premium Numbering Ribbon */
     #recentIncomeList, #recentExpenseList, #transactionList {
@@ -2208,10 +2208,10 @@ body.dark-theme .card, body.dark-theme .modal-content {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -2244,7 +2244,7 @@ body.dark-theme .card, body.dark-theme .modal-content {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -2256,7 +2256,7 @@ body.dark-theme .card, body.dark-theme .modal-content {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -2294,10 +2294,10 @@ body.dark-theme .card, body.dark-theme .modal-content {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -2410,10 +2410,10 @@ body.dark-theme .card-body {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -2446,7 +2446,7 @@ body.dark-theme .card-body {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -2458,7 +2458,7 @@ body.dark-theme .card-body {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -2496,10 +2496,10 @@ body.dark-theme .card-body {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -2616,10 +2616,10 @@ body.dark-theme .table {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -2652,7 +2652,7 @@ body.dark-theme .table {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -2664,7 +2664,7 @@ body.dark-theme .table {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -2702,10 +2702,10 @@ body.dark-theme .table {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -2820,10 +2820,10 @@ body.dark-theme .table td, body.dark-theme .table th {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -2856,7 +2856,7 @@ body.dark-theme .table td, body.dark-theme .table th {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -2868,7 +2868,7 @@ body.dark-theme .table td, body.dark-theme .table th {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -2906,10 +2906,10 @@ body.dark-theme .table td, body.dark-theme .table th {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -3024,10 +3024,10 @@ body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-them
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -3060,7 +3060,7 @@ body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-them
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -3072,7 +3072,7 @@ body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-them
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -3110,10 +3110,10 @@ body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-them
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -3227,10 +3227,10 @@ body.dark-theme .swal2-popup {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -3263,7 +3263,7 @@ body.dark-theme .swal2-popup {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -3275,7 +3275,7 @@ body.dark-theme .swal2-popup {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -3313,10 +3313,10 @@ body.dark-theme .swal2-popup {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -3429,10 +3429,10 @@ body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -3465,7 +3465,7 @@ body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -3477,7 +3477,7 @@ body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -3515,10 +3515,10 @@ body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -3633,10 +3633,10 @@ body.dark-theme input.form-control, body.dark-theme select.form-select, body.dar
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -3669,7 +3669,7 @@ body.dark-theme input.form-control, body.dark-theme select.form-select, body.dar
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -3681,7 +3681,7 @@ body.dark-theme input.form-control, body.dark-theme select.form-select, body.dar
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -3719,10 +3719,10 @@ body.dark-theme input.form-control, body.dark-theme select.form-select, body.dar
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -3836,10 +3836,10 @@ body.dark-theme input.form-control:focus {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -3872,7 +3872,7 @@ body.dark-theme input.form-control:focus {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -3884,7 +3884,7 @@ body.dark-theme input.form-control:focus {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -3922,10 +3922,10 @@ body.dark-theme input.form-control:focus {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -4043,10 +4043,10 @@ body.dark-theme .btn-light {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -4079,7 +4079,7 @@ body.dark-theme .btn-light {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -4091,7 +4091,7 @@ body.dark-theme .btn-light {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -4129,10 +4129,10 @@ body.dark-theme .btn-light {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -4246,10 +4246,10 @@ body.dark-theme .btn-light:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -4282,7 +4282,7 @@ body.dark-theme .btn-light:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -4294,7 +4294,7 @@ body.dark-theme .btn-light:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -4332,10 +4332,10 @@ body.dark-theme .btn-light:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -4396,7 +4396,7 @@ body.dark-theme .btn-light:hover {
 
 }
 body.dark-theme .custom-dropdown-content {
-    background-color: #1e293b;
+    background-color: var(--bs-body-color);
     border-color: #334155;
     /* Premium Numbering Ribbon */
     #recentIncomeList, #recentExpenseList, #transactionList {
@@ -4449,10 +4449,10 @@ body.dark-theme .custom-dropdown-content {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -4485,7 +4485,7 @@ body.dark-theme .custom-dropdown-content {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -4497,7 +4497,7 @@ body.dark-theme .custom-dropdown-content {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -4535,10 +4535,10 @@ body.dark-theme .custom-dropdown-content {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -4652,10 +4652,10 @@ body.dark-theme .custom-dropdown-content a {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -4688,7 +4688,7 @@ body.dark-theme .custom-dropdown-content a {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -4700,7 +4700,7 @@ body.dark-theme .custom-dropdown-content a {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -4738,10 +4738,10 @@ body.dark-theme .custom-dropdown-content a {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -4855,10 +4855,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -4891,7 +4891,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -4903,7 +4903,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -4941,10 +4941,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -5060,10 +5060,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -5096,7 +5096,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -5108,7 +5108,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -5146,10 +5146,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -5269,10 +5269,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -5305,7 +5305,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -5317,7 +5317,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -5355,10 +5355,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -5478,10 +5478,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -5514,7 +5514,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -5526,7 +5526,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -5564,10 +5564,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -5683,10 +5683,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -5719,7 +5719,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -5731,7 +5731,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -5769,10 +5769,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -5885,10 +5885,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -5921,7 +5921,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -5933,7 +5933,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -5971,10 +5971,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -6095,10 +6095,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -6131,7 +6131,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -6143,7 +6143,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -6181,10 +6181,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -6249,7 +6249,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     flex-direction: row;
     width: 100%;
     max-width: 900px;
-    background: #fff;
+    background: var(--bs-body-bg);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
@@ -6304,10 +6304,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -6340,7 +6340,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -6352,7 +6352,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -6390,10 +6390,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -6508,10 +6508,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -6544,7 +6544,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -6556,7 +6556,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -6594,10 +6594,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -6712,10 +6712,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -6748,7 +6748,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -6760,7 +6760,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -6798,10 +6798,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -6917,10 +6917,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -6953,7 +6953,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -6965,7 +6965,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -7003,10 +7003,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -7122,10 +7122,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -7158,7 +7158,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -7170,7 +7170,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -7208,10 +7208,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -7324,10 +7324,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -7360,7 +7360,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -7372,7 +7372,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -7410,10 +7410,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -7527,10 +7527,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -7563,7 +7563,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -7575,7 +7575,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -7613,10 +7613,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -7730,10 +7730,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -7766,7 +7766,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -7778,7 +7778,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -7816,10 +7816,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -7932,10 +7932,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -7968,7 +7968,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -7980,7 +7980,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -8018,10 +8018,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -8139,10 +8139,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -8175,7 +8175,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -8187,7 +8187,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -8225,10 +8225,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -8342,10 +8342,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -8378,7 +8378,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -8390,7 +8390,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -8428,10 +8428,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -8545,10 +8545,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -8581,7 +8581,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -8593,7 +8593,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -8631,10 +8631,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -8695,7 +8695,7 @@ body.dark-theme .custom-dropdown-content a:hover {
 
 }
 .btn-login-outline:hover {
-    background-color: #fff;
+    background-color: var(--bs-body-bg);
     color: #2e7d32;
     /* Premium Numbering Ribbon */
     #recentIncomeList, #recentExpenseList, #transactionList {
@@ -8748,10 +8748,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -8784,7 +8784,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -8796,7 +8796,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -8834,10 +8834,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -8900,7 +8900,7 @@ body.dark-theme .custom-dropdown-content a:hover {
 
 @media (max-width: 768px) {
     .login-wrapper {
-        background-color: #fff;
+        background-color: var(--bs-body-bg);
         align-items: flex-start;
         padding: 20px;
     }
@@ -8962,10 +8962,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -8998,7 +8998,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -9010,7 +9010,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -9048,10 +9048,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -9172,10 +9172,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -9208,7 +9208,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -9220,7 +9220,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -9258,10 +9258,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -9374,10 +9374,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -9410,7 +9410,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -9422,7 +9422,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -9460,10 +9460,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -9589,10 +9589,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -9625,7 +9625,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -9637,7 +9637,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -9675,10 +9675,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -9800,10 +9800,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -9836,7 +9836,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -9848,7 +9848,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -9886,10 +9886,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -10003,10 +10003,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -10039,7 +10039,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -10051,7 +10051,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -10089,10 +10089,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -10206,10 +10206,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -10242,7 +10242,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -10254,7 +10254,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -10292,10 +10292,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -10408,10 +10408,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -10444,7 +10444,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -10456,7 +10456,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -10494,10 +10494,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -10613,10 +10613,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -10649,7 +10649,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -10661,7 +10661,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -10699,10 +10699,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -10845,10 +10845,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -10881,7 +10881,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -10893,7 +10893,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -10931,10 +10931,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -11050,10 +11050,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -11086,7 +11086,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -11098,7 +11098,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -11136,10 +11136,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -11214,8 +11214,8 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     .table-responsive tr {
         margin-bottom: 12px;
-        background-color: #fff;
-        border: 1px solid #e2e8f0;
+        background-color: var(--bs-body-bg);
+        border: 1px solid var(--bs-border-color);
         border-radius: 12px;
         padding: 12px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -11247,7 +11247,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         grid-row: 1;
         text-align: right !important;
         font-size: 12px;
-        color: #64748b;
+        color: var(--bs-secondary-color);
     }
     
     /* Category (Col 2) -> Top Left */
@@ -11257,14 +11257,14 @@ body.dark-theme .custom-dropdown-content a:hover {
         grid-row: 1;
         font-weight: 700;
         font-size: 15px;
-        color: #1e293b;
+        color: var(--bs-body-color);
     }
     
     /* Add Labels to Amounts */
-    #recentIncomeList td:nth-child(3)::before, #recentExpenseList td:nth-child(3)::before { content: "សាច់ប្រាក់ ៛ : "; color: #64748b; font-size: 12px; font-weight: normal; }
-    #recentIncomeList td:nth-child(4)::before, #recentExpenseList td:nth-child(4)::before { content: "សាច់ប្រាក់ $ : "; color: #64748b; font-size: 12px; font-weight: normal; }
-    #recentIncomeList td:nth-child(5)::before, #recentExpenseList td:nth-child(5)::before { content: "ធនាគារ ៛ : "; color: #64748b; font-size: 12px; font-weight: normal; }
-    #recentIncomeList td:nth-child(6)::before, #recentExpenseList td:nth-child(6)::before { content: "ធនាគារ $ : "; color: #64748b; font-size: 12px; font-weight: normal; }
+    #recentIncomeList td:nth-child(3)::before, #recentExpenseList td:nth-child(3)::before { content: "សាច់ប្រាក់ ៛ : "; color: var(--bs-secondary-color); font-size: 12px; font-weight: normal; }
+    #recentIncomeList td:nth-child(4)::before, #recentExpenseList td:nth-child(4)::before { content: "សាច់ប្រាក់ $ : "; color: var(--bs-secondary-color); font-size: 12px; font-weight: normal; }
+    #recentIncomeList td:nth-child(5)::before, #recentExpenseList td:nth-child(5)::before { content: "ធនាគារ ៛ : "; color: var(--bs-secondary-color); font-size: 12px; font-weight: normal; }
+    #recentIncomeList td:nth-child(6)::before, #recentExpenseList td:nth-child(6)::before { content: "ធនាគារ $ : "; color: var(--bs-secondary-color); font-size: 12px; font-weight: normal; }
     
     /* Positioning the money columns */
     #recentIncomeList td:nth-child(3), #recentExpenseList td:nth-child(3) { grid-column: 1 / 2; grid-row: 2; font-weight: 600; font-size: 13px;}
@@ -11300,9 +11300,9 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Type Badge */
     #transactionList td:nth-child(2) { grid-column: 1 / 2; grid-row: 1; }
     /* Date */
-    #transactionList td:nth-child(1) { grid-column: 2 / 3; grid-row: 1; text-align: right !important; font-size: 12px; color: #64748b; }
+    #transactionList td:nth-child(1) { grid-column: 2 / 3; grid-row: 1; text-align: right !important; font-size: 12px; color: var(--bs-secondary-color); }
     /* Category */
-    #transactionList td:nth-child(3) { grid-column: 1 / 2; grid-row: 2; font-weight: 700; font-size: 15px; color: #1e293b; }
+    #transactionList td:nth-child(3) { grid-column: 1 / 2; grid-row: 2; font-weight: 700; font-size: 15px; color: var(--bs-body-color); }
     /* Amount */
     #transactionList td:nth-child(4) { grid-column: 2 / 3; grid-row: 2; font-size: 16px; align-self: end;}
     /* Hide Note */
@@ -11361,10 +11361,10 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: block;
         width: 100%;
         margin-top: 20px;
-        background: #fff;
+        background: var(--bs-body-bg);
         border-radius: 16px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--bs-border-color);
         overflow: hidden;
     }
     
@@ -11397,7 +11397,7 @@ body.dark-theme .custom-dropdown-content a:hover {
         display: flex;
         justify-content: space-between;
         padding: 6px 0 !important;
-        border-bottom: 1px solid #f1f5f9 !important;
+        border-bottom: 1px solid var(--bs-border-color) !important;
         font-size: 14px;
         font-weight: 600;
     }
@@ -11409,7 +11409,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(2) {
         background-color: #f8f9fa !important;
         padding: 15px;
-        border-top: 1px dashed #cbd5e1;
+        border-top: 1px dashed var(--bs-border-color);
     }
     /* For Income, use a slight green tint, for Expense slight red tint */
     #recentIncomeList + tfoot tr:nth-child(2) { background-color: #f0fdf4 !important; }
@@ -11447,10 +11447,10 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentExpenseList + tfoot tr:nth-child(3) td:empty { display: none !important; }
     
     /* Labels for the first row */
-    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: #64748b; }
-    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: #64748b; }
-    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: #64748b; }
-    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: #64748b; }
+    #list-inc-cash-khr::before, #list-exp-cash-khr::before { content: "សាច់ប្រាក់ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-cash-usd::before, #list-exp-cash-usd::before { content: "សាច់ប្រាក់ $"; color: var(--bs-secondary-color); }
+    #list-inc-bank-khr::before, #list-exp-bank-khr::before { content: "ធនាគារ ៛"; color: var(--bs-secondary-color); }
+    #list-inc-bank-usd::before, #list-exp-bank-usd::before { content: "ធនាគារ $"; color: var(--bs-secondary-color); }
     
     /* Labels for the second row (Subtotals) */
     /* The first TD in row 2 is the label "សរុបសាច់ប្រាក់" and "សរុបធនាគារ" which is already there, but it was merged!
@@ -11509,4 +11509,18 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
+}
+
+[data-bs-theme="dark"] .table-responsive tr {
+    background-color: var(--bs-tertiary-bg);
+}
+[data-bs-theme="dark"] #recentIncomeList + tfoot,
+[data-bs-theme="dark"] #recentExpenseList + tfoot {
+    background-color: var(--bs-tertiary-bg);
+}
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr:nth-child(2) {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+}
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr:nth-child(2) {
+    background-color: rgba(220, 53, 69, 0.1) !important;
 }
