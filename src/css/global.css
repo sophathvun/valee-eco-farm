@@ -1,3 +1,8 @@
+
+/* Tell mobile browsers that we natively support both light and dark modes, so they don't use Smart Invert */
+:root {
+    color-scheme: light dark;
+}
 /* global.css */
 @font-face {
     font-family: 'Khmer OS Siemreap';
