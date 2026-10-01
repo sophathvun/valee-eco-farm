@@ -43,7 +43,7 @@ async function loadEmployees() {
             <td>${emp.position}</td>
             <td><span class="badge bg-secondary">${typeLabel}</span></td>
             <td>${emp.phone}</td>
-            <td class="text-info fw-bold">${formatCurrency(emp.salary, 'USD')} <small class="text-muted">${wageSuffix}</small></td>
+            <td class="text-info fw-bold">${formatCurrency(emp.salary, emp.currency || 'USD')} <small class="text-muted">${wageSuffix}</small></td>
             <td class="align-middle">
                 ${hasPermission('employee_manage') ? `
                 <button class="btn btn-sm btn-outline-warning btn-edit me-1" onclick="editEmployee(${emp.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button>
@@ -67,6 +67,7 @@ window.editEmployee = async function(id) {
     document.getElementById('emp-phone').value = emp.phone;
     document.getElementById('emp-department').value = emp.department || '';
     document.getElementById('emp-position').value = emp.position || '';
+    if(document.getElementById('emp-currency')) document.getElementById('emp-currency').value = emp.currency || 'USD';
     document.getElementById('emp-salary').value = emp.salary;
     document.getElementById('emp-type').value = emp.type || 'Full-Time';
     document.getElementById('emp-wage-type').value = emp.wageType || 'Monthly';
@@ -111,6 +112,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         const position = document.getElementById('emp-position').value;
         const type = document.getElementById('emp-type').value;
         const wageType = document.getElementById('emp-wage-type').value;
+        const currency = document.getElementById('emp-currency') ? document.getElementById('emp-currency').value : 'USD';
         const salary = parseFloat(document.getElementById('emp-salary').value);
         const photo = document.getElementById('emp-photo-preview').src;
 
@@ -121,7 +123,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
             return;
         }
 
-        const data = { code, name, gender, dob, phone, department, position, type, wageType, salary, photo };
+        const data = { code, name, gender, dob, phone, department, position, type, wageType, currency, salary, photo };
         if (editingEmployeeId) {
             await db.employees.update(editingEmployeeId, data);
             Swal.fire({icon: 'success', text: 'អាប់ដេតព័ត៌មានបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
@@ -133,6 +135,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         document.getElementById('employeeForm').reset();
         document.getElementById('emp-type').value = 'Full-Time';
         document.getElementById('emp-wage-type').value = 'Monthly';
+        if(document.getElementById('emp-currency')) document.getElementById('emp-currency').value = 'USD';
         editingEmployeeId = null;
         document.getElementById('emp-photo-preview').removeAttribute('src');
         btn.innerHTML = 'រក្សាទុក';
