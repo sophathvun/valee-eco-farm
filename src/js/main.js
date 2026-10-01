@@ -98,7 +98,8 @@ async function initializeApp() {
         flatpickr('input[type="date"]', {
             dateFormat: 'Y-m-d',
             altInput: true,
-            altFormat: 'd-M-Y'
+            altFormat: 'd-m-Y',
+            allowInput: true
         });
     }
 }
