@@ -2,6 +2,13 @@
 /* Tell mobile browsers that we natively support both light and dark modes, so they don't use Smart Invert */
 :root {
     color-scheme: light dark;
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
+
 }
 /* global.css */
 @font-face {
@@ -16,7 +23,7 @@
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -207,6 +214,13 @@
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 @font-face {
@@ -221,7 +235,7 @@
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -412,6 +426,13 @@
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 @font-face {
@@ -426,7 +447,7 @@
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -617,6 +638,13 @@
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 
@@ -638,7 +666,7 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -829,6 +857,13 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 
@@ -913,7 +948,7 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -1104,6 +1139,13 @@ body { font-family: 'Khmer OS Siemreap', 'Kantumruy Pro', 'Khmer OS Battambang',
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 
@@ -1157,7 +1199,7 @@ body.dark-theme {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -1348,6 +1390,13 @@ body.dark-theme {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .main-panel {
@@ -1359,7 +1408,7 @@ body.dark-theme .main-panel {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -1550,6 +1599,13 @@ body.dark-theme .main-panel {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .content {
@@ -1561,7 +1617,7 @@ body.dark-theme .content {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -1752,6 +1808,13 @@ body.dark-theme .content {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .top-navbar {
@@ -1764,7 +1827,7 @@ body.dark-theme .top-navbar {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -1955,6 +2018,13 @@ body.dark-theme .top-navbar {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dark-theme .top-navbar .text-secondary, body.dark-theme .top-navbar .text-muted {
@@ -1966,7 +2036,7 @@ body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dar
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -2157,6 +2227,13 @@ body.dark-theme .top-navbar h5, body.dark-theme .top-navbar .text-dark, body.dar
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .card, body.dark-theme .modal-content {
@@ -2169,7 +2246,7 @@ body.dark-theme .card, body.dark-theme .modal-content {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -2360,6 +2437,13 @@ body.dark-theme .card, body.dark-theme .modal-content {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .card-body {
@@ -2371,7 +2455,7 @@ body.dark-theme .card-body {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -2562,6 +2646,13 @@ body.dark-theme .card-body {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .table {
@@ -2577,7 +2668,7 @@ body.dark-theme .table {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -2768,6 +2859,13 @@ body.dark-theme .table {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .table td, body.dark-theme .table th {
@@ -2781,7 +2879,7 @@ body.dark-theme .table td, body.dark-theme .table th {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -2972,6 +3070,13 @@ body.dark-theme .table td, body.dark-theme .table th {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-theme .table-primary th {
@@ -2985,7 +3090,7 @@ body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-them
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -3176,6 +3281,13 @@ body.dark-theme .table-light th, body.dark-theme .table-light td, body.dark-them
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .swal2-popup {
@@ -3188,7 +3300,7 @@ body.dark-theme .swal2-popup {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -3379,6 +3491,13 @@ body.dark-theme .swal2-popup {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
@@ -3390,7 +3509,7 @@ body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -3581,6 +3700,13 @@ body.dark-theme .swal2-title, body.dark-theme .swal2-html-container {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme input.form-control, body.dark-theme select.form-select, body.dark-theme textarea.form-control {
@@ -3594,7 +3720,7 @@ body.dark-theme input.form-control, body.dark-theme select.form-select, body.dar
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -3785,6 +3911,13 @@ body.dark-theme input.form-control, body.dark-theme select.form-select, body.dar
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme input.form-control:focus {
@@ -3797,7 +3930,7 @@ body.dark-theme input.form-control:focus {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -3988,6 +4121,13 @@ body.dark-theme input.form-control:focus {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .text-dark { color: #f8fafc !important; }
@@ -4004,7 +4144,7 @@ body.dark-theme .btn-light {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -4195,6 +4335,13 @@ body.dark-theme .btn-light {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .btn-light:hover {
@@ -4207,7 +4354,7 @@ body.dark-theme .btn-light:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -4398,6 +4545,13 @@ body.dark-theme .btn-light:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .custom-dropdown-content {
@@ -4410,7 +4564,7 @@ body.dark-theme .custom-dropdown-content {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -4601,6 +4755,13 @@ body.dark-theme .custom-dropdown-content {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .custom-dropdown-content a {
@@ -4613,7 +4774,7 @@ body.dark-theme .custom-dropdown-content a {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -4804,6 +4965,13 @@ body.dark-theme .custom-dropdown-content a {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 body.dark-theme .custom-dropdown-content a:hover {
@@ -4816,7 +4984,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -5007,6 +5175,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .table-darkgreen th {
@@ -5021,7 +5196,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -5212,6 +5387,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .table-darkgreen th.th-cash-khr { background-color: #0fa874 !important; }
@@ -5230,7 +5412,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -5421,6 +5603,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .table-darkred th.th-cash-khr { background-color: #c0392b !important; }
@@ -5439,7 +5628,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -5630,6 +5819,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .form-switch .form-check-input:focus {
@@ -5644,7 +5840,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -5835,6 +6031,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .form-switch .form-check-input:checked:focus {
@@ -5846,7 +6049,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -6037,6 +6240,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 
@@ -6056,7 +6266,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -6247,6 +6457,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .login-card {
@@ -6265,7 +6482,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -6456,6 +6673,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .login-left {
@@ -6469,7 +6693,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -6660,6 +6884,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .login-right {
@@ -6673,7 +6904,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -6864,6 +7095,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .login-left #loginLogoImg {
@@ -6878,7 +7116,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -7069,6 +7307,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .login-input-group .form-control, .login-input-group .input-group-text {
@@ -7083,7 +7328,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -7274,6 +7519,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .login-input-group .form-control {
@@ -7285,7 +7537,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -7476,6 +7728,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .login-input-group .input-group-text:first-child {
@@ -7488,7 +7747,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -7679,6 +7938,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .login-input-group .input-group-text:last-child {
@@ -7691,7 +7957,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -7882,6 +8148,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .login-input-group .form-control:focus {
@@ -7893,7 +8166,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -8084,6 +8357,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .btn-login {
@@ -8100,7 +8380,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -8291,6 +8571,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .btn-login:hover {
@@ -8303,7 +8590,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -8494,6 +8781,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .btn-login-outline {
@@ -8506,7 +8800,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -8697,6 +8991,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .btn-login-outline:hover {
@@ -8709,7 +9010,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -8900,6 +9201,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 
@@ -8923,7 +9231,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -9114,6 +9422,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 
@@ -9133,7 +9448,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -9324,6 +9639,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .sidebar-backdrop.show {
@@ -9335,7 +9657,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -9526,6 +9848,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 
@@ -9550,7 +9879,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -9741,6 +10070,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .mobile-bottom-nav .nav-item {
@@ -9761,7 +10097,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -9952,6 +10288,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .mobile-bottom-nav .nav-item i {
@@ -9964,7 +10307,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -10155,6 +10498,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .mobile-bottom-nav .nav-item.active {
@@ -10167,7 +10517,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -10358,6 +10708,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 .mobile-bottom-nav .nav-item.active i {
@@ -10369,7 +10726,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -10560,6 +10917,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 /* Adjust main content padding on mobile so bottom nav doesn't hide content */
@@ -10574,7 +10938,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -10765,6 +11129,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 
@@ -10806,7 +11177,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -10997,6 +11368,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 
@@ -11011,7 +11389,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -11202,6 +11580,13 @@ body.dark-theme .custom-dropdown-content a:hover {
     /* Allow the first td of row 4 to be shown */
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
+
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
 
 }
 @media (max-width: 767px) {
@@ -11253,16 +11638,19 @@ body.dark-theme .custom-dropdown-content a:hover {
         text-align: right !important;
         font-size: 12px;
         color: var(--bs-secondary-color);
+        padding-top: 2px !important; /* align with category */
     }
     
-    /* Category (Col 2) -> Top Left */
+    /* Category (Col 2) -> Top Left inline with ribbon */
     #recentIncomeList td:nth-child(2),
     #recentExpenseList td:nth-child(2) {
         grid-column: 1 / 2;
         grid-row: 1;
         font-weight: 700;
-        font-size: 15px;
+        font-size: 16px;
         color: var(--bs-body-color);
+        padding-left: 55px !important; /* Make room for the Numbering Ribbon */
+        line-height: 1.2;
     }
     
     /* Add Labels to Amounts */
@@ -11277,9 +11665,26 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentIncomeList td:nth-child(5), #recentExpenseList td:nth-child(5) { grid-column: 1 / 2; grid-row: 3; font-weight: 600; font-size: 13px;}
     #recentIncomeList td:nth-child(6), #recentExpenseList td:nth-child(6) { grid-column: 2 / 3; grid-row: 3; text-align: right !important; font-weight: 600; font-size: 13px;}
     
-    /* Hide Note Column (Col 7) on mobile */
+    /* Note Column (Col 7) -> Full width before actions */
     #recentIncomeList td:nth-child(7),
-    #recentExpenseList td:nth-child(7) { display: none !important; }
+    #recentExpenseList td:nth-child(7) {
+        display: block !important;
+        grid-column: 1 / 3;
+        grid-row: 4;
+        font-size: 13px;
+        color: var(--bs-secondary-color);
+        border-top: 1px dashed var(--bs-border-color) !important;
+        margin-top: 8px;
+        padding-top: 8px !important;
+        font-style: italic;
+    }
+    /* Add a label "កំណត់សម្គាល់៖ " before the note if it's not a dash */
+    #recentIncomeList td:nth-child(7)::before,
+    #recentExpenseList td:nth-child(7)::before {
+        content: "កំណត់សម្គាល់៖ ";
+        font-weight: normal;
+        color: var(--bs-secondary-color);
+    }
     
     /* Actions (Col 8) -> Bottom row */
     #recentIncomeList td:nth-child(8),
@@ -11303,15 +11708,35 @@ body.dark-theme .custom-dropdown-content a:hover {
         gap: 2px 10px;
     }
     /* Type Badge */
-    #transactionList td:nth-child(2) { grid-column: 1 / 2; grid-row: 1; }
+    #transactionList td:nth-child(2) { grid-column: 1 / 2; grid-row: 1; padding-left: 55px !important; }
     /* Date */
-    #transactionList td:nth-child(1) { grid-column: 2 / 3; grid-row: 1; text-align: right !important; font-size: 12px; color: var(--bs-secondary-color); }
+    #transactionList td:nth-child(1) { grid-column: 2 / 3; grid-row: 1; text-align: right !important; font-size: 12px; color: var(--bs-secondary-color); padding-top: 2px !important; }
     /* Category */
     #transactionList td:nth-child(3) { grid-column: 1 / 2; grid-row: 2; font-weight: 700; font-size: 15px; color: var(--bs-body-color); }
     /* Amount */
     #transactionList td:nth-child(4) { grid-column: 2 / 3; grid-row: 2; font-size: 16px; align-self: end;}
-    /* Hide Note */
-    #transactionList td:nth-child(5) { display: none !important; }
+    /* Note */
+    #transactionList td:nth-child(5) {
+        display: block !important;
+        grid-column: 1 / 3;
+        grid-row: 4;
+        font-size: 13px;
+        color: var(--bs-secondary-color);
+        border-top: 1px dashed var(--bs-border-color) !important;
+        margin-top: 8px;
+        padding-top: 8px !important;
+        font-style: italic;
+    }
+    #transactionList td:nth-child(5)::before {
+        content: "កំណត់សម្គាល់៖ ";
+        font-weight: normal;
+        color: var(--bs-secondary-color);
+    }
+    /* Actions */
+    #transactionList td:nth-child(6) {
+        grid-column: 1 / 3;
+        grid-row: 5;
+    }
 
 
 
@@ -11322,7 +11747,7 @@ body.dark-theme .custom-dropdown-content a:hover {
     
     #recentIncomeList tr, #recentExpenseList tr, #transactionList tr {
         counter-increment: cardCounter;
-        padding-top: 38px !important;
+        padding: 12px !important;
         overflow: hidden; 
     }
     
@@ -11514,18 +11939,53 @@ body.dark-theme .custom-dropdown-content a:hover {
     #recentIncomeList + tfoot tr:nth-child(4) td:first-child,
     #recentExpenseList + tfoot tr:nth-child(4) td:first-child { display: block !important; }
 
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
+
 }
 
 [data-bs-theme="dark"] .table-responsive tr {
     background-color: var(--bs-tertiary-bg);
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
+
 }
 [data-bs-theme="dark"] #recentIncomeList + tfoot,
 [data-bs-theme="dark"] #recentExpenseList + tfoot {
     background-color: var(--bs-tertiary-bg);
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
+
 }
 [data-bs-theme="dark"] #recentIncomeList + tfoot tr:nth-child(2) {
     background-color: rgba(25, 135, 84, 0.1) !important;
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
+
 }
 [data-bs-theme="dark"] #recentExpenseList + tfoot tr:nth-child(2) {
     background-color: rgba(220, 53, 69, 0.1) !important;
+    /* Hide empty notes to save space */
+    #recentIncomeList td:nth-child(7):empty,
+    #recentExpenseList td:nth-child(7):empty,
+    #transactionList td:nth-child(5):empty {
+        display: none !important;
+    }
+
 }
