@@ -258,9 +258,9 @@
         </nav>
 
         <!-- Main Panel (Includes Top Navbar and Content) -->
-        <div class="main-panel flex-grow-1 d-flex flex-column" style="min-width: 0; background-color: #f4f6f8;">
+        <div class="main-panel flex-grow-1 d-flex flex-column" style="min-width: 0; background-color: var(--bs-secondary-bg);">
 <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-bottom-nav d-md-none bg-white border-top">
+    <nav class="mobile-bottom-nav d-md-none bg-body border-top">
         <a href="#" class="nav-item active" onclick="showTab('dashboard'); updateBottomNav(this);">
             <i class="bi bi-grid-fill"></i>
             <span>ទំព័រដើម</span>
@@ -291,7 +291,7 @@
 
             
             <!-- Top Navbar -->
-            <header class="top-navbar d-flex justify-content-between align-items-center shadow-sm px-4 bg-white" style="height: 64px;">
+            <header class="top-navbar d-flex justify-content-between align-items-center shadow-sm px-4 bg-body" style="height: 64px;">
                 <div class="d-flex align-items-center">
                     <button class="btn btn-sm btn-outline-secondary d-md-none me-3" onclick="document.querySelector('.sidebar').classList.toggle('mobile-open')">☰</button>
                     <h5 class="m-0 d-flex align-items-center text-muted fs-6" id="top-navbar-title">
