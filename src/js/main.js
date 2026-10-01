@@ -21,7 +21,7 @@ async function initializeApp() {
     // 1. Fetch and inject all HTML templates
     for (let view of viewsToLoad) {
         try {
-            const response = await fetch(`src/templates/${view}.html`);
+            const response = await fetch(`src/templates/${view}.html?v=${new Date().getTime()}`);
             if (response.ok) {
                 const html = await response.text();
                 // Create the view wrapper
