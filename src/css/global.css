@@ -369,3 +369,48 @@ body.dark-theme .custom-dropdown-content a:hover {
 .sidebar-backdrop.show {
     display: block;
 }
+
+
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    z-index: 1040;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+.mobile-bottom-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.75rem;
+    width: 20%;
+    height: 100%;
+    transition: all 0.2s ease;
+}
+.mobile-bottom-nav .nav-item i {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+}
+.mobile-bottom-nav .nav-item.active {
+    color: #2e7d32;
+    font-weight: bold;
+}
+.mobile-bottom-nav .nav-item.active i {
+    transform: scale(1.1);
+}
+/* Adjust main content padding on mobile so bottom nav doesn't hide content */
+@media (max-width: 767px) {
+    .main-panel {
+        padding-bottom: 70px !important;
+    }
+}

@@ -472,7 +472,7 @@
 
     <!-- CROPPER MODAL -->
     <div class="modal fade" id="cropperModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen-md-down">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold">កាត់រូបភាព (Crop Image)</h5>
@@ -511,7 +511,38 @@
         </svg>
         Add Shortcut
     </button>
-  </body>
+  
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav d-md-none bg-white border-top">
+        <a href="#" class="nav-item active" onclick="showTab('dashboard'); updateBottomNav(this);">
+            <i class="bi bi-grid-fill"></i>
+            <span>ទំព័រដើម</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showTab('income'); updateBottomNav(this);">
+            <i class="bi bi-wallet2"></i>
+            <span>ចំណូល</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showTab('expense'); updateBottomNav(this);">
+            <i class="bi bi-cart-dash-fill"></i>
+            <span>ចំណាយ</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showTab('reports'); updateBottomNav(this);">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span>របាយការណ៍</span>
+        </a>
+        <a href="#" class="nav-item" onclick="document.querySelector('.sidebar').classList.toggle('mobile-open')">
+            <i class="bi bi-list"></i>
+            <span>ម៉ឺនុយ</span>
+        </a>
+    </nav>
+    <script>
+    function updateBottomNav(element) {
+        document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+        if(element) element.classList.add('active');
+    }
+    </script>
+
+</body>
 </html>
 
 

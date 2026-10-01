@@ -276,6 +276,14 @@ window.showTab = function(tabId, subId = null) {
         if (icon) icon.textContent = '▲';
     }
     
+        // Sync mobile bottom nav
+    document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(el => {
+        el.classList.remove('active');
+        if (el.getAttribute('onclick') && el.getAttribute('onclick').includes("showTab('" + tabId + "')")) {
+            el.classList.add('active');
+        }
+    });
+    
     // Close mobile sidebar if open
     document.querySelector('.sidebar').classList.remove('mobile-open');
     
