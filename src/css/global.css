@@ -447,3 +447,26 @@ body.dark-theme .custom-dropdown-content a:hover {
         padding-right: 0 !important;
     }
 }
+
+@media (max-width: 767px) {
+
+    /* Compact table for mobile to prevent horizontal scrolling */
+    .table-responsive table {
+        font-size: 12px !important;
+    }
+    .table-responsive th, .table-responsive td {
+        padding: 4px 2px !important;
+        white-space: nowrap !important;
+    }
+    .table-responsive th {
+        font-size: 11px !important;
+    }
+    .table-responsive tfoot {
+        font-size: 12px !important;
+    }
+    .table-responsive .btn-sm {
+        padding: 0.1rem 0.3rem !important;
+        font-size: 0.7rem !important;
+    }
+
+}
