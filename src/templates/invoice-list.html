@@ -1,34 +1,37 @@
-                <!-- Filter Section -->
-                <div class="card shadow-sm mb-3 border-0 border-top border-secondary border-4">
-                    <div class="card-body">
-                        <div class="row align-items-end">
-                            <div class="col-md-3 mb-2">
-                                <label class="form-label text-secondary fw-bold">ស្វែងរកលេខវិក្កយបត្រ</label>
-                                <input type="text" class="form-control" id="search-inv-no" placeholder="ឧ. 001" oninput="loadInvoices()">
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <label class="form-label text-secondary fw-bold">ចាប់ពីថ្ងៃទី (From)</label>
-                                <input type="date" class="form-control" id="search-inv-from" onchange="loadInvoices()">
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <label class="form-label text-secondary fw-bold">ដល់ថ្ងៃទី (To)</label>
-                                <input type="date" class="form-control" id="search-inv-to" onchange="loadInvoices()">
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <button class="btn btn-outline-secondary w-100" onclick="clearInvoiceFilters()">សំអាតការស្វែងរក (Clear)</button>
+
+                <div class="card shadow-sm border-0 border-top border-info border-4">
+                    <div class="card-header bg-body d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-info fw-bold">ប្រវត្តិវិក្កយបត្រ (Invoice History)</h5>
+                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#invFilterCollapse" aria-expanded="false">
+                            <i class="bi bi-funnel"></i>
+                        </button>
+                    </div>
+                    <div class="collapse" id="invFilterCollapse">
+                        <div class="card-body bg-body-tertiary pb-2 pt-2 border-bottom">
+                            <div class="row align-items-end">
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label" style="font-size: 13px;">ស្វែងរកលេខវិក្កយបត្រ</label>
+                                    <input type="text" class="form-control form-control-sm" id="search-inv-no" placeholder="ឧ. 001" oninput="loadInvoices()">
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label" style="font-size: 13px;">ចាប់ពីថ្ងៃទី (From)</label>
+                                    <input type="date" class="form-control form-control-sm" id="search-inv-from" onchange="loadInvoices()">
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label" style="font-size: 13px;">ដល់ថ្ងៃទី (To)</label>
+                                    <input type="date" class="form-control form-control-sm" id="search-inv-to" onchange="loadInvoices()">
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <button class="btn btn-sm btn-secondary w-100" onclick="clearInvoiceFilters()">សម្អាត (Clear)</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="card shadow-sm border-0 border-top border-info border-4">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0 text-info fw-bold">ប្រវត្តិវិក្កយបត្រដែលបានចេញ (Invoice History)</h5>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0 text-center">
                                 <thead class="table-darkgreen">
-                                    <tr><th>ថ្ងៃទី</th><th>លេខវិក្កយបត្រ</th><th>អតិថិជន</th><th>លេខទូរស័ព្ទ</th><th>សរុបទឹកប្រាក់</th><th>សកម្មភាព</th></tr>
+                                    <tr><th>កាលបរិច្ឆេទ</th><th>លេខវិក្កយបត្រ</th><th>អតិថិជន</th><th>លេខទូរស័ព្ទ</th><th>សរុបរួម (Grand Total)</th><th>សកម្មភាព</th></tr>
                                 </thead>
                                 <tbody id="invoiceListBody"></tbody>
                             </table>
