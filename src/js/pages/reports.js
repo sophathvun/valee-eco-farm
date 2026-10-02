@@ -412,12 +412,12 @@ async function generateReport() {
         });
 
         const prefix = isInc ? 'rep-inc' : 'rep-exp';
-        document.getElementById(`${prefix}-cash-khr-tbl`).textContent = formatCurrency(tCashKhr, 'KHR');
-        document.getElementById(`${prefix}-cash-usd-tbl`).textContent = formatCurrency(tCashUsd, 'USD');
-        document.getElementById(`${prefix}-bank-khr-tbl`).textContent = formatCurrency(tBankKhr, 'KHR');
-        document.getElementById(`${prefix}-bank-usd-tbl`).textContent = formatCurrency(tBankUsd, 'USD');
-        document.getElementById(`${prefix}-grand-khr-tbl`).textContent = formatCurrency(tCashKhr + tBankKhr, 'KHR');
-        document.getElementById(`${prefix}-grand-usd-tbl`).textContent = formatCurrency(tCashUsd + tBankUsd, 'USD');
+        const el1 = document.getElementById(`${prefix}-cash-khr-tbl`); if(el1) el1.textContent = formatCurrency(tCashKhr, 'KHR');
+        const el2 = document.getElementById(`${prefix}-cash-usd-tbl`); if(el2) el2.textContent = formatCurrency(tCashUsd, 'USD');
+        const el3 = document.getElementById(`${prefix}-bank-khr-tbl`); if(el3) el3.textContent = formatCurrency(tBankKhr, 'KHR');
+        const el4 = document.getElementById(`${prefix}-bank-usd-tbl`); if(el4) el4.textContent = formatCurrency(tBankUsd, 'USD');
+        const el5 = document.getElementById(`${prefix}-grand-khr-tbl`); if(el5) el5.textContent = formatCurrency(tCashKhr + tBankKhr, 'KHR');
+        const el6 = document.getElementById(`${prefix}-grand-usd-tbl`); if(el6) el6.textContent = formatCurrency(tCashUsd + tBankUsd, 'USD');
         
         updateSpecificChart(isInc ? 'incReportChart' : 'expReportChart', isInc ? incData : expData, isInc ? 'ចំណូល' : 'ចំណាយ', isInc ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)');
     }
