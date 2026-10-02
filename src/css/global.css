@@ -12123,3 +12123,188 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
         display: none !important;
     }
 }
+
+
+/* ==================================================
+   REPORTS PREMIUM MOBILE LAYOUT
+   ================================================== */
+@media (max-width: 767px) {
+    #rep-summary-tbody, #rep-inc-tbody, #rep-exp-tbody {
+        counter-reset: repCounter;
+    }
+    
+    #rep-summary-tbody tr, #rep-inc-tbody tr, #rep-exp-tbody tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        counter-increment: repCounter;
+        padding: 12px !important;
+        margin-bottom: 12px;
+        background-color: var(--bs-body-bg);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    [data-bs-theme="dark"] #rep-summary-tbody tr, 
+    [data-bs-theme="dark"] #rep-inc-tbody tr, 
+    [data-bs-theme="dark"] #rep-exp-tbody tr {
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    #rep-summary-tbody tr::before, #rep-inc-tbody tr::before, #rep-exp-tbody tr::before {
+        content: counter(repCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #6c757d;
+        color: white;
+        padding: 4px 14px;
+        font-weight: bold;
+        border-bottom-right-radius: 16px;
+        z-index: 1;
+        font-size: 13px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    #rep-summary-tbody td, #rep-inc-tbody td, #rep-exp-tbody td {
+        display: block !important;
+        text-align: left !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+    
+    /* Hide Col 1 (No) */
+    #rep-summary-tbody td:nth-child(1), #rep-inc-tbody td:nth-child(1), #rep-exp-tbody td:nth-child(1) {
+        display: none !important;
+    }
+    
+    /* Description */
+    #rep-summary-tbody td:nth-child(2), #rep-inc-tbody td:nth-child(2), #rep-exp-tbody td:nth-child(2) {
+        grid-column: 1 / 3;
+        grid-row: 1;
+        font-size: 16px;
+        font-weight: bold;
+        padding-left: 45px !important;
+        margin-bottom: 12px;
+        padding-bottom: 8px !important;
+        border-bottom: 1px dashed var(--bs-border-color) !important;
+        color: var(--bs-body-color);
+    }
+    
+    /* SUMMARY TABLE (Table 1) */
+    /* Income */
+    #rep-summary-tbody td:nth-child(3) { grid-column: 1 / 2; grid-row: 2; margin-bottom: 6px; }
+    #rep-summary-tbody td:nth-child(3)::before { content: "ចំណូល៖ "; color: var(--bs-secondary-color); font-size: 13px; }
+    #rep-summary-tbody td:nth-child(4) { grid-column: 2 / 3; grid-row: 2; text-align: right !important; margin-bottom: 6px; }
+    #rep-summary-tbody td:nth-child(4)::before { content: "($) "; color: var(--bs-secondary-color); font-size: 13px; }
+    
+    /* Expense */
+    #rep-summary-tbody td:nth-child(5) { grid-column: 1 / 2; grid-row: 3; margin-bottom: 6px; }
+    #rep-summary-tbody td:nth-child(5)::before { content: "ចំណាយ៖ "; color: var(--bs-secondary-color); font-size: 13px; }
+    #rep-summary-tbody td:nth-child(6) { grid-column: 2 / 3; grid-row: 3; text-align: right !important; margin-bottom: 6px; }
+    #rep-summary-tbody td:nth-child(6)::before { content: "($) "; color: var(--bs-secondary-color); font-size: 13px; }
+    
+    /* Balance */
+    #rep-summary-tbody td:nth-child(7) { grid-column: 1 / 2; grid-row: 4; border-top: 1px dashed var(--bs-border-color) !important; margin-top: 6px; padding-top: 6px !important; }
+    #rep-summary-tbody td:nth-child(7)::before { content: "ចំណេញ៖ "; color: var(--bs-secondary-color); font-size: 13px; }
+    #rep-summary-tbody td:nth-child(8) { grid-column: 2 / 3; grid-row: 4; text-align: right !important; border-top: 1px dashed var(--bs-border-color) !important; margin-top: 6px; padding-top: 6px !important; }
+    #rep-summary-tbody td:nth-child(8)::before { content: "($) "; color: var(--bs-secondary-color); font-size: 13px; }
+    
+    
+    /* SINGLE TABLES (Table 2 & 3) */
+    #rep-inc-tbody td:nth-child(3), #rep-exp-tbody td:nth-child(3) { grid-column: 1 / 2; grid-row: 2; }
+    #rep-inc-tbody td:nth-child(3)::before, #rep-exp-tbody td:nth-child(3)::before { content: "សរុប (៛)៖ "; color: var(--bs-secondary-color); font-size: 13px; }
+    
+    #rep-inc-tbody td:nth-child(4), #rep-exp-tbody td:nth-child(4) { grid-column: 2 / 3; grid-row: 2; text-align: right !important; }
+    #rep-inc-tbody td:nth-child(4)::before, #rep-exp-tbody td:nth-child(4)::before { content: "($) "; color: var(--bs-secondary-color); font-size: 13px; }
+
+
+    /* ==================================================
+       TFOOT SUMMARY CARDS
+       ================================================== */
+    #rep-tab-summary tfoot tr, #rep-tab-income tfoot tr, #rep-tab-expense tfoot tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background-color: var(--bs-tertiary-bg) !important;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 12px;
+        padding: 16px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        margin-top: 16px;
+    }
+    
+    #rep-tab-summary tfoot td, #rep-tab-income tfoot td, #rep-tab-expense tfoot td {
+        display: block !important;
+        border: none !important;
+        padding: 4px 0 !important;
+    }
+    
+    /* Table 1 Tfoot */
+    #rep-tab-summary tfoot td:nth-child(1) {
+        grid-column: 1 / 3;
+        text-align: center !important;
+        font-size: 16px;
+        border-bottom: 1px solid var(--bs-border-color) !important;
+        margin-bottom: 12px;
+        padding-bottom: 12px !important;
+    }
+    #rep-tab-summary tfoot td:nth-child(2) { grid-column: 1 / 2; text-align: left !important; }
+    #rep-tab-summary tfoot td:nth-child(2)::before { content: "សរុបចំណូល៖ "; color: var(--bs-secondary-color); font-size: 13px; font-weight: normal; }
+    #rep-tab-summary tfoot td:nth-child(3) { grid-column: 2 / 3; text-align: right !important; }
+    #rep-tab-summary tfoot td:nth-child(3)::before { content: "($) "; color: var(--bs-secondary-color); font-size: 13px; font-weight: normal; }
+    
+    #rep-tab-summary tfoot td:nth-child(4) { grid-column: 1 / 2; text-align: left !important; }
+    #rep-tab-summary tfoot td:nth-child(4)::before { content: "សរុបចំណាយ៖ "; color: var(--bs-secondary-color); font-size: 13px; font-weight: normal; }
+    #rep-tab-summary tfoot td:nth-child(5) { grid-column: 2 / 3; text-align: right !important; }
+    #rep-tab-summary tfoot td:nth-child(5)::before { content: "($) "; color: var(--bs-secondary-color); font-size: 13px; font-weight: normal; }
+    
+    #rep-tab-summary tfoot td:nth-child(6) {
+        grid-column: 1 / 2;
+        text-align: left !important;
+        border-top: 1px dashed var(--bs-border-color) !important;
+        margin-top: 8px;
+        padding-top: 8px !important;
+    }
+    #rep-tab-summary tfoot td:nth-child(6)::before { content: "សរុបចំណេញ៖ "; color: var(--bs-secondary-color); font-size: 13px; font-weight: normal; }
+    #rep-tab-summary tfoot td:nth-child(7) {
+        grid-column: 2 / 3;
+        text-align: right !important;
+        border-top: 1px dashed var(--bs-border-color) !important;
+        margin-top: 8px;
+        padding-top: 8px !important;
+    }
+    #rep-tab-summary tfoot td:nth-child(7)::before { content: "($) "; color: var(--bs-secondary-color); font-size: 13px; font-weight: normal; }
+    
+    
+    /* Table 2 & 3 Tfoot */
+    #rep-tab-income tfoot td:nth-child(1), #rep-tab-expense tfoot td:nth-child(1) {
+        grid-column: 1 / 3;
+        text-align: center !important;
+        font-size: 16px;
+        border-bottom: 1px solid var(--bs-border-color) !important;
+        margin-bottom: 12px;
+        padding-bottom: 12px !important;
+    }
+    #rep-tab-income tfoot td:nth-child(2), #rep-tab-expense tfoot td:nth-child(2) {
+        grid-column: 1 / 2;
+        text-align: left !important;
+    }
+    #rep-tab-income tfoot td:nth-child(2)::before, #rep-tab-expense tfoot td:nth-child(2)::before {
+        content: "សរុប (៛)៖ ";
+        color: var(--bs-secondary-color);
+        font-size: 13px;
+        font-weight: normal;
+    }
+    #rep-tab-income tfoot td:nth-child(3), #rep-tab-expense tfoot td:nth-child(3) {
+        grid-column: 2 / 3;
+        text-align: right !important;
+    }
+    #rep-tab-income tfoot td:nth-child(3)::before, #rep-tab-expense tfoot td:nth-child(3)::before {
+        content: "($) ";
+        color: var(--bs-secondary-color);
+        font-size: 13px;
+        font-weight: normal;
+    }
+}
