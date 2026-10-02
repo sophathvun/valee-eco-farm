@@ -241,7 +241,7 @@ async function generateReport() {
         if (month === 'all') {
             key = tx.date.substring(0, 7); // YYYY-MM
             const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
-            label = `ខែ ${khmerMonths[parseInt(key.split('-')[1], 10) - 1]}`;
+            label = `ខែ ${khmerMonths[parseInt(key.split('-')[1], 10) - 1]} ${key.split('-')[0]}`;
         } else if (day === 'all') {
             key = tx.date; // YYYY-MM-DD
             label = `ថ្ងៃទី ${key.split('-')[2]}`;
@@ -357,7 +357,7 @@ async function generateReport() {
             let gKey = '', gLabel = '';
             if (month === 'all') {
                 gKey = tx.date.substring(0, 7);
-                gLabel = `ខែ ${khmerMonths[parseInt(gKey.split('-')[1], 10) - 1]}`;
+                gLabel = `ខែ ${khmerMonths[parseInt(gKey.split('-')[1], 10) - 1]} ${gKey.split('-')[0]}`;
             } else if (day === 'all') {
                 gKey = tx.date;
                 gLabel = `ថ្ងៃទី ${gKey.split('-')[2]}`;
