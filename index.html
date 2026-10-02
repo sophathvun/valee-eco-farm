@@ -20,7 +20,11 @@
     <!-- Dark Mode Sync -->
     <script>
         function updateTheme() {
-            if (localStorage.getItem('sysTheme')) return; // Prefer user saved theme
+            const savedTheme = localStorage.getItem('sysTheme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+                return;
+            }
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.setAttribute('data-bs-theme', 'dark');
             } else {
@@ -301,9 +305,13 @@
                 </div>
                 
                 <div class="d-flex align-items-center">
-                    <span id="theme-toggle" class="me-3 fs-5" style="cursor: pointer;" onclick="toggleTheme()">🌙</span>
-                    <span class="me-3 fs-5" style="cursor: pointer;">🔔</span>
-                    <span class="me-4 fs-5" style="cursor: pointer;">💬</span>
+                    <div class="d-flex align-items-center me-3">
+                        <i class="bi bi-sun-fill text-warning me-1"></i>
+                        <div class="form-check form-switch mb-0" style="padding-top: 4px;">
+                            <input class="form-check-input" type="checkbox" role="switch" id="themeSwitch" onchange="toggleTheme()" style="cursor: pointer; width: 40px; height: 20px;">
+                        </div>
+                        <i class="bi bi-moon-stars-fill text-secondary ms-1"></i>
+                    </div>
                     <div class="user-profile d-flex align-items-center" style="cursor: pointer;">
                         <div class="text-end me-2 d-none d-md-block lh-1">
                             <div class="fw-bold text-dark fs-6" id="top-user-name">USER</div>
@@ -545,7 +553,7 @@
         </div>
     </div>
 
-    <script type="module" src="src/js/main.js?v=1790935344"></script>
+    <script type="module" src="src/js/main.js?v=1790935839"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
