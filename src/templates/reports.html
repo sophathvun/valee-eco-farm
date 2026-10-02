@@ -2,18 +2,23 @@
                     
                     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0" id="report-card-title">របាយការណ៍ចំណូលចំណាយ</h4>
-                        <div class="custom-dropdown">
-                            <button class="btn btn-sm btn-light fw-bold text-dark dropbtn" onclick="this.parentElement.classList.toggle('show')">🖨️ ព្រីនរបាយការណ៍នេះ ▼</button>
-                            <div class="custom-dropdown-content">
-                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printAnalyticsReport('summary');">🖨️ ព្រីនរបាយការណ៍សរុប</a>
-                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printAnalyticsReport('detail');">🖨️ ព្រីនរបាយការណ៍លំអិត</a>
-                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើស \'Save as PDF\' នៅក្នុងផ្ទាំង Print បន្ទាប់។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#007bff'}).then((result) => { if(result.isConfirmed) printAnalyticsReport('summary'); });">💾 ព្រីនរបាយការណ៍សរុប PDF</a>
-                                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើស \'Save as PDF\' នៅក្នុងផ្ទាំង Print បន្ទាប់។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#007bff'}).then((result) => { if(result.isConfirmed) printAnalyticsReport('detail'); });">💾 ព្រីនរបាយការណ៍លំអិត PDF</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body bg-body-tertiary border-bottom">
+    <div class="d-flex gap-2">
+        <div class="custom-dropdown">
+            <button class="btn btn-sm btn-light fw-bold text-dark dropbtn" onclick="this.parentElement.classList.toggle('show')">បោះពុម្ព</button>
+            <div class="custom-dropdown-content">
+                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printAnalyticsReport('summary');">បោះពុម្ពរបាយការណ៍សរុបរួម</a>
+                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printAnalyticsReport('detail');">បោះពុម្ពរបាយការណ៍លម្អិត</a>
+                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើសយក \'Save as PDF\' ត្រង់ផ្នែកទីតាំង Print របស់អ្នក', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#007bff'}).then((result) => { if(result.isConfirmed) printAnalyticsReport('summary'); });">ទាញយករបាយការណ៍សរុបរួម PDF</a>
+                <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'រក្សាទុកជា PDF', text: 'សូមជ្រើសរើសយក \'Save as PDF\' ត្រង់ផ្នែកទីតាំង Print របស់អ្នក', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#007bff'}).then((result) => { if(result.isConfirmed) printAnalyticsReport('detail'); });">ទាញយករបាយការណ៍លម្អិត PDF</a>
+            </div>
+        </div>
+        <button class="btn btn-sm btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#reportFilterCollapse" aria-expanded="false">
+            <i class="bi bi-funnel"></i>
+        </button>
+    </div>
+</div>
+<div class="collapse" id="reportFilterCollapse">
+<div class="card-body bg-body-tertiary border-bottom">
                         <div class="row">
                             <div class="col-md-3">
                                 <label class="form-label fw-bold">ជ្រើសរើសឆ្នាំ</label>
@@ -48,6 +53,7 @@
                             </div>
                         </div>
                     </div>
+</div>
                     </div>
 
 
