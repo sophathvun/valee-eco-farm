@@ -251,7 +251,10 @@ async function generateReport() {
             key = tx.category + '_' + tx.type;
             label = `${tx.category} ${tx.type === 'income' ? '(ចំណូល)' : '(ចំណាយ)'}`;
         }
-        if (!summaryBreakdown[key]) summaryBreakdown[key] = { label, incKHR: 0, incUSD: 0, expKHR: 0, expUSD: 0 };
+        if (!summaryBreakdown[key]) summaryBreakdown[key] = { label, 
+            incCashKHR: 0, incCashUSD: 0, incBankKHR: 0, incBankUSD: 0, 
+            expCashKHR: 0, expCashUSD: 0, expBankKHR: 0, expBankUSD: 0 
+        };
 
         if (!chartData[tx.category]) chartData[tx.category] = { income: 0, expense: 0 };
 
@@ -264,7 +267,11 @@ async function generateReport() {
                 incKHR += tx.amount;
                 method === 'Bank' ? incBankKHR += tx.amount : incCashKHR += tx.amount;
             }
-            cur === 'USD' ? summaryBreakdown[key].incUSD += tx.amount : summaryBreakdown[key].incKHR += tx.amount;
+            if (cur === 'USD') {
+                method === 'Bank' ? summaryBreakdown[key].incBankUSD += tx.amount : summaryBreakdown[key].incCashUSD += tx.amount;
+            } else {
+                method === 'Bank' ? summaryBreakdown[key].incBankKHR += tx.amount : summaryBreakdown[key].incCashKHR += tx.amount;
+            }
             chartData[tx.category].income += amountKHR;
             
             if (!incData[tx.category]) incData[tx.category] = { khr: 0, usd: 0 };
@@ -277,7 +284,11 @@ async function generateReport() {
                 expKHR += tx.amount;
                 method === 'Bank' ? expBankKHR += tx.amount : expCashKHR += tx.amount;
             }
-            cur === 'USD' ? summaryBreakdown[key].expUSD += tx.amount : summaryBreakdown[key].expKHR += tx.amount;
+            if (cur === 'USD') {
+                method === 'Bank' ? summaryBreakdown[key].expBankUSD += tx.amount : summaryBreakdown[key].expCashUSD += tx.amount;
+            } else {
+                method === 'Bank' ? summaryBreakdown[key].expBankKHR += tx.amount : summaryBreakdown[key].expCashKHR += tx.amount;
+            }
             chartData[tx.category].expense += amountKHR;
             
             if (!expData[tx.category]) expData[tx.category] = { khr: 0, usd: 0 };
@@ -301,36 +312,42 @@ async function generateReport() {
                 // Render Income Group
                 const incKeys = Object.keys(summaryBreakdown).filter(k => k.endsWith('_income')).sort();
                 if (incKeys.length > 0) {
-                    tbody.innerHTML += `<tr><td colspan="8" class="text-start fw-bold bg-light text-success">ក្រុមចំណូល (Income)</td></tr>`;
+                    tbody.innerHTML += `<tr><td colspan="14" class="text-start fw-bold bg-light text-success">ក្រុមចំណូល (Income)</td></tr>`;
                     incKeys.forEach(k => {
                         const b = summaryBreakdown[k];
                         tbody.innerHTML += `<tr>
                             <td>${index++}</td>
                             <td class="text-start fw-bold">${b.label}</td>
-                            <td class="text-success">${formatCurrency(b.incKHR, 'KHR')}</td>
-                            <td class="text-success">${formatCurrency(b.incUSD, 'USD')}</td>
-                            <td class="text-danger">-</td>
-                            <td class="text-danger">-</td>
-                            <td class="text-primary">${formatCurrency(b.incKHR, 'KHR')}</td>
-                            <td class="text-primary">${formatCurrency(b.incUSD, 'USD')}</td>
+                            <td class="text-success">${formatCurrency(b.incCashKHR, 'KHR')}</td>
+                            <td class="text-success">${formatCurrency(b.incCashUSD, 'USD')}</td>
+                            <td class="text-success">${formatCurrency(b.incBankKHR, 'KHR')}</td>
+                            <td class="text-success">${formatCurrency(b.incBankUSD, 'USD')}</td>
+                            <td class="text-danger">-</td><td class="text-danger">-</td><td class="text-danger">-</td><td class="text-danger">-</td>
+                            <td class="text-primary">${formatCurrency(b.incCashKHR, 'KHR')}</td>
+                            <td class="text-primary">${formatCurrency(b.incCashUSD, 'USD')}</td>
+                            <td class="text-primary">${formatCurrency(b.incBankKHR, 'KHR')}</td>
+                            <td class="text-primary">${formatCurrency(b.incBankUSD, 'USD')}</td>
                         </tr>`;
                     });
                 }
                 // Render Expense Group
                 const expKeys = Object.keys(summaryBreakdown).filter(k => k.endsWith('_expense')).sort();
                 if (expKeys.length > 0) {
-                    tbody.innerHTML += `<tr><td colspan="8" class="text-start fw-bold bg-light text-danger">ក្រុមចំណាយ (Expense)</td></tr>`;
+                    tbody.innerHTML += `<tr><td colspan="14" class="text-start fw-bold bg-light text-danger">ក្រុមចំណាយ (Expense)</td></tr>`;
                     expKeys.forEach(k => {
                         const b = summaryBreakdown[k];
                         tbody.innerHTML += `<tr>
                             <td>${index++}</td>
                             <td class="text-start fw-bold">${b.label}</td>
-                            <td class="text-success">-</td>
-                            <td class="text-success">-</td>
-                            <td class="text-danger">${formatCurrency(b.expKHR, 'KHR')}</td>
-                            <td class="text-danger">${formatCurrency(b.expUSD, 'USD')}</td>
-                            <td class="text-primary">${formatCurrency(-b.expKHR, 'KHR')}</td>
-                            <td class="text-primary">${formatCurrency(-b.expUSD, 'USD')}</td>
+                            <td class="text-success">-</td><td class="text-success">-</td><td class="text-success">-</td><td class="text-success">-</td>
+                            <td class="text-danger">${formatCurrency(b.expCashKHR, 'KHR')}</td>
+                            <td class="text-danger">${formatCurrency(b.expCashUSD, 'USD')}</td>
+                            <td class="text-danger">${formatCurrency(b.expBankKHR, 'KHR')}</td>
+                            <td class="text-danger">${formatCurrency(b.expBankUSD, 'USD')}</td>
+                            <td class="text-primary">${formatCurrency(-b.expCashKHR, 'KHR')}</td>
+                            <td class="text-primary">${formatCurrency(-b.expCashUSD, 'USD')}</td>
+                            <td class="text-primary">${formatCurrency(-b.expBankKHR, 'KHR')}</td>
+                            <td class="text-primary">${formatCurrency(-b.expBankUSD, 'USD')}</td>
                         </tr>`;
                     });
                 }
@@ -340,37 +357,59 @@ async function generateReport() {
                     tbody.innerHTML += `<tr>
                         <td>${index++}</td>
                         <td class="text-start fw-bold">${b.label}</td>
-                        <td class="text-success">${formatCurrency(b.incKHR, 'KHR')}</td>
-                        <td class="text-success">${formatCurrency(b.incUSD, 'USD')}</td>
-                        <td class="text-danger">${formatCurrency(b.expKHR, 'KHR')}</td>
-                        <td class="text-danger">${formatCurrency(b.expUSD, 'USD')}</td>
-                        <td class="text-primary">${formatCurrency(b.incKHR - b.expKHR, 'KHR')}</td>
-                        <td class="text-primary">${formatCurrency(b.incUSD - b.expUSD, 'USD')}</td>
+                        <td class="text-success">${formatCurrency(b.incCashKHR, 'KHR')}</td>
+                        <td class="text-success">${formatCurrency(b.incCashUSD, 'USD')}</td>
+                        <td class="text-success">${formatCurrency(b.incBankKHR, 'KHR')}</td>
+                        <td class="text-success">${formatCurrency(b.incBankUSD, 'USD')}</td>
+                        <td class="text-danger">${formatCurrency(b.expCashKHR, 'KHR')}</td>
+                        <td class="text-danger">${formatCurrency(b.expCashUSD, 'USD')}</td>
+                        <td class="text-danger">${formatCurrency(b.expBankKHR, 'KHR')}</td>
+                        <td class="text-danger">${formatCurrency(b.expBankUSD, 'USD')}</td>
+                        <td class="text-primary">${formatCurrency(b.incCashKHR - b.expCashKHR, 'KHR')}</td>
+                        <td class="text-primary">${formatCurrency(b.incCashUSD - b.expCashUSD, 'USD')}</td>
+                        <td class="text-primary">${formatCurrency(b.incBankKHR - b.expBankKHR, 'KHR')}</td>
+                        <td class="text-primary">${formatCurrency(b.incBankUSD - b.expBankUSD, 'USD')}</td>
                     </tr>`;
                 });
             }
         }
-        document.getElementById('repIncKHR').textContent = formatCurrency(incKHR, 'KHR');
-        document.getElementById('repIncUSD').textContent = formatCurrency(incUSD, 'USD');
-        document.getElementById('repExpKHR').textContent = formatCurrency(expKHR, 'KHR');
-        document.getElementById('repExpUSD').textContent = formatCurrency(expUSD, 'USD');
-        document.getElementById('repBalKHR').textContent = formatCurrency(incKHR - expKHR, 'KHR');
-        document.getElementById('repBalUSD').textContent = formatCurrency(incUSD - expUSD, 'USD');
+        const setTxt = (id, val, cur) => { const el = document.getElementById(id); if(el) el.textContent = cur ? formatCurrency(val, cur) : val; };
         
-        const setTxt = (id, val, cur) => { const el = document.getElementById(id); if(el) el.textContent = formatCurrency(val, cur); };
-        setTxt('repIncCashKHR', incCashKHR, 'KHR');
-        setTxt('repIncCashUSD', incCashUSD, 'USD');
-        setTxt('repExpCashKHR', expCashKHR, 'KHR');
-        setTxt('repExpCashUSD', expCashUSD, 'USD');
-        setTxt('repBalCashKHR', incCashKHR - expCashKHR, 'KHR');
-        setTxt('repBalCashUSD', incCashUSD - expCashUSD, 'USD');
+        // Col Totals
+        setTxt('colIncCashKHR', incCashKHR, 'KHR');
+        setTxt('colIncCashUSD', incCashUSD, 'USD');
+        setTxt('colIncBankKHR', incBankKHR, 'KHR');
+        setTxt('colIncBankUSD', incBankUSD, 'USD');
         
-        setTxt('repIncBankKHR', incBankKHR, 'KHR');
-        setTxt('repIncBankUSD', incBankUSD, 'USD');
-        setTxt('repExpBankKHR', expBankKHR, 'KHR');
-        setTxt('repExpBankUSD', expBankUSD, 'USD');
-        setTxt('repBalBankKHR', incBankKHR - expBankKHR, 'KHR');
-        setTxt('repBalBankUSD', incBankUSD - expBankUSD, 'USD');
+        setTxt('colExpCashKHR', expCashKHR, 'KHR');
+        setTxt('colExpCashUSD', expCashUSD, 'USD');
+        setTxt('colExpBankKHR', expBankKHR, 'KHR');
+        setTxt('colExpBankUSD', expBankUSD, 'USD');
+        
+        setTxt('colBalCashKHR', incCashKHR - expCashKHR, 'KHR');
+        setTxt('colBalCashUSD', incCashUSD - expCashUSD, 'USD');
+        setTxt('colBalBankKHR', incBankKHR - expBankKHR, 'KHR');
+        setTxt('colBalBankUSD', incBankUSD - expBankUSD, 'USD');
+        
+        // Cash / Bank Totals
+        const rate = window.sysExchangeRate || 4100;
+        
+        setTxt('totIncCash', formatCurrency(incCashKHR, 'KHR') + " / " + formatCurrency(incCashUSD, 'USD'));
+        setTxt('totExpCash', formatCurrency(expCashKHR, 'KHR') + " / " + formatCurrency(expCashUSD, 'USD'));
+        setTxt('totBalCash', formatCurrency(incCashKHR - expCashKHR, 'KHR') + " / " + formatCurrency(incCashUSD - expCashUSD, 'USD'));
+        
+        setTxt('totIncBank', formatCurrency(incBankKHR, 'KHR') + " / " + formatCurrency(incBankUSD, 'USD'));
+        setTxt('totExpBank', formatCurrency(expBankKHR, 'KHR') + " / " + formatCurrency(expBankUSD, 'USD'));
+        setTxt('totBalBank', formatCurrency(incBankKHR - expBankKHR, 'KHR') + " / " + formatCurrency(incBankUSD - expBankUSD, 'USD'));
+        
+        // Grand Totals (USD = KHR)
+        const grandInc = incCashKHR + incBankKHR + ((incCashUSD + incBankUSD) * rate);
+        const grandExp = expCashKHR + expBankKHR + ((expCashUSD + expBankUSD) * rate);
+        const grandBal = grandInc - grandExp;
+        
+        setTxt('grandInc', formatCurrency(grandInc, 'KHR'));
+        setTxt('grandExp', formatCurrency(grandExp, 'KHR'));
+        setTxt('grandBal', formatCurrency(grandBal, 'KHR'));
         updateReportChart(chartData);
     } 
     else if (currentReportTab === 'income' || currentReportTab === 'expense') {
