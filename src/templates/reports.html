@@ -65,24 +65,64 @@
                             <div class="table-responsive">
                                 <table class="table table-bordered text-center">
                                     <thead class="table-darkgreen">
-                                        <tr>
-                                            <th>ល.រ</th>
-                                            <th id="rep-summary-first-col">កាលបរិច្ឆេទ</th>
-                                            <th>ចំណូល (៛)</th><th>ចំណូល ($)</th>
-                                            <th>ចំណាយ (៛)</th><th>ចំណាយ ($)</th>
-                                            <th>ចំណេញ/ខាត (៛)</th><th>ចំណេញ/ខាត ($)</th>
-                                        </tr>
-                                    </thead>
+    <tr>
+        <th rowspan="3" class="align-middle text-center">ល.រ</th>
+        <th rowspan="3" class="align-middle text-center" id="rep-summary-first-col">កាលបរិច្ឆេទ</th>
+        <th colspan="4" class="text-center border-bottom border-light">ចំណូល</th>
+        <th colspan="4" class="text-center border-bottom border-light">ចំណាយ</th>
+        <th colspan="4" class="text-center border-bottom border-light">ចំណេញ/ខាត</th>
+    </tr>
+    <tr>
+        <th colspan="2" class="text-center border-bottom border-light" style="background-color: rgba(40,167,69,0.3);">សាច់ប្រាក់</th>
+        <th colspan="2" class="text-center border-bottom border-light" style="background-color: rgba(40,167,69,0.5);">ធនាគារ</th>
+        <th colspan="2" class="text-center border-bottom border-light" style="background-color: rgba(220,53,69,0.3);">សាច់ប្រាក់</th>
+        <th colspan="2" class="text-center border-bottom border-light" style="background-color: rgba(220,53,69,0.5);">ធនាគារ</th>
+        <th colspan="2" class="text-center border-bottom border-light" style="background-color: rgba(13,110,253,0.3);">សាច់ប្រាក់</th>
+        <th colspan="2" class="text-center border-bottom border-light" style="background-color: rgba(13,110,253,0.5);">ធនាគារ</th>
+    </tr>
+    <tr>
+        <th class="text-center">៛</th><th class="text-center">$</th>
+        <th class="text-center">៛</th><th class="text-center">$</th>
+        <th class="text-center">៛</th><th class="text-center">$</th>
+        <th class="text-center">៛</th><th class="text-center">$</th>
+        <th class="text-center">៛</th><th class="text-center">$</th>
+        <th class="text-center">៛</th><th class="text-center">$</th>
+    </tr>
+</thead>
                                     <tbody id="rep-summary-tbody">
                                     </tbody>
                                     <tfoot class="table-light fw-bold fs-6">
-                                        <tr>
-                                            <td colspan="2">សរុបរួម</td>
-                                            <td class="text-success" id="repIncKHR">0</td><td class="text-success" id="repIncUSD">0</td>
-                                            <td class="text-danger" id="repExpKHR">0</td><td class="text-danger" id="repExpUSD">0</td>
-                                            <td class="text-primary" id="repBalKHR">0</td><td class="text-primary" id="repBalUSD">0</td>
-                                        </tr>
-                                    </tfoot>
+    <!-- Total by Column -->
+    <tr>
+        <td colspan="2" class="text-end">សរុបតាម Column</td>
+        <td class="text-success" id="colIncCashKHR">0</td><td class="text-success" id="colIncCashUSD">0</td>
+        <td class="text-success" id="colIncBankKHR">0</td><td class="text-success" id="colIncBankUSD">0</td>
+        <td class="text-danger" id="colExpCashKHR">0</td><td class="text-danger" id="colExpCashUSD">0</td>
+        <td class="text-danger" id="colExpBankKHR">0</td><td class="text-danger" id="colExpBankUSD">0</td>
+        <td class="text-primary" id="colBalCashKHR">0</td><td class="text-primary" id="colBalCashUSD">0</td>
+        <td class="text-primary" id="colBalBankKHR">0</td><td class="text-primary" id="colBalBankUSD">0</td>
+    </tr>
+    <!-- Total by Cash / Bank -->
+    <tr style="background-color: #f8f9fa;">
+        <td colspan="2" class="text-end">សរុបសាច់ប្រាក់</td>
+        <td colspan="4" class="text-success text-center" id="totIncCash">0</td>
+        <td colspan="4" class="text-danger text-center" id="totExpCash">0</td>
+        <td colspan="4" class="text-primary text-center" id="totBalCash">0</td>
+    </tr>
+    <tr style="background-color: #f8f9fa;">
+        <td colspan="2" class="text-end">សរុបធនាគារ</td>
+        <td colspan="4" class="text-success text-center" id="totIncBank">0</td>
+        <td colspan="4" class="text-danger text-center" id="totExpBank">0</td>
+        <td colspan="4" class="text-primary text-center" id="totBalBank">0</td>
+    </tr>
+    <!-- Grand Total with Exchange Rate -->
+    <tr class="table-warning fs-5">
+        <td colspan="2" class="text-end">សរុបរួម ($=៛)</td>
+        <td colspan="4" class="text-success text-center" id="grandInc">0</td>
+        <td colspan="4" class="text-danger text-center" id="grandExp">0</td>
+        <td colspan="4" class="text-primary text-center" id="grandBal">0</td>
+    </tr>
+</tfoot>
                                 </table>
                             </div>
                             <div class="mt-4"><canvas id="reportChart" height="80"></canvas></div>
