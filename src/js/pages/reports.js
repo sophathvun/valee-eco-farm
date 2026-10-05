@@ -226,6 +226,8 @@ async function generateReport() {
     const filtered = allTx.filter(tx => tx.date && tx.date.startsWith(prefix));
 
     let incKHR = 0, incUSD = 0, expKHR = 0, expUSD = 0;
+    let incCashKHR = 0, incCashUSD = 0, expCashKHR = 0, expCashUSD = 0;
+    let incBankKHR = 0, incBankUSD = 0, expBankKHR = 0, expBankUSD = 0;
     
     const chartData = {}; // Summary
     const incData = {};   // Income specific
@@ -253,15 +255,28 @@ async function generateReport() {
 
         if (!chartData[tx.category]) chartData[tx.category] = { income: 0, expense: 0 };
 
+        const method = tx.paymentMethod || 'Cash';
         if (tx.type === 'income') {
-            cur === 'USD' ? incUSD += tx.amount : incKHR += tx.amount;
+            if (cur === 'USD') {
+                incUSD += tx.amount;
+                method === 'Bank' ? incBankUSD += tx.amount : incCashUSD += tx.amount;
+            } else {
+                incKHR += tx.amount;
+                method === 'Bank' ? incBankKHR += tx.amount : incCashKHR += tx.amount;
+            }
             cur === 'USD' ? summaryBreakdown[key].incUSD += tx.amount : summaryBreakdown[key].incKHR += tx.amount;
             chartData[tx.category].income += amountKHR;
             
             if (!incData[tx.category]) incData[tx.category] = { khr: 0, usd: 0 };
             cur === 'USD' ? incData[tx.category].usd += tx.amount : incData[tx.category].khr += tx.amount;
         } else {
-            cur === 'USD' ? expUSD += tx.amount : expKHR += tx.amount;
+            if (cur === 'USD') {
+                expUSD += tx.amount;
+                method === 'Bank' ? expBankUSD += tx.amount : expCashUSD += tx.amount;
+            } else {
+                expKHR += tx.amount;
+                method === 'Bank' ? expBankKHR += tx.amount : expCashKHR += tx.amount;
+            }
             cur === 'USD' ? summaryBreakdown[key].expUSD += tx.amount : summaryBreakdown[key].expKHR += tx.amount;
             chartData[tx.category].expense += amountKHR;
             
@@ -341,6 +356,21 @@ async function generateReport() {
         document.getElementById('repExpUSD').textContent = formatCurrency(expUSD, 'USD');
         document.getElementById('repBalKHR').textContent = formatCurrency(incKHR - expKHR, 'KHR');
         document.getElementById('repBalUSD').textContent = formatCurrency(incUSD - expUSD, 'USD');
+        
+        const setTxt = (id, val, cur) => { const el = document.getElementById(id); if(el) el.textContent = formatCurrency(val, cur); };
+        setTxt('repIncCashKHR', incCashKHR, 'KHR');
+        setTxt('repIncCashUSD', incCashUSD, 'USD');
+        setTxt('repExpCashKHR', expCashKHR, 'KHR');
+        setTxt('repExpCashUSD', expCashUSD, 'USD');
+        setTxt('repBalCashKHR', incCashKHR - expCashKHR, 'KHR');
+        setTxt('repBalCashUSD', incCashUSD - expCashUSD, 'USD');
+        
+        setTxt('repIncBankKHR', incBankKHR, 'KHR');
+        setTxt('repIncBankUSD', incBankUSD, 'USD');
+        setTxt('repExpBankKHR', expBankKHR, 'KHR');
+        setTxt('repExpBankUSD', expBankUSD, 'USD');
+        setTxt('repBalBankKHR', incBankKHR - expBankKHR, 'KHR');
+        setTxt('repBalBankUSD', incBankUSD - expBankUSD, 'USD');
         updateReportChart(chartData);
     } 
     else if (currentReportTab === 'income' || currentReportTab === 'expense') {
