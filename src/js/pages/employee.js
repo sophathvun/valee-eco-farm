@@ -579,16 +579,16 @@ function renderCropLivePreview() {
     const previewCtx = previewCanvas.getContext('2d');
 
     const croppedCanvas = cropper.getCroppedCanvas({
-        width: 250,
-        height: 250,
+        width: 280,
+        height: 280,
         imageSmoothingEnabled: true,
         imageSmoothingQuality: 'high'
     });
     if (!croppedCanvas) return;
 
     const workCanvas = document.createElement('canvas');
-    workCanvas.width = 250;
-    workCanvas.height = 250;
+    workCanvas.width = 280;
+    workCanvas.height = 280;
     const workCtx = workCanvas.getContext('2d');
     workCtx.drawImage(croppedCanvas, 0, 0);
 
@@ -597,11 +597,13 @@ function renderCropLivePreview() {
     const brightness = parseInt(document.getElementById('crop-brightness')?.value || '0', 10);
     const contrast = parseInt(document.getElementById('crop-contrast')?.value || '0', 10);
 
-    processCanvasBackground(workCtx, 250, 250, selectedCropBgColor, tolerance);
-    processCanvasEnhancements(workCtx, 250, 250, brightness, contrast, sharpen);
+    processCanvasBackground(workCtx, 280, 280, selectedCropBgColor, tolerance);
+    processCanvasEnhancements(workCtx, 280, 280, brightness, contrast, sharpen);
 
-    previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-    previewCtx.drawImage(workCanvas, 0, 0, previewCanvas.width, previewCanvas.height);
+    previewCanvas.width = 280;
+    previewCanvas.height = 280;
+    previewCtx.clearRect(0, 0, 280, 280);
+    previewCtx.drawImage(workCanvas, 0, 0, 280, 280);
 
     const result = exportOptimizedWebP(workCanvas);
     const sizeEl = document.getElementById('crop-file-size');
