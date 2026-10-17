@@ -36,7 +36,7 @@ async function loadEmployees() {
         else if (wageType === 'Hourly') wageSuffix = '/ \u1798\u17c9\u17c4\u1784';
         
         tr.innerHTML = `
-            <td><img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" style="width:50px; height:50px; object-fit:cover; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></td>
+            <td><img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" style="width:50px; height:50px; object-fit:cover; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" onclick="viewEmployeePhoto(${emp.id})" title="ចុចដើម្បីមើលរូបធំ និងទាញយក"></td>
             <td class="fw-bold text-primary">${emp.code || 'N/A'}</td>
             <td>${emp.nationalId || '-'}</td>
             <td class="fw-bold">${emp.name}</td>
@@ -848,6 +848,164 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 1000);
 });
+
+// ====== PHOTO VIEWER POPUP (ZOOM & DOWNLOAD JPG) ======
+let currentViewingEmp = null;
+let currentViewerZoom = 1;
+let isPanningViewer = false;
+let startPanX = 0, startPanY = 0;
+let currentPanX = 0, currentPanY = 0;
+
+window.viewEmployeePhoto = async function(empId) {
+    try {
+        const emp = await db.employees.get(empId);
+        if (!emp) return;
+        currentViewingEmp = emp;
+        currentViewerZoom = 1;
+        currentPanX = 0;
+        currentPanY = 0;
+
+        const modalEl = document.getElementById('empPhotoViewerModal');
+        if (!modalEl) return;
+
+        const nameEl = document.getElementById('viewer-emp-name');
+        if (nameEl) nameEl.textContent = emp.name || 'រូបថតបុគ្គលិក';
+
+        const codeEl = document.getElementById('viewer-emp-code');
+        if (codeEl) codeEl.textContent = emp.code ? `(${emp.code})` : '';
+
+        const imgEl = document.getElementById('viewer-emp-img');
+        if (imgEl) {
+            imgEl.src = emp.photo || 'assets/images/default-avatar.svg';
+            imgEl.style.transform = 'translate(0px, 0px) scale(1)';
+        }
+
+        const zoomLevelEl = document.getElementById('viewer-zoom-level');
+        if (zoomLevelEl) zoomLevelEl.textContent = '100%';
+
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    } catch (err) {
+        console.error('Error viewing employee photo:', err);
+    }
+};
+
+window.zoomEmpPhoto = function(delta) {
+    currentViewerZoom = Math.max(0.5, Math.min(4.0, parseFloat((currentViewerZoom + delta).toFixed(2))));
+    applyViewerTransform();
+};
+
+window.resetEmpPhotoZoom = function() {
+    currentViewerZoom = 1;
+    currentPanX = 0;
+    currentPanY = 0;
+    applyViewerTransform();
+};
+
+function applyViewerTransform() {
+    const imgEl = document.getElementById('viewer-emp-img');
+    const zoomLevelEl = document.getElementById('viewer-zoom-level');
+    if (imgEl) {
+        imgEl.style.transform = `translate(${currentPanX}px, ${currentPanY}px) scale(${currentViewerZoom})`;
+    }
+    if (zoomLevelEl) {
+        zoomLevelEl.textContent = `${Math.round(currentViewerZoom * 100)}%`;
+    }
+}
+
+// Mouse Wheel Zoom & Drag Pan inside Viewer
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const wrapper = document.getElementById('viewer-photo-wrapper');
+        if (!wrapper) return;
+
+        wrapper.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.2 : -0.2;
+            zoomEmpPhoto(delta);
+        }, { passive: false });
+
+        wrapper.addEventListener('mousedown', (e) => {
+            if (currentViewerZoom > 1) {
+                isPanningViewer = true;
+                startPanX = e.clientX - currentPanX;
+                startPanY = e.clientY - currentPanY;
+                wrapper.style.cursor = 'grabbing';
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isPanningViewer) return;
+            currentPanX = e.clientX - startPanX;
+            currentPanY = e.clientY - startPanY;
+            applyViewerTransform();
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isPanningViewer) {
+                isPanningViewer = false;
+                if (wrapper) wrapper.style.cursor = currentViewerZoom > 1 ? 'grab' : 'default';
+            }
+        });
+    }, 1000);
+});
+
+// Download Photo as high-quality JPG
+window.downloadEmpPhotoJpg = function() {
+    const img = document.getElementById('viewer-emp-img');
+    if (!img || !img.src) return;
+
+    const btn = document.getElementById('viewer-download-btn');
+    if (btn) btn.disabled = true;
+
+    const tempImg = new Image();
+    tempImg.crossOrigin = 'anonymous';
+    tempImg.onload = function() {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = tempImg.naturalWidth || 400;
+            canvas.height = tempImg.naturalHeight || 400;
+            const ctx = canvas.getContext('2d');
+
+            // Solid white background fill so any transparency doesn't turn black in JPEG
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(tempImg, 0, 0, canvas.width, canvas.height);
+
+            const jpgDataUrl = canvas.toDataURL('image/jpeg', 0.95);
+            const link = document.createElement('a');
+            const empCode = (currentViewingEmp && currentViewingEmp.code) ? currentViewingEmp.code : 'EMP';
+            let safeName = 'photo';
+            if (currentViewingEmp) {
+                safeName = (currentViewingEmp.latinName || currentViewingEmp.name || 'photo').replace(/[^a-zA-Z0-9_\u1780-\u17D3]/g, '_');
+            }
+            link.download = `${empCode}_${safeName}.jpg`;
+            link.href = jpgDataUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            if (btn) btn.disabled = false;
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ទាញយកជោគជ័យ!',
+                    text: `រូបថតត្រូវបានរក្សាទុកជា ${link.download}`,
+                    timer: 1600,
+                    showConfirmButton: false
+                });
+            }
+        } catch (e) {
+            console.error('Download error:', e);
+            if (btn) btn.disabled = false;
+        }
+    };
+    tempImg.onerror = function() {
+        if (btn) btn.disabled = false;
+        alert('មិនអាចទាញយករូបភាពបានទេ!');
+    };
+    tempImg.src = img.src;
+};
 
 
 
