@@ -10,12 +10,5 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const firestore = firebase.firestore();
 
-
-firebase.firestore().enablePersistence()
-  .catch(function(err) {
-      if (err.code == 'failed-precondition') {
-          console.warn('Multiple tabs open, persistence can only be enabled in one tab at a a time.');
-      } else if (err.code == 'unimplemented') {
-          console.warn('The current browser does not support all of the features required to enable persistence');
-      }
-  });
+// Offline persistence is disabled to enforce live online Cloud syncing across all devices
+// and prevent data inconsistency between computers and mobile phones.

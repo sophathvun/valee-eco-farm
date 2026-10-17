@@ -16,13 +16,44 @@ document.getElementById('inv-date').valueAsDate = new Date();
 function updateOnlineStatus() {
     const offlineBadge = document.getElementById('offline-status');
     if (offlineBadge) {
-        if (!navigator.onLine) offlineBadge.style.display = 'block';
-        else offlineBadge.style.display = 'none';
+        if (!navigator.onLine) {
+            offlineBadge.style.display = 'block';
+        } else {
+            offlineBadge.style.display = 'none';
+        }
     }
 }
 
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
+window.addEventListener('online', () => {
+    updateOnlineStatus();
+    if (typeof Swal !== 'undefined') {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
+        });
+        Toast.fire({
+            icon: 'success',
+            title: 'បានភ្ជាប់អ៊ីនធឺណិតឡើងវិញ (Online)'
+        });
+    }
+});
+
+window.addEventListener('offline', () => {
+    updateOnlineStatus();
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'ដាច់ការតភ្ជាប់អ៊ីនធឺណិត!',
+            text: 'ប្រព័ន្ធដំណើរការផ្ទាល់លើ Cloud Online ប៉ុណ្ណោះ។ សូមភ្ជាប់អ៊ីនធឺណិតដើម្បីបន្តប្រើប្រាស់។',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#d33'
+        });
+    }
+});
+
 updateOnlineStatus();
 
 

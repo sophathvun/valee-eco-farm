@@ -1,3 +1,8 @@
+function checkOnline() {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        throw new Error('គ្មានការតភ្ជាប់អ៊ីនធឺណិត (No Internet Connection)! ប្រព័ន្ធដំណើរការលើ Cloud Online ប៉ុណ្ណោះ សូមភ្ជាប់អ៊ីនធឺណិតដើម្បីបន្ត។');
+    }
+}
 
 function withTimeout(promise, ms = 10000) {
     return Promise.race([
@@ -10,7 +15,8 @@ class FirebaseQuery {
     constructor(query) { this.query = query; }
     reverse() { this.shouldReverse = true; return this; }
     async toArray() {
-        const snap = await this.query.get();
+        checkOnline();
+        const snap = await withTimeout(this.query.get());
         let arr = snap.docs.map(d => d.data());
         if(this.shouldReverse) arr.reverse();
         return arr;
@@ -20,11 +26,13 @@ class FirebaseQuery {
         return arr[arr.length - 1];
     }
     async first() {
-        const snap = await this.query.limit(1).get();
+        checkOnline();
+        const snap = await withTimeout(this.query.limit(1).get());
         return snap.empty ? null : snap.docs[0].data();
     }
     async count() {
-        const snap = await this.query.get();
+        checkOnline();
+        const snap = await withTimeout(this.query.get());
         return snap.size;
     }
 }
@@ -49,42 +57,53 @@ class FirebaseStore {
     constructor(collectionName) {
         this.col = firestore.collection(collectionName);
     }
-    async count() { const snap = await this.col.get(); return snap.size; }
+    async count() { 
+        checkOnline();
+        const snap = await withTimeout(this.col.get()); 
+        return snap.size; 
+    }
     async add(obj) { 
+        checkOnline();
         validateAndSanitize(obj);
         if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
         await withTimeout(this.col.doc(obj.id.toString()).set(obj)); 
         return obj.id; 
     }
     async bulkAdd(arr) { 
+        checkOnline();
         const batch = firestore.batch();
         arr.forEach(obj => {
             validateAndSanitize(obj);
             if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
             batch.set(this.col.doc(obj.id.toString()), obj);
         });
-        await batch.commit();
+        await withTimeout(batch.commit());
     }
     async get(id) { 
         if(!id) return null;
-        const doc = await this.col.doc(id.toString()).get(); 
+        checkOnline();
+        const doc = await withTimeout(this.col.doc(id.toString()).get()); 
         return doc.exists ? doc.data() : null; 
     }
     async update(id, obj) { 
         if(!id) return;
+        checkOnline();
         validateAndSanitize(obj);
         await withTimeout(this.col.doc(id.toString()).update(obj)); 
     }
     async delete(id) { 
         if(!id) return;
+        checkOnline();
         await withTimeout(this.col.doc(id.toString()).delete()); 
     }
     async first() {
-        const snap = await this.col.limit(1).get();
+        checkOnline();
+        const snap = await withTimeout(this.col.limit(1).get());
         return snap.empty ? null : snap.docs[0].data();
     }
     async toArray() { 
-        const snap = await this.col.get(); 
+        checkOnline();
+        const snap = await withTimeout(this.col.get()); 
         return snap.docs.map(d => d.data()); 
     }
     orderBy(field) { return new FirebaseQuery(this.col.orderBy(field)); }

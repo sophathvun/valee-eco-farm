@@ -1,4 +1,4 @@
-﻿// ====== INVOICE LOGIC ======
+// ====== INVOICE LOGIC ======
 let invoiceItemCount = 0;
 let editingInvoiceId = null;
 let editingTxId = null;
@@ -143,6 +143,9 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
     resetInvoiceForm();
     loadInvoices();
     loadData();
+    } catch (err) {
+        console.error(err);
+        Swal.fire('បញ្ហា', err.message, 'error');
     } finally { if (subBtn) { subBtn.disabled = false; subBtn.innerHTML = subBtn.dataset.oh; } }
 });
 

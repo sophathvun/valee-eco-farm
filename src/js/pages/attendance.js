@@ -326,7 +326,7 @@ window.saveAllAttendance = async function() {
 
         Swal.fire({icon: 'success', text: 'រក្សាទុកវត្តមានប្រចាំខែជោគជ័យ!', timer: 1500, showConfirmButton: false});
     } catch (error) {
-        Swal.fire('បរាជ័យ', 'មានបញ្ហាក្នុងការរក្សាទុកវត្តមាន', 'error');
+        Swal.fire('បរាជ័យ', error.message || 'មានបញ្ហាក្នុងការរក្សាទុកវត្តមាន', 'error');
         console.error(error);
     } finally {
         if (btn) {
