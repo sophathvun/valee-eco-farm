@@ -36,7 +36,7 @@ async function loadEmployees() {
         else if (wageType === 'Hourly') wageSuffix = '/ \u1798\u17c9\u17c4\u1784';
         
         tr.innerHTML = `
-            <td><img src="${emp.photo || ''}" style="width:50px; height:50px; object-fit:cover; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></td>
+            <td><img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" style="width:50px; height:50px; object-fit:cover; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></td>
             <td class="fw-bold text-primary">${emp.code || 'N/A'}</td>
             <td>${emp.nationalId || '-'}</td>
             <td class="fw-bold">${emp.name}</td>
@@ -68,7 +68,10 @@ window.openAddEmployeeModal = async function() {
     if (document.getElementById('emp-currency')) document.getElementById('emp-currency').value = 'USD';
     
     const preview = document.getElementById('emp-photo-preview');
-    if (preview) preview.removeAttribute('src');
+    if (preview) {
+        preview.src = 'assets/images/default-avatar.svg';
+        preview.dataset.hasCustom = 'false';
+    }
     if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
     
     const modalTitle = document.querySelector('#employeeModal .modal-title');
@@ -142,8 +145,13 @@ window.editEmployee = async function(id) {
         
         const preview = document.getElementById('emp-photo-preview');
         if (preview) {
-            if (emp.photo) preview.src = emp.photo;
-            else preview.removeAttribute('src');
+            if (emp.photo) {
+                preview.src = emp.photo;
+                preview.dataset.hasCustom = 'true';
+            } else {
+                preview.src = 'assets/images/default-avatar.svg';
+                preview.dataset.hasCustom = 'false';
+            }
         }
         if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
         
@@ -201,7 +209,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         const currency = document.getElementById('emp-currency') ? document.getElementById('emp-currency').value : 'USD';
         const salary = parseFloat(document.getElementById('emp-salary').value) || 0;
         const photoEl = document.getElementById('emp-photo-preview');
-        const photo = (photoEl && photoEl.getAttribute('src')) ? photoEl.getAttribute('src') : '';
+        const photo = (photoEl && photoEl.dataset.hasCustom === 'true' && photoEl.getAttribute('src')) ? photoEl.getAttribute('src') : '';
 
         const allEmps = await db.employees.toArray();
         const isDuplicate = allEmps.some(e => e.code === code && e.id !== editingEmployeeId);
@@ -240,7 +248,11 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         document.getElementById('emp-wage-type').value = 'Monthly';
         if(document.getElementById('emp-currency')) document.getElementById('emp-currency').value = 'USD';
         editingEmployeeId = null;
-        document.getElementById('emp-photo-preview').removeAttribute('src');
+        const prevPhoto = document.getElementById('emp-photo-preview');
+        if (prevPhoto) {
+            prevPhoto.src = 'assets/images/default-avatar.svg';
+            prevPhoto.dataset.hasCustom = 'false';
+        }
         btn.innerHTML = 'រក្សាទុក';
         if(typeof generateEmpCode === 'function') generateEmpCode();
         loadEmployees();
@@ -276,13 +288,12 @@ function updatePhotoPlaceholder() {
     const preview = document.getElementById('emp-photo-preview');
     const placeholder = document.getElementById('emp-photo-placeholder');
     if(preview && placeholder) {
-        if (preview.getAttribute('src') && preview.getAttribute('src').length > 10) {
-            placeholder.style.display = 'none';
-            preview.style.display = 'block';
-        } else {
-            placeholder.style.display = 'flex';
-            preview.style.display = 'none';
+        if (!preview.getAttribute('src')) {
+            preview.src = 'assets/images/default-avatar.svg';
+            preview.dataset.hasCustom = 'false';
         }
+        preview.style.display = 'block';
+        placeholder.style.display = 'block';
     }
 }
 updatePhotoPlaceholder();
@@ -345,7 +356,10 @@ if(btnSave) {
         const canvas = cropper.getCroppedCanvas({ width: 250, height: 250, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
         const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
         const prev = document.getElementById('emp-photo-preview');
-        if(prev) prev.src = dataUrl;
+        if(prev) {
+            prev.src = dataUrl;
+            prev.dataset.hasCustom = 'true';
+        }
         updatePhotoPlaceholder();
         if(cropperModal) cropperModal.hide();
     });

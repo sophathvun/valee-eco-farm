@@ -148,7 +148,7 @@ window.generateAttendanceReport = async function() {
                     <tr>
                     <td class="text-start align-middle col-emp">
                         <div class="d-flex align-items-center">
-                            <img src="${emp.photo || 'assets/default-avatar.png'}" class="rounded-circle me-2 border" style="width: 30px; height: 30px; object-fit: cover;">
+                            <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border" style="width: 30px; height: 30px; object-fit: cover;">
                             <div style="line-height: 1.2;">
                                 <div class="fw-bold text-dark" style="font-size: 0.85rem;">${emp.name}</div>
                                 <div class="text-muted" style="font-size: 0.7rem;">${emp.code || ''}</div>
