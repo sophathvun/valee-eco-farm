@@ -4,19 +4,12 @@ function checkOnline() {
     }
 }
 
-function withTimeout(promise, ms = 10000) {
-    return Promise.race([
-        promise,
-        new Promise((_, reject) => setTimeout(() => reject(new Error('បណ្តាញអ៊ីនធឺណិតមានបញ្ហា ឬយឺតខ្លាំង (Network Timeout)')), ms))
-    ]);
-}
-
 class FirebaseQuery {
     constructor(query) { this.query = query; }
     reverse() { this.shouldReverse = true; return this; }
     async toArray() {
         checkOnline();
-        const snap = await withTimeout(this.query.get());
+        const snap = await this.query.get();
         let arr = snap.docs.map(d => d.data());
         if(this.shouldReverse) arr.reverse();
         return arr;
@@ -27,12 +20,12 @@ class FirebaseQuery {
     }
     async first() {
         checkOnline();
-        const snap = await withTimeout(this.query.limit(1).get());
+        const snap = await this.query.limit(1).get();
         return snap.empty ? null : snap.docs[0].data();
     }
     async count() {
         checkOnline();
-        const snap = await withTimeout(this.query.get());
+        const snap = await this.query.get();
         return snap.size;
     }
 }
@@ -59,14 +52,14 @@ class FirebaseStore {
     }
     async count() { 
         checkOnline();
-        const snap = await withTimeout(this.col.get()); 
+        const snap = await this.col.get(); 
         return snap.size; 
     }
     async add(obj) { 
         checkOnline();
         validateAndSanitize(obj);
         if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
-        await withTimeout(this.col.doc(obj.id.toString()).set(obj)); 
+        await this.col.doc(obj.id.toString()).set(obj); 
         return obj.id; 
     }
     async bulkAdd(arr) { 
@@ -77,33 +70,33 @@ class FirebaseStore {
             if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
             batch.set(this.col.doc(obj.id.toString()), obj);
         });
-        await withTimeout(batch.commit());
+        await batch.commit();
     }
     async get(id) { 
         if(!id) return null;
         checkOnline();
-        const doc = await withTimeout(this.col.doc(id.toString()).get()); 
+        const doc = await this.col.doc(id.toString()).get(); 
         return doc.exists ? doc.data() : null; 
     }
     async update(id, obj) { 
         if(!id) return;
         checkOnline();
         validateAndSanitize(obj);
-        await withTimeout(this.col.doc(id.toString()).update(obj)); 
+        await this.col.doc(id.toString()).set(obj, { merge: true }); 
     }
     async delete(id) { 
         if(!id) return;
         checkOnline();
-        await withTimeout(this.col.doc(id.toString()).delete()); 
+        await this.col.doc(id.toString()).delete(); 
     }
     async first() {
         checkOnline();
-        const snap = await withTimeout(this.col.limit(1).get());
+        const snap = await this.col.limit(1).get();
         return snap.empty ? null : snap.docs[0].data();
     }
     async toArray() { 
         checkOnline();
-        const snap = await withTimeout(this.col.get()); 
+        const snap = await this.col.get(); 
         return snap.docs.map(d => d.data()); 
     }
     orderBy(field) { return new FirebaseQuery(this.col.orderBy(field)); }

@@ -199,8 +199,9 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         const type = document.getElementById('emp-type').value;
         const wageType = document.getElementById('emp-wage-type').value;
         const currency = document.getElementById('emp-currency') ? document.getElementById('emp-currency').value : 'USD';
-        const salary = parseFloat(document.getElementById('emp-salary').value);
-        const photo = document.getElementById('emp-photo-preview').src;
+        const salary = parseFloat(document.getElementById('emp-salary').value) || 0;
+        const photoEl = document.getElementById('emp-photo-preview');
+        const photo = (photoEl && photoEl.getAttribute('src')) ? photoEl.getAttribute('src') : '';
 
         const allEmps = await db.employees.toArray();
         const isDuplicate = allEmps.some(e => e.code === code && e.id !== editingEmployeeId);
@@ -209,7 +210,23 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
             return;
         }
 
-        const data = { code, nationalId, name, latinName, gender, dob, phone, department, position, type, wageType, currency, salary, photo };
+        const data = { 
+            id: editingEmployeeId || Date.now(),
+            code: code || '',
+            nationalId: nationalId || '',
+            name: name || '',
+            latinName: latinName || '',
+            gender: gender || 'ប្រុស',
+            dob: dob || '',
+            phone: phone || '',
+            department: department || '',
+            position: position || '',
+            type: type || 'Full-Time',
+            wageType: wageType || 'Monthly',
+            currency: currency || 'USD',
+            salary: isNaN(salary) ? 0 : salary,
+            photo: photo || ''
+        };
         if (editingEmployeeId) {
             await db.employees.update(editingEmployeeId, data);
             Swal.fire({icon: 'success', text: 'អាប់ដេតព័ត៌មានបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
