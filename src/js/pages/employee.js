@@ -72,6 +72,7 @@ window.openAddEmployeeModal = async function() {
         preview.src = 'assets/images/default-avatar.svg';
         preview.dataset.hasCustom = 'false';
     }
+    if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
     if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
     
     const modalTitle = document.querySelector('#employeeModal .modal-title');
@@ -153,6 +154,7 @@ window.editEmployee = async function(id) {
                 preview.dataset.hasCustom = 'false';
             }
         }
+        if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
         if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
         
         const subBtn = document.querySelector('#employeeForm button[type="submit"]');
@@ -253,6 +255,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
             prevPhoto.src = 'assets/images/default-avatar.svg';
             prevPhoto.dataset.hasCustom = 'false';
         }
+        if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
         btn.innerHTML = 'រក្សាទុក';
         if(typeof generateEmpCode === 'function') generateEmpCode();
         loadEmployees();
@@ -297,6 +300,29 @@ function updatePhotoPlaceholder() {
     }
 }
 updatePhotoPlaceholder();
+
+// ====== REMOVE PHOTO HELPER ======
+function updateRemovePhotoBtnVisibility() {
+    const preview = document.getElementById('emp-photo-preview');
+    const removeBtn = document.getElementById('btn-remove-emp-photo');
+    if (!removeBtn) return;
+    const hasCustom = preview && preview.dataset.hasCustom === 'true';
+    removeBtn.style.display = hasCustom ? 'block' : 'none';
+}
+window.updateRemovePhotoBtnVisibility = updateRemovePhotoBtnVisibility;
+
+window.removeEmployeePhoto = function() {
+    const preview = document.getElementById('emp-photo-preview');
+    if (preview) {
+        preview.src = 'assets/images/default-avatar.svg';
+        preview.dataset.hasCustom = 'false';
+    }
+    const photoInput = document.getElementById('emp-photo');
+    if (photoInput) photoInput.value = '';
+    updateRemovePhotoBtnVisibility();
+    if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
+};
+updateRemovePhotoBtnVisibility();
 
 if (dropzone && photoInput) {
     dropzone.addEventListener('click', () => photoInput.click());
@@ -752,6 +778,7 @@ if(btnSave) {
             prev.dataset.hasCustom = 'true';
         }
         updatePhotoPlaceholder();
+        if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
         if(cropperModal) cropperModal.hide();
 
         if (typeof Swal !== 'undefined') {
@@ -767,7 +794,12 @@ if(btnSave) {
 }
 
 const empForm = document.getElementById('employeeForm');
-if(empForm) empForm.addEventListener('reset', () => { setTimeout(updatePhotoPlaceholder, 10); });
+if(empForm) empForm.addEventListener('reset', () => { 
+    setTimeout(() => {
+        if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
+        if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
+    }, 10); 
+});
 
 window.loadDepartmentsForEmp = async function(selectedVal = null) {
     try {
