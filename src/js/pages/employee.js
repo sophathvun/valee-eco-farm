@@ -342,8 +342,8 @@ const btnSave = document.getElementById('crop-save-btn');
 if(btnSave) {
     btnSave.addEventListener('click', () => {
         if (!cropper) return;
-        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        const canvas = cropper.getCroppedCanvas({ width: 250, height: 250, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
         const prev = document.getElementById('emp-photo-preview');
         if(prev) prev.src = dataUrl;
         updatePhotoPlaceholder();

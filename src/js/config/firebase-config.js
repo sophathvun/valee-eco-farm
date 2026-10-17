@@ -9,6 +9,9 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const firestore = firebase.firestore();
+firestore.settings({
+  experimentalAutoDetectLongPolling: true
+});
 
 // Offline persistence is disabled to enforce live online Cloud syncing across all devices
 // and prevent data inconsistency between computers and mobile phones.

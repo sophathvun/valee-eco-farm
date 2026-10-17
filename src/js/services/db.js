@@ -4,12 +4,26 @@ function checkOnline() {
     }
 }
 
+async function retryOperation(fn, retries = 3, delay = 1000) {
+    let lastError;
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await fn();
+        } catch (err) {
+            lastError = err;
+            console.warn(`Firestore operation attempt ${i + 1} failed, retrying...`, err);
+            await new Promise(r => setTimeout(r, delay * (i + 1)));
+        }
+    }
+    throw lastError;
+}
+
 class FirebaseQuery {
     constructor(query) { this.query = query; }
     reverse() { this.shouldReverse = true; return this; }
     async toArray() {
         checkOnline();
-        const snap = await this.query.get();
+        const snap = await retryOperation(() => this.query.get());
         let arr = snap.docs.map(d => d.data());
         if(this.shouldReverse) arr.reverse();
         return arr;
@@ -20,12 +34,12 @@ class FirebaseQuery {
     }
     async first() {
         checkOnline();
-        const snap = await this.query.limit(1).get();
+        const snap = await retryOperation(() => this.query.limit(1).get());
         return snap.empty ? null : snap.docs[0].data();
     }
     async count() {
         checkOnline();
-        const snap = await this.query.get();
+        const snap = await retryOperation(() => this.query.get());
         return snap.size;
     }
 }
@@ -52,14 +66,14 @@ class FirebaseStore {
     }
     async count() { 
         checkOnline();
-        const snap = await this.col.get(); 
+        const snap = await retryOperation(() => this.col.get()); 
         return snap.size; 
     }
     async add(obj) { 
         checkOnline();
         validateAndSanitize(obj);
         if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
-        await this.col.doc(obj.id.toString()).set(obj); 
+        await retryOperation(() => this.col.doc(obj.id.toString()).set(obj)); 
         return obj.id; 
     }
     async bulkAdd(arr) { 
@@ -70,33 +84,33 @@ class FirebaseStore {
             if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
             batch.set(this.col.doc(obj.id.toString()), obj);
         });
-        await batch.commit();
+        await retryOperation(() => batch.commit());
     }
     async get(id) { 
         if(!id) return null;
         checkOnline();
-        const doc = await this.col.doc(id.toString()).get(); 
+        const doc = await retryOperation(() => this.col.doc(id.toString()).get()); 
         return doc.exists ? doc.data() : null; 
     }
     async update(id, obj) { 
         if(!id) return;
         checkOnline();
         validateAndSanitize(obj);
-        await this.col.doc(id.toString()).set(obj, { merge: true }); 
+        await retryOperation(() => this.col.doc(id.toString()).set(obj, { merge: true })); 
     }
     async delete(id) { 
         if(!id) return;
         checkOnline();
-        await this.col.doc(id.toString()).delete(); 
+        await retryOperation(() => this.col.doc(id.toString()).delete()); 
     }
     async first() {
         checkOnline();
-        const snap = await this.col.limit(1).get();
+        const snap = await retryOperation(() => this.col.limit(1).get());
         return snap.empty ? null : snap.docs[0].data();
     }
     async toArray() { 
         checkOnline();
-        const snap = await this.col.get(); 
+        const snap = await retryOperation(() => this.col.get()); 
         return snap.docs.map(d => d.data()); 
     }
     orderBy(field) { return new FirebaseQuery(this.col.orderBy(field)); }
