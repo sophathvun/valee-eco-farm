@@ -1,4 +1,4 @@
-﻿#attendance-table-container {
+#attendance-table-container {
     max-height: 70vh;
     overflow: auto;
 }
@@ -84,5 +84,16 @@
     background-color: #e9ecef; /* Light gray for no data */
     color: transparent;
 }
+
+.att-table thead th.day-header {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    user-select: none;
+}
+
+.att-table thead th.day-header:hover {
+    background-color: #146c43 !important;
+}
+
 
 

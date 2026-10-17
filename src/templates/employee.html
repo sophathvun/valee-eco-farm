@@ -1,4 +1,12 @@
-﻿<div class="row">
+<style>
+    #employeeModal .form-label,
+    #employeeForm .form-label {
+        font-size: 0.85rem;
+        font-weight: normal;
+        margin-bottom: 0.35rem;
+    }
+</style>
+<div class="row">
                 <!-- Modal for Employee Form -->
                 <div class="modal fade" id="employeeModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-fullscreen-md-down">
@@ -11,7 +19,7 @@
                                 <form id="employeeForm">
                                     <div class="row">
                                         <div class="col-md-4 text-center mb-3">
-                                            <label class="form-label fw-bold d-block">រូបថតបុគ្គលិក (Photo)</label>
+                                            <label class="form-label d-block">រូបថតបុគ្គលិក (Photo)</label>
                                             <div id="emp-photo-dropzone" class="rounded mx-auto p-3 mb-2 bg-light d-flex flex-column align-items-center justify-content-center" style="cursor: pointer; width: 100%; height: 220px; border: 2px dashed #0dcaf0; transition: 0.3s;">
                                                 <div class="rounded-3 overflow-hidden mb-2 bg-white shadow-sm" style="width: 150px; height: 150px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; position: relative;">
                                                     <img id="emp-photo-preview" style="width: 100%; height: 100%; object-fit: cover;">
@@ -24,49 +32,57 @@
                                         <div class="col-md-8">
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">អត្តលេខ (Emp ID)</label>
+                                                    <label class="form-label">អត្តលេខ (Emp ID)</label>
                                                     <input type="text" class="form-control" id="emp-code" required readonly placeholder="Ex: VEF-0001">
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ឈ្មោះ (Name)</label>
+                                                    <label class="form-label">លេខអត្តសញ្ញាណបណ្ណ (National ID)</label>
+                                                    <input type="text" class="form-control" id="emp-national-id" placeholder="បញ្ចូលលេខអត្តសញ្ញាណបណ្ណ">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">ឈ្មោះ (Name)</label>
                                                     <input type="text" class="form-control" id="emp-name" required>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ភេទ (Gender)</label>
+                                                    <label class="form-label">ឈ្មោះឡាតាំង</label>
+                                                    <input type="text" class="form-control" id="emp-latin-name" placeholder="Name in English (Latin)">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">ភេទ (Gender)</label>
                                                     <select class="form-select" id="emp-gender">
                                                         <option value="ប្រុស">ប្រុស (Male)</option>
                                                         <option value="ស្រី">ស្រី (Female)</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ថ្ងៃខែឆ្នាំកំណើត (DOB)</label>
+                                                    <label class="form-label">ថ្ងៃខែឆ្នាំកំណើត (DOB)</label>
                                                     <input type="date" class="form-control" id="emp-dob">
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">លេខទូរស័ព្ទ (Phone)</label>
+                                                    <label class="form-label">លេខទូរស័ព្ទ (Phone)</label>
                                                     <input type="text" class="form-control" id="emp-phone">
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ផ្នែកការងារ (Department)</label>
+                                                    <label class="form-label">ផ្នែកការងារ (Department)</label>
                                                     <select class="form-select" id="emp-department" required>
                                                         <option value="">-- ជ្រើសរើសផ្នែក --</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">តួនាទី (Position)</label>
+                                                    <label class="form-label">តួនាទី (Position)</label>
                                                     <select class="form-select" id="emp-position" required>
                                                         <option value="">-- ជ្រើសរើសតួនាទី --</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-bold">ប្រភេទការងារ (Type)</label>
+                                                    <label class="form-label">ប្រភេទការងារ (Type)</label>
                                                     <select class="form-select" id="emp-type">
                                                         <option value="Full-Time">ពេញម៉ោង (Full-Time)</option>
                                                         <option value="Part-Time">ក្រៅម៉ោង (Part-Time)</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-12 mb-3">
-                                                    <label class="form-label fw-bold">ប្រាក់ឈ្នួលគោល (Base Rate) USD</label>
+                                                    <label class="form-label">ប្រាក់ឈ្នួលគោល (Base Rate) USD</label>
                                                     <div class="input-group">
                                                         <select class="form-select" id="emp-currency" style="max-width: 90px;" required>
                                                             <option value="USD">$</option>
@@ -76,6 +92,7 @@
                                                         <select class="form-select" id="emp-wage-type" style="max-width: 150px;">
                                                             <option value="Monthly">គិតជាខែ</option>
                                                             <option value="Daily">គិតជាថ្ងៃ</option>
+                                                            <option value="Shift">គិតជាវេន</option>
                                                             <option value="Hourly">គិតជាម៉ោង</option>
                                                         </select>
                                                     </div>
@@ -102,7 +119,9 @@
                                     <tr>
                                         <th>រូបថត</th>
                                         <th>អត្តលេខ</th>
+                                        <th>លេខអត្តសញ្ញាណបណ្ណ</th>
                                         <th>ឈ្មោះបុគ្គលិក</th>
+                                        <th>ឈ្មោះឡាតាំង</th>
                                         <th>ភេទ</th>
                                         <th>ផ្នែកការងារ</th>
                                         <th>តួនាទី</th>

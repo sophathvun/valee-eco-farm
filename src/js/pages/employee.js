@@ -1,4 +1,4 @@
-﻿// ====== EMPLOYEE MANAGEMENT ======
+// ====== EMPLOYEE MANAGEMENT ======
 let editingEmployeeId = null;
 
 window.generateEmpCode = async function() {
@@ -32,12 +32,15 @@ async function loadEmployees() {
         const wageType = emp.wageType || 'Monthly';
         if (wageType === 'Monthly') wageSuffix = '/ \u1781\u17c2';
         else if (wageType === 'Daily') wageSuffix = '/ \u1790\u17d2\u1784\u17c3';
+        else if (wageType === 'Shift') wageSuffix = '/ \u179c\u17c1\u1793';
         else if (wageType === 'Hourly') wageSuffix = '/ \u1798\u17c9\u17c4\u1784';
         
         tr.innerHTML = `
             <td><img src="${emp.photo || ''}" style="width:50px; height:50px; object-fit:cover; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></td>
             <td class="fw-bold text-primary">${emp.code || 'N/A'}</td>
+            <td>${emp.nationalId || '-'}</td>
             <td class="fw-bold">${emp.name}</td>
+            <td>${emp.latinName || '-'}</td>
             <td>${emp.gender}</td>
             <td>${emp.department || ''}</td>
             <td>${emp.position}</td>
@@ -61,7 +64,13 @@ window.editEmployee = async function(id) {
     
     editingEmployeeId = id;
     document.getElementById('emp-code').value = emp.code || '';
+    if (document.getElementById('emp-national-id')) {
+        document.getElementById('emp-national-id').value = emp.nationalId || '';
+    }
     document.getElementById('emp-name').value = emp.name;
+    if (document.getElementById('emp-latin-name')) {
+        document.getElementById('emp-latin-name').value = emp.latinName || '';
+    }
     document.getElementById('emp-gender').value = emp.gender;
     document.getElementById('emp-dob').value = emp.dob;
     document.getElementById('emp-phone').value = emp.phone;
@@ -104,7 +113,9 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
     
     try {
         const code = document.getElementById('emp-code').value.trim();
+        const nationalId = document.getElementById('emp-national-id') ? document.getElementById('emp-national-id').value.trim() : '';
         const name = document.getElementById('emp-name').value.trim();
+        const latinName = document.getElementById('emp-latin-name') ? document.getElementById('emp-latin-name').value.trim() : '';
         const gender = document.getElementById('emp-gender').value;
         const dob = document.getElementById('emp-dob').value;
         const phone = document.getElementById('emp-phone').value.trim();
@@ -123,7 +134,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
             return;
         }
 
-        const data = { code, name, gender, dob, phone, department, position, type, wageType, currency, salary, photo };
+        const data = { code, nationalId, name, latinName, gender, dob, phone, department, position, type, wageType, currency, salary, photo };
         if (editingEmployeeId) {
             await db.employees.update(editingEmployeeId, data);
             Swal.fire({icon: 'success', text: 'អាប់ដេតព័ត៌មានបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});

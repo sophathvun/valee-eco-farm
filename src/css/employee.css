@@ -1,1 +1,9 @@
-﻿/* Employee List specific styles */
+/* Employee List specific styles */
+
+#employeeModal .form-label,
+#employeeForm .form-label {
+    font-size: 0.85rem;
+    font-weight: normal;
+    margin-bottom: 0.35rem;
+}
+

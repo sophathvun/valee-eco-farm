@@ -1,4 +1,4 @@
-﻿// main.js - Application Entry Point
+// main.js - Application Entry Point
 
 // List of templates to load in order
 const viewsToLoad = [
@@ -59,7 +59,7 @@ async function initializeApp() {
     for (let src of scriptsToLoad) {
         await new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = src;
+            script.src = `${src}?v=${new Date().getTime()}`;
             script.onload = resolve;
             script.onerror = reject;
             document.body.appendChild(script);

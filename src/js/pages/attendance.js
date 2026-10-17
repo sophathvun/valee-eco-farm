@@ -1,4 +1,4 @@
-﻿// ====== ATTENDANCE MANAGEMENT ======
+// ====== ATTENDANCE MANAGEMENT ======
 let currentAttendanceData = {}; // Format: { empId: { "2026-09-01": { morning: "P", afternoon: "A" } } }
 let currentDaysInMonth = 30;
 let currentYear = 2026;
@@ -52,7 +52,9 @@ function renderAttendanceTable(employees) {
     let tr2 = `<tr>`;
     
     for (let d = 1; d <= currentDaysInMonth; d++) {
-        tr1 += `<th colspan="2" class="border-start border-end">${d}</th>`;
+        tr1 += `<th colspan="2" class="border-start border-end text-center day-header" onclick="openApplyAllPModal(${d})" title="ចុចទីនេះដើម្បីដាក់ P គ្រប់បុគ្គលិកនៅថ្ងៃទី ${d}">
+            ${d} <i class="bi bi-check2 text-light" style="font-size: 0.75rem;"></i>
+        </th>`;
         tr2 += `<th class="border-start"><small>ព្រឹក</small></th><th class="border-end"><small>ល្ងាច</small></th>`;
     }
     
@@ -69,9 +71,6 @@ function renderAttendanceTable(employees) {
         return;
     }
 
-    const todayObj = new Date();
-    const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
-
     employees.forEach(emp => {
         const tr = document.createElement('tr');
         
@@ -81,7 +80,7 @@ function renderAttendanceTable(employees) {
                     <img src="${emp.photo || 'assets/default-avatar.png'}" class="rounded-circle me-2 border" style="width: 30px; height: 30px; object-fit: cover;">
                     <div style="line-height: 1.2;">
                         <div class="fw-bold text-dark" style="font-size: 0.85rem;">${emp.name}</div>
-                        <div class="text-muted" style="font-size: 0.7rem;">${emp.code}</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">${emp.code || ''}</div>
                     </div>
                 </div>
             </td>`;
@@ -90,11 +89,10 @@ function renderAttendanceTable(employees) {
 
         for (let d = 1; d <= currentDaysInMonth; d++) {
             const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            const isFuture = dateStr > todayStr;
-            const rec = currentAttendanceData[emp.id][dateStr];
+            const rec = currentAttendanceData[emp.id] ? currentAttendanceData[emp.id][dateStr] : null;
             
-            let mVal = rec ? rec.morning : (isFuture ? '' : 'P');
-            let aVal = rec ? rec.afternoon : (isFuture ? '' : 'P');
+            let mVal = (rec && rec.morning) ? rec.morning : '';
+            let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
             
             // Tally totals
             if (mVal === 'P') totalP += 0.5;
@@ -105,8 +103,8 @@ function renderAttendanceTable(employees) {
             if (aVal === 'A') totalA += 0.5;
             if (aVal === 'L') totalL += 0.5;
 
-            let mClick = isFuture ? '' : `onclick="toggleAtt('${emp.id}', '${dateStr}', 'morning', this)"`;
-            let aClick = isFuture ? '' : `onclick="toggleAtt('${emp.id}', '${dateStr}', 'afternoon', this)"`;
+            let mClick = `onclick="toggleAtt('${emp.id}', '${dateStr}', 'morning', this)"`;
+            let aClick = `onclick="toggleAtt('${emp.id}', '${dateStr}', 'afternoon', this)"`;
             
             let mClass = mVal ? mVal : 'none';
             let aClass = aVal ? aVal : 'none';
@@ -125,45 +123,34 @@ function renderAttendanceTable(employees) {
 }
 
 window.toggleAtt = function(empId, dateStr, shift, el) {
-    // Extra safety: Check if future date
-    const todayObj = new Date();
-    const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
-    if (dateStr > todayStr) return;
-
-    const states = ['P', 'A', 'L'];
+    const states = ['P', 'A', 'L', '']; // cycle: Empty -> P -> A -> L -> Empty
     let currentState = el.innerText.trim();
-    if (!currentState) currentState = 'P'; // If somehow empty, default to P on first click
-    else {
-        let nextIdx = (states.indexOf(currentState) + 1) % states.length;
-        currentState = states[nextIdx];
-    }
+    let nextIdx = (states.indexOf(currentState) + 1) % states.length;
+    let nextState = states[nextIdx];
     
     // Update UI
-    el.innerText = currentState;
-    el.className = `att-cell att-${currentState}`;
+    el.innerText = nextState;
+    el.className = `att-cell att-${nextState ? nextState : 'none'}`;
     
     // Update Data
+    if (!currentAttendanceData[empId]) currentAttendanceData[empId] = {};
     if (!currentAttendanceData[empId][dateStr]) {
-        currentAttendanceData[empId][dateStr] = { morning: 'P', afternoon: 'P' };
+        currentAttendanceData[empId][dateStr] = { morning: '', afternoon: '' };
     }
-    currentAttendanceData[empId][dateStr][shift] = currentState;
+    currentAttendanceData[empId][dateStr][shift] = nextState;
     
     // Recalculate totals for this employee
     recalcTotals(empId);
 };
 
 function recalcTotals(empId) {
-    const todayObj = new Date();
-    const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
-
     let totalP = 0, totalA = 0, totalL = 0;
     for (let d = 1; d <= currentDaysInMonth; d++) {
         const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-        const isFuture = dateStr > todayStr;
-        const rec = currentAttendanceData[empId][dateStr];
+        const rec = currentAttendanceData[empId] ? currentAttendanceData[empId][dateStr] : null;
         
-        let mVal = rec ? rec.morning : (isFuture ? '' : 'P');
-        let aVal = rec ? rec.afternoon : (isFuture ? '' : 'P');
+        let mVal = (rec && rec.morning) ? rec.morning : '';
+        let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
         
         if (mVal === 'P') totalP += 0.5;
         if (mVal === 'A') totalA += 0.5;
@@ -174,9 +161,103 @@ function recalcTotals(empId) {
         if (aVal === 'L') totalL += 0.5;
     }
     
-    document.getElementById(`tot-p-${empId}`).innerText = totalP;
-    document.getElementById(`tot-a-${empId}`).innerText = totalA;
-    document.getElementById(`tot-l-${empId}`).innerText = totalL;
+    const pEl = document.getElementById(`tot-p-${empId}`);
+    const aEl = document.getElementById(`tot-a-${empId}`);
+    const lEl = document.getElementById(`tot-l-${empId}`);
+    if (pEl) pEl.innerText = totalP;
+    if (aEl) aEl.innerText = totalA;
+    if (lEl) lEl.innerText = totalL;
+}
+
+window.openApplyAllPModal = async function(preselectedDay) {
+    let employees = await db.employees.toArray();
+    if (!employees || employees.length === 0) {
+        Swal.fire('មិនមានបុគ្គលិក', 'សូមបញ្ចូលព័ត៌មានបុគ្គលិកជាមុនសិន!', 'warning');
+        return;
+    }
+
+    const today = new Date();
+    let defaultDay = preselectedDay;
+    if (!defaultDay) {
+        if (today.getFullYear() === currentYear && (today.getMonth() + 1) === currentMonth) {
+            defaultDay = today.getDate();
+        } else {
+            defaultDay = 1;
+        }
+    }
+    if (defaultDay > currentDaysInMonth) defaultDay = currentDaysInMonth;
+
+    let dayOptions = '';
+    for (let d = 1; d <= currentDaysInMonth; d++) {
+        const sel = (d === defaultDay) ? 'selected' : '';
+        dayOptions += `<option value="${d}" ${sel}>ថ្ងៃទី ${d}</option>`;
+    }
+
+    const { value: formValues } = await Swal.fire({
+        title: '✅ ដាក់វត្តមាន "P" គ្រប់បុគ្គលិក',
+        html: `
+            <div class="text-start mb-3">
+                <label class="form-label fw-bold">ជ្រើសរើសថ្ងៃ (ខែ ${String(currentMonth).padStart(2, '0')}/${currentYear})</label>
+                <select id="swal-apply-day" class="form-select">
+                    ${dayOptions}
+                </select>
+            </div>
+            <div class="text-start mb-2">
+                <label class="form-label fw-bold">ជ្រើសរើសវេន (Shift)</label>
+                <select id="swal-apply-shift" class="form-select">
+                    <option value="both">ពេញមួយថ្ងៃ (ព្រឹក និង ល្ងាច)</option>
+                    <option value="morning">តែពេលព្រឹក</option>
+                    <option value="afternoon">តែពេលល្ងាច</option>
+                </select>
+            </div>
+            <div class="form-text text-muted text-start">
+                * ប្រព័ន្ធនឹងដាក់ 'P' ទៅលើបុគ្គលិកទាំងអស់ (${employees.length} នាក់) សម្រាប់ថ្ងៃដែលបានជ្រើសរើស។
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: '<i class="bi bi-check-lg"></i> អនុវត្ត (Apply)',
+        cancelButtonText: 'បោះបង់',
+        confirmButtonColor: '#198754',
+        focusConfirm: false,
+        preConfirm: () => {
+            const day = parseInt(document.getElementById('swal-apply-day').value, 10);
+            const shift = document.getElementById('swal-apply-shift').value;
+            return { day, shift };
+        }
+    });
+
+    if (formValues) {
+        applyPToAll(formValues.day, formValues.shift, employees);
+    }
+};
+
+function applyPToAll(day, shift, employees) {
+    const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    
+    employees.forEach(emp => {
+        if (!currentAttendanceData[emp.id]) currentAttendanceData[emp.id] = {};
+        if (!currentAttendanceData[emp.id][dateStr]) {
+            currentAttendanceData[emp.id][dateStr] = { morning: '', afternoon: '' };
+        }
+        
+        if (shift === 'both' || shift === 'morning') {
+            currentAttendanceData[emp.id][dateStr].morning = 'P';
+        }
+        if (shift === 'both' || shift === 'afternoon') {
+            currentAttendanceData[emp.id][dateStr].afternoon = 'P';
+        }
+    });
+
+    renderAttendanceTable(employees);
+
+    Swal.fire({
+        icon: 'success',
+        title: 'ជោគជ័យ!',
+        text: `បានដាក់ 'P' គ្រប់បុគ្គលិកសម្រាប់ថ្ងៃទី ${day} រួចរាល់។ សូមចុច «រក្សាទុកវត្តមាន» ដើម្បីកត់ត្រាចូលប្រព័ន្ធ។`,
+        confirmButtonText: 'យល់ព្រម',
+        confirmButtonColor: '#198754',
+        timer: 2500
+    });
 }
 
 window.saveAllAttendance = async function() {
@@ -187,14 +268,13 @@ window.saveAllAttendance = async function() {
     }
     
     const btn = document.querySelector('button[onclick="saveAllAttendance()"]');
-    const oldText = btn.innerHTML;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> រក្សាទុក...';
-    btn.disabled = true;
+    const oldText = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> រក្សាទុក...';
+        btn.disabled = true;
+    }
 
     try {
-        const todayObj = new Date();
-        const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
-
         let employees = await db.employees.toArray();
         let allRecords = await db.attendance.toArray();
         let existingMap = {}; 
@@ -210,14 +290,10 @@ window.saveAllAttendance = async function() {
         employees.forEach(emp => {
             for (let d = 1; d <= currentDaysInMonth; d++) {
                 const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const isFuture = dateStr > todayStr;
-                const rec = currentAttendanceData[emp.id][dateStr];
+                const rec = currentAttendanceData[emp.id] ? currentAttendanceData[emp.id][dateStr] : null;
                 
-                let mVal = rec ? rec.morning : (isFuture ? '' : 'P');
-                let aVal = rec ? rec.afternoon : (isFuture ? '' : 'P');
-                
-                // Do not save future empty days
-                if (isFuture && !rec) continue; 
+                let mVal = (rec && rec.morning) ? rec.morning : '';
+                let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
                 
                 let data = {
                     date: dateStr,
@@ -234,7 +310,7 @@ window.saveAllAttendance = async function() {
                         batchUpdates.push({ id: ext.id, data: data });
                     }
                 } else {
-                    if (mVal !== 'P' || aVal !== 'P') { 
+                    if (mVal || aVal) { 
                         batchAdds.push(data);
                     }
                 }
@@ -252,8 +328,10 @@ window.saveAllAttendance = async function() {
     } catch (error) {
         Swal.fire('បរាជ័យ', 'មានបញ្ហាក្នុងការរក្សាទុកវត្តមាន', 'error');
         console.error(error);
+    } finally {
+        if (btn) {
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        }
     }
-    
-    btn.innerHTML = oldText;
-    btn.disabled = false;
 };

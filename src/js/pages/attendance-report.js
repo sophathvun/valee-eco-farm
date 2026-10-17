@@ -1,4 +1,4 @@
-﻿// ====== ATTENDANCE REPORT ======
+// ====== ATTENDANCE REPORT ======
 
 function formatKhmerDate(dateStr) {
     const [y, m, d] = dateStr.split('-');
@@ -161,9 +161,8 @@ window.generateAttendanceReport = async function() {
                 let totalP = 0, totalA = 0, totalL = 0;
                 for (let d of daysArray) {
                     const rec = agg[emp.id][d];
-                    const isF = d > todayStr;
-                    let m = rec ? rec.morning : (isF ? '' : 'P');
-                    let a = rec ? rec.afternoon : (isF ? '' : 'P');
+                    let m = (rec && rec.morning) ? rec.morning : '';
+                    let a = (rec && rec.afternoon) ? rec.afternoon : '';
                     
                     if (m === 'P') totalP += 0.5;
                     if (m === 'A') totalA += 0.5;
@@ -174,11 +173,10 @@ window.generateAttendanceReport = async function() {
                 }
 
                 chunk.forEach(dateStr => {
-                    const isFuture = dateStr > todayStr;
                     const rec = agg[emp.id][dateStr];
                     
-                    let mVal = rec ? rec.morning : (isFuture ? '' : 'P');
-                    let aVal = rec ? rec.afternoon : (isFuture ? '' : 'P');
+                    let mVal = (rec && rec.morning) ? rec.morning : '';
+                    let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
                     
                     let mClass = mVal ? mVal : 'none';
                     let aClass = aVal ? aVal : 'none';

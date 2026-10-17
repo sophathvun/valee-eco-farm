@@ -46,26 +46,27 @@ function filterSidebarMenu() {
 }
 
 function toggleTheme() {
-    const body = document.body;
-    const isDark = body.classList.toggle('dark-theme');
-    const toggleIcon = document.getElementById('theme-toggle');
-    if (toggleIcon) {
-        toggleIcon.textContent = isDark ? '☀️' : '🌙';
+    const isDark = document.getElementById('themeSwitch').checked;
+    
+    if (isDark) {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+        document.body.classList.add('dark-theme');
+    } else {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+        document.body.classList.remove('dark-theme');
     }
+    
     localStorage.setItem('sysTheme', isDark ? 'dark' : 'light');
 }
 
 // Initialize theme on load
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('sysTheme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    
+    const themeSwitch = document.getElementById('themeSwitch');
+    if (themeSwitch) {
+        themeSwitch.checked = isDark;
     }
-    // Update icon if it exists (since index.html might load after)
-    setTimeout(() => {
-        const toggleIcon = document.getElementById('theme-toggle');
-        if (toggleIcon && document.body.classList.contains('dark-theme')) {
-            toggleIcon.textContent = '☀️';
-        }
-    }, 100);
 });
