@@ -365,12 +365,17 @@ function handleFileSelect(file) {
         const tol = document.getElementById('crop-bg-tolerance'); if (tol) tol.value = 45;
         const tolV = document.getElementById('crop-bg-tol-val'); if (tolV) tolV.textContent = '45';
         selectedCropBgColor = 'original';
+        currentAiMaskCanvas = null;
+        isAiSegmenting = false;
         document.querySelectorAll('.crop-bg-btn').forEach(b => {
             if (b.getAttribute('data-color') === 'original') b.classList.add('active');
             else b.classList.remove('active');
         });
         const tolWrap = document.getElementById('crop-bg-tol-wrap');
         if (tolWrap) tolWrap.style.display = 'none';
+
+        // Pre-warm MediaPipe AI in background so it's ready when user picks a color
+        getSelfieSegmenter().catch(() => {});
 
         if(cropperModal) cropperModal.show();
     };
@@ -379,6 +384,10 @@ function handleFileSelect(file) {
 
 let selectedCropBgColor = 'original';
 let previewDebounceTimer = null;
+let selfieSegmenter = null;
+let selfieSegLoadingPromise = null;
+let currentAiMaskCanvas = null;
+let isAiSegmenting = false;
 
 function hexToRgb(hex) {
     if (!hex) return null;
@@ -400,10 +409,139 @@ function hexToRgb(hex) {
     return null;
 }
 
-// 1. Background Replacement (sample corners & flood fill perimeter with feathering)
+// ====== AI SELFIE SEGMENTATION (PERSON & WHITE SHIRT PROTECTION) ======
+function getSelfieSegmenter() {
+    if (selfieSegmenter) return Promise.resolve(selfieSegmenter);
+    if (selfieSegLoadingPromise) return selfieSegLoadingPromise;
+
+    selfieSegLoadingPromise = new Promise((resolve, reject) => {
+        try {
+            if (typeof SelfieSegmentation === 'undefined') {
+                reject(new Error('MediaPipe SelfieSegmentation script not loaded'));
+                return;
+            }
+            const segmenter = new SelfieSegmentation({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+            });
+            segmenter.setOptions({
+                modelSelection: 0, // General 256x256 square portrait model
+                selfieMode: false
+            });
+            selfieSegmenter = segmenter;
+            resolve(segmenter);
+        } catch (e) {
+            reject(e);
+        }
+    });
+    return selfieSegLoadingPromise;
+}
+
+async function requestAiSegmentation(croppedCanvas) {
+    if (!croppedCanvas) return null;
+    const spinner = document.getElementById('crop-ai-spinner');
+    if (spinner) spinner.style.display = 'block';
+
+    try {
+        const segmenter = await getSelfieSegmenter();
+        const maskCanvas = await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error('AI Segmentation timeout'));
+            }, 8000);
+
+            segmenter.onResults((results) => {
+                clearTimeout(timeout);
+                if (results && results.segmentationMask) {
+                    const mCanvas = document.createElement('canvas');
+                    mCanvas.width = 280;
+                    mCanvas.height = 280;
+                    const mCtx = mCanvas.getContext('2d');
+                    mCtx.drawImage(results.segmentationMask, 0, 0, 280, 280);
+                    resolve(mCanvas);
+                } else {
+                    reject(new Error('Empty segmentation result'));
+                }
+            });
+
+            segmenter.send({ image: croppedCanvas }).catch((err) => {
+                clearTimeout(timeout);
+                reject(err);
+            });
+        });
+
+        if (spinner) spinner.style.display = 'none';
+        return maskCanvas;
+    } catch (err) {
+        console.warn('AI Segmentation failed or fallback:', err);
+        if (spinner) spinner.style.display = 'none';
+        return null;
+    }
+}
+
+function applyAiBackground(destCtx, croppedCanvas, maskCanvas, targetColor) {
+    const width = 280;
+    const height = 280;
+
+    const bufCanvas = document.createElement('canvas');
+    bufCanvas.width = width;
+    bufCanvas.height = height;
+    const bufCtx = bufCanvas.getContext('2d');
+    bufCtx.drawImage(croppedCanvas, 0, 0, width, height);
+
+    const imgData = bufCtx.getImageData(0, 0, width, height);
+    const pixels = imgData.data;
+    const mData = maskCanvas.getContext('2d').getImageData(0, 0, width, height).data;
+
+    let targetR = 255, targetG = 255, targetB = 255, isTransparent = false;
+    if (!targetColor || targetColor === 'transparent') {
+        isTransparent = true;
+    } else {
+        const rgb = hexToRgb(targetColor);
+        if (rgb) {
+            targetR = rgb.r;
+            targetG = rgb.g;
+            targetB = rgb.b;
+        }
+    }
+
+    for (let i = 0; i < pixels.length; i += 4) {
+        // MediaPipe segmentation mask: person has high value in R and/or Alpha
+        const confidence = Math.max(mData[i], mData[i + 3]) / 255;
+
+        if (confidence >= 0.65) {
+            // Definite Person (skin, hair, eyes, clothes, white shirt) -> Keep 100% original pixel!
+            // White shirt is never erased
+        } else if (confidence <= 0.25) {
+            // Definite Background
+            if (isTransparent) {
+                pixels[i + 3] = 0;
+            } else {
+                pixels[i] = targetR;
+                pixels[i + 1] = targetG;
+                pixels[i + 2] = targetB;
+                pixels[i + 3] = 255;
+            }
+        } else {
+            // Soft Antialiased Edge Feathering between 0.25 and 0.65
+            const fgFactor = (confidence - 0.25) / 0.40;
+            if (isTransparent) {
+                pixels[i + 3] = Math.round(pixels[i + 3] * fgFactor);
+            } else {
+                pixels[i] = Math.round(pixels[i] * fgFactor + targetR * (1 - fgFactor));
+                pixels[i + 1] = Math.round(pixels[i] * fgFactor + targetG * (1 - fgFactor));
+                pixels[i + 2] = Math.round(pixels[i] * fgFactor + targetB * (1 - fgFactor));
+                pixels[i + 3] = 255;
+            }
+        }
+    }
+
+    destCtx.putImageData(imgData, 0, 0);
+}
+
+// ====== FALLBACK COLOR-BASED BACKGROUND REPLACEMENT (WITH SHIRT PROTECTION) ======
 function processCanvasBackground(ctx, width, height, targetHex, tolerance = 45) {
     if (!targetHex || targetHex === 'original') return;
-    const target = hexToRgb(targetHex);
+    const isTransparent = (targetHex === 'transparent');
+    const target = isTransparent ? { r: 255, g: 255, b: 255 } : hexToRgb(targetHex);
     if (!target) return;
 
     const imgData = ctx.getImageData(0, 0, width, height);
@@ -477,8 +615,18 @@ function processCanvasBackground(ctx, width, height, targetHex, tolerance = 45) 
                 const b = data[nIdx + 2];
 
                 // Protect face / skin tone in center region
-                if (nx > width * 0.28 && nx < width * 0.72 && ny > height * 0.2 && ny < height * 0.8) {
+                if (nx > width * 0.25 && nx < width * 0.75 && ny > height * 0.15 && ny < height * 0.85) {
                     if (r > 60 && g > 40 && b > 20 && r > g && g > b && (r - g >= 14)) {
+                        continue;
+                    }
+                }
+
+                // Protect torso & chest region (white shirt / clothes)
+                if (ny > height * 0.38 && nx > width * 0.20 && nx < width * 0.80) {
+                    if (r > 170 && g > 170 && b > 170) {
+                        continue;
+                    }
+                    if (Math.abs(r - g) < 25 && Math.abs(g - b) < 25 && (r + g + b) > 380) {
                         continue;
                     }
                 }
@@ -504,7 +652,9 @@ function processCanvasBackground(ctx, width, height, targetHex, tolerance = 45) 
                            (px < width - 1 && !isBg[i + 1]) ||
                            (py > 0 && !isBg[i - width]) ||
                            (py < height - 1 && !isBg[i + width]);
-            if (isEdge) {
+            if (isTransparent) {
+                data[idx + 3] = isEdge ? 120 : 0;
+            } else if (isEdge) {
                 data[idx] = Math.round((data[idx] + target.r) / 2);
                 data[idx + 1] = Math.round((data[idx + 1] + target.g) / 2);
                 data[idx + 2] = Math.round((data[idx + 2] + target.b) / 2);
@@ -623,22 +773,49 @@ function renderCropLivePreview() {
     const brightness = parseInt(document.getElementById('crop-brightness')?.value || '0', 10);
     const contrast = parseInt(document.getElementById('crop-contrast')?.value || '0', 10);
 
-    processCanvasBackground(workCtx, 280, 280, selectedCropBgColor, tolerance);
-    processCanvasEnhancements(workCtx, 280, 280, brightness, contrast, sharpen);
+    if (selectedCropBgColor !== 'original') {
+        if (currentAiMaskCanvas) {
+            applyAiBackground(workCtx, croppedCanvas, currentAiMaskCanvas, selectedCropBgColor);
+            finish();
+        } else if (!isAiSegmenting) {
+            isAiSegmenting = true;
+            requestAiSegmentation(croppedCanvas).then(mask => {
+                isAiSegmenting = false;
+                currentAiMaskCanvas = mask;
+                renderCropLivePreview();
+            }).catch(e => {
+                isAiSegmenting = false;
+                console.warn('AI segmentation fallback:', e);
+                processCanvasBackground(workCtx, 280, 280, selectedCropBgColor, tolerance);
+                finish();
+            });
+            finish();
+            return;
+        } else {
+            finish();
+            return;
+        }
+    } else {
+        finish();
+    }
 
-    previewCanvas.width = 280;
-    previewCanvas.height = 280;
-    previewCtx.clearRect(0, 0, 280, 280);
-    previewCtx.drawImage(workCanvas, 0, 0, 280, 280);
+    function finish() {
+        processCanvasEnhancements(workCtx, 280, 280, brightness, contrast, sharpen);
+        previewCanvas.width = 280;
+        previewCanvas.height = 280;
+        previewCtx.clearRect(0, 0, 280, 280);
+        previewCtx.drawImage(workCanvas, 0, 0, 280, 280);
 
-    const result = exportOptimizedWebP(workCanvas);
-    const sizeEl = document.getElementById('crop-file-size');
-    if (sizeEl) sizeEl.textContent = `${result.sizeKb} KB`;
+        const result = exportOptimizedWebP(workCanvas);
+        const sizeEl = document.getElementById('crop-file-size');
+        if (sizeEl) sizeEl.textContent = `${result.sizeKb} KB`;
+    }
 }
 
 function debounceRenderCropPreview() {
+    currentAiMaskCanvas = null;
     clearTimeout(previewDebounceTimer);
-    previewDebounceTimer = setTimeout(renderCropLivePreview, 40);
+    previewDebounceTimer = setTimeout(renderCropLivePreview, 120);
 }
 
 if(cropperModalEl) {
@@ -666,6 +843,10 @@ if(cropperModalEl) {
 
     cropperModalEl.addEventListener('hidden.bs.modal', () => {
         if (cropper) { cropper.destroy(); cropper = null; }
+        currentAiMaskCanvas = null;
+        isAiSegmenting = false;
+        const spinner = document.getElementById('crop-ai-spinner');
+        if (spinner) spinner.style.display = 'none';
     });
 }
 
@@ -687,6 +868,10 @@ document.getElementById('crop-reset-all')?.addEventListener('click', () => {
     const tol = document.getElementById('crop-bg-tolerance'); if (tol) tol.value = 45;
     const tolV = document.getElementById('crop-bg-tol-val'); if (tolV) tolV.textContent = '45';
     selectedCropBgColor = 'original';
+    currentAiMaskCanvas = null;
+    isAiSegmenting = false;
+    const spinner = document.getElementById('crop-ai-spinner');
+    if (spinner) spinner.style.display = 'none';
     document.querySelectorAll('.crop-bg-btn').forEach(b => {
         if (b.getAttribute('data-color') === 'original') b.classList.add('active');
         else b.classList.remove('active');
@@ -703,7 +888,7 @@ document.querySelectorAll('.crop-bg-btn').forEach(btn => {
         btn.classList.add('active');
         selectedCropBgColor = btn.getAttribute('data-color');
         const tolWrap = document.getElementById('crop-bg-tol-wrap');
-        if (tolWrap) tolWrap.style.display = (selectedCropBgColor === 'original') ? 'none' : 'block';
+        if (tolWrap) tolWrap.style.display = 'none';
         renderCropLivePreview();
     });
 });
@@ -712,7 +897,7 @@ document.getElementById('crop-bg-custom')?.addEventListener('input', (e) => {
     document.querySelectorAll('.crop-bg-btn').forEach(b => b.classList.remove('active'));
     selectedCropBgColor = e.target.value;
     const tolWrap = document.getElementById('crop-bg-tol-wrap');
-    if (tolWrap) tolWrap.style.display = 'block';
+    if (tolWrap) tolWrap.style.display = 'none';
     renderCropLivePreview();
 });
 
@@ -745,50 +930,75 @@ document.getElementById('btn-auto-enhance')?.addEventListener('click', () => {
 // Save button (Crop & Save WebP)
 const btnSave = document.getElementById('crop-save-btn'); 
 if(btnSave) {
-    btnSave.addEventListener('click', () => {
+    btnSave.addEventListener('click', async () => {
         if (!cropper) return;
-        const croppedCanvas = cropper.getCroppedCanvas({
-            width: 280,
-            height: 280,
-            imageSmoothingEnabled: true,
-            imageSmoothingQuality: 'high'
-        });
-        if (!croppedCanvas) return;
+        const origBtnHtml = btnSave.innerHTML;
+        btnSave.disabled = true;
+        btnSave.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>កំពុងរក្សាទុក...';
 
-        const workCanvas = document.createElement('canvas');
-        workCanvas.width = 280;
-        workCanvas.height = 280;
-        const workCtx = workCanvas.getContext('2d');
-        workCtx.drawImage(croppedCanvas, 0, 0);
-
-        const tolerance = parseInt(document.getElementById('crop-bg-tolerance')?.value || '45', 10);
-        const sharpen = parseInt(document.getElementById('crop-sharpen')?.value || '0', 10);
-        const brightness = parseInt(document.getElementById('crop-brightness')?.value || '0', 10);
-        const contrast = parseInt(document.getElementById('crop-contrast')?.value || '0', 10);
-
-        // Run full processing
-        processCanvasBackground(workCtx, 280, 280, selectedCropBgColor, tolerance);
-        processCanvasEnhancements(workCtx, 280, 280, brightness, contrast, sharpen);
-
-        // Export as WebP < 50KB
-        const result = exportOptimizedWebP(workCanvas);
-        const prev = document.getElementById('emp-photo-preview');
-        if(prev) {
-            prev.src = result.dataUrl;
-            prev.dataset.hasCustom = 'true';
-        }
-        updatePhotoPlaceholder();
-        if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
-        if(cropperModal) cropperModal.hide();
-
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'success',
-                title: 'កាត់ និងកែរូបភាពជោគជ័យ!',
-                html: `រូបភាពត្រូវបានកែច្បាស់ និងរក្សាទុកជា WebP<br><b class="text-success">ទំហំ៖ ${result.sizeKb} KB (&lt; 50KB)</b>`,
-                timer: 1600,
-                showConfirmButton: false
+        try {
+            const croppedCanvas = cropper.getCroppedCanvas({
+                width: 280,
+                height: 280,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
             });
+            if (!croppedCanvas) return;
+
+            const workCanvas = document.createElement('canvas');
+            workCanvas.width = 280;
+            workCanvas.height = 280;
+            const workCtx = workCanvas.getContext('2d');
+            workCtx.drawImage(croppedCanvas, 0, 0);
+
+            const tolerance = parseInt(document.getElementById('crop-bg-tolerance')?.value || '45', 10);
+            const sharpen = parseInt(document.getElementById('crop-sharpen')?.value || '0', 10);
+            const brightness = parseInt(document.getElementById('crop-brightness')?.value || '0', 10);
+            const contrast = parseInt(document.getElementById('crop-contrast')?.value || '0', 10);
+
+            // Process Background
+            if (selectedCropBgColor !== 'original') {
+                let mask = currentAiMaskCanvas;
+                if (!mask) {
+                    mask = await requestAiSegmentation(croppedCanvas);
+                    currentAiMaskCanvas = mask;
+                }
+                if (mask) {
+                    applyAiBackground(workCtx, croppedCanvas, mask, selectedCropBgColor);
+                } else {
+                    processCanvasBackground(workCtx, 280, 280, selectedCropBgColor, tolerance);
+                }
+            }
+
+            // Process Enhancements (Sharpen & Light)
+            processCanvasEnhancements(workCtx, 280, 280, brightness, contrast, sharpen);
+
+            // Export as WebP < 50KB
+            const result = exportOptimizedWebP(workCanvas);
+            const prev = document.getElementById('emp-photo-preview');
+            if(prev) {
+                prev.src = result.dataUrl;
+                prev.dataset.hasCustom = 'true';
+            }
+            updatePhotoPlaceholder();
+            if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
+            if(cropperModal) cropperModal.hide();
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'រក្សាទុករូបភាពជោគជ័យ!',
+                    html: `រូបភាពត្រូវបានកាត់ផ្ទៃ និងរក្សាទុកជា WebP<br><b class="text-success">ទំហំ៖ ${result.sizeKb} KB (&lt; 50KB)</b>`,
+                    timer: 1600,
+                    showConfirmButton: false
+                });
+            }
+        } catch (err) {
+            console.error('Error saving cropped image:', err);
+            Swal.fire({icon: 'error', text: 'បរាជ័យក្នុងការរក្សាទុករូបភាព: ' + err.message, confirmButtonText: 'យល់ព្រម'});
+        } finally {
+            btnSave.disabled = false;
+            btnSave.innerHTML = origBtnHtml;
         }
     });
 }
