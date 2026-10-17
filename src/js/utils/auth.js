@@ -1,4 +1,4 @@
-﻿// ======= AUTHENTICATION LOGIC =======
+// ======= AUTHENTICATION LOGIC =======
 let currentUser = null;
 
 async function checkLogin() {
@@ -351,6 +351,8 @@ window.showTab = function(tabId, subId = null) {
     
     if (tabId === 'employee') {
         if (typeof loadEmployees === 'function') loadEmployees();
+        if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
+        if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
     }
     
     if (tabId === 'attendance') {

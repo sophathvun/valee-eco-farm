@@ -58,32 +58,107 @@ async function loadEmployees() {
     });
 }
 
+window.openAddEmployeeModal = async function() {
+    editingEmployeeId = null;
+    const form = document.getElementById('employeeForm');
+    if (form) form.reset();
+    
+    document.getElementById('emp-type').value = 'Full-Time';
+    document.getElementById('emp-wage-type').value = 'Monthly';
+    if (document.getElementById('emp-currency')) document.getElementById('emp-currency').value = 'USD';
+    
+    const preview = document.getElementById('emp-photo-preview');
+    if (preview) preview.removeAttribute('src');
+    if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
+    
+    const modalTitle = document.querySelector('#employeeModal .modal-title');
+    if (modalTitle) modalTitle.textContent = 'បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី';
+    
+    const subBtn = document.querySelector('#employeeForm button[type="submit"]');
+    if (subBtn) subBtn.innerHTML = 'រក្សាទុក';
+    
+    await Promise.all([
+        loadDepartmentsForEmp(''),
+        loadPositionsForEmp(''),
+        typeof generateEmpCode === 'function' ? generateEmpCode() : Promise.resolve()
+    ]);
+    
+    const modalEl = document.getElementById('employeeModal');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+};
+
 window.editEmployee = async function(id) {
-    const emp = await db.employees.get(id);
-    if (!emp) return;
-    
-    editingEmployeeId = id;
-    document.getElementById('emp-code').value = emp.code || '';
-    if (document.getElementById('emp-national-id')) {
-        document.getElementById('emp-national-id').value = emp.nationalId || '';
+    try {
+        const emp = await db.employees.get(id);
+        if (!emp) return;
+        
+        editingEmployeeId = id;
+        
+        // Ensure dropdown options are loaded with the employee's values selected
+        await Promise.all([
+            loadDepartmentsForEmp(emp.department || ''),
+            loadPositionsForEmp(emp.position || '')
+        ]);
+        
+        const modalTitle = document.querySelector('#employeeModal .modal-title');
+        if (modalTitle) modalTitle.textContent = 'កែប្រែព័ត៌មានបុគ្គលិក';
+        
+        const empCodeEl = document.getElementById('emp-code');
+        if (empCodeEl) empCodeEl.value = emp.code || '';
+        
+        const natIdEl = document.getElementById('emp-national-id');
+        if (natIdEl) natIdEl.value = emp.nationalId || '';
+        
+        const nameEl = document.getElementById('emp-name');
+        if (nameEl) nameEl.value = emp.name || '';
+        
+        const latinNameEl = document.getElementById('emp-latin-name');
+        if (latinNameEl) latinNameEl.value = emp.latinName || '';
+        
+        const genderEl = document.getElementById('emp-gender');
+        if (genderEl) genderEl.value = emp.gender || 'ប្រុស';
+        
+        const dobEl = document.getElementById('emp-dob');
+        if (dobEl) dobEl.value = emp.dob || '';
+        
+        const phoneEl = document.getElementById('emp-phone');
+        if (phoneEl) phoneEl.value = emp.phone || '';
+        
+        if (document.getElementById('emp-currency')) {
+            document.getElementById('emp-currency').value = emp.currency || 'USD';
+        }
+        
+        const salaryEl = document.getElementById('emp-salary');
+        if (salaryEl) salaryEl.value = emp.salary !== undefined ? emp.salary : '';
+        
+        const typeEl = document.getElementById('emp-type');
+        if (typeEl) typeEl.value = emp.type || 'Full-Time';
+        
+        const wageTypeEl = document.getElementById('emp-wage-type');
+        if (wageTypeEl) wageTypeEl.value = emp.wageType || 'Monthly';
+        
+        const preview = document.getElementById('emp-photo-preview');
+        if (preview) {
+            if (emp.photo) preview.src = emp.photo;
+            else preview.removeAttribute('src');
+        }
+        if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
+        
+        const subBtn = document.querySelector('#employeeForm button[type="submit"]');
+        if (subBtn) subBtn.innerHTML = 'រក្សាទុក (Update)';
+        
+        const modalEl = document.getElementById('employeeModal');
+        if (modalEl && typeof bootstrap !== 'undefined') {
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+    } catch (err) {
+        console.error('Error editing employee:', err);
+        Swal.fire({icon: 'error', text: 'Error: ' + err.message, confirmButtonText: 'យល់ព្រម'});
     }
-    document.getElementById('emp-name').value = emp.name;
-    if (document.getElementById('emp-latin-name')) {
-        document.getElementById('emp-latin-name').value = emp.latinName || '';
-    }
-    document.getElementById('emp-gender').value = emp.gender;
-    document.getElementById('emp-dob').value = emp.dob;
-    document.getElementById('emp-phone').value = emp.phone;
-    document.getElementById('emp-department').value = emp.department || '';
-    document.getElementById('emp-position').value = emp.position || '';
-    if(document.getElementById('emp-currency')) document.getElementById('emp-currency').value = emp.currency || 'USD';
-    document.getElementById('emp-salary').value = emp.salary;
-    document.getElementById('emp-type').value = emp.type || 'Full-Time';
-    document.getElementById('emp-wage-type').value = emp.wageType || 'Monthly';
-    if(emp.photo) document.getElementById('emp-photo-preview').src = emp.photo; else document.getElementById('emp-photo-preview').removeAttribute('src');
-    
-    document.querySelector('#employeeForm button[type="submit"]').innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780 (Update)';
-    showTab('employee');
 };
 
 window.deleteEmployee = async function(id) {
@@ -259,61 +334,87 @@ if(btnSave) {
     });
 }
 
-const originalEditEmployee = window.editEmployee;
-window.editEmployee = async function(id) {
-    if(originalEditEmployee) await originalEditEmployee(id);
-    updatePhotoPlaceholder();
-    
-    // Show the modal manually since edit button doesn't have data-bs-toggle
-    const modalEl = document.getElementById('employeeModal');
-    if (modalEl && typeof bootstrap !== 'undefined') {
-        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-        modal.show();
-    }
-};
-
 const empForm = document.getElementById('employeeForm');
 if(empForm) empForm.addEventListener('reset', () => { setTimeout(updatePhotoPlaceholder, 10); });
 
-window.loadDepartmentsForEmp = async function() {
-    const all = await db.departments.toArray();
-    const select = document.getElementById('emp-department');
-    if (!select) return;
-    const currentVal = select.value;
-    select.innerHTML = '<option value="">-- ជ្រើសរើសផ្នែក --</option>';
-    all.forEach(d => {
-        select.appendChild(new Option(d.name, d.name));
-    });
-    if(currentVal) select.value = currentVal;
+window.loadDepartmentsForEmp = async function(selectedVal = null) {
+    try {
+        const all = await db.departments.toArray();
+        const select = document.getElementById('emp-department');
+        if (!select) return;
+        const currentVal = selectedVal !== null ? selectedVal : select.value;
+        select.innerHTML = '<option value="">-- ជ្រើសរើសផ្នែក --</option>';
+        all.forEach(d => {
+            if (d && d.name) {
+                select.appendChild(new Option(d.name, d.name));
+            }
+        });
+        if (currentVal) {
+            if (!Array.from(select.options).some(o => o.value === currentVal)) {
+                select.appendChild(new Option(currentVal, currentVal));
+            }
+            select.value = currentVal;
+        }
+    } catch (e) {
+        console.error('Error loading departments for employee form:', e);
+    }
 };
 
-window.loadPositionsForEmp = async function() {
-    const all = await db.positions.toArray();
-    const select = document.getElementById('emp-position');
-    if (!select) return;
-    const currentVal = select.value;
-    select.innerHTML = '<option value="">-- ជ្រើសរើសតួនាទី --</option>';
-    all.forEach(p => {
-        select.appendChild(new Option(p.name, p.name));
-    });
-    if(currentVal) select.value = currentVal;
+window.loadPositionsForEmp = async function(selectedVal = null) {
+    try {
+        const all = await db.positions.toArray();
+        const select = document.getElementById('emp-position');
+        if (!select) return;
+        const currentVal = selectedVal !== null ? selectedVal : select.value;
+        select.innerHTML = '<option value="">-- ជ្រើសរើសតួនាទី --</option>';
+        all.forEach(p => {
+            if (p && p.name) {
+                select.appendChild(new Option(p.name, p.name));
+            }
+        });
+        if (currentVal) {
+            if (!Array.from(select.options).some(o => o.value === currentVal)) {
+                select.appendChild(new Option(currentVal, currentVal));
+            }
+            select.value = currentVal;
+        }
+    } catch (e) {
+        console.error('Error loading positions for employee form:', e);
+    }
 };
 
-// Auto-load employees when this script loads (since it loads after the init block in reports.js)
+// Auto-load employees, departments, and positions when this script loads
 loadEmployees();
-// Generate Employee ID on load
+loadDepartmentsForEmp();
+loadPositionsForEmp();
 if (typeof generateEmpCode === 'function') generateEmpCode();
 
-// Ensure code is generated when Employee tab is clicked
+// Listen to employeeModal shown to ensure dropdowns are populated even if opened via data-bs-toggle
+const empModalEl = document.getElementById('employeeModal');
+if (empModalEl) {
+    empModalEl.addEventListener('show.bs.modal', async () => {
+        if (!editingEmployeeId) {
+            await Promise.all([
+                loadDepartmentsForEmp(),
+                loadPositionsForEmp(),
+                typeof generateEmpCode === 'function' ? generateEmpCode() : Promise.resolve()
+            ]);
+        }
+    });
+}
+
+// Ensure code and dropdowns are ready when Employee tab is clicked
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         const link = document.getElementById('nav-employee');
         if (link) {
             link.addEventListener('click', () => {
+                loadDepartmentsForEmp();
+                loadPositionsForEmp();
                 if (!editingEmployeeId && typeof generateEmpCode === 'function') generateEmpCode();
             });
         }
-    }, 1000); // Wait for DOM injection
+    }, 1000);
 });
 
 
