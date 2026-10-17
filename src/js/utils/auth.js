@@ -18,7 +18,7 @@ async function checkLogin() {
         document.getElementById('login-view').style.display = 'none';
         document.getElementById('main-wrapper').style.display = 'flex';
         const topUser = document.getElementById('top-user-name');
-        if (topUser) topUser.textContent = currentUser.username.toUpperCase();
+        if (topUser) topUser.textContent = (currentUser && currentUser.username ? currentUser.username : '').toUpperCase();
         applyPermissions();
         loadSystemSettings(); // Wait, let's just apply permissions
         return true;
@@ -38,7 +38,7 @@ window.loginUser = async function() {
     try {
         const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timed out. Please check your internet.')), 10000));
         const allUsers = await Promise.race([db.users.toArray(), timeout]);
-        const user = allUsers.find(x => x.username.toLowerCase() === u.toLowerCase() && x.password === p);
+        const user = allUsers.find(x => x && (x.username || '').toLowerCase() === (u || '').toLowerCase() && x.password === p);
         if (user) {
             if (user.isActive === false) {
                 Swal.fire('បដិសេធ', 'គណនីរបស់អ្នកត្រូវបានបិទ (Inactive)។', 'error');
@@ -92,15 +92,8 @@ async function logoutUser() {
 
 function hasPermission(perm) {
     if (!currentUser) return false;
-    if (currentUser.username.toLowerCase() === 'admin') return true;
-    return currentUser.permissions && currentUser.permissions.includes(perm);
-}
-
-// Helper function for RBAC
-function hasPermission(perm) {
-    if (!currentUser) return false;
-    if (currentUser.username.toLowerCase() === 'admin') return true;
-    return currentUser.permissions && currentUser.permissions.includes(perm);
+    if ((currentUser.username || '').toLowerCase() === 'admin') return true;
+    return Boolean(currentUser.permissions && currentUser.permissions.includes(perm));
 }
 
 // Override applyPermissions to hide elements
@@ -111,7 +104,7 @@ window.applyPermissions = function() {
     // Hide menus
     document.querySelectorAll('.sys-menu-item').forEach(el => {
         const p = el.getAttribute('data-perm');
-        if (p && !perms.includes(p) && currentUser.username.toLowerCase() !== 'admin') {
+        if (p && !perms.includes(p) && (currentUser.username || '').toLowerCase() !== 'admin') {
             el.style.display = 'none';
         } else {
             el.style.display = 'block';
@@ -130,7 +123,7 @@ window.applyPermissions = function() {
         'settings_emp_structure_add', 'settings_emp_structure_edit', 'settings_emp_structure_delete'
     ];
 
-    if (currentUser.username.toLowerCase() !== 'admin') {
+    if ((currentUser.username || '').toLowerCase() !== 'admin') {
         specificAccessKeys.forEach(key => {
             if (!perms.includes(key)) document.body.classList.add('no-' + key);
             else document.body.classList.remove('no-' + key);

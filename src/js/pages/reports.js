@@ -1,4 +1,4 @@
-﻿// ====== PRINT LIST REPORTS ======
+// ====== PRINT LIST REPORTS ======
 async function printListReport(type) {
     let allTx = await db.transactions.toArray();
     allTx.sort((a, b) => {
@@ -805,6 +805,8 @@ checkLogin().then((isLoggedIn) => {
     if(typeof loadEmployees === 'function') loadEmployees();
     if(typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
     if(typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
+}).catch(err => {
+    console.error("Initial load error:", err);
 });
 
 // Auto-update PWA logic
