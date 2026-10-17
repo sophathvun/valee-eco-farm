@@ -553,10 +553,12 @@
         </div>
     </div>
 
-    <script type="module" src="src/js/main.js?v=1792248500"></script>
+    <script type="module" src="src/js/main.js?v=1792249500"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            navigator.serviceWorker.register('sw.js?v=1792249500').then(reg => {
+                reg.update();
+            });
         }
     </script>
     <button id="pwa-install-btn" class="btn text-white shadow" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; border-radius: 25px; align-items: center; gap: 8px; padding: 10px 20px; background-color: #0062cc;">
