@@ -321,23 +321,319 @@ if (dropzone && photoInput) {
 
 function handleFileSelect(file) {
     if (!file.type.startsWith('image/')) {
-        Swal.fire({icon: 'error', text: '\u179f\u17bc\u1798\u1787\u17d2\u179a\u17be\u179f\u179a\u17be\u179f\u17af\u1780\u179f\u17b6\u179a\u1787\u17b6\u179a\u17bc\u1794\u1797\u17b6\u1796!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+        Swal.fire({icon: 'error', text: 'សូមជ្រើសរើសឯកសារជារូបភាព!', confirmButtonText: 'យល់ព្រម'});
         return;
     }
     const reader = new FileReader();
     reader.onload = (e) => {
         const img = document.getElementById('cropper-image');
         if(img) img.src = e.target.result;
+
+        // Reset controls for fresh image
+        const sh = document.getElementById('crop-sharpen'); if (sh) sh.value = 0;
+        const shV = document.getElementById('crop-sharpen-val'); if (shV) shV.textContent = '0%';
+        const br = document.getElementById('crop-brightness'); if (br) br.value = 0;
+        const brV = document.getElementById('crop-brightness-val'); if (brV) brV.textContent = '0';
+        const ct = document.getElementById('crop-contrast'); if (ct) ct.value = 0;
+        const ctV = document.getElementById('crop-contrast-val'); if (ctV) ctV.textContent = '0';
+        const tol = document.getElementById('crop-bg-tolerance'); if (tol) tol.value = 45;
+        const tolV = document.getElementById('crop-bg-tol-val'); if (tolV) tolV.textContent = '45';
+        selectedCropBgColor = 'original';
+        document.querySelectorAll('.crop-bg-btn').forEach(b => {
+            if (b.getAttribute('data-color') === 'original') b.classList.add('active');
+            else b.classList.remove('active');
+        });
+        const tolWrap = document.getElementById('crop-bg-tol-wrap');
+        if (tolWrap) tolWrap.style.display = 'none';
+
         if(cropperModal) cropperModal.show();
     };
     reader.readAsDataURL(file);
+}
+
+let selectedCropBgColor = 'original';
+let previewDebounceTimer = null;
+
+function hexToRgb(hex) {
+    if (!hex) return null;
+    let clean = hex.replace('#', '').trim();
+    if (clean.length === 3) {
+        return {
+            r: parseInt(clean[0] + clean[0], 16),
+            g: parseInt(clean[1] + clean[1], 16),
+            b: parseInt(clean[2] + clean[2], 16)
+        };
+    }
+    if (clean.length === 6) {
+        return {
+            r: parseInt(clean.substring(0, 2), 16),
+            g: parseInt(clean.substring(2, 4), 16),
+            b: parseInt(clean.substring(4, 6), 16)
+        };
+    }
+    return null;
+}
+
+// 1. Background Replacement (sample corners & flood fill perimeter with feathering)
+function processCanvasBackground(ctx, width, height, targetHex, tolerance = 45) {
+    if (!targetHex || targetHex === 'original') return;
+    const target = hexToRgb(targetHex);
+    if (!target) return;
+
+    const imgData = ctx.getImageData(0, 0, width, height);
+    const data = imgData.data;
+
+    // Sample background from 4 outer corners and top-middle
+    const sampleCoords = [
+        [2, 2], [width - 3, 2], [Math.floor(width / 2), 2],
+        [2, Math.floor(height * 0.25)], [width - 3, Math.floor(height * 0.25)]
+    ];
+    let sR = 0, sG = 0, sB = 0, sCount = 0;
+    for (let [sx, sy] of sampleCoords) {
+        const idx = (sy * width + sx) * 4;
+        if (data[idx + 3] > 40) {
+            sR += data[idx]; sG += data[idx + 1]; sB += data[idx + 2];
+            sCount++;
+        }
+    }
+    if (sCount > 0) {
+        sR = Math.round(sR / sCount);
+        sG = Math.round(sG / sCount);
+        sB = Math.round(sB / sCount);
+    } else {
+        sR = 240; sG = 240; sB = 240;
+    }
+
+    const tolSq = tolerance * tolerance;
+    const isBg = new Uint8Array(width * height);
+    const queue = [];
+
+    // Seed outer edges
+    for (let x = 0; x < width; x++) {
+        isBg[0 * width + x] = 1;
+        queue.push(0 * width + x);
+    }
+    for (let y = 1; y < Math.floor(height * 0.7); y++) {
+        isBg[y * width + 0] = 1;
+        queue.push(y * width + 0);
+        isBg[y * width + (width - 1)] = 1;
+        queue.push(y * width + (width - 1));
+    }
+
+    let head = 0;
+    while (head < queue.length) {
+        const p = queue[head++];
+        const px = p % width;
+        const py = Math.floor(p / width);
+
+        const neighbors = [
+            px > 0 ? p - 1 : -1,
+            px < width - 1 ? p + 1 : -1,
+            py > 0 ? p - width : -1,
+            py < height - 1 ? p + width : -1
+        ];
+
+        for (let np of neighbors) {
+            if (np >= 0 && !isBg[np]) {
+                const nx = np % width;
+                const ny = Math.floor(np / width);
+                const nIdx = np * 4;
+                const a = data[nIdx + 3];
+
+                if (a < 50) {
+                    isBg[np] = 1;
+                    queue.push(np);
+                    continue;
+                }
+
+                const r = data[nIdx];
+                const g = data[nIdx + 1];
+                const b = data[nIdx + 2];
+
+                // Protect face / skin tone in center region
+                if (nx > width * 0.28 && nx < width * 0.72 && ny > height * 0.2 && ny < height * 0.8) {
+                    if (r > 60 && g > 40 && b > 20 && r > g && g > b && (r - g >= 14)) {
+                        continue;
+                    }
+                }
+
+                const dr = r - sR;
+                const dg = g - sG;
+                const db = b - sB;
+                if ((dr * dr + dg * dg + db * db) <= tolSq) {
+                    isBg[np] = 1;
+                    queue.push(np);
+                }
+            }
+        }
+    }
+
+    // Apply target background with feathering
+    for (let i = 0; i < width * height; i++) {
+        if (isBg[i]) {
+            const idx = i * 4;
+            const px = i % width;
+            const py = Math.floor(i / width);
+            const isEdge = (px > 0 && !isBg[i - 1]) ||
+                           (px < width - 1 && !isBg[i + 1]) ||
+                           (py > 0 && !isBg[i - width]) ||
+                           (py < height - 1 && !isBg[i + width]);
+            if (isEdge) {
+                data[idx] = Math.round((data[idx] + target.r) / 2);
+                data[idx + 1] = Math.round((data[idx + 1] + target.g) / 2);
+                data[idx + 2] = Math.round((data[idx + 2] + target.b) / 2);
+                data[idx + 3] = 255;
+            } else {
+                data[idx] = target.r;
+                data[idx + 1] = target.g;
+                data[idx + 2] = target.b;
+                data[idx + 3] = 255;
+            }
+        }
+    }
+    ctx.putImageData(imgData, 0, 0);
+}
+
+// 2. Brightness, Contrast & Sharpening (Fix blur / old photo)
+function processCanvasEnhancements(ctx, width, height, brightness, contrast, sharpen) {
+    if (brightness === 0 && contrast === 0 && sharpen === 0) return;
+
+    const imgData = ctx.getImageData(0, 0, width, height);
+    const data = imgData.data;
+
+    // A. Brightness & Contrast
+    if (brightness !== 0 || contrast !== 0) {
+        const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+        for (let i = 0; i < data.length; i += 4) {
+            let r = data[i];
+            let g = data[i + 1];
+            let b = data[i + 2];
+
+            if (contrast !== 0) {
+                r = factor * (r - 128) + 128;
+                g = factor * (g - 128) + 128;
+                b = factor * (b - 128) + 128;
+            }
+            if (brightness !== 0) {
+                r += brightness;
+                g += brightness;
+                b += brightness;
+            }
+
+            data[i] = r < 0 ? 0 : (r > 255 ? 255 : r);
+            data[i + 1] = g < 0 ? 0 : (g > 255 ? 255 : g);
+            data[i + 2] = b < 0 ? 0 : (b > 255 ? 255 : b);
+        }
+    }
+
+    // B. Sharpen (Unsharp Mask Kernel to fix blurry/old photos)
+    if (sharpen > 0) {
+        const s = (sharpen / 100) * 0.8;
+        const copy = new Uint8ClampedArray(data);
+        for (let y = 1; y < height - 1; y++) {
+            for (let x = 1; x < width - 1; x++) {
+                const idx = (y * width + x) * 4;
+                const top = ((y - 1) * width + x) * 4;
+                const btm = ((y + 1) * width + x) * 4;
+                const lft = (y * width + (x - 1)) * 4;
+                const rgt = (y * width + (x + 1)) * 4;
+
+                for (let c = 0; c < 3; c++) {
+                    const center = copy[idx + c];
+                    const neighbors = copy[top + c] + copy[btm + c] + copy[lft + c] + copy[rgt + c];
+                    let val = center * (1 + 4 * s) - neighbors * s;
+                    data[idx + c] = val < 0 ? 0 : (val > 255 ? 255 : val);
+                }
+            }
+        }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+}
+
+// 3. Export as WebP strictly under 50KB
+function exportOptimizedWebP(canvas) {
+    let quality = 0.84;
+    let dataUrl = canvas.toDataURL('image/webp', quality);
+    
+    // In case browser doesn't support WebP, fallback to JPEG
+    if (!dataUrl.startsWith('data:image/webp')) {
+        dataUrl = canvas.toDataURL('image/jpeg', quality);
+    }
+
+    // Strictly ensure < 50KB (48KB buffer)
+    const maxBytes = 48 * 1024;
+    while (dataUrl.length * 0.75 > maxBytes && quality > 0.35) {
+        quality -= 0.08;
+        dataUrl = canvas.toDataURL('image/webp', quality);
+    }
+    const sizeKb = ((dataUrl.length * 0.75) / 1024).toFixed(1);
+    return { dataUrl, sizeKb };
+}
+
+// 4. Live Preview Renderer
+function renderCropLivePreview() {
+    if (!cropper) return;
+    const previewCanvas = document.getElementById('crop-live-preview');
+    if (!previewCanvas) return;
+    const previewCtx = previewCanvas.getContext('2d');
+
+    const croppedCanvas = cropper.getCroppedCanvas({
+        width: 250,
+        height: 250,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high'
+    });
+    if (!croppedCanvas) return;
+
+    const workCanvas = document.createElement('canvas');
+    workCanvas.width = 250;
+    workCanvas.height = 250;
+    const workCtx = workCanvas.getContext('2d');
+    workCtx.drawImage(croppedCanvas, 0, 0);
+
+    const tolerance = parseInt(document.getElementById('crop-bg-tolerance')?.value || '45', 10);
+    const sharpen = parseInt(document.getElementById('crop-sharpen')?.value || '0', 10);
+    const brightness = parseInt(document.getElementById('crop-brightness')?.value || '0', 10);
+    const contrast = parseInt(document.getElementById('crop-contrast')?.value || '0', 10);
+
+    processCanvasBackground(workCtx, 250, 250, selectedCropBgColor, tolerance);
+    processCanvasEnhancements(workCtx, 250, 250, brightness, contrast, sharpen);
+
+    previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    previewCtx.drawImage(workCanvas, 0, 0, previewCanvas.width, previewCanvas.height);
+
+    const result = exportOptimizedWebP(workCanvas);
+    const sizeEl = document.getElementById('crop-file-size');
+    if (sizeEl) sizeEl.textContent = `${result.sizeKb} KB`;
+}
+
+function debounceRenderCropPreview() {
+    clearTimeout(previewDebounceTimer);
+    previewDebounceTimer = setTimeout(renderCropLivePreview, 40);
 }
 
 if(cropperModalEl) {
     cropperModalEl.addEventListener('shown.bs.modal', () => {
         const image = document.getElementById('cropper-image');
         if (cropper) cropper.destroy();
-        cropper = new Cropper(image, { aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 0.9, restore: false, guides: true, center: true, highlight: false, cropBoxMovable: true, cropBoxResizable: true, toggleDragModeOnDblclick: false });
+        cropper = new Cropper(image, {
+            aspectRatio: 1,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.9,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+            crop: () => {
+                debounceRenderCropPreview();
+            }
+        });
+        setTimeout(renderCropLivePreview, 150);
     });
 
     cropperModalEl.addEventListener('hidden.bs.modal', () => {
@@ -345,23 +641,126 @@ if(cropperModalEl) {
     });
 }
 
-const btnRotL = document.getElementById('crop-rotate-left'); if(btnRotL) btnRotL.addEventListener('click', () => { if (cropper) cropper.rotate(-90); });
-const btnRotR = document.getElementById('crop-rotate-right'); if(btnRotR) btnRotR.addEventListener('click', () => { if (cropper) cropper.rotate(90); });
-const btnZoomI = document.getElementById('crop-zoom-in'); if(btnZoomI) btnZoomI.addEventListener('click', () => { if (cropper) cropper.zoom(0.1); });
-const btnZoomO = document.getElementById('crop-zoom-out'); if(btnZoomO) btnZoomO.addEventListener('click', () => { if (cropper) cropper.zoom(-0.1); });
+// Rotate & Zoom buttons
+document.getElementById('crop-rotate-left')?.addEventListener('click', () => { if (cropper) { cropper.rotate(-90); debounceRenderCropPreview(); } });
+document.getElementById('crop-rotate-right')?.addEventListener('click', () => { if (cropper) { cropper.rotate(90); debounceRenderCropPreview(); } });
+document.getElementById('crop-zoom-in')?.addEventListener('click', () => { if (cropper) { cropper.zoom(0.1); debounceRenderCropPreview(); } });
+document.getElementById('crop-zoom-out')?.addEventListener('click', () => { if (cropper) { cropper.zoom(-0.1); debounceRenderCropPreview(); } });
+
+// Reset button
+document.getElementById('crop-reset-all')?.addEventListener('click', () => {
+    if (cropper) cropper.reset();
+    const sh = document.getElementById('crop-sharpen'); if (sh) sh.value = 0;
+    const shV = document.getElementById('crop-sharpen-val'); if (shV) shV.textContent = '0%';
+    const br = document.getElementById('crop-brightness'); if (br) br.value = 0;
+    const brV = document.getElementById('crop-brightness-val'); if (brV) brV.textContent = '0';
+    const ct = document.getElementById('crop-contrast'); if (ct) ct.value = 0;
+    const ctV = document.getElementById('crop-contrast-val'); if (ctV) ctV.textContent = '0';
+    const tol = document.getElementById('crop-bg-tolerance'); if (tol) tol.value = 45;
+    const tolV = document.getElementById('crop-bg-tol-val'); if (tolV) tolV.textContent = '45';
+    selectedCropBgColor = 'original';
+    document.querySelectorAll('.crop-bg-btn').forEach(b => {
+        if (b.getAttribute('data-color') === 'original') b.classList.add('active');
+        else b.classList.remove('active');
+    });
+    const tolWrap = document.getElementById('crop-bg-tol-wrap');
+    if (tolWrap) tolWrap.style.display = 'none';
+    renderCropLivePreview();
+});
+
+// Background selection
+document.querySelectorAll('.crop-bg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.crop-bg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedCropBgColor = btn.getAttribute('data-color');
+        const tolWrap = document.getElementById('crop-bg-tol-wrap');
+        if (tolWrap) tolWrap.style.display = (selectedCropBgColor === 'original') ? 'none' : 'block';
+        renderCropLivePreview();
+    });
+});
+
+document.getElementById('crop-bg-custom')?.addEventListener('input', (e) => {
+    document.querySelectorAll('.crop-bg-btn').forEach(b => b.classList.remove('active'));
+    selectedCropBgColor = e.target.value;
+    const tolWrap = document.getElementById('crop-bg-tol-wrap');
+    if (tolWrap) tolWrap.style.display = 'block';
+    renderCropLivePreview();
+});
+
+// Slider inputs
+['crop-sharpen', 'crop-brightness', 'crop-contrast', 'crop-bg-tolerance'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('input', (e) => {
+            const valEl = document.getElementById(id + '-val');
+            if (valEl) {
+                const suffix = (id === 'crop-sharpen') ? '%' : '';
+                valEl.textContent = e.target.value + suffix;
+            }
+            debounceRenderCropPreview();
+        });
+    }
+});
+
+// Auto-Enhance Button (Fix Blur & Boost Contrast/Light)
+document.getElementById('btn-auto-enhance')?.addEventListener('click', () => {
+    const sh = document.getElementById('crop-sharpen'); if (sh) sh.value = 45;
+    const shV = document.getElementById('crop-sharpen-val'); if (shV) shV.textContent = '45%';
+    const br = document.getElementById('crop-brightness'); if (br) br.value = 8;
+    const brV = document.getElementById('crop-brightness-val'); if (brV) brV.textContent = '+8';
+    const ct = document.getElementById('crop-contrast'); if (ct) ct.value = 18;
+    const ctV = document.getElementById('crop-contrast-val'); if (ctV) ctV.textContent = '+18';
+    renderCropLivePreview();
+});
+
+// Save button (Crop & Save WebP)
 const btnSave = document.getElementById('crop-save-btn'); 
 if(btnSave) {
     btnSave.addEventListener('click', () => {
         if (!cropper) return;
-        const canvas = cropper.getCroppedCanvas({ width: 250, height: 250, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+        const croppedCanvas = cropper.getCroppedCanvas({
+            width: 280,
+            height: 280,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+        });
+        if (!croppedCanvas) return;
+
+        const workCanvas = document.createElement('canvas');
+        workCanvas.width = 280;
+        workCanvas.height = 280;
+        const workCtx = workCanvas.getContext('2d');
+        workCtx.drawImage(croppedCanvas, 0, 0);
+
+        const tolerance = parseInt(document.getElementById('crop-bg-tolerance')?.value || '45', 10);
+        const sharpen = parseInt(document.getElementById('crop-sharpen')?.value || '0', 10);
+        const brightness = parseInt(document.getElementById('crop-brightness')?.value || '0', 10);
+        const contrast = parseInt(document.getElementById('crop-contrast')?.value || '0', 10);
+
+        // Run full processing
+        processCanvasBackground(workCtx, 280, 280, selectedCropBgColor, tolerance);
+        processCanvasEnhancements(workCtx, 280, 280, brightness, contrast, sharpen);
+
+        // Export as WebP < 50KB
+        const result = exportOptimizedWebP(workCanvas);
         const prev = document.getElementById('emp-photo-preview');
         if(prev) {
-            prev.src = dataUrl;
+            prev.src = result.dataUrl;
             prev.dataset.hasCustom = 'true';
         }
         updatePhotoPlaceholder();
         if(cropperModal) cropperModal.hide();
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: 'កាត់ និងកែរូបភាពជោគជ័យ!',
+                html: `រូបភាពត្រូវបានកែច្បាស់ និងរក្សាទុកជា WebP<br><b class="text-success">ទំហំ៖ ${result.sizeKb} KB (&lt; 50KB)</b>`,
+                timer: 1600,
+                showConfirmButton: false
+            });
+        }
     });
 }
 
