@@ -77,11 +77,11 @@
         display: none !important;
     }
     
-    #print-area-invoice.print-template,
-    #print-area-report.print-template,
-    #print-area-analytics.print-template,
-    #print-area-payroll-master.print-template,
-    #print-area-payslip.print-template { 
+    body:not(.printing-report) #print-area-invoice.print-template,
+    body:not(.printing-report) #print-area-report.print-template,
+    body:not(.printing-report) #print-area-analytics.print-template,
+    body:not(.printing-report) #print-area-payroll-master.print-template,
+    body:not(.printing-report) #print-area-payslip.print-template { 
         display: block !important; 
         position: absolute;
         left: 0;
@@ -91,8 +91,8 @@
         background: #ffffff !important;
     }
 
-    #print-area-payroll-master.print-template *,
-    #print-area-payslip.print-template * {
+    body:not(.printing-report) #print-area-payroll-master.print-template *,
+    body:not(.printing-report) #print-area-payslip.print-template * {
         visibility: visible !important;
     }
 
@@ -156,11 +156,15 @@
         visibility: visible !important;
     }
     
-    /* Hide other print areas when printing attendance report */
+    /* Hide ALL other print areas when printing attendance report */
     body.printing-report #print-area-invoice,
     body.printing-report #print-area-report,
-    body.printing-report #print-area-analytics {
+    body.printing-report #print-area-analytics,
+    body.printing-report #print-area-payroll-master,
+    body.printing-report #print-area-payslip,
+    body.printing-report .print-container {
         display: none !important;
+        visibility: hidden !important;
     }
     
     .print-template * {

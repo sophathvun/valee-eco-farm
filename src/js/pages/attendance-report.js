@@ -296,6 +296,12 @@ window.printAttReport = async function() {
         await loadAttendanceReportLogo();
     }
     
+    // Purge any lingering print templates and empty payslip/payroll containers
+    document.querySelectorAll('.print-container').forEach(el => {
+        el.classList.remove('print-template');
+        el.innerHTML = '';
+    });
+
     let style = document.getElementById('dynamic-print-orientation');
     if (!style) {
         style = document.createElement('style');
@@ -307,6 +313,10 @@ window.printAttReport = async function() {
     
     const cleanup = () => {
         document.body.classList.remove('printing-report');
+        document.querySelectorAll('.print-container').forEach(el => {
+            el.classList.remove('print-template');
+            el.innerHTML = '';
+        });
         window.removeEventListener('afterprint', cleanup);
     };
     window.addEventListener('afterprint', cleanup);

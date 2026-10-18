@@ -469,4 +469,10 @@
     #print-area-payslip .d-print-none {
         display: none !important;
     }
+
+    body.printing-report #print-area-payslip,
+    body.printing-report #print-area-payroll-master {
+        display: none !important;
+        visibility: hidden !important;
+    }
 }

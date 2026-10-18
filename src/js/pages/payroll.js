@@ -1737,8 +1737,18 @@ function executePayrollPrint(elementId, orientation = 'landscape') {
         target.classList.add('print-template');
     }
 
+    const cleanup = () => {
+        document.querySelectorAll('.print-container').forEach(el => {
+            el.classList.remove('print-template');
+            el.innerHTML = '';
+        });
+        window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+
     setTimeout(() => {
         window.print();
+        setTimeout(cleanup, 2000);
     }, 250);
 }
 
@@ -1752,6 +1762,18 @@ window.triggerPrintCurrentPayslip = function() {
     printArea.innerHTML = payslipContainer.innerHTML;
     executePayrollPrint('print-area-payslip', 'portrait');
 };
+
+// Purge print area when payslip modal is closed
+const pModalEl = document.getElementById('payslipModal');
+if (pModalEl) {
+    pModalEl.addEventListener('hidden.bs.modal', () => {
+        const printArea = document.getElementById('print-area-payslip');
+        if (printArea) {
+            printArea.classList.remove('print-template');
+            printArea.innerHTML = '';
+        }
+    });
+}
 
 // ====== 10. PRINT MASTER PAYROLL SHEET (A4 LANDSCAPE) ======
 window.printPayrollMaster = async function(batchId) {

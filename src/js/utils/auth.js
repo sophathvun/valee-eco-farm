@@ -223,6 +223,13 @@ window.showTab = function(tabId, subId = null) {
         const expEx = document.getElementById('exp-exchange-rate');
         if (expEx && !expEx.value) expEx.value = window.sysExchangeRate || 4100;
     }
+    // Clean up all print containers and print classes when switching tabs
+    document.querySelectorAll('.print-container').forEach(el => {
+        el.classList.remove('print-template');
+        el.innerHTML = '';
+    });
+    document.body.classList.remove('printing-report');
+
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
     

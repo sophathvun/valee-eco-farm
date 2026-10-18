@@ -168,7 +168,17 @@ function printElement(elId, orientation = 'portrait') {
 
     document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
     document.getElementById(elId).classList.add('print-template');
-    setTimeout(() => window.print(), 300);
+
+    const cleanup = () => {
+        document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
+        window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+
+    setTimeout(() => {
+        window.print();
+        setTimeout(cleanup, 2000);
+    }, 300);
 }
 
 async function populateAndPrintInvoice(inv) {
