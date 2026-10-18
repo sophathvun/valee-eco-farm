@@ -542,48 +542,79 @@ window.viewPayrollDetail = async function(batchId) {
             }
         }
 
-        // Aggregate metrics for summary bar
+        // Aggregate metrics for summary bar & footer
         const exRate = window.sysExchangeRate || parseFloat(localStorage.getItem('sysExchangeRate')) || 4100;
         let totEmps = batch.items.length;
-        let totGrossUSD = 0;
-        let totDeductUSD = 0;
+        let sumBaseUSD = 0, sumBaseKHR = 0;
+        let sumPeriodBaseUSD = 0, sumPeriodBaseKHR = 0;
+        let sumAbsenceDeductUSD = 0, sumAbsenceDeductKHR = 0;
+        let sumAllowanceUSD = 0, sumAllowanceKHR = 0;
+        let sumOtherDeductUSD = 0, sumOtherDeductKHR = 0;
         let sumNetUSD = 0, sumNetKHR = 0;
-        let gTotPeriodBase = 0, gTotAbsenceDeduct = 0, gTotAllowance = 0, gTotOtherDeduct = 0;
         let gTotP = 0, gTotL = 0, gTotA = 0;
 
         batch.items.forEach(it => {
-            const g = parseFloat(it.grossSalary) || 0;
-            const d = parseFloat(it.absenceDeduction) || 0;
-            const n = parseFloat(it.netSalary) || 0;
+            const cur = it.currency || 'USD';
+            const b = parseFloat(it.baseSalary) || 0;
+            const pb = parseFloat(it.periodBaseSalary) || 0;
+            const ad = parseFloat(it.absenceDeduction) || 0;
+            const al = parseFloat(it.allowance) || 0;
+            const od = parseFloat(it.otherDeduction) || 0;
+            const net = parseFloat(it.netSalary) || 0;
 
-            if (it.currency === 'KHR') {
-                totGrossUSD += (g / exRate);
-                totDeductUSD += (d / exRate);
-                sumNetKHR += n;
+            if (cur === 'KHR') {
+                sumBaseKHR += b;
+                sumPeriodBaseKHR += pb;
+                sumAbsenceDeductKHR += ad;
+                sumAllowanceKHR += al;
+                sumOtherDeductKHR += od;
+                sumNetKHR += net;
             } else {
-                totGrossUSD += g;
-                totDeductUSD += d;
-                sumNetUSD += n;
+                sumBaseUSD += b;
+                sumPeriodBaseUSD += pb;
+                sumAbsenceDeductUSD += ad;
+                sumAllowanceUSD += al;
+                sumOtherDeductUSD += od;
+                sumNetUSD += net;
             }
 
             gTotP += (it.presentDays || 0);
             gTotL += (it.leaveDays || 0);
             gTotA += (it.absentDays || 0);
-            gTotPeriodBase += (it.periodBaseSalary || 0);
-            gTotAbsenceDeduct += (it.absenceDeduction || 0);
-            gTotAllowance += (it.allowance || 0);
-            gTotOtherDeduct += (it.otherDeduction || 0);
         });
 
-        const grandTotalAllUSD = sumNetUSD + (sumNetKHR / exRate);
-        const grandTotalAllKHR = (sumNetUSD * exRate) + sumNetKHR;
+        const grandTotalBaseUSD = sumBaseUSD + (sumBaseKHR / exRate);
+        const grandTotalBaseKHR = (sumBaseUSD * exRate) + sumBaseKHR;
+
+        const grandTotalPeriodUSD = sumPeriodBaseUSD + (sumPeriodBaseKHR / exRate);
+        const grandTotalPeriodKHR = (sumPeriodBaseUSD * exRate) + sumPeriodBaseKHR;
+
+        const grandTotalAbsenceUSD = sumAbsenceDeductUSD + (sumAbsenceDeductKHR / exRate);
+        const grandTotalAbsenceKHR = (sumAbsenceDeductUSD * exRate) + sumAbsenceDeductKHR;
+
+        const grandTotalAllowanceUSD = sumAllowanceUSD + (sumAllowanceKHR / exRate);
+        const grandTotalAllowanceKHR = (sumAllowanceUSD * exRate) + sumAllowanceKHR;
+
+        const grandTotalOtherDeductUSD = sumOtherDeductUSD + (sumOtherDeductKHR / exRate);
+        const grandTotalOtherDeductKHR = (sumOtherDeductUSD * exRate) + sumOtherDeductKHR;
+
+        const grandTotalNetUSD = sumNetUSD + (sumNetKHR / exRate);
+        const grandTotalNetKHR = (sumNetUSD * exRate) + sumNetKHR;
 
         document.getElementById('detail-stat-emps').textContent = `${totEmps} នាក់`;
-        document.getElementById('detail-stat-gross').textContent = formatPayCurrency(totGrossUSD, 'USD');
-        document.getElementById('detail-stat-deduction').textContent = totDeductUSD > 0 ? `-${formatPayCurrency(totDeductUSD, 'USD')}` : '$0.00';
+        document.getElementById('detail-stat-gross').innerHTML = `
+            <span>${formatPayCurrency(sumPeriodBaseUSD, 'USD')} + ${formatPayCurrency(sumPeriodBaseKHR, 'KHR')}</span>
+            <br><small class="text-primary fw-bold">(ស្មើ៖ ${formatPayCurrency(grandTotalPeriodUSD, 'USD')})</small>
+        `;
+        const deductGrossUSD = (sumAbsenceDeductUSD > 0 ? '-' + formatPayCurrency(sumAbsenceDeductUSD, 'USD') : '$0.00');
+        const deductGrossKHR = (sumAbsenceDeductKHR > 0 ? '-' + formatPayCurrency(sumAbsenceDeductKHR, 'KHR') : '៛0');
+        document.getElementById('detail-stat-deduction').innerHTML = `
+            <span>${deductGrossUSD} + ${deductGrossKHR}</span>
+            <br><small class="text-danger fw-bold">(ស្មើ៖ ${grandTotalAbsenceUSD > 0 ? '-' + formatPayCurrency(grandTotalAbsenceUSD, 'USD') : '$0.00'})</small>
+        `;
         document.getElementById('detail-stat-net').innerHTML = `
             <span>${formatPayCurrency(sumNetUSD, 'USD')} + ${formatPayCurrency(sumNetKHR, 'KHR')}</span>
-            <br><small class="text-success fw-bold">(ស្មើ៖ ${formatPayCurrency(grandTotalAllUSD, 'USD')} | ${formatPayCurrency(grandTotalAllKHR, 'KHR')})</small>
+            <br><small class="text-success fw-bold">(ស្មើ៖ ${formatPayCurrency(grandTotalNetUSD, 'USD')} | ${formatPayCurrency(grandTotalNetKHR, 'KHR')})</small>
         `;
 
         // Group items by Department
@@ -609,7 +640,7 @@ window.viewPayrollDetail = async function(batchId) {
             // Department row
             html += `
                 <tr class="payroll-dept-header-row text-start">
-                    <td colspan="14" class="py-2 px-3">
+                    <td colspan="19" class="py-2 px-3">
                         <i class="bi bi-diagram-3-fill text-success me-1"></i>
                         ផ្នែក៖ <strong>${dept}</strong> (${emps.length} នាក់)
                     </td>
@@ -621,20 +652,54 @@ window.viewPayrollDetail = async function(batchId) {
                 const typeBadge = isPartTime ? '<span class="badge bg-warning text-dark px-1">Part-Time</span>' : '<span class="badge bg-primary bg-opacity-75 text-white px-1">Full-Time</span>';
                 
                 const cur = it.currency || 'USD';
-                const baseDisplay = formatPayCurrency(it.baseSalary, cur);
-                const periodBaseDisplay = isPartTime ? '<span class="text-muted">-</span>' : formatPayCurrency(it.periodBaseSalary, cur);
-                const deductDisplay = it.absenceDeduction > 0 ? `<span class="text-danger fw-bold">-${formatPayCurrency(it.absenceDeduction, cur)}</span>` : '<span class="text-muted">$0.00</span>';
-                const allowanceDisplay = it.allowance > 0 ? `<span class="text-info fw-bold">+${formatPayCurrency(it.allowance, cur)}</span>${it.allowanceNote ? `<br><small class="text-muted" title="${it.allowanceNote}">(${it.allowanceNote})</small>` : ''}` : '<span class="text-muted">$0.00</span>';
-                const otherDeductDisplay = it.otherDeduction > 0 ? `<span class="text-warning fw-bold">-${formatPayCurrency(it.otherDeduction, cur)}</span>${it.deductionNote ? `<br><small class="text-muted" title="${it.deductionNote}">(${it.deductionNote})</small>` : ''}` : '<span class="text-muted">$0.00</span>';
-                
-                let netUSDDisplay = '<span class="text-muted">-</span>';
-                let netKHRDisplay = '<span class="text-muted">-</span>';
+                const b = parseFloat(it.baseSalary) || 0;
+                const pb = parseFloat(it.periodBaseSalary) || 0;
+                const ad = parseFloat(it.absenceDeduction) || 0;
+                const al = parseFloat(it.allowance) || 0;
+                const od = parseFloat(it.otherDeduction) || 0;
+                const net = parseFloat(it.netSalary) || 0;
 
-                if (it.currency === 'KHR') {
-                    netKHRDisplay = formatPayCurrency(it.netSalary, 'KHR');
-                } else {
-                    netUSDDisplay = formatPayCurrency(it.netSalary, 'USD');
+                // Base Salary display
+                const baseUSDDisplay = cur === 'USD' ? formatPayCurrency(b, 'USD') : '<span class="text-muted">-</span>';
+                const baseKHRDisplay = cur === 'KHR' ? formatPayCurrency(b, 'KHR') : '<span class="text-muted">-</span>';
+
+                // Period Base display
+                let periodBaseUSDDisplay = '<span class="text-muted">-</span>';
+                let periodBaseKHRDisplay = '<span class="text-muted">-</span>';
+                if (!isPartTime) {
+                    if (cur === 'USD') periodBaseUSDDisplay = formatPayCurrency(pb, 'USD');
+                    else periodBaseKHRDisplay = formatPayCurrency(pb, 'KHR');
                 }
+
+                // Absence Deduction display
+                let deductUSDDisplay = '<span class="text-muted">-</span>';
+                let deductKHRDisplay = '<span class="text-muted">-</span>';
+                if (ad > 0) {
+                    if (cur === 'USD') deductUSDDisplay = `<span class="text-danger fw-bold">-${formatPayCurrency(ad, 'USD')}</span>`;
+                    else deductKHRDisplay = `<span class="text-danger fw-bold">-${formatPayCurrency(ad, 'KHR')}</span>`;
+                }
+
+                // Allowance display
+                let allowanceUSDDisplay = '<span class="text-muted">-</span>';
+                let allowanceKHRDisplay = '<span class="text-muted">-</span>';
+                const allowNoteHtml = it.allowanceNote ? `<br><small class="text-muted" title="${it.allowanceNote}">(${it.allowanceNote})</small>` : '';
+                if (al > 0) {
+                    if (cur === 'USD') allowanceUSDDisplay = `<span class="text-info fw-bold">+${formatPayCurrency(al, 'USD')}</span>${allowNoteHtml}`;
+                    else allowanceKHRDisplay = `<span class="text-info fw-bold">+${formatPayCurrency(al, 'KHR')}</span>${allowNoteHtml}`;
+                }
+
+                // Other Deduction display
+                let otherDeductUSDDisplay = '<span class="text-muted">-</span>';
+                let otherDeductKHRDisplay = '<span class="text-muted">-</span>';
+                const deductNoteHtml = it.deductionNote ? `<br><small class="text-muted" title="${it.deductionNote}">(${it.deductionNote})</small>` : '';
+                if (od > 0) {
+                    if (cur === 'USD') otherDeductUSDDisplay = `<span class="text-warning fw-bold">-${formatPayCurrency(od, 'USD')}</span>${deductNoteHtml}`;
+                    else otherDeductKHRDisplay = `<span class="text-warning fw-bold">-${formatPayCurrency(od, 'KHR')}</span>${deductNoteHtml}`;
+                }
+
+                // Net Salary display
+                const netUSDDisplay = cur === 'USD' ? formatPayCurrency(net, 'USD') : '<span class="text-muted">-</span>';
+                const netKHRDisplay = cur === 'KHR' ? formatPayCurrency(net, 'KHR') : '<span class="text-muted">-</span>';
 
                 html += `
                     <tr>
@@ -649,14 +714,19 @@ window.viewPayrollDetail = async function(batchId) {
                             </div>
                         </td>
                         <td>${typeBadge}</td>
-                        <td>${baseDisplay}</td>
+                        <td class="text-end">${baseUSDDisplay}</td>
+                        <td class="text-end">${baseKHRDisplay}</td>
                         <td class="text-success fw-bold">${it.presentDays}</td>
                         <td class="text-warning fw-bold">${it.leaveDays}</td>
                         <td class="text-danger fw-bold">${it.absentDays}</td>
-                        <td>${periodBaseDisplay}</td>
-                        <td>${deductDisplay}</td>
-                        <td>${allowanceDisplay}</td>
-                        <td>${otherDeductDisplay}</td>
+                        <td class="text-end">${periodBaseUSDDisplay}</td>
+                        <td class="text-end">${periodBaseKHRDisplay}</td>
+                        <td class="text-end">${deductUSDDisplay}</td>
+                        <td class="text-end">${deductKHRDisplay}</td>
+                        <td class="text-end">${allowanceUSDDisplay}</td>
+                        <td class="text-end">${allowanceKHRDisplay}</td>
+                        <td class="text-end">${otherDeductUSDDisplay}</td>
+                        <td class="text-end">${otherDeductKHRDisplay}</td>
                         <td class="fw-bold text-success text-end">${netUSDDisplay}</td>
                         <td class="fw-bold text-success text-end">${netKHRDisplay}</td>
                         <td>
@@ -681,24 +751,46 @@ window.viewPayrollDetail = async function(batchId) {
         if (tfoot) {
             tfoot.innerHTML = `
                 <tr class="payroll-foot-subtotal">
-                    <td colspan="4" class="text-center py-2">សរុបតាមរូបិយប័ណ្ណ (${batch.items.length} នាក់)</td>
+                    <td colspan="3" class="text-center py-2">សរុបតាមរូបិយប័ណ្ណ (${batch.items.length} នាក់)</td>
+                    <td class="text-end fw-semibold">${formatPayCurrency(sumBaseUSD, 'USD')}</td>
+                    <td class="text-end fw-semibold">${formatPayCurrency(sumBaseKHR, 'KHR')}</td>
                     <td class="text-success fw-bold">${gTotP}</td>
                     <td class="text-warning text-dark fw-bold">${gTotL}</td>
                     <td class="text-danger fw-bold">${gTotA}</td>
-                    <td class="text-end fw-semibold">${formatPayCurrency(gTotPeriodBase, 'USD')}</td>
-                    <td class="text-end text-danger fw-semibold">${gTotAbsenceDeduct > 0 ? '-' + formatPayCurrency(gTotAbsenceDeduct, 'USD') : '$0.00'}</td>
-                    <td class="text-end text-info fw-semibold">${gTotAllowance > 0 ? '+' + formatPayCurrency(gTotAllowance, 'USD') : '$0.00'}</td>
-                    <td class="text-end text-warning fw-semibold">${gTotOtherDeduct > 0 ? '-' + formatPayCurrency(gTotOtherDeduct, 'USD') : '$0.00'}</td>
+                    <td class="text-end fw-semibold">${formatPayCurrency(sumPeriodBaseUSD, 'USD')}</td>
+                    <td class="text-end fw-semibold">${formatPayCurrency(sumPeriodBaseKHR, 'KHR')}</td>
+                    <td class="text-end text-danger fw-semibold">${sumAbsenceDeductUSD > 0 ? '-' + formatPayCurrency(sumAbsenceDeductUSD, 'USD') : '$0.00'}</td>
+                    <td class="text-end text-danger fw-semibold">${sumAbsenceDeductKHR > 0 ? '-' + formatPayCurrency(sumAbsenceDeductKHR, 'KHR') : '៛0'}</td>
+                    <td class="text-end text-info fw-semibold">${sumAllowanceUSD > 0 ? '+' + formatPayCurrency(sumAllowanceUSD, 'USD') : '$0.00'}</td>
+                    <td class="text-end text-info fw-semibold">${sumAllowanceKHR > 0 ? '+' + formatPayCurrency(sumAllowanceKHR, 'KHR') : '៛0'}</td>
+                    <td class="text-end text-warning fw-semibold">${sumOtherDeductUSD > 0 ? '-' + formatPayCurrency(sumOtherDeductUSD, 'USD') : '$0.00'}</td>
+                    <td class="text-end text-warning fw-semibold">${sumOtherDeductKHR > 0 ? '-' + formatPayCurrency(sumOtherDeductKHR, 'KHR') : '៛0'}</td>
                     <td class="text-end fw-bold text-success fs-6">${formatPayCurrency(sumNetUSD, 'USD')}</td>
                     <td class="text-end fw-bold text-success fs-6">${formatPayCurrency(sumNetKHR, 'KHR')}</td>
                     <td></td>
                 </tr>
                 <tr class="payroll-foot-grandtotal">
-                    <td colspan="11" class="text-end py-2 px-3 text-success">
-                        <i class="bi bi-calculator me-1"></i> សរុបរួមស្មើនឹង ($ និង ៛) <small class="text-muted fw-normal">(អត្រាប្តូរប្រាក់ 1$ = ${exRate.toLocaleString('en-US')} ៛) :</small>
+                    <td colspan="3" class="text-center py-2 px-2 text-success fw-bold">
+                        <i class="bi bi-calculator me-1"></i> សរុបរួមស្មើនឹង ($ និង ៛)<br><small class="text-muted fw-normal">(អត្រា 1$ = ${exRate.toLocaleString('en-US')} ៛)</small>
                     </td>
-                    <td colspan="2" class="text-end py-2 px-3 fw-bold text-success fs-6">
-                        ${formatPayCurrency(grandTotalAllUSD, 'USD')} = ${formatPayCurrency(grandTotalAllKHR, 'KHR')}
+                    <td colspan="2" class="text-end py-2 px-2 fw-bold text-primary">
+                        ${formatPayCurrency(grandTotalBaseUSD, 'USD')} = ${formatPayCurrency(grandTotalBaseKHR, 'KHR')}
+                    </td>
+                    <td colspan="3" class="text-center text-muted">-</td>
+                    <td colspan="2" class="text-end py-2 px-2 fw-bold text-primary">
+                        ${formatPayCurrency(grandTotalPeriodUSD, 'USD')} = ${formatPayCurrency(grandTotalPeriodKHR, 'KHR')}
+                    </td>
+                    <td colspan="2" class="text-end py-2 px-2 fw-bold text-danger">
+                        ${grandTotalAbsenceUSD > 0 ? '-' + formatPayCurrency(grandTotalAbsenceUSD, 'USD') : '$0.00'} = ${grandTotalAbsenceKHR > 0 ? '-' + formatPayCurrency(grandTotalAbsenceKHR, 'KHR') : '៛0'}
+                    </td>
+                    <td colspan="2" class="text-end py-2 px-2 fw-bold text-info">
+                        ${grandTotalAllowanceUSD > 0 ? '+' + formatPayCurrency(grandTotalAllowanceUSD, 'USD') : '$0.00'} = ${grandTotalAllowanceKHR > 0 ? '+' + formatPayCurrency(grandTotalAllowanceKHR, 'KHR') : '៛0'}
+                    </td>
+                    <td colspan="2" class="text-end py-2 px-2 fw-bold text-warning">
+                        ${grandTotalOtherDeductUSD > 0 ? '-' + formatPayCurrency(grandTotalOtherDeductUSD, 'USD') : '$0.00'} = ${grandTotalOtherDeductKHR > 0 ? '-' + formatPayCurrency(grandTotalOtherDeductKHR, 'KHR') : '៛0'}
+                    </td>
+                    <td colspan="2" class="text-end py-2 px-2 fw-bold text-success fs-6">
+                        ${formatPayCurrency(grandTotalNetUSD, 'USD')} = ${formatPayCurrency(grandTotalNetKHR, 'KHR')}
                     </td>
                     <td></td>
                 </tr>
@@ -1239,14 +1331,13 @@ window.printPayrollMaster = async function(batchId) {
     let tbodyRows = '';
     let seq = 1;
 
-    let gTotBase = 0;
+    let sumBaseUSD = 0, sumBaseKHR = 0;
+    let sumPeriodBaseUSD = 0, sumPeriodBaseKHR = 0;
+    let sumAbsenceDeductUSD = 0, sumAbsenceDeductKHR = 0;
+    let sumAllowanceUSD = 0, sumAllowanceKHR = 0;
+    let sumOtherDeductUSD = 0, sumOtherDeductKHR = 0;
+    let sumNetUSD = 0, sumNetKHR = 0;
     let gTotP = 0, gTotL = 0, gTotA = 0;
-    let gTotPeriodBase = 0;
-    let gTotAbsenceDeduct = 0;
-    let gTotAllowance = 0;
-    let gTotOtherDeduct = 0;
-    let gTotNetUSD = 0;
-    let gTotNetKHR = 0;
 
     sortedDeptNames.forEach(dept => {
         const emps = deptMap[dept];
@@ -1254,7 +1345,7 @@ window.printPayrollMaster = async function(batchId) {
 
         tbodyRows += `
             <tr class="master-dept-row">
-                <td colspan="13" style="background-color: #f1f5f9; font-weight: bold; text-align: left; padding: 4px 8px;">
+                <td colspan="21" style="background-color: #f1f5f9; font-weight: bold; text-align: left; padding: 4px 8px;">
                     ផ្នែក៖ ${dept} (${emps.length} នាក់)
                 </td>
             </tr>
@@ -1263,27 +1354,66 @@ window.printPayrollMaster = async function(batchId) {
         emps.forEach(it => {
             const isPartTime = (it.type === 'Part-Time');
             const cur = it.currency || 'USD';
-            const n = parseFloat(it.netSalary) || 0;
+            const b = parseFloat(it.baseSalary) || 0;
+            const pb = parseFloat(it.periodBaseSalary) || 0;
+            const ad = parseFloat(it.absenceDeduction) || 0;
+            const al = parseFloat(it.allowance) || 0;
+            const od = parseFloat(it.otherDeduction) || 0;
+            const net = parseFloat(it.netSalary) || 0;
 
-            let netUSDPrint = '<span style="color: #94a3b8;">-</span>';
-            let netKHRPrint = '<span style="color: #94a3b8;">-</span>';
-
-            if (it.currency === 'KHR') {
-                gTotNetKHR += n;
-                netKHRPrint = formatPayCurrency(n, 'KHR');
+            if (cur === 'KHR') {
+                sumBaseKHR += b;
+                sumPeriodBaseKHR += pb;
+                sumAbsenceDeductKHR += ad;
+                sumAllowanceKHR += al;
+                sumOtherDeductKHR += od;
+                sumNetKHR += net;
             } else {
-                gTotNetUSD += n;
-                netUSDPrint = formatPayCurrency(n, 'USD');
+                sumBaseUSD += b;
+                sumPeriodBaseUSD += pb;
+                sumAbsenceDeductUSD += ad;
+                sumAllowanceUSD += al;
+                sumOtherDeductUSD += od;
+                sumNetUSD += net;
             }
 
-            gTotBase += (it.baseSalary || 0);
             gTotP += (it.presentDays || 0);
             gTotL += (it.leaveDays || 0);
             gTotA += (it.absentDays || 0);
-            gTotPeriodBase += (it.periodBaseSalary || 0);
-            gTotAbsenceDeduct += (it.absenceDeduction || 0);
-            gTotAllowance += (it.allowance || 0);
-            gTotOtherDeduct += (it.otherDeduction || 0);
+
+            const baseUSD = cur === 'USD' ? formatPayCurrency(b, 'USD') : '<span style="color: #94a3b8;">-</span>';
+            const baseKHR = cur === 'KHR' ? formatPayCurrency(b, 'KHR') : '<span style="color: #94a3b8;">-</span>';
+
+            let periodUSD = '<span style="color: #94a3b8;">-</span>';
+            let periodKHR = '<span style="color: #94a3b8;">-</span>';
+            if (!isPartTime) {
+                if (cur === 'USD') periodUSD = formatPayCurrency(pb, 'USD');
+                else periodKHR = formatPayCurrency(pb, 'KHR');
+            }
+
+            let deductUSD = '<span style="color: #94a3b8;">-</span>';
+            let deductKHR = '<span style="color: #94a3b8;">-</span>';
+            if (ad > 0) {
+                if (cur === 'USD') deductUSD = `-${formatPayCurrency(ad, 'USD')}`;
+                else deductKHR = `-${formatPayCurrency(ad, 'KHR')}`;
+            }
+
+            let allowUSD = '<span style="color: #94a3b8;">-</span>';
+            let allowKHR = '<span style="color: #94a3b8;">-</span>';
+            if (al > 0) {
+                if (cur === 'USD') allowUSD = `+${formatPayCurrency(al, 'USD')}`;
+                else allowKHR = `+${formatPayCurrency(al, 'KHR')}`;
+            }
+
+            let otherUSD = '<span style="color: #94a3b8;">-</span>';
+            let otherKHR = '<span style="color: #94a3b8;">-</span>';
+            if (od > 0) {
+                if (cur === 'USD') otherUSD = `-${formatPayCurrency(od, 'USD')}`;
+                else otherKHR = `-${formatPayCurrency(od, 'KHR')}`;
+            }
+
+            const netUSD = cur === 'USD' ? formatPayCurrency(net, 'USD') : '<span style="color: #94a3b8;">-</span>';
+            const netKHR = cur === 'KHR' ? formatPayCurrency(net, 'KHR') : '<span style="color: #94a3b8;">-</span>';
 
             tbodyRows += `
                 <tr>
@@ -1294,22 +1424,43 @@ window.printPayrollMaster = async function(batchId) {
                     </td>
                     <td>${it.position || ''}</td>
                     <td>${it.type}</td>
-                    <td style="text-align: right;">${formatPayCurrency(it.baseSalary, cur)}</td>
+                    <td style="text-align: right;">${baseUSD}</td>
+                    <td style="text-align: right;">${baseKHR}</td>
                     <td style="font-weight: bold; color: #15803d;">${it.presentDays}</td>
                     <td style="font-weight: bold; color: #b45309;">${it.leaveDays}</td>
                     <td style="font-weight: bold; color: #b91c1c;">${it.absentDays}</td>
-                    <td style="text-align: right;">${isPartTime ? '-' : formatPayCurrency(it.periodBaseSalary, cur)}</td>
-                    <td style="text-align: right; color: #b91c1c;">${it.absenceDeduction > 0 ? '-' + formatPayCurrency(it.absenceDeduction, cur) : '$0.00'}</td>
-                    <td style="text-align: right; color: #0284c7;">${it.allowance > 0 ? '+' + formatPayCurrency(it.allowance, cur) : '$0.00'}</td>
-                    <td style="text-align: right; font-weight: bold; color: #15803d; font-size: 9px;">${netUSDPrint}</td>
-                    <td style="text-align: right; font-weight: bold; color: #15803d; font-size: 9px;">${netKHRPrint}</td>
+                    <td style="text-align: right;">${periodUSD}</td>
+                    <td style="text-align: right;">${periodKHR}</td>
+                    <td style="text-align: right; color: #b91c1c;">${deductUSD}</td>
+                    <td style="text-align: right; color: #b91c1c;">${deductKHR}</td>
+                    <td style="text-align: right; color: #0284c7;">${allowUSD}</td>
+                    <td style="text-align: right; color: #0284c7;">${allowKHR}</td>
+                    <td style="text-align: right; color: #b45309;">${otherUSD}</td>
+                    <td style="text-align: right; color: #b45309;">${otherKHR}</td>
+                    <td style="text-align: right; font-weight: bold; color: #15803d; font-size: 8.8px;">${netUSD}</td>
+                    <td style="text-align: right; font-weight: bold; color: #15803d; font-size: 8.8px;">${netKHR}</td>
                 </tr>
             `;
         });
     });
 
-    const grandTotalPrintUSD = gTotNetUSD + (gTotNetKHR / exRate);
-    const grandTotalPrintKHR = (gTotNetUSD * exRate) + gTotNetKHR;
+    const grandTotalBaseUSD = sumBaseUSD + (sumBaseKHR / exRate);
+    const grandTotalBaseKHR = (sumBaseUSD * exRate) + sumBaseKHR;
+
+    const grandTotalPeriodUSD = sumPeriodBaseUSD + (sumPeriodBaseKHR / exRate);
+    const grandTotalPeriodKHR = (sumPeriodBaseUSD * exRate) + sumPeriodBaseKHR;
+
+    const grandTotalAbsenceUSD = sumAbsenceDeductUSD + (sumAbsenceDeductKHR / exRate);
+    const grandTotalAbsenceKHR = (sumAbsenceDeductUSD * exRate) + sumAbsenceDeductKHR;
+
+    const grandTotalAllowanceUSD = sumAllowanceUSD + (sumAllowanceKHR / exRate);
+    const grandTotalAllowanceKHR = (sumAllowanceUSD * exRate) + sumAllowanceKHR;
+
+    const grandTotalOtherDeductUSD = sumOtherDeductUSD + (sumOtherDeductKHR / exRate);
+    const grandTotalOtherDeductKHR = (sumOtherDeductUSD * exRate) + sumOtherDeductKHR;
+
+    const grandTotalNetUSD = sumNetUSD + (sumNetKHR / exRate);
+    const grandTotalNetKHR = (sumNetUSD * exRate) + sumNetKHR;
 
     const printHtml = `
         <div style="font-family: 'Battambang', sans-serif; padding: 5px;">
@@ -1331,25 +1482,36 @@ window.printPayrollMaster = async function(batchId) {
             </div>
 
             <!-- Master Table -->
-            <table class="payroll-master-print-table" style="width: 100%; border-collapse: collapse; font-size: 8.2px;">
+            <table class="payroll-master-print-table" style="width: 100%; border-collapse: collapse; font-size: 7.8px;">
                 <thead>
                     <tr style="background-color: #198754; color: #ffffff;">
                         <th rowspan="2" style="width: 25px; vertical-align: middle;">ល.រ</th>
-                        <th rowspan="2" style="text-align: left; min-width: 125px; vertical-align: middle;">ឈ្មោះបុគ្គលិក</th>
-                        <th rowspan="2" style="width: 70px; vertical-align: middle;">តួនាទី</th>
-                        <th rowspan="2" style="width: 60px; vertical-align: middle;">ប្រភេទ</th>
-                        <th rowspan="2" style="width: 65px; text-align: right; vertical-align: middle;">ប្រាក់ខែ/ថ្ងៃ</th>
-                        <th rowspan="2" style="width: 28px; vertical-align: middle;">P</th>
-                        <th rowspan="2" style="width: 28px; vertical-align: middle;">L</th>
-                        <th rowspan="2" style="width: 28px; vertical-align: middle;">A</th>
-                        <th rowspan="2" style="width: 70px; text-align: right; vertical-align: middle;">ប្រាក់គោលកន្លះខែ</th>
-                        <th rowspan="2" style="width: 70px; text-align: right; vertical-align: middle;">កាត់អវត្តមាន</th>
-                        <th rowspan="2" style="width: 65px; text-align: right; vertical-align: middle;">ប្រាក់បន្ថែម</th>
-                        <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 3px 0;">ប្រាក់សុទ្ធ (Net Salary)</th>
+                        <th rowspan="2" style="text-align: left; min-width: 110px; vertical-align: middle;">ឈ្មោះបុគ្គលិក</th>
+                        <th rowspan="2" style="width: 60px; vertical-align: middle;">តួនាទី</th>
+                        <th rowspan="2" style="width: 50px; vertical-align: middle;">ប្រភេទ</th>
+                        <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">ប្រាក់ខែគោល</th>
+                        <th rowspan="2" style="width: 25px; vertical-align: middle;">P</th>
+                        <th rowspan="2" style="width: 25px; vertical-align: middle;">L</th>
+                        <th rowspan="2" style="width: 25px; vertical-align: middle;">A</th>
+                        <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">ប្រាក់គោលកន្លះខែ</th>
+                        <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">កាត់អវត្តមាន</th>
+                        <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">ប្រាក់បន្ថែម</th>
+                        <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">កាត់ផ្សេងៗ</th>
+                        <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">ប្រាក់សុទ្ធ (Net Salary)</th>
                     </tr>
                     <tr style="background-color: #146c43; color: #ffffff;">
-                        <th style="width: 75px; text-align: right; padding: 2px 4px;">ប្រាក់ ($)</th>
-                        <th style="width: 85px; text-align: right; padding: 2px 4px;">ប្រាក់ (៛)</th>
+                        <th style="width: 50px; text-align: right; padding: 2px 3px;">ប្រាក់ ($)</th>
+                        <th style="width: 60px; text-align: right; padding: 2px 3px;">ប្រាក់ (៛)</th>
+                        <th style="width: 50px; text-align: right; padding: 2px 3px;">ប្រាក់ ($)</th>
+                        <th style="width: 60px; text-align: right; padding: 2px 3px;">ប្រាក់ (៛)</th>
+                        <th style="width: 50px; text-align: right; padding: 2px 3px;">ប្រាក់ ($)</th>
+                        <th style="width: 60px; text-align: right; padding: 2px 3px;">ប្រាក់ (៛)</th>
+                        <th style="width: 50px; text-align: right; padding: 2px 3px;">ប្រាក់ ($)</th>
+                        <th style="width: 60px; text-align: right; padding: 2px 3px;">ប្រាក់ (៛)</th>
+                        <th style="width: 50px; text-align: right; padding: 2px 3px;">ប្រាក់ ($)</th>
+                        <th style="width: 60px; text-align: right; padding: 2px 3px;">ប្រាក់ (៛)</th>
+                        <th style="width: 55px; text-align: right; padding: 2px 3px;">ប្រាក់ ($)</th>
+                        <th style="width: 65px; text-align: right; padding: 2px 3px;">ប្រាក់ (៛)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1358,22 +1520,44 @@ window.printPayrollMaster = async function(batchId) {
                 <tfoot>
                     <tr style="background-color: #e2e8f0; font-weight: bold; border-top: 2px solid #000;">
                         <td colspan="4" style="text-align: center;">សរុបតាមរូបិយប័ណ្ណ (${batch.items.length} នាក់)</td>
-                        <td style="text-align: right;">${formatPayCurrency(gTotBase, 'USD')}</td>
+                        <td style="text-align: right;">${formatPayCurrency(sumBaseUSD, 'USD')}</td>
+                        <td style="text-align: right;">${formatPayCurrency(sumBaseKHR, 'KHR')}</td>
                         <td>${gTotP}</td>
                         <td>${gTotL}</td>
                         <td>${gTotA}</td>
-                        <td style="text-align: right;">${formatPayCurrency(gTotPeriodBase, 'USD')}</td>
-                        <td style="text-align: right; color: #b91c1c;">-${formatPayCurrency(gTotAbsenceDeduct, 'USD')}</td>
-                        <td style="text-align: right; color: #0284c7;">+${formatPayCurrency(gTotAllowance, 'USD')}</td>
-                        <td style="text-align: right; color: #15803d; font-size: 9.5px;">${formatPayCurrency(gTotNetUSD, 'USD')}</td>
-                        <td style="text-align: right; color: #15803d; font-size: 9.5px;">${formatPayCurrency(gTotNetKHR, 'KHR')}</td>
+                        <td style="text-align: right;">${formatPayCurrency(sumPeriodBaseUSD, 'USD')}</td>
+                        <td style="text-align: right;">${formatPayCurrency(sumPeriodBaseKHR, 'KHR')}</td>
+                        <td style="text-align: right; color: #b91c1c;">${sumAbsenceDeductUSD > 0 ? '-' + formatPayCurrency(sumAbsenceDeductUSD, 'USD') : '$0.00'}</td>
+                        <td style="text-align: right; color: #b91c1c;">${sumAbsenceDeductKHR > 0 ? '-' + formatPayCurrency(sumAbsenceDeductKHR, 'KHR') : '៛0'}</td>
+                        <td style="text-align: right; color: #0284c7;">${sumAllowanceUSD > 0 ? '+' + formatPayCurrency(sumAllowanceUSD, 'USD') : '$0.00'}</td>
+                        <td style="text-align: right; color: #0284c7;">${sumAllowanceKHR > 0 ? '+' + formatPayCurrency(sumAllowanceKHR, 'KHR') : '៛0'}</td>
+                        <td style="text-align: right; color: #b45309;">${sumOtherDeductUSD > 0 ? '-' + formatPayCurrency(sumOtherDeductUSD, 'USD') : '$0.00'}</td>
+                        <td style="text-align: right; color: #b45309;">${sumOtherDeductKHR > 0 ? '-' + formatPayCurrency(sumOtherDeductKHR, 'KHR') : '៛0'}</td>
+                        <td style="text-align: right; color: #15803d; font-size: 8.8px;">${formatPayCurrency(sumNetUSD, 'USD')}</td>
+                        <td style="text-align: right; color: #15803d; font-size: 8.8px;">${formatPayCurrency(sumNetKHR, 'KHR')}</td>
                     </tr>
                     <tr style="background-color: #d1fae5; font-weight: bold; border-top: 1px solid #10b981; border-bottom: 2px solid #0f5132;">
-                        <td colspan="11" style="text-align: right; padding-right: 12px; color: #065f46; font-size: 9px;">
-                            សរុបរួមស្មើនឹង ($ និង ៛) <span style="font-weight: normal; color: #475569; font-size: 8px;">(អត្រាប្តូរប្រាក់ 1$ = ${exRate.toLocaleString('en-US')} ៛) :</span>
+                        <td colspan="4" style="text-align: center; color: #065f46; font-size: 8px;">
+                            សរុបរួមស្មើនឹង ($ និង ៛) <br><span style="font-weight: normal; color: #475569; font-size: 7.2px;">(អត្រា 1$ = ${exRate.toLocaleString('en-US')} ៛)</span>
                         </td>
-                        <td colspan="2" style="text-align: right; color: #047857; font-size: 10px; font-weight: bold; padding-right: 8px;">
-                            ${formatPayCurrency(grandTotalPrintUSD, 'USD')} = ${formatPayCurrency(grandTotalPrintKHR, 'KHR')}
+                        <td colspan="2" style="text-align: right; color: #0f5132; font-size: 8.2px; padding-right: 4px;">
+                            ${formatPayCurrency(grandTotalBaseUSD, 'USD')} = ${formatPayCurrency(grandTotalBaseKHR, 'KHR')}
+                        </td>
+                        <td colspan="3" style="text-align: center; color: #94a3b8;">-</td>
+                        <td colspan="2" style="text-align: right; color: #0f5132; font-size: 8.2px; padding-right: 4px;">
+                            ${formatPayCurrency(grandTotalPeriodUSD, 'USD')} = ${formatPayCurrency(grandTotalPeriodKHR, 'KHR')}
+                        </td>
+                        <td colspan="2" style="text-align: right; color: #b91c1c; font-size: 8.2px; padding-right: 4px;">
+                            ${grandTotalAbsenceUSD > 0 ? '-' + formatPayCurrency(grandTotalAbsenceUSD, 'USD') : '$0.00'} = ${grandTotalAbsenceKHR > 0 ? '-' + formatPayCurrency(grandTotalAbsenceKHR, 'KHR') : '៛0'}
+                        </td>
+                        <td colspan="2" style="text-align: right; color: #0284c7; font-size: 8.2px; padding-right: 4px;">
+                            ${grandTotalAllowanceUSD > 0 ? '+' + formatPayCurrency(grandTotalAllowanceUSD, 'USD') : '$0.00'} = ${grandTotalAllowanceKHR > 0 ? '+' + formatPayCurrency(grandTotalAllowanceKHR, 'KHR') : '៛0'}
+                        </td>
+                        <td colspan="2" style="text-align: right; color: #b45309; font-size: 8.2px; padding-right: 4px;">
+                            ${grandTotalOtherDeductUSD > 0 ? '-' + formatPayCurrency(grandTotalOtherDeductUSD, 'USD') : '$0.00'} = ${grandTotalOtherDeductKHR > 0 ? '-' + formatPayCurrency(grandTotalOtherDeductKHR, 'KHR') : '៛0'}
+                        </td>
+                        <td colspan="2" style="text-align: right; color: #047857; font-size: 9px; font-weight: bold; padding-right: 4px;">
+                            ${formatPayCurrency(grandTotalNetUSD, 'USD')} = ${formatPayCurrency(grandTotalNetKHR, 'KHR')}
                         </td>
                     </tr>
                 </tfoot>
@@ -1418,16 +1602,21 @@ window.exportPayrollExcel = async function(batchId) {
         "តួនាទី (Position)",
         "ប្រភេទការងារ (Type)",
         "រូបិយប័ណ្ណ",
-        "ប្រាក់ខែ/ថ្ងៃ",
+        "ប្រាក់ខែគោល ($)",
+        "ប្រាក់ខែគោល (៛)",
         "វត្តមាន P (ថ្ងៃ)",
         "ច្បាប់ L (ថ្ងៃ)",
         "អវត្តមាន A (ថ្ងៃ)",
         "ថ្ងៃធ្វើការសរុប",
-        "ប្រាក់គោលកន្លះខែ",
-        "ប្រាក់កាត់អវត្តមាន",
-        "ប្រាក់បន្ថែម",
+        "ប្រាក់គោលកន្លះខែ ($)",
+        "ប្រាក់គោលកន្លះខែ (៛)",
+        "ប្រាក់កាត់អវត្តមាន ($)",
+        "ប្រាក់កាត់អវត្តមាន (៛)",
+        "ប្រាក់បន្ថែម ($)",
+        "ប្រាក់បន្ថែម (៛)",
         "មូលហេតុបន្ថែម",
-        "ប្រាក់កាត់ផ្សេងៗ",
+        "ប្រាក់កាត់ផ្សេងៗ ($)",
+        "ប្រាក់កាត់ផ្សេងៗ (៛)",
         "មូលហេតុការកាត់",
         "ប្រាក់សុទ្ធ ($)",
         "ប្រាក់សុទ្ធ (៛)"
@@ -1435,19 +1624,83 @@ window.exportPayrollExcel = async function(batchId) {
 
     let csvContent = "\uFEFF" + headers.join(",") + "\n";
     const exRate = window.sysExchangeRate || parseFloat(localStorage.getItem('sysExchangeRate')) || 4100;
-    let sumExcelUSD = 0, sumExcelKHR = 0;
+    
+    let sumBaseUSD = 0, sumBaseKHR = 0;
+    let sumPeriodUSD = 0, sumPeriodKHR = 0;
+    let sumAbsUSD = 0, sumAbsKHR = 0;
+    let sumAllowUSD = 0, sumAllowKHR = 0;
+    let sumOtherUSD = 0, sumOtherKHR = 0;
+    let sumNetUSD = 0, sumNetKHR = 0;
 
     batch.items.forEach((it, idx) => {
-        let netUSD = "";
-        let netKHR = "";
+        const cur = it.currency || 'USD';
+        const isPartTime = (it.type === 'Part-Time');
+        const b = parseFloat(it.baseSalary) || 0;
+        const pb = parseFloat(it.periodBaseSalary) || 0;
+        const ad = parseFloat(it.absenceDeduction) || 0;
+        const al = parseFloat(it.allowance) || 0;
+        const od = parseFloat(it.otherDeduction) || 0;
+        const net = parseFloat(it.netSalary) || 0;
 
-        const n = parseFloat(it.netSalary) || 0;
-        if (it.currency === 'KHR') {
-            netKHR = n;
-            sumExcelKHR += n;
+        let baseUSD = "", baseKHR = "";
+        let periodUSD = "", periodKHR = "";
+        let absUSD = "", absKHR = "";
+        let allowUSD = "", allowKHR = "";
+        let otherUSD = "", otherKHR = "";
+        let netUSD = "", netKHR = "";
+
+        if (cur === 'KHR') {
+            baseKHR = b;
+            sumBaseKHR += b;
+
+            if (!isPartTime) {
+                periodKHR = pb;
+                sumPeriodKHR += pb;
+            }
+
+            if (ad > 0) {
+                absKHR = ad;
+                sumAbsKHR += ad;
+            }
+
+            if (al > 0) {
+                allowKHR = al;
+                sumAllowKHR += al;
+            }
+
+            if (od > 0) {
+                otherKHR = od;
+                sumOtherKHR += od;
+            }
+
+            netKHR = net;
+            sumNetKHR += net;
         } else {
-            netUSD = n;
-            sumExcelUSD += n;
+            baseUSD = b;
+            sumBaseUSD += b;
+
+            if (!isPartTime) {
+                periodUSD = pb;
+                sumPeriodUSD += pb;
+            }
+
+            if (ad > 0) {
+                absUSD = ad;
+                sumAbsUSD += ad;
+            }
+
+            if (al > 0) {
+                allowUSD = al;
+                sumAllowUSD += al;
+            }
+
+            if (od > 0) {
+                otherUSD = od;
+                sumOtherUSD += od;
+            }
+
+            netUSD = net;
+            sumNetUSD += net;
         }
 
         const row = [
@@ -1458,17 +1711,22 @@ window.exportPayrollExcel = async function(batchId) {
             `"${(it.department || '').replace(/"/g, '""')}"`,
             `"${(it.position || '').replace(/"/g, '""')}"`,
             `"${it.type || ''}"`,
-            `"${it.currency || 'USD'}"`,
-            it.baseSalary || 0,
+            `"${cur}"`,
+            baseUSD !== "" ? baseUSD : "",
+            baseKHR !== "" ? baseKHR : "",
             it.presentDays || 0,
             it.leaveDays || 0,
             it.absentDays || 0,
             it.workedDays || 0,
-            it.periodBaseSalary || 0,
-            it.absenceDeduction || 0,
-            it.allowance || 0,
+            periodUSD !== "" ? periodUSD : "",
+            periodKHR !== "" ? periodKHR : "",
+            absUSD !== "" ? absUSD : "",
+            absKHR !== "" ? absKHR : "",
+            allowUSD !== "" ? allowUSD : "",
+            allowKHR !== "" ? allowKHR : "",
             `"${(it.allowanceNote || '').replace(/"/g, '""')}"`,
-            it.otherDeduction || 0,
+            otherUSD !== "" ? otherUSD : "",
+            otherKHR !== "" ? otherKHR : "",
             `"${(it.deductionNote || '').replace(/"/g, '""')}"`,
             netUSD !== "" ? netUSD : "",
             netKHR !== "" ? netKHR : ""
@@ -1476,11 +1734,29 @@ window.exportPayrollExcel = async function(batchId) {
         csvContent += row.join(",") + "\n";
     });
 
-    const grandTotalUSD = sumExcelUSD + (sumExcelKHR / exRate);
-    const grandTotalKHR = (sumExcelUSD * exRate) + sumExcelKHR;
+    const gtBaseUSD = sumBaseUSD + (sumBaseKHR / exRate);
+    const gtBaseKHR = (sumBaseUSD * exRate) + sumBaseKHR;
 
-    csvContent += `\n"","","","","","","","","","","","","","","","","","","សរុបតាមរូបិយប័ណ្ណ",${sumExcelUSD},${sumExcelKHR}\n`;
-    csvContent += `"","","","","","","","","","","","","","","","","","","សរុបរួម (1$ = ${exRate} ៛)","${formatPayCurrency(grandTotalUSD, 'USD')} = ${formatPayCurrency(grandTotalKHR, 'KHR')}"\n`;
+    const gtPeriodUSD = sumPeriodUSD + (sumPeriodKHR / exRate);
+    const gtPeriodKHR = (sumPeriodUSD * exRate) + sumPeriodKHR;
+
+    const gtAbsUSD = sumAbsUSD + (sumAbsKHR / exRate);
+    const gtAbsKHR = (sumAbsUSD * exRate) + sumAbsKHR;
+
+    const gtAllowUSD = sumAllowUSD + (sumAllowKHR / exRate);
+    const gtAllowKHR = (sumAllowUSD * exRate) + sumAllowKHR;
+
+    const gtOtherUSD = sumOtherUSD + (sumOtherKHR / exRate);
+    const gtOtherKHR = (sumOtherUSD * exRate) + sumOtherKHR;
+
+    const gtNetUSD = sumNetUSD + (sumNetKHR / exRate);
+    const gtNetKHR = (sumNetUSD * exRate) + sumNetKHR;
+
+    // Subtotal Row
+    csvContent += `\n"","","","","","","","សរុបតាមរូបិយប័ណ្ណ",${sumBaseUSD},${sumBaseKHR},"","","",${sumPeriodUSD},${sumPeriodKHR},${sumAbsUSD},${sumAbsKHR},${sumAllowUSD},${sumAllowKHR},"",${sumOtherUSD},${sumOtherKHR},"",${sumNetUSD},${sumNetKHR}\n`;
+    
+    // Grand Total Converted Row
+    csvContent += `"","","","","","","","សរុបរួម (1$ = ${exRate} ៛)","${formatPayCurrency(gtBaseUSD, 'USD')} = ${formatPayCurrency(gtBaseKHR, 'KHR')}","","","","","${formatPayCurrency(gtPeriodUSD, 'USD')} = ${formatPayCurrency(gtPeriodKHR, 'KHR')}","","${formatPayCurrency(gtAbsUSD, 'USD')} = ${formatPayCurrency(gtAbsKHR, 'KHR')}","","${formatPayCurrency(gtAllowUSD, 'USD')} = ${formatPayCurrency(gtAllowKHR, 'KHR')}","","","${formatPayCurrency(gtOtherUSD, 'USD')} = ${formatPayCurrency(gtOtherKHR, 'KHR')}","","","${formatPayCurrency(gtNetUSD, 'USD')} = ${formatPayCurrency(gtNetKHR, 'KHR')}"\n`;
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
