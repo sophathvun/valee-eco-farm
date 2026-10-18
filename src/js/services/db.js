@@ -137,5 +137,6 @@ const db = {
     units: new FirebaseStore('units'),
     brandSettings: new FirebaseStore('brandSettings'),
     attendance: new FirebaseStore('attendance'),
-    workShifts: new FirebaseStore('workShifts')
+    workShifts: new FirebaseStore('workShifts'),
+    payroll: new FirebaseStore('payroll')
 };

@@ -11,6 +11,7 @@ const viewsToLoad = [
     'employee',
     'attendance',
     'attendance-report',
+    'payroll',
     'settings'
 ];
 
@@ -53,7 +54,8 @@ async function initializeApp() {
         'src/js/pages/reports.js',
         'src/js/pages/employee.js',
         'src/js/pages/attendance.js',
-        'src/js/pages/attendance-report.js'
+        'src/js/pages/attendance-report.js',
+        'src/js/pages/payroll.js'
     ];
 
     for (let src of scriptsToLoad) {

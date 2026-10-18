@@ -290,7 +290,8 @@ window.showTab = function(tabId, subId = null) {
         'settings': 'ការកំណត់ទូទៅ',
         'employee': 'បញ្ជីបុគ្គលិក',
         'attendance': 'គ្រប់គ្រងវត្តមាន',
-        'attendance-report': 'របាយការណ៍វត្តមាន'
+        'attendance-report': 'របាយការណ៍វត្តមាន',
+        'payroll': 'បើកប្រាក់បៀវត្សរ៍ (Payroll)'
     };
     
     const subTitles = {
@@ -307,7 +308,8 @@ window.showTab = function(tabId, subId = null) {
         'shifts': 'ម៉ោងធ្វើការ',
         'list': 'បញ្ជីបុគ្គលិក',
         'attendance': 'គ្រប់គ្រងវត្តមាន',
-        'attendance-report': 'របាយការណ៍វត្តមាន'
+        'attendance-report': 'របាយការណ៍វត្តមាន',
+        'payroll': 'បើកប្រាក់បៀវត្សរ៍'
     };
     
     const icons = {
@@ -318,7 +320,8 @@ window.showTab = function(tabId, subId = null) {
         'expense': '💸',
         'reports': '📊',
         'settings': '⚙️',
-        'employee': '👨‍💼'
+        'employee': '👨‍💼',
+        'payroll': '💵'
     };
     
     const topNavbarText = document.getElementById('top-navbar-text');
@@ -354,6 +357,10 @@ window.showTab = function(tabId, subId = null) {
     
     if (tabId === 'attendance-report') {
         if (typeof initAttendanceReport === 'function') initAttendanceReport();
+    }
+
+    if (tabId === 'payroll') {
+        if (typeof initPayroll === 'function') initPayroll();
     }
 }
 
