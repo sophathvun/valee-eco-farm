@@ -109,10 +109,8 @@ window.loadPayrollBatches = async function() {
                     const net = parseFloat(it.netSalary) || 0;
                     if (it.currency === 'KHR') {
                         totalNetKHR += net;
-                        totalNetUSD += (net / exRate);
                     } else {
                         totalNetUSD += net;
-                        totalNetKHR += Math.round(net * exRate);
                     }
                 });
             }
@@ -126,7 +124,11 @@ window.loadPayrollBatches = async function() {
         const kpiPaidEl = document.getElementById('kpi-paid-batches');
 
         if (kpiNetEl) kpiNetEl.textContent = formatPayCurrency(totalNetUSD, 'USD');
-        if (kpiNetKhrEl) kpiNetKhrEl.textContent = formatPayCurrency(totalNetKHR, 'KHR');
+        if (kpiNetKhrEl) {
+            kpiNetKhrEl.innerHTML = totalNetKHR > 0
+                ? `${formatPayCurrency(totalNetKHR, 'KHR')} <span class="text-white-50 small">(សរុបស្មើ៖ ${formatPayCurrency(totalNetUSD + (totalNetKHR / exRate), 'USD')})</span>`
+                : `(សរុបស្មើ៖ ${formatPayCurrency(totalNetUSD, 'USD')})`;
+        }
         if (kpiEmpsEl) kpiEmpsEl.textContent = `${totalEmployeesCount} នាក់`;
         if (kpiPendingEl) kpiPendingEl.textContent = `${pendingCount} លើក`;
         if (kpiPaidEl) kpiPaidEl.textContent = `${paidCount} លើក`;
@@ -156,7 +158,7 @@ window.loadPayrollBatches = async function() {
             // Calculate batch totals
             let batchGrossUSD = 0;
             let batchDeductUSD = 0;
-            let batchNetUSD = 0, batchNetKHR = 0;
+            let batchSumUSD = 0, batchSumKHR = 0;
 
             (b.items || []).forEach(it => {
                 const g = parseFloat(it.grossSalary || it.periodBaseSalary) || 0;
@@ -166,20 +168,18 @@ window.loadPayrollBatches = async function() {
                 if (it.currency === 'KHR') {
                     batchGrossUSD += (g / exRate);
                     batchDeductUSD += (d / exRate);
-                    batchNetKHR += n;
-                    batchNetUSD += (n / exRate);
+                    batchSumKHR += n;
                 } else {
                     batchGrossUSD += g;
                     batchDeductUSD += d;
-                    batchNetUSD += n;
-                    batchNetKHR += Math.round(n * exRate);
+                    batchSumUSD += n;
                 }
             });
 
             const grossDisplay = formatPayCurrency(batchGrossUSD, 'USD');
             const deductDisplay = batchDeductUSD > 0 ? `-${formatPayCurrency(batchDeductUSD, 'USD')}` : '$0.00';
-            const netUSDDisplay = formatPayCurrency(batchNetUSD, 'USD');
-            const netKHRDisplay = formatPayCurrency(batchNetKHR, 'KHR');
+            const netUSDDisplay = batchSumUSD > 0 ? formatPayCurrency(batchSumUSD, 'USD') : '<span class="text-muted">-</span>';
+            const netKHRDisplay = batchSumKHR > 0 ? formatPayCurrency(batchSumKHR, 'KHR') : '<span class="text-muted">-</span>';
 
             html += `
                 <tr>
@@ -545,9 +545,11 @@ window.viewPayrollDetail = async function(batchId) {
         // Aggregate metrics for summary bar
         const exRate = window.sysExchangeRate || parseFloat(localStorage.getItem('sysExchangeRate')) || 4100;
         let totEmps = batch.items.length;
-        let totGrossUSD = 0, totGrossKHR = 0;
-        let totDeductUSD = 0, totDeductKHR = 0;
-        let totNetUSD = 0, totNetKHR = 0;
+        let totGrossUSD = 0;
+        let totDeductUSD = 0;
+        let sumNetUSD = 0, sumNetKHR = 0;
+        let gTotPeriodBase = 0, gTotAbsenceDeduct = 0, gTotAllowance = 0, gTotOtherDeduct = 0;
+        let gTotP = 0, gTotL = 0, gTotA = 0;
 
         batch.items.forEach(it => {
             const g = parseFloat(it.grossSalary) || 0;
@@ -555,26 +557,34 @@ window.viewPayrollDetail = async function(batchId) {
             const n = parseFloat(it.netSalary) || 0;
 
             if (it.currency === 'KHR') {
-                totGrossKHR += g;
                 totGrossUSD += (g / exRate);
-                totDeductKHR += d;
                 totDeductUSD += (d / exRate);
-                totNetKHR += n;
-                totNetUSD += (n / exRate);
+                sumNetKHR += n;
             } else {
                 totGrossUSD += g;
-                totGrossKHR += Math.round(g * exRate);
                 totDeductUSD += d;
-                totDeductKHR += Math.round(d * exRate);
-                totNetUSD += n;
-                totNetKHR += Math.round(n * exRate);
+                sumNetUSD += n;
             }
+
+            gTotP += (it.presentDays || 0);
+            gTotL += (it.leaveDays || 0);
+            gTotA += (it.absentDays || 0);
+            gTotPeriodBase += (it.periodBaseSalary || 0);
+            gTotAbsenceDeduct += (it.absenceDeduction || 0);
+            gTotAllowance += (it.allowance || 0);
+            gTotOtherDeduct += (it.otherDeduction || 0);
         });
 
+        const grandTotalAllUSD = sumNetUSD + (sumNetKHR / exRate);
+        const grandTotalAllKHR = (sumNetUSD * exRate) + sumNetKHR;
+
         document.getElementById('detail-stat-emps').textContent = `${totEmps} នាក់`;
-        document.getElementById('detail-stat-gross').innerHTML = `${formatPayCurrency(totGrossUSD, 'USD')} <small class="text-muted">(${formatPayCurrency(totGrossKHR, 'KHR')})</small>`;
-        document.getElementById('detail-stat-deduction').innerHTML = totDeductUSD > 0 ? `-${formatPayCurrency(totDeductUSD, 'USD')} <small class="text-danger">(-${formatPayCurrency(totDeductKHR, 'KHR')})</small>` : '$0.00';
-        document.getElementById('detail-stat-net').innerHTML = `${formatPayCurrency(totNetUSD, 'USD')} <span class="text-muted fw-normal">|</span> <span class="fs-6">${formatPayCurrency(totNetKHR, 'KHR')}</span>`;
+        document.getElementById('detail-stat-gross').textContent = formatPayCurrency(totGrossUSD, 'USD');
+        document.getElementById('detail-stat-deduction').textContent = totDeductUSD > 0 ? `-${formatPayCurrency(totDeductUSD, 'USD')}` : '$0.00';
+        document.getElementById('detail-stat-net').innerHTML = `
+            <span>${formatPayCurrency(sumNetUSD, 'USD')} + ${formatPayCurrency(sumNetKHR, 'KHR')}</span>
+            <br><small class="text-success fw-bold">(ស្មើ៖ ${formatPayCurrency(grandTotalAllUSD, 'USD')} | ${formatPayCurrency(grandTotalAllKHR, 'KHR')})</small>
+        `;
 
         // Group items by Department
         const deptMap = {};
@@ -617,17 +627,14 @@ window.viewPayrollDetail = async function(batchId) {
                 const allowanceDisplay = it.allowance > 0 ? `<span class="text-info fw-bold">+${formatPayCurrency(it.allowance, cur)}</span>${it.allowanceNote ? `<br><small class="text-muted" title="${it.allowanceNote}">(${it.allowanceNote})</small>` : ''}` : '<span class="text-muted">$0.00</span>';
                 const otherDeductDisplay = it.otherDeduction > 0 ? `<span class="text-warning fw-bold">-${formatPayCurrency(it.otherDeduction, cur)}</span>${it.deductionNote ? `<br><small class="text-muted" title="${it.deductionNote}">(${it.deductionNote})</small>` : ''}` : '<span class="text-muted">$0.00</span>';
                 
-                let netUSD = 0, netKHR = 0;
-                if (it.currency === 'KHR') {
-                    netKHR = Math.round(it.netSalary || 0);
-                    netUSD = (it.netSalary || 0) / exRate;
-                } else {
-                    netUSD = parseFloat(it.netSalary) || 0;
-                    netKHR = Math.round(netUSD * exRate);
-                }
+                let netUSDDisplay = '<span class="text-muted">-</span>';
+                let netKHRDisplay = '<span class="text-muted">-</span>';
 
-                const netUSDDisplay = formatPayCurrency(netUSD, 'USD');
-                const netKHRDisplay = formatPayCurrency(netKHR, 'KHR');
+                if (it.currency === 'KHR') {
+                    netKHRDisplay = formatPayCurrency(it.netSalary, 'KHR');
+                } else {
+                    netUSDDisplay = formatPayCurrency(it.netSalary, 'USD');
+                }
 
                 html += `
                     <tr>
@@ -668,6 +675,38 @@ window.viewPayrollDetail = async function(batchId) {
         });
 
         tbody.innerHTML = html;
+
+        // Render Table Footer
+        const tfoot = document.getElementById('payrollDetailItemsFooter');
+        if (tfoot) {
+            tfoot.innerHTML = `
+                <tr class="payroll-foot-subtotal">
+                    <td colspan="4" class="text-center py-2">សរុបតាមរូបិយប័ណ្ណ (${batch.items.length} នាក់)</td>
+                    <td class="text-success fw-bold">${gTotP}</td>
+                    <td class="text-warning text-dark fw-bold">${gTotL}</td>
+                    <td class="text-danger fw-bold">${gTotA}</td>
+                    <td class="text-end fw-semibold">${formatPayCurrency(gTotPeriodBase, 'USD')}</td>
+                    <td class="text-end text-danger fw-semibold">${gTotAbsenceDeduct > 0 ? '-' + formatPayCurrency(gTotAbsenceDeduct, 'USD') : '$0.00'}</td>
+                    <td class="text-end text-info fw-semibold">${gTotAllowance > 0 ? '+' + formatPayCurrency(gTotAllowance, 'USD') : '$0.00'}</td>
+                    <td class="text-end text-warning fw-semibold">${gTotOtherDeduct > 0 ? '-' + formatPayCurrency(gTotOtherDeduct, 'USD') : '$0.00'}</td>
+                    <td class="text-end fw-bold text-success fs-6">${formatPayCurrency(sumNetUSD, 'USD')}</td>
+                    <td class="text-end fw-bold text-success fs-6">${formatPayCurrency(sumNetKHR, 'KHR')}</td>
+                    <td></td>
+                </tr>
+                <tr class="payroll-foot-grandtotal">
+                    <td colspan="11" class="text-end py-2 px-3 text-success">
+                        <i class="bi bi-calculator me-1"></i> សរុបរួមស្មើនឹង ($ និង ៛) <small class="text-muted fw-normal">(អត្រាប្តូរប្រាក់ 1$ = ${exRate.toLocaleString('en-US')} ៛) :</small>
+                    </td>
+                    <td class="text-end py-2 px-2 fw-bold text-success fs-6">
+                        ${formatPayCurrency(grandTotalAllUSD, 'USD')}
+                    </td>
+                    <td class="text-end py-2 px-2 fw-bold text-success fs-6">
+                        ${formatPayCurrency(grandTotalAllKHR, 'KHR')}
+                    </td>
+                    <td></td>
+                </tr>
+            `;
+        }
 
     } catch (err) {
         console.error("Error viewing payroll detail:", err);
@@ -1227,14 +1266,17 @@ window.printPayrollMaster = async function(batchId) {
         emps.forEach(it => {
             const isPartTime = (it.type === 'Part-Time');
             const cur = it.currency || 'USD';
+            const n = parseFloat(it.netSalary) || 0;
 
-            let netUSD = 0, netKHR = 0;
+            let netUSDPrint = '<span style="color: #94a3b8;">-</span>';
+            let netKHRPrint = '<span style="color: #94a3b8;">-</span>';
+
             if (it.currency === 'KHR') {
-                netKHR = Math.round(it.netSalary || 0);
-                netUSD = (it.netSalary || 0) / exRate;
+                gTotNetKHR += n;
+                netKHRPrint = formatPayCurrency(n, 'KHR');
             } else {
-                netUSD = parseFloat(it.netSalary) || 0;
-                netKHR = Math.round(netUSD * exRate);
+                gTotNetUSD += n;
+                netUSDPrint = formatPayCurrency(n, 'USD');
             }
 
             gTotBase += (it.baseSalary || 0);
@@ -1245,8 +1287,6 @@ window.printPayrollMaster = async function(batchId) {
             gTotAbsenceDeduct += (it.absenceDeduction || 0);
             gTotAllowance += (it.allowance || 0);
             gTotOtherDeduct += (it.otherDeduction || 0);
-            gTotNetUSD += netUSD;
-            gTotNetKHR += netKHR;
 
             tbodyRows += `
                 <tr>
@@ -1264,12 +1304,15 @@ window.printPayrollMaster = async function(batchId) {
                     <td style="text-align: right;">${isPartTime ? '-' : formatPayCurrency(it.periodBaseSalary, cur)}</td>
                     <td style="text-align: right; color: #b91c1c;">${it.absenceDeduction > 0 ? '-' + formatPayCurrency(it.absenceDeduction, cur) : '$0.00'}</td>
                     <td style="text-align: right; color: #0284c7;">${it.allowance > 0 ? '+' + formatPayCurrency(it.allowance, cur) : '$0.00'}</td>
-                    <td style="text-align: right; font-weight: bold; color: #15803d; font-size: 9px;">${formatPayCurrency(netUSD, 'USD')}</td>
-                    <td style="text-align: right; font-weight: bold; color: #15803d; font-size: 9px;">${formatPayCurrency(netKHR, 'KHR')}</td>
+                    <td style="text-align: right; font-weight: bold; color: #15803d; font-size: 9px;">${netUSDPrint}</td>
+                    <td style="text-align: right; font-weight: bold; color: #15803d; font-size: 9px;">${netKHRPrint}</td>
                 </tr>
             `;
         });
     });
+
+    const grandTotalPrintUSD = gTotNetUSD + (gTotNetKHR / exRate);
+    const grandTotalPrintKHR = (gTotNetUSD * exRate) + gTotNetKHR;
 
     const printHtml = `
         <div style="font-family: 'Battambang', sans-serif; padding: 5px;">
@@ -1294,19 +1337,22 @@ window.printPayrollMaster = async function(batchId) {
             <table class="payroll-master-print-table" style="width: 100%; border-collapse: collapse; font-size: 8.2px;">
                 <thead>
                     <tr style="background-color: #198754; color: #ffffff;">
-                        <th style="width: 25px;">ល.រ</th>
-                        <th style="text-align: left; min-width: 125px;">ឈ្មោះបុគ្គលិក</th>
-                        <th style="width: 70px;">តួនាទី</th>
-                        <th style="width: 60px;">ប្រភេទ</th>
-                        <th style="width: 65px; text-align: right;">ប្រាក់ខែ/ថ្ងៃ</th>
-                        <th style="width: 28px;">P</th>
-                        <th style="width: 28px;">L</th>
-                        <th style="width: 28px;">A</th>
-                        <th style="width: 70px; text-align: right;">ប្រាក់គោលកន្លះខែ</th>
-                        <th style="width: 70px; text-align: right;">កាត់អវត្តមាន</th>
-                        <th style="width: 65px; text-align: right;">ប្រាក់បន្ថែម</th>
-                        <th style="width: 75px; text-align: right;">ប្រាក់ ($)</th>
-                        <th style="width: 85px; text-align: right;">ប្រាក់ (៛)</th>
+                        <th rowspan="2" style="width: 25px; vertical-align: middle;">ល.រ</th>
+                        <th rowspan="2" style="text-align: left; min-width: 125px; vertical-align: middle;">ឈ្មោះបុគ្គលិក</th>
+                        <th rowspan="2" style="width: 70px; vertical-align: middle;">តួនាទី</th>
+                        <th rowspan="2" style="width: 60px; vertical-align: middle;">ប្រភេទ</th>
+                        <th rowspan="2" style="width: 65px; text-align: right; vertical-align: middle;">ប្រាក់ខែ/ថ្ងៃ</th>
+                        <th rowspan="2" style="width: 28px; vertical-align: middle;">P</th>
+                        <th rowspan="2" style="width: 28px; vertical-align: middle;">L</th>
+                        <th rowspan="2" style="width: 28px; vertical-align: middle;">A</th>
+                        <th rowspan="2" style="width: 70px; text-align: right; vertical-align: middle;">ប្រាក់គោលកន្លះខែ</th>
+                        <th rowspan="2" style="width: 70px; text-align: right; vertical-align: middle;">កាត់អវត្តមាន</th>
+                        <th rowspan="2" style="width: 65px; text-align: right; vertical-align: middle;">ប្រាក់បន្ថែម</th>
+                        <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 3px 0;">ប្រាក់សុទ្ធ (Net Salary)</th>
+                    </tr>
+                    <tr style="background-color: #146c43; color: #ffffff;">
+                        <th style="width: 75px; text-align: right; padding: 2px 4px;">ប្រាក់ ($)</th>
+                        <th style="width: 85px; text-align: right; padding: 2px 4px;">ប្រាក់ (៛)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1314,7 +1360,7 @@ window.printPayrollMaster = async function(batchId) {
                 </tbody>
                 <tfoot>
                     <tr style="background-color: #e2e8f0; font-weight: bold; border-top: 2px solid #000;">
-                        <td colspan="4" style="text-align: center;">សរុបរួម (GRAND TOTAL - ${batch.items.length} នាក់)</td>
+                        <td colspan="4" style="text-align: center;">សរុបតាមរូបិយប័ណ្ណ (${batch.items.length} នាក់)</td>
                         <td style="text-align: right;">${formatPayCurrency(gTotBase, 'USD')}</td>
                         <td>${gTotP}</td>
                         <td>${gTotL}</td>
@@ -1324,6 +1370,13 @@ window.printPayrollMaster = async function(batchId) {
                         <td style="text-align: right; color: #0284c7;">+${formatPayCurrency(gTotAllowance, 'USD')}</td>
                         <td style="text-align: right; color: #15803d; font-size: 9.5px;">${formatPayCurrency(gTotNetUSD, 'USD')}</td>
                         <td style="text-align: right; color: #15803d; font-size: 9.5px;">${formatPayCurrency(gTotNetKHR, 'KHR')}</td>
+                    </tr>
+                    <tr style="background-color: #d1fae5; font-weight: bold; border-top: 1px solid #10b981; border-bottom: 2px solid #0f5132;">
+                        <td colspan="11" style="text-align: right; padding-right: 12px; color: #065f46; font-size: 9px;">
+                            សរុបរួមគិតស្មើ ($ និង ៛) <span style="font-weight: normal; color: #475569; font-size: 8px;">(អត្រាប្តូរប្រាក់ 1$ = ${exRate.toLocaleString('en-US')} ៛) :</span>
+                        </td>
+                        <td style="text-align: right; color: #047857; font-size: 10px; font-weight: bold;">${formatPayCurrency(grandTotalPrintUSD, 'USD')}</td>
+                        <td style="text-align: right; color: #047857; font-size: 10px; font-weight: bold;">${formatPayCurrency(grandTotalPrintKHR, 'KHR')}</td>
                     </tr>
                 </tfoot>
             </table>
@@ -1384,15 +1437,19 @@ window.exportPayrollExcel = async function(batchId) {
 
     let csvContent = "\uFEFF" + headers.join(",") + "\n";
     const exRate = window.sysExchangeRate || parseFloat(localStorage.getItem('sysExchangeRate')) || 4100;
+    let sumExcelUSD = 0, sumExcelKHR = 0;
 
     batch.items.forEach((it, idx) => {
-        let netUSD = 0, netKHR = 0;
+        let netUSD = "";
+        let netKHR = "";
+
+        const n = parseFloat(it.netSalary) || 0;
         if (it.currency === 'KHR') {
-            netKHR = Math.round(it.netSalary || 0);
-            netUSD = Math.round(((it.netSalary || 0) / exRate) * 100) / 100;
+            netKHR = n;
+            sumExcelKHR += n;
         } else {
-            netUSD = parseFloat(it.netSalary) || 0;
-            netKHR = Math.round(netUSD * exRate);
+            netUSD = n;
+            sumExcelUSD += n;
         }
 
         const row = [
@@ -1415,11 +1472,17 @@ window.exportPayrollExcel = async function(batchId) {
             `"${(it.allowanceNote || '').replace(/"/g, '""')}"`,
             it.otherDeduction || 0,
             `"${(it.deductionNote || '').replace(/"/g, '""')}"`,
-            netUSD,
-            netKHR
+            netUSD !== "" ? netUSD : "",
+            netKHR !== "" ? netKHR : ""
         ];
         csvContent += row.join(",") + "\n";
     });
+
+    const grandTotalUSD = sumExcelUSD + (sumExcelKHR / exRate);
+    const grandTotalKHR = (sumExcelUSD * exRate) + sumExcelKHR;
+
+    csvContent += `\n"","","","","","","","","","","","","","","","","","","សរុបតាមរូបិយប័ណ្ណ",${sumExcelUSD},${sumExcelKHR}\n`;
+    csvContent += `"","","","","","","","","","","","","","","","","","","សរុបរួម (1$ = ${exRate} ៛)",${grandTotalUSD.toFixed(2)},${Math.round(grandTotalKHR)}\n`;
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);

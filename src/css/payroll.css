@@ -62,9 +62,22 @@
     padding: 6px 8px !important;
     font-size: 0.82rem;
 }
+.payroll-detail-table thead th {
+    vertical-align: middle !important;
+}
 .payroll-detail-table .col-emp-name {
     font-size: 0.85rem;
     line-height: 1.25;
+}
+.payroll-detail-table tfoot tr.payroll-foot-subtotal td {
+    background-color: #f1f5f9 !important;
+    font-weight: 700;
+    border-top: 2px solid #0f5132 !important;
+}
+.payroll-detail-table tfoot tr.payroll-foot-grandtotal td {
+    background-color: #ecfdf5 !important;
+    font-weight: 700;
+    border-bottom: 2px solid #10b981 !important;
 }
 
 /* Payslip Design */

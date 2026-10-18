@@ -213,24 +213,29 @@
                     <table class="table table-bordered table-hover align-middle mb-0 text-center payroll-detail-table">
                         <thead class="table-darkgreen text-white">
                             <tr>
-                                <th style="width: 40px;">ល.រ</th>
-                                <th class="text-start" style="min-width: 180px;">ឈ្មោះ (Staff Name)</th>
-                                <th style="width: 85px;">ប្រភេទការងារ</th>
-                                <th style="width: 95px;">ប្រាក់ខែគោល</th>
-                                <th style="width: 55px;" class="bg-success text-white" title="ចំនួនថ្ងៃវត្តមាន (P)">P</th>
-                                <th style="width: 55px;" class="bg-warning text-dark" title="ចំនួនថ្ងៃច្បាប់ (L គិតដូចថ្ងៃធ្វើការ)">L</th>
-                                <th style="width: 55px;" class="bg-danger text-white" title="ចំនួនថ្ងៃអវត្តមាន (A ត្រូវកាត់ប្រាក់ខែ)">A</th>
-                                <th style="min-width: 100px;">ប្រាក់គោលកន្លះខែ</th>
-                                <th style="min-width: 100px;" class="text-danger">កាត់អវត្តមាន</th>
-                                <th style="min-width: 95px;" class="text-info">ប្រាក់បន្ថែម</th>
-                                <th style="min-width: 95px;" class="text-warning">កាត់ផ្សេងៗ</th>
-                                <th style="min-width: 95px;" class="bg-success bg-opacity-25 fw-bold text-success">ប្រាក់ ($)</th>
-                                <th style="min-width: 105px;" class="bg-success bg-opacity-25 fw-bold text-success">ប្រាក់ (៛)</th>
-                                <th style="width: 120px;">សកម្មភាព</th>
+                                <th rowspan="2" class="align-middle" style="width: 40px;">ល.រ</th>
+                                <th rowspan="2" class="align-middle text-start" style="min-width: 170px;">ឈ្មោះ (Staff Name)</th>
+                                <th rowspan="2" class="align-middle" style="width: 85px;">ប្រភេទការងារ</th>
+                                <th rowspan="2" class="align-middle" style="width: 95px;">ប្រាក់ខែគោល</th>
+                                <th rowspan="2" class="align-middle bg-success text-white" style="width: 50px;" title="ចំនួនថ្ងៃវត្តមាន (P)">P</th>
+                                <th rowspan="2" class="align-middle bg-warning text-dark" style="width: 50px;" title="ចំនួនថ្ងៃច្បាប់ (L គិតដូចថ្ងៃធ្វើការ)">L</th>
+                                <th rowspan="2" class="align-middle bg-danger text-white" style="width: 50px;" title="ចំនួនថ្ងៃអវត្តមាន (A ត្រូវកាត់ប្រាក់ខែ)">A</th>
+                                <th rowspan="2" class="align-middle" style="min-width: 95px;">ប្រាក់គោលកន្លះខែ</th>
+                                <th rowspan="2" class="align-middle text-danger" style="min-width: 95px;">កាត់អវត្តមាន</th>
+                                <th rowspan="2" class="align-middle text-info" style="min-width: 90px;">ប្រាក់បន្ថែម</th>
+                                <th rowspan="2" class="align-middle text-warning" style="min-width: 90px;">កាត់ផ្សេងៗ</th>
+                                <th colspan="2" class="align-middle text-center bg-success bg-opacity-25 text-success fw-bold py-1">ប្រាក់សុទ្ធ (Net Salary)</th>
+                                <th rowspan="2" class="align-middle" style="width: 110px;">សកម្មភាព</th>
+                            </tr>
+                            <tr>
+                                <th class="align-middle text-end bg-success bg-opacity-25 text-success fw-bold py-1" style="min-width: 95px;">ប្រាក់ ($)</th>
+                                <th class="align-middle text-end bg-success bg-opacity-25 text-success fw-bold py-1" style="min-width: 105px;">ប្រាក់ (៛)</th>
                             </tr>
                         </thead>
                         <tbody id="payrollDetailItemsList">
                         </tbody>
+                        <tfoot id="payrollDetailItemsFooter">
+                        </tfoot>
                     </table>
                 </div>
             </div>
