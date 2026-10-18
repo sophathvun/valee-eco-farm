@@ -1220,7 +1220,7 @@ window.viewPayslip = function(batchId, empId) {
     const item = batch.items.find(it => it.empId === empId);
     if (!item) return;
 
-    const reportLogo = localStorage.getItem('cachedReportLogo') || 'assets/images/default-avatar.svg';
+    const reportLogo = localStorage.getItem('cachedReportLogo') || localStorage.getItem('cachedSidebarLogo') || 'assets/images/logo.png';
     const cur = item.currency || 'USD';
     const isPartTime = (item.type === 'Part-Time');
     const exRate = window.sysExchangeRate || parseFloat(localStorage.getItem('sysExchangeRate')) || 4100;
@@ -1441,7 +1441,7 @@ window.printPayrollMaster = async function(batchId) {
     }
     if (!batch) return;
 
-    const reportLogo = localStorage.getItem('cachedReportLogo') || '';
+    const reportLogo = localStorage.getItem('cachedReportLogo') || localStorage.getItem('cachedSidebarLogo') || 'assets/images/logo.png';
     const exRate = window.sysExchangeRate || parseFloat(localStorage.getItem('sysExchangeRate')) || 4100;
 
     // Group items by Department
@@ -1593,10 +1593,10 @@ window.printPayrollMaster = async function(batchId) {
             <!-- Header -->
             <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #198754; padding-bottom: 8px; margin-bottom: 10px;">
                 <div style="display: flex; align-items: center;">
-                    ${reportLogo ? `<img src="${reportLogo}" style="max-height: 55px; max-width: 140px; object-fit: contain; margin-right: 15px;">` : ''}
+                    ${reportLogo ? `<img src="${reportLogo}" style="max-height: 85px; max-width: 250px; object-fit: contain; margin-right: 18px;">` : ''}
                     <div>
-                        <h4 style="margin: 0; font-family: 'Khmer OS Muol Light', cursive; font-size: 1.15rem; color: #0f5132;">តារាងទូទាត់ប្រាក់បៀវត្សរ៍បុគ្គលិក (MASTER PAYROLL SHEET)</h4>
-                        <div style="font-size: 8.5px; color: #475569; margin-top: 3px;">
+                        <h4 style="margin: 0; font-family: 'Khmer OS Muol Light', cursive; font-size: 1.25rem; color: #0f5132;">តារាងទូទាត់ប្រាក់បៀវត្សរ៍បុគ្គលិក (MASTER PAYROLL SHEET)</h4>
+                        <div style="font-size: 9px; color: #475569; margin-top: 4px;">
                             ${batch.title} | កាលបរិច្ឆេទ៖ ${formatPayDate(batch.startDate)} ដល់ ${formatPayDate(batch.endDate)} | កូដ៖ ${batch.code}
                         </div>
                     </div>

@@ -293,8 +293,8 @@
 }
 
 .payslip-logo {
-    max-height: 60px;
-    max-width: 150px;
+    max-height: 85px;
+    max-width: 220px;
     object-fit: contain;
 }
 
@@ -410,5 +410,11 @@
         padding: 15px !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
+    }
+
+    #print-area-payslip .payslip-logo {
+        max-height: 85px !important;
+        max-width: 220px !important;
+        object-fit: contain !important;
     }
 }
