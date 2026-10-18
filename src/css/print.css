@@ -244,31 +244,39 @@
     .print-table th.col-emp,
     .print-table td.col-emp {
         text-align: left !important;
-        padding: 2px 4px !important;
-        width: 140px !important;
-        min-width: 130px !important;
-        max-width: 155px !important;
+        padding: 2px 3px !important;
+        width: 105px !important;
+        min-width: 95px !important;
+        max-width: 110px !important;
     }
 
     .print-table td.col-emp img {
-        width: 20px !important;
-        height: 20px !important;
-        min-width: 20px !important;
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
         object-fit: cover !important;
         border-radius: 50% !important;
         border: 1px solid #cbd5e1 !important;
-        margin-right: 4px !important;
+        margin-right: 3px !important;
     }
 
-    .print-table td.col-emp .fw-bold {
-        font-size: 8px !important;
-        line-height: 1.1 !important;
+    .print-table td.col-emp .fw-bold,
+    .print-table td.col-emp .emp-name-km {
+        font-size: 7.2px !important;
+        line-height: 1.35 !important;
         color: #0f172a !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
     }
 
-    .print-table td.col-emp .text-muted {
-        font-size: 6.5px !important;
-        line-height: 1 !important;
+    .print-table td.col-emp .text-muted,
+    .print-table td.col-emp .emp-name-latin {
+        font-size: 6px !important;
+        line-height: 1.1 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
     }
 
     /* Shift Columns in Print */
@@ -372,12 +380,12 @@
     /* Job Type Column in Print */
     .print-table th.col-type,
     .print-table td.col-type {
-        width: 52px !important;
-        min-width: 46px !important;
-        max-width: 58px !important;
-        padding: 2px 2px !important;
+        width: 48px !important;
+        min-width: 44px !important;
+        max-width: 52px !important;
+        padding: 2px 1px !important;
         text-align: center !important;
-        font-size: 7.5px !important;
+        font-size: 7.2px !important;
         white-space: nowrap !important;
     }
     .print-table td.col-type .badge {

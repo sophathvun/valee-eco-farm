@@ -154,10 +154,10 @@ window.generateAttendanceReport = async function() {
             deptMap[dept].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'km'));
         });
 
-        // Chunk days into groups of 15 (fits nicely on A4 landscape)
+        // Chunk days into groups of 16 (fits nicely on A4 landscape, max 2 pages for 31 days)
         const chunkedDays = [];
-        for (let i = 0; i < daysArray.length; i += 15) {
-            chunkedDays.push(daysArray.slice(i, i + 15));
+        for (let i = 0; i < daysArray.length; i += 16) {
+            chunkedDays.push(daysArray.slice(i, i + 16));
         }
 
         let finalHtml = '';
