@@ -10927,7 +10927,7 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
 
 }
 /* Adjust main content padding on mobile so bottom nav doesn't hide content */
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
     .main-panel {
         padding-bottom: 70px !important;
     }
@@ -11589,20 +11589,20 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
     }
 
 }
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
 
-    /* Premium Mobile Card Layout for Tables */
-    .table-responsive thead { display: none; }
+    /* Premium Mobile Card Layout for Tables (exclude attendance and print tables) */
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) table:not(.att-table):not(.print-table) thead { display: none; }
     
-    .table-responsive table,
-    .table-responsive tbody,
-    .table-responsive tr,
-    .table-responsive td {
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table),
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table) > tbody,
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table) > tbody > tr,
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table) > tbody > tr > td {
         display: block;
         width: 100%;
     }
     
-    .table-responsive tr {
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table) > tbody > tr {
         margin-bottom: 12px;
         background-color: var(--bs-body-bg);
         border: 1px solid var(--bs-border-color);
@@ -11612,7 +11612,7 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
         position: relative;
     }
     
-    .table-responsive td {
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table) > tbody > tr > td {
         border: none !important;
         padding: 4px 0 !important;
         text-align: left !important;
@@ -11992,7 +11992,7 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
 
 
 /* Premium Mobile Layout for Invoice List */
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
     #invoiceListBody {
         counter-reset: cardCounter;
     }
@@ -12128,7 +12128,7 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
 /* ==================================================
    REPORTS PREMIUM MOBILE LAYOUT
    ================================================== */
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
     #rep-summary-tbody, #rep-inc-tbody, #rep-exp-tbody {
         counter-reset: repCounter;
     }

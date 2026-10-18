@@ -1,20 +1,50 @@
-﻿/* print.css */
+/* print.css */
 @media screen {
     .print-container { display: none !important; }
 }
+
 @media print {
-    body { background-color: #fff; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body {
+        background-color: #fff !important;
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
     
+    /* Universal hiding of navigation, sidebars, bottom navs, modals, and buttons */
+    .sidebar,
+    header,
+    .top-navbar,
+    .mobile-bottom-nav,
+    .sidebar-backdrop,
+    .modal-backdrop,
+    #pwa-install-btn,
+    .swal2-container,
+    .d-print-none,
+    button.d-print-none,
+    .btn.d-print-none {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
     /* Default Print (e.g. Invoice) */
-    body:not(.printing-report) .wrapper, body:not(.printing-report) .sidebar, body:not(.printing-report) .content, body:not(.printing-report) .view-section { display: none !important; }
-    
-        /* Report Print Mode */
-    body.printing-report, body.printing-report html {
+    body:not(.printing-report) .wrapper,
+    body:not(.printing-report) .sidebar,
+    body:not(.printing-report) .content,
+    body:not(.printing-report) .view-section {
+        display: none !important;
+    }
+
+    /* Report Print Mode */
+    body.printing-report,
+    body.printing-report html {
         background-color: #fff !important;
         overflow: visible !important;
         height: auto !important;
     }
-    body.printing-report .sidebar, body.printing-report header, body.printing-report .top-navbar { display: none !important; }
     
     body.printing-report .main-panel,
     body.printing-report .wrapper,
@@ -35,65 +65,234 @@
         min-height: 0 !important;
     }
     
-    body.printing-report .view-section:not(.active) { display: none !important; }
-    body.printing-report .view-section.active { display: block !important; overflow: visible !important; }
+    body.printing-report .view-section:not(.active) {
+        display: none !important;
+    }
+    body.printing-report .view-section.active {
+        display: block !important;
+        overflow: visible !important;
+    }
 
-    .print-container { display: none !important; }
-    #print-area-invoice.print-template, #print-area-report.print-template, #print-area-analytics.print-template, #print-area-att-report.print-template { 
+    .print-container {
+        display: none !important;
+    }
+    
+    #print-area-invoice.print-template,
+    #print-area-report.print-template,
+    #print-area-analytics.print-template { 
         display: block !important; 
-        position: absolute; left: 0; top: 0; width: 100%; 
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%; 
     }
     
-    /* If printing report, the template is IN flow, not absolute, so we override absolute if it's inside the wrapper */
-    body.printing-report #print-area-att-report.print-template {
+    /* Attendance Report print template is in flow */
+    body.printing-report #print-area-att-report.print-template,
+    body.printing-report #print-area-att-report,
+    #attendance-report-view.active #print-area-att-report {
+        display: block !important;
         position: static !important;
+        width: 100% !important;
+        visibility: visible !important;
     }
     
-    /* Hide other print areas (invoice, etc.) when printing attendance report */
+    /* Hide other print areas when printing attendance report */
     body.printing-report #print-area-invoice,
     body.printing-report #print-area-report,
     body.printing-report #print-area-analytics {
         display: none !important;
     }
     
-    /* Hide filter bar when printing */
-    body.printing-report .d-print-none { display: none !important; }
+    .print-template * {
+        visibility: visible;
+    }
 
-    .print-template * { visibility: visible; }
-    
-    .page-break-after { page-break-after: always; break-after: page; }
-    /* Fix table-responsive cutting off content during print */
-    .table-responsive { overflow: visible !important; }
-    #rep-attendance-table-container, #report-tables-wrapper { overflow: visible !important; height: auto !important; max-height: none !important; margin: 0 !important; padding: 0 !important; border: none !important; }
+    /* CRITICAL: Force native table display during print to prevent mobile card transformation */
+    .table-responsive,
+    #rep-attendance-table-container,
+    #report-tables-wrapper {
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        display: block !important;
+    }
+
+    table.print-table,
+    table.att-table,
+    .table-responsive > table,
+    #rep-attendance-table-container table {
+        display: table !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: auto !important;
+        background-color: #ffffff !important;
+    }
+
+    table.print-table thead,
+    table.att-table thead,
+    .table-responsive thead,
+    #rep-attendance-table-container thead {
+        display: table-header-group !important;
+    }
+
+    table.print-table tbody,
+    table.att-table tbody,
+    .table-responsive tbody,
+    #rep-attendance-table-container tbody {
+        display: table-row-group !important;
+    }
+
+    table.print-table tr,
+    table.att-table tr,
+    .table-responsive tr,
+    #rep-attendance-table-container tr {
+        display: table-row !important;
+        width: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: inherit !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    table.print-table th,
+    table.print-table td,
+    table.att-table th,
+    table.att-table td,
+    .table-responsive th,
+    .table-responsive td,
+    #rep-attendance-table-container th,
+    #rep-attendance-table-container td {
+        display: table-cell !important;
+        width: auto !important;
+        box-shadow: none !important;
+        vertical-align: middle !important;
+        position: static !important;
+    }
+
     /* Disable sticky positioning which breaks print layout */
-    .col-emp, .col-total-p, .col-total-a, .col-total-l, .col-total-header { position: static !important; }
-
-    
-    /* Shrink font and padding for matrix tables */
-    .print-table th, .print-table td {
-        padding: 0.1rem !important;
-        font-size: 8px !important;
+    .col-emp,
+    .col-total,
+    .col-total-p,
+    .col-total-a,
+    .col-total-l,
+    .col-total-header,
+    .att-table thead th,
+    .att-table tbody td {
+        position: static !important;
+        box-shadow: none !important;
     }
-    
-    .print-table .att-cell {
-        width: 18px !important;
-        height: 18px !important;
-        line-height: 18px !important;
+
+    /* Matrix Table Borders & Typography */
+    .print-table,
+    .print-table th,
+    .print-table td {
+        border: 1px solid #94a3b8 !important;
+        padding: 2px 1px !important;
         font-size: 8px !important;
+        text-align: center !important;
+    }
+
+    .table-darkgreen th,
+    .print-table thead th {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Employee Column in Print */
+    .print-table th.col-emp,
+    .print-table td.col-emp {
+        text-align: left !important;
+        padding: 2px 4px !important;
+        width: 140px !important;
+        min-width: 130px !important;
+        max-width: 155px !important;
+    }
+
+    .print-table td.col-emp img {
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        object-fit: cover !important;
+        border-radius: 50% !important;
+        border: 1px solid #cbd5e1 !important;
+        margin-right: 4px !important;
+    }
+
+    .print-table td.col-emp .fw-bold {
+        font-size: 8px !important;
+        line-height: 1.1 !important;
+        color: #0f172a !important;
+    }
+
+    .print-table td.col-emp .text-muted {
+        font-size: 6.5px !important;
+        line-height: 1 !important;
+    }
+
+    /* Shift Columns in Print */
+    .print-table th small {
+        font-size: 6.5px !important;
+    }
+
+    /* Status Badges in Print (P, A, L) */
+    .print-table .att-cell,
+    #rep-attendance-table-container .att-cell {
+        width: 14px !important;
+        height: 14px !important;
+        line-height: 14px !important;
+        font-size: 7.5px !important;
+        font-weight: 700 !important;
+        border-radius: 2px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: none !important;
         margin: 0 auto !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .print-table .att-P {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+    }
+    .print-table .att-A {
+        background-color: #dc3545 !important;
+        color: #ffffff !important;
+    }
+    .print-table .att-L {
+        background-color: #f59e0b !important;
+        color: #000000 !important;
+    }
+    .print-table .att-none {
+        background-color: #f8fafc !important;
+        color: transparent !important;
+        border: 0.5px dashed #cbd5e1 !important;
+    }
+
+    /* Totals in Print */
+    .print-table th.col-total,
+    .print-table td.col-total {
+        width: 22px !important;
+        min-width: 20px !important;
+        font-size: 8px !important;
+        font-weight: bold !important;
+        padding: 2px 1px !important;
+    }
+
+    /* Page Breaks */
+    .page-break-after {
+        page-break-after: always !important;
+        break-after: page !important;
     }
 }
-
-
-
-
-
-
-
-
-@media print {
-    .swal2-container { display: none !important; }
-}
-
-/* Hide PWA Install button during print */
-#pwa-install-btn { display: none !important; }

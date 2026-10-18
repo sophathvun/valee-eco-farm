@@ -114,14 +114,11 @@ window.generateAttendanceReport = async function() {
             curD.setDate(curD.getDate() + 1);
         }
 
-        // Chunk days into groups of 15
+        // Chunk days into groups of 15 (fits nicely on A4 landscape)
         const chunkedDays = [];
         for (let i = 0; i < daysArray.length; i += 15) {
             chunkedDays.push(daysArray.slice(i, i + 15));
         }
-
-        const todayObj = new Date();
-        const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
 
         let finalHtml = '';
 
@@ -148,16 +145,15 @@ window.generateAttendanceReport = async function() {
                     <tr>
                     <td class="text-start align-middle col-emp">
                         <div class="d-flex align-items-center">
-                            <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border" style="width: 30px; height: 30px; object-fit: cover;">
-                            <div style="line-height: 1.2;">
-                                <div class="fw-bold text-dark" style="font-size: 0.85rem;">${emp.name}</div>
-                                <div class="text-muted" style="font-size: 0.7rem;">${emp.code || ''}</div>
+                            <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 26px; height: 26px; object-fit: cover;">
+                            <div style="line-height: 1.15; overflow: hidden; white-space: nowrap;">
+                                <div class="fw-bold text-dark" style="font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis;">${emp.name}</div>
+                                <div class="text-muted" style="font-size: 0.65rem;">${emp.code || ''}</div>
                             </div>
                         </div>
                     </td>`;
                     
-                // For Totals, we sum up across ALL days in the entire range, not just this chunk!
-                // So the user sees the grand total for the period on every chunk table.
+                // For Totals, sum up across ALL days in the entire range
                 let totalP = 0, totalA = 0, totalL = 0;
                 for (let d of daysArray) {
                     const rec = agg[emp.id][d];
@@ -198,6 +194,7 @@ window.generateAttendanceReport = async function() {
             
             finalHtml += `
                 <div class="${pbClass} mb-4">
+                    ${chunkedDays.length > 1 ? `<div class="fw-bold mb-2 text-dark small text-start">ផ្នែកទី ${chunkIdx + 1}: ថ្ងៃទី ${chunk[0].split('-')[2]}/${chunk[0].split('-')[1]} ដល់ ${chunk[chunk.length - 1].split('-')[2]}/${chunk[chunk.length - 1].split('-')[1]}</div>` : ''}
                     <table class="table table-hover table-bordered align-middle text-center mb-0 att-table print-table">
                         <thead class="table-darkgreen">
                             ${tr1}
@@ -226,15 +223,21 @@ window.printAttReport = function() {
         style.id = 'dynamic-print-orientation';
         document.head.appendChild(style);
     }
-    style.innerHTML = '@media print { @page { size: A4 landscape; margin: 10mm; } }';
+    style.innerHTML = '@page { size: A4 landscape; margin: 8mm; } @media print { @page { size: A4 landscape; margin: 8mm; } }';
     document.body.classList.add('printing-report');
-    setTimeout(() => { window.print(); setTimeout(() => document.body.classList.remove('printing-report'), 1000); }, 300);
-    setTimeout(() => document.body.classList.remove('printing-report'), 1000);
-};;
-
-
-
-
-
-
-
+    
+    const cleanup = () => {
+        document.body.classList.remove('printing-report');
+        window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    
+    // Fallback if afterprint doesn't fire after 10s
+    setTimeout(() => {
+        document.body.classList.remove('printing-report');
+    }, 10000);
+    
+    setTimeout(() => {
+        window.print();
+    }, 250);
+};
