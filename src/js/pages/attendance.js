@@ -28,6 +28,15 @@ window.loadAttendance = async function() {
 
     let employees = await db.employees.toArray();
     
+    // Sort employees by department (A-Z) then by Khmer name (A-Z)
+    employees.sort((a, b) => {
+        const deptA = (a.department && a.department.trim()) ? a.department.trim() : 'ផ្សេងៗ (Other)';
+        const deptB = (b.department && b.department.trim()) ? b.department.trim() : 'ផ្សេងៗ (Other)';
+        const deptCompare = deptA.localeCompare(deptB, 'km');
+        if (deptCompare !== 0) return deptCompare;
+        return (a.name || '').localeCompare(b.name || '', 'km');
+    });
+    
     let allRecords = await db.attendance.toArray();
     let records = allRecords.filter(r => r.date && r.date.startsWith(monthVal));
 

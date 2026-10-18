@@ -111,6 +111,24 @@ window.generateAttendanceReport = async function() {
             curD.setDate(curD.getDate() + 1);
         }
 
+        // 1. Group employees by Department
+        const deptMap = {};
+        employees.forEach(emp => {
+            const dept = (emp.department && emp.department.trim()) ? emp.department.trim() : 'ផ្សេងៗ (Other)';
+            if (!deptMap[dept]) {
+                deptMap[dept] = [];
+            }
+            deptMap[dept].push(emp);
+        });
+
+        // 2. Sort departments Ascending (A-Z) in Khmer
+        const sortedDeptNames = Object.keys(deptMap).sort((a, b) => a.localeCompare(b, 'km'));
+
+        // 3. Sort employees within each department by Khmer name (A-Z)
+        sortedDeptNames.forEach(dept => {
+            deptMap[dept].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'km'));
+        });
+
         // Chunk days into groups of 15 (fits nicely on A4 landscape)
         const chunkedDays = [];
         for (let i = 0; i < daysArray.length; i += 15) {
@@ -122,6 +140,7 @@ window.generateAttendanceReport = async function() {
         chunkedDays.forEach((chunk, chunkIdx) => {
             // Build Header for this chunk
             let tr1 = `<tr>
+                <th rowspan="2" class="align-middle col-no text-center">ល.រ</th>
                 <th rowspan="2" class="align-middle col-emp">បុគ្គលិក (Employee)</th>
                 <th rowspan="2" class="align-middle col-type">ប្រភេទការងារ<br><small style="font-size: 0.65rem;">(Type)</small></th>`;
             let tr2 = `<tr>`;
@@ -140,61 +159,81 @@ window.generateAttendanceReport = async function() {
                     <th class="col-total col-total-l text-warning"><small>L</small></th></tr>`;
             
             let tbodyHtml = '';
+            let seqNo = 1;
+            const totalCols = chunk.length * 2 + 6;
 
-            employees.forEach(emp => {
-                let html = `
-                    <tr>
-                    <td class="text-start align-middle col-emp">
-                        <div class="d-flex align-items-center">
-                            <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 26px; height: 26px; object-fit: cover;">
-                            <div style="line-height: 1.18; overflow: hidden; white-space: nowrap;">
-                                <div class="fw-bold text-dark emp-name-km" style="font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.name}">${emp.name}</div>
-                                <div class="text-muted emp-name-latin" style="font-size: 0.68rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
+            sortedDeptNames.forEach(dept => {
+                const deptEmps = deptMap[dept];
+                if (!deptEmps || deptEmps.length === 0) return;
+
+                // Department Header Row
+                tbodyHtml += `
+                    <tr class="dept-header-row">
+                        <td colspan="${totalCols}" class="text-start dept-header-cell">
+                            <span class="dept-header-title"><i class="bi bi-diagram-3-fill me-1 text-primary"></i>ផ្នែក៖ <strong>${dept}</strong></span>
+                            <span class="dept-header-count text-muted ms-2 small">(${deptEmps.length} នាក់)</span>
+                        </td>
+                    </tr>
+                `;
+
+                deptEmps.forEach(emp => {
+                    let html = `
+                        <tr>
+                        <td class="align-middle text-center col-no fw-bold text-muted">${seqNo}</td>
+                        <td class="text-start align-middle col-emp">
+                            <div class="d-flex align-items-center">
+                                <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 26px; height: 26px; object-fit: cover;">
+                                <div style="line-height: 1.18; overflow: hidden; white-space: nowrap;">
+                                    <div class="fw-bold text-dark emp-name-km" style="font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.name}">${emp.name}</div>
+                                    <div class="text-muted emp-name-latin" style="font-size: 0.68rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td class="align-middle text-center col-type">
-                        <span class="badge ${emp.type === 'Part-Time' ? 'bg-warning text-dark' : 'bg-primary bg-opacity-75 text-white'} px-1 py-1" style="font-size: 0.68rem; font-weight: 500;">
-                            ${emp.type || 'Full-Time'}
-                        </span>
-                    </td>`;
-                    
-                // For Totals, sum up across ALL days in the entire range
-                let totalP = 0, totalA = 0, totalL = 0;
-                for (let d of daysArray) {
-                    const rec = agg[emp.id][d];
-                    let m = (rec && rec.morning) ? rec.morning : '';
-                    let a = (rec && rec.afternoon) ? rec.afternoon : '';
-                    
-                    if (m === 'P') totalP += 0.5;
-                    if (m === 'A') totalA += 0.5;
-                    if (m === 'L') totalL += 0.5;
-                    if (a === 'P') totalP += 0.5;
-                    if (a === 'A') totalA += 0.5;
-                    if (a === 'L') totalL += 0.5;
-                }
+                        </td>
+                        <td class="align-middle text-center col-type">
+                            <span class="badge ${emp.type === 'Part-Time' ? 'bg-warning text-dark' : 'bg-primary bg-opacity-75 text-white'} px-1 py-1" style="font-size: 0.68rem; font-weight: 500;">
+                                ${emp.type || 'Full-Time'}
+                            </span>
+                        </td>`;
 
-                chunk.forEach((dateStr, dIdx) => {
-                    const isEven = (dIdx % 2 === 1);
-                    const dayClass = isEven ? 'day-even-col' : 'day-odd-col';
-                    const rec = agg[emp.id][dateStr];
-                    
-                    let mVal = (rec && rec.morning) ? rec.morning : '';
-                    let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
-                    
-                    let mClass = mVal ? mVal : 'none';
-                    let aClass = aVal ? aVal : 'none';
+                    seqNo++;
+                        
+                    // For Totals, sum up across ALL days in the entire range
+                    let totalP = 0, totalA = 0, totalL = 0;
+                    for (let d of daysArray) {
+                        const rec = agg[emp.id][d];
+                        let m = (rec && rec.morning) ? rec.morning : '';
+                        let a = (rec && rec.afternoon) ? rec.afternoon : '';
+                        
+                        if (m === 'P') totalP += 0.5;
+                        if (m === 'A') totalA += 0.5;
+                        if (m === 'L') totalL += 0.5;
+                        if (a === 'P') totalP += 0.5;
+                        if (a === 'A') totalA += 0.5;
+                        if (a === 'L') totalL += 0.5;
+                    }
 
-                    html += `<td class="border-start ${dayClass} p-1"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
-                             <td class="border-end ${dayClass} day-border-right p-1"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
+                    chunk.forEach((dateStr, dIdx) => {
+                        const isEven = (dIdx % 2 === 1);
+                        const dayClass = isEven ? 'day-even-col' : 'day-odd-col';
+                        const rec = agg[emp.id][dateStr];
+                        
+                        let mVal = (rec && rec.morning) ? rec.morning : '';
+                        let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
+                        
+                        let mClass = mVal ? mVal : 'none';
+                        let aClass = aVal ? aVal : 'none';
+
+                        html += `<td class="border-start ${dayClass} p-1"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
+                                 <td class="border-end ${dayClass} day-border-right p-1"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
+                    });
+
+                    html += `<td class="col-total col-total-p text-success fw-bold p-1">${totalP}</td>
+                             <td class="col-total col-total-a text-danger fw-bold p-1">${totalA}</td>
+                             <td class="col-total col-total-l text-warning fw-bold p-1">${totalL}</td>
+                        </tr>`;
+                    
+                    tbodyHtml += html;
                 });
-
-                html += `<td class="col-total col-total-p text-success fw-bold p-1">${totalP}</td>
-                         <td class="col-total col-total-a text-danger fw-bold p-1">${totalA}</td>
-                         <td class="col-total col-total-l text-warning fw-bold p-1">${totalL}</td>
-                    </tr>`;
-                
-                tbodyHtml += html;
             });
 
             // Page break for printing (except last table)

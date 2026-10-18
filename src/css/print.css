@@ -208,6 +208,18 @@
         print-color-adjust: exact !important;
     }
 
+    /* Sequence Number Column in Print */
+    .print-table th.col-no,
+    .print-table td.col-no {
+        width: 24px !important;
+        min-width: 22px !important;
+        max-width: 26px !important;
+        padding: 2px 1px !important;
+        text-align: center !important;
+        font-size: 7.5px !important;
+        font-weight: 600 !important;
+    }
+
     /* Employee Column in Print */
     .print-table th.col-emp,
     .print-table td.col-emp {
@@ -333,6 +345,23 @@
     }
     .print-table .day-border-right {
         border-right: 1.5px solid #94a3b8 !important;
+    }
+
+    /* Department Group Header in Print */
+    .print-table tr.dept-header-row td.dept-header-cell {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+        font-size: 8px !important;
+        font-weight: 700 !important;
+        padding: 3px 6px !important;
+        border-top: 1.5px solid #94a3b8 !important;
+        border-bottom: 1.5px solid #94a3b8 !important;
+        border-left: 4px solid #198754 !important;
+        text-align: left !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     /* Page Breaks */
