@@ -290,6 +290,51 @@
         padding: 2px 1px !important;
     }
 
+    /* Job Type Column in Print */
+    .print-table th.col-type,
+    .print-table td.col-type {
+        width: 55px !important;
+        min-width: 48px !important;
+        max-width: 62px !important;
+        padding: 2px 2px !important;
+        text-align: center !important;
+        font-size: 7.5px !important;
+        white-space: nowrap !important;
+    }
+    .print-table td.col-type .badge {
+        font-size: 6.5px !important;
+        padding: 1px 3px !important;
+        font-weight: 600 !important;
+        border: 0.5px solid #cbd5e1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Alternating Day Column Backgrounds in Print */
+    .print-table td.day-odd-col {
+        background-color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .print-table td.day-even-col {
+        background-color: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .print-table thead th.day-header-odd {
+        background-color: #198754 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .print-table thead th.day-header-even {
+        background-color: #157347 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .print-table .day-border-right {
+        border-right: 1.5px solid #94a3b8 !important;
+    }
+
     /* Page Breaks */
     .page-break-after {
         page-break-after: always !important;

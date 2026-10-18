@@ -212,6 +212,16 @@
 
 /* ====== SHIFT COLUMNS & ALTERNATING DAY BACKGROUNDS ====== */
 
+.att-table th.col-type,
+.att-table td.col-type {
+    width: 68px;
+    min-width: 58px;
+    max-width: 78px;
+    text-align: center;
+    padding: 3px 2px !important;
+    white-space: nowrap;
+}
+
 .att-table th.col-shift,
 .att-table td.col-shift {
     width: 22px;

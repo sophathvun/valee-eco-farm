@@ -1,15 +1,12 @@
 // ====== ATTENDANCE REPORT ======
 
-function formatKhmerDate(dateStr) {
+function formatReportDate(dateStr) {
+    if (!dateStr) return '';
     const [y, m, d] = dateStr.split('-');
-    const khmerMonths = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
-    const khmerNumbers = ["០", "១", "២", "៣", "៤", "៥", "៦", "៧", "៨", "៩"];
-    
-    let kD = d.split('').map(char => khmerNumbers[parseInt(char)]).join('');
-    let kY = y.split('').map(char => khmerNumbers[parseInt(char)]).join('');
-    let kM = khmerMonths[parseInt(m) - 1];
-    
-    return `${kD} ${kM} ${kY}`;
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const mIdx = parseInt(m, 10) - 1;
+    const mName = months[mIdx] || m;
+    return `${d}-${mName}-${y}`;
 }
 
 window.initAttendanceReport = function() {
@@ -81,7 +78,7 @@ window.generateAttendanceReport = async function() {
     }
     
     if (dateText) {
-        dateText.innerText = `គិតចាប់ពីថ្ងៃទី ${formatKhmerDate(from)} ដល់ថ្ងៃទី ${formatKhmerDate(to)}`;
+        dateText.innerText = `គិតចាប់ពីថ្ងៃទី ${formatReportDate(from)} ដល់ថ្ងៃទី ${formatReportDate(to)}`;
     }
     
     try {
@@ -124,13 +121,17 @@ window.generateAttendanceReport = async function() {
 
         chunkedDays.forEach((chunk, chunkIdx) => {
             // Build Header for this chunk
-            let tr1 = `<tr><th rowspan="2" class="align-middle col-emp">បុគ្គលិក (Employee)</th>`;
+            let tr1 = `<tr>
+                <th rowspan="2" class="align-middle col-emp">បុគ្គលិក (Employee)</th>
+                <th rowspan="2" class="align-middle col-type">ប្រភេទការងារ<br><small style="font-size: 0.65rem;">(Type)</small></th>`;
             let tr2 = `<tr>`;
             
-            chunk.forEach(dateStr => {
+            chunk.forEach((dateStr, dIdx) => {
                 const parts = dateStr.split('-');
-                tr1 += `<th colspan="2" class="border-start border-end">${parts[2]}/${parts[1]}</th>`;
-                tr2 += `<th class="border-start"><small>ព្រឹក</small></th><th class="border-end"><small>ល្ងាច</small></th>`;
+                const isEven = (dIdx % 2 === 1);
+                const hClass = isEven ? 'day-header-even' : 'day-header-odd';
+                tr1 += `<th colspan="2" class="${hClass} border-start border-end day-border-right">${parts[2]}/${parts[1]}</th>`;
+                tr2 += `<th class="${hClass} border-start"><small>ព្រឹក</small></th><th class="${hClass} border-end day-border-right"><small>ល្ងាច</small></th>`;
             });
             
             tr1 += `<th colspan="3" class="col-total col-total-header">សរុប (Total)</th></tr>`;
@@ -146,11 +147,16 @@ window.generateAttendanceReport = async function() {
                     <td class="text-start align-middle col-emp">
                         <div class="d-flex align-items-center">
                             <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 26px; height: 26px; object-fit: cover;">
-                            <div style="line-height: 1.15; overflow: hidden; white-space: nowrap;">
-                                <div class="fw-bold text-dark" style="font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis;">${emp.name}</div>
-                                <div class="text-muted" style="font-size: 0.65rem;">${emp.code || ''}</div>
+                            <div style="line-height: 1.18; overflow: hidden; white-space: nowrap;">
+                                <div class="fw-bold text-dark emp-name-km" style="font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.name}">${emp.name}</div>
+                                <div class="text-muted emp-name-latin" style="font-size: 0.68rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
                             </div>
                         </div>
+                    </td>
+                    <td class="align-middle text-center col-type">
+                        <span class="badge ${emp.type === 'Part-Time' ? 'bg-warning text-dark' : 'bg-primary bg-opacity-75 text-white'} px-1 py-1" style="font-size: 0.68rem; font-weight: 500;">
+                            ${emp.type || 'Full-Time'}
+                        </span>
                     </td>`;
                     
                 // For Totals, sum up across ALL days in the entire range
@@ -168,7 +174,9 @@ window.generateAttendanceReport = async function() {
                     if (a === 'L') totalL += 0.5;
                 }
 
-                chunk.forEach(dateStr => {
+                chunk.forEach((dateStr, dIdx) => {
+                    const isEven = (dIdx % 2 === 1);
+                    const dayClass = isEven ? 'day-even-col' : 'day-odd-col';
                     const rec = agg[emp.id][dateStr];
                     
                     let mVal = (rec && rec.morning) ? rec.morning : '';
@@ -177,8 +185,8 @@ window.generateAttendanceReport = async function() {
                     let mClass = mVal ? mVal : 'none';
                     let aClass = aVal ? aVal : 'none';
 
-                    html += `<td class="border-start p-1"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
-                             <td class="border-end p-1"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
+                    html += `<td class="border-start ${dayClass} p-1"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
+                             <td class="border-end ${dayClass} day-border-right p-1"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
                 });
 
                 html += `<td class="col-total col-total-p text-success fw-bold p-1">${totalP}</td>
@@ -194,7 +202,7 @@ window.generateAttendanceReport = async function() {
             
             finalHtml += `
                 <div class="${pbClass} mb-4">
-                    ${chunkedDays.length > 1 ? `<div class="fw-bold mb-2 text-dark small text-start">ផ្នែកទី ${chunkIdx + 1}: ថ្ងៃទី ${chunk[0].split('-')[2]}/${chunk[0].split('-')[1]} ដល់ ${chunk[chunk.length - 1].split('-')[2]}/${chunk[chunk.length - 1].split('-')[1]}</div>` : ''}
+                    ${chunkedDays.length > 1 ? `<div class="fw-bold mb-2 text-dark small text-start">ផ្នែកទី ${chunkIdx + 1}: ថ្ងៃទី ${formatReportDate(chunk[0])} ដល់ ${formatReportDate(chunk[chunk.length - 1])}</div>` : ''}
                     <table class="table table-hover table-bordered align-middle text-center mb-0 att-table print-table">
                         <thead class="table-darkgreen">
                             ${tr1}
