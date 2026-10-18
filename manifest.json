@@ -1,10 +1,11 @@
-﻿{
+{
   "name": "Valee Eco Farm System",
   "short_name": "Valee Farm",
-  "start_url": "/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2e7d32",
+  "theme_color": "#198754",
   "icons": [
     {
       "src": "assets/images/logo.png",
@@ -15,6 +16,12 @@
       "src": "assets/images/logo.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "assets/images/logo.png",
+      "sizes": "640x640",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

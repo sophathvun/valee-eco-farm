@@ -7,11 +7,11 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <link rel="stylesheet" href="assets/cropper.min.css">
-    <link rel="stylesheet" href="src/css/global.css?v=1792318000">
-    <link rel="stylesheet" href="src/css/print.css?v=1792318000">
-    <link rel="stylesheet" href="src/css/employee.css?v=1792318000">
-    <link rel="stylesheet" href="src/css/attendance.css?v=1792318000">
-    <link rel="stylesheet" href="src/css/payroll.css?v=1792318000">
+    <link rel="stylesheet" href="src/css/global.css?v=1792319000">
+    <link rel="stylesheet" href="src/css/print.css?v=1792319000">
+    <link rel="stylesheet" href="src/css/employee.css?v=1792319000">
+    <link rel="stylesheet" href="src/css/attendance.css?v=1792319000">
+    <link rel="stylesheet" href="src/css/payroll.css?v=1792319000">
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
@@ -667,22 +667,43 @@
         </div>
     </div>
 
-    <script type="module" src="src/js/main.js?v=1792318000"></script>
     <script>
+        window.deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+            if (typeof window.checkPWAStatus === 'function') {
+                window.checkPWAStatus();
+            } else {
+                const container = document.getElementById('pwa-install-container');
+                if (container && localStorage.getItem('currentUser') && !localStorage.getItem('pwaDismissed')) {
+                    container.style.display = 'inline-flex';
+                }
+            }
+        });
+
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=1792318000').then(reg => {
+            navigator.serviceWorker.register('sw.js?v=1792319000').then(reg => {
                 reg.update();
             });
         }
     </script>
-    <button id="pwa-install-btn" class="btn text-white shadow" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; border-radius: 25px; align-items: center; gap: 8px; padding: 10px 20px; background-color: #0062cc;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M4 1.5A1.5 1.5 0 0 1 5.5 0h5A1.5 1.5 0 0 1 12 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 4 14.5v-13zm1.5-.5a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5h-5z"/>
-            <path d="M8 8a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 8z"/>
-            <path d="M6.5 9.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H7v2a.5.5 0 0 1-1 0v-2.5z"/>
-        </svg>
-        Add Shortcut
-    </button>
+    <script type="module" src="src/js/main.js?v=1792319000"></script>
+
+    <!-- Floating PWA Install Button Container -->
+    <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">
+        <button id="pwa-install-btn" class="btn btn-primary text-white shadow-lg rounded-pill px-3 py-2 d-inline-flex align-items-center" onclick="triggerPWAInstall()" style="font-weight: 600; font-size: 0.88rem; box-shadow: 0 4px 15px rgba(13, 110, 253, 0.45) !important;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+                <path d="M4 1.5A1.5 1.5 0 0 1 5.5 0h5A1.5 1.5 0 0 1 12 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 4 14.5v-13zm1.5-.5a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5h-5z"/>
+                <path d="M8 8a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 8z"/>
+                <path d="M6.5 9.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H7v2a.5.5 0 0 1-1 0v-2.5z"/>
+            </svg>
+            <span>ដំឡើង Shortcut</span>
+        </button>
+        <button type="button" class="btn btn-dark text-white rounded-circle shadow p-0 d-inline-flex align-items-center justify-content-center" onclick="dismissPWAInstall(event)" style="width: 26px; height: 26px; font-size: 13px; line-height: 1; border: 1px solid rgba(255,255,255,0.4);" title="បិទ (Close)">
+            ✕
+        </button>
+    </div>
   
     
 

@@ -154,32 +154,6 @@ async function applyBranding() {
                     document.getElementsByTagName('head')[0].appendChild(appleLink);
                 }
                 appleLink.href = brand.mobileIcon;
-
-                // Dynamically create manifest.json for PWA / Android shortcut
-                const manifest = {
-                    "name": "Valee Eco Farm",
-                    "short_name": "Valee",
-                    "start_url": ".",
-                    "display": "standalone",
-                    "background_color": "#1e293b",
-                    "theme_color": "#198754",
-                    "icons": [
-                        {
-                            "src": brand.mobileIcon,
-                            "sizes": "192x192 512x512",
-                            "type": "image/png"
-                        }
-                    ]
-                };
-                const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-                const manifestURL = URL.createObjectURL(manifestBlob);
-                let manifestLink = document.querySelector("link[rel='manifest']");
-                if (!manifestLink) {
-                    manifestLink = document.createElement('link');
-                    manifestLink.rel = 'manifest';
-                    document.getElementsByTagName('head')[0].appendChild(manifestLink);
-                }
-                manifestLink.href = manifestURL;
             }
         }
     } catch (e) {
@@ -197,22 +171,25 @@ window.applyBranding = applyBranding;
 
 
 // PWA Install Logic
-window.deferredPrompt = null;
+window.deferredPrompt = window.deferredPrompt || null;
 const isIos = () => {
     const userAgent = window.navigator.userAgent.toLowerCase();
     return /iphone|ipad|ipod/.test(userAgent);
 };
-const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+const isInStandaloneMode = () => {
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || 
+           (('standalone' in window.navigator) && window.navigator.standalone);
+};
 
 window.checkPWAStatus = function() {
-    if (localStorage.getItem('currentUser')) {
-        const btn = document.getElementById('pwa-install-btn');
-        if (!btn) return;
-        if (isIos() && !isInStandaloneMode()) {
-            btn.style.display = 'flex';
-        } else if (window.deferredPrompt) {
-            btn.style.display = 'flex';
+    if (localStorage.getItem('currentUser') && !localStorage.getItem('pwaDismissed')) {
+        const container = document.getElementById('pwa-install-container');
+        if (!container) return;
+        if (isInStandaloneMode()) {
+            container.style.display = 'none';
+            return;
         }
+        container.style.display = 'inline-flex';
     }
 };
 
@@ -222,46 +199,125 @@ window.addEventListener('beforeinstallprompt', (e) => {
     checkPWAStatus();
 });
 
-document.addEventListener('click', async (e) => {
-    const btn = e.target.closest('#pwa-install-btn');
-    if (btn) {
-        if (typeof isIos === 'function' && isIos()) {
-            Swal.fire({
-                title: 'Install on iOS',
-                html: 'To install on your iPhone/iPad:<br><br>1. Tap the <b>Share</b> button at the bottom of Safari.<br>2. Scroll down and tap <b>Add to Home Screen</b>.',
-                icon: 'info',
-                confirmButtonText: 'Got it'
-            });
-        } else if (window.deferredPrompt) {
-            try {
-                window.deferredPrompt.prompt();
-                const { outcome } = await window.deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    btn.style.display = 'none';
-                }
-                window.deferredPrompt = null;
-            } catch (err) {
-                console.error("PWA Prompt error:", err);
-                window.deferredPrompt = null;
+window.triggerPWAInstall = async function() {
+    const isIosDevice = isIos();
+    const isAndroidDevice = /android/.test(window.navigator.userAgent.toLowerCase());
+
+    if (window.deferredPrompt) {
+        try {
+            window.deferredPrompt.prompt();
+            const { outcome } = await window.deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                const container = document.getElementById('pwa-install-container');
+                if (container) container.style.display = 'none';
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ដំឡើងជោគជ័យ!',
+                    text: 'Shortcut នៃកម្មវិធីត្រូវបានបញ្ចូលទៅក្នុងឧបករណ៍របស់អ្នករួចរាល់ហើយ។',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
             }
-        } else {
-            Swal.fire({
-                title: 'Install App',
-                html: 'Please use your browser menu (usually three dots in the top right) and select <b>"Install app"</b> or <b>"Add to Home screen"</b>.',
-                icon: 'info',
-                confirmButtonText: 'Got it'
-            });
+            window.deferredPrompt = null;
+            return;
+        } catch (err) {
+            console.warn("PWA Prompt error, showing guide instead:", err);
+            window.deferredPrompt = null;
         }
     }
-});
+
+    if (isIosDevice) {
+        Swal.fire({
+            title: '<strong>ដំឡើងលើ iPhone / iPad (iOS)</strong>',
+            icon: 'info',
+            html: `
+                <div class="text-start" style="font-size: 0.95rem; line-height: 1.6;">
+                    <p class="mb-2">ដើម្បីដាក់ Shortcut លើអេក្រង់ដើម (Safari)៖</p>
+                    <ol class="ps-3 mb-3">
+                        <li class="mb-2">ចុចប៊ូតុង <strong>Share (ចែករំលែក <i class="bi bi-box-arrow-up text-primary"></i>)</strong> នៅខាងក្រោម Safari</li>
+                        <li class="mb-2">អូសចុះក្រោម រួចជ្រើសរើស <strong>"Add to Home Screen (បន្ថែមទៅអេក្រង់ដើម <i class="bi bi-plus-square"></i>)"</strong></li>
+                        <li class="mb-0">ចុចប៊ូតុង <strong>"Add (បន្ថែម)"</strong> នៅជ្រុងខាងលើស្តាំ</li>
+                    </ol>
+                    <div class="alert alert-success py-2 px-3 small mb-0">
+                        <i class="bi bi-check-circle-fill me-1"></i> កម្មវិធីនឹងបង្ហាញ Icon លើទូរស័ព្ទរបស់អ្នកដូច App ធម្មតា!
+                    </div>
+                </div>
+            `,
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#198754'
+        });
+    } else if (isAndroidDevice) {
+        Swal.fire({
+            title: '<strong>ដំឡើងលើទូរស័ព្ទ Android</strong>',
+            icon: 'info',
+            html: `
+                <div class="text-start" style="font-size: 0.95rem; line-height: 1.6;">
+                    <p class="mb-2">ដើម្បីដាក់ Shortcut លើអេក្រង់ Android (Chrome)៖</p>
+                    <ol class="ps-3 mb-3">
+                        <li class="mb-2">ចុចសញ្ញាចុចបី <strong>(⋮)</strong> នៅជ្រុងខាងលើស្តាំនៃ Chrome</li>
+                        <li class="mb-2">ជ្រើសរើស <strong>"Install app"</strong> ឬ <strong>"Add to Home screen (បន្ថែមទៅអេក្រង់ដើម)"</strong></li>
+                        <li class="mb-0">ចុច <strong>"Install"</strong> ឬ <strong>"Add"</strong> ជាការស្រេច</li>
+                    </ol>
+                </div>
+            `,
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#198754'
+        });
+    } else {
+        // Desktop PC (Windows / Mac)
+        Swal.fire({
+            title: '<strong>ដំឡើង Shortcut លើកុំព្យូទ័រ (PC / Laptop)</strong>',
+            icon: 'info',
+            html: `
+                <div class="text-start" style="font-size: 0.92rem; line-height: 1.6;">
+                    <p class="mb-2">សូមជ្រើសរើសវិធីងាយៗមួយក្នុងចំណោមវិធីខាងក្រោម៖</p>
+                    
+                    <div class="p-2 border rounded mb-2 bg-light">
+                        <strong class="text-primary"><i class="bi bi-1-circle-fill me-1"></i> វិធីទី១ (លឿនបំផុត)៖</strong><br>
+                        សម្លឹងមើលទៅ <strong>របារអាសយដ្ឋាន (URL Bar ខាងលើបង្អស់)</strong> នៅខាងស្តាំដៃ អ្នកនឹងឃើញរូបតំណាង <strong>Install (📥 ឬ <i class="bi bi-laptop"></i>)</strong> &rarr; ចុចលើវា រួចចុច <strong>"Install"</strong>។
+                    </div>
+
+                    <div class="p-2 border rounded mb-2 bg-light">
+                        <strong class="text-success"><i class="bi bi-2-circle-fill me-1"></i> វិធីទី២ (តាមរយៈម៉ឺនុយ Browser)៖</strong><br>
+                        ១. ចុចសញ្ញាចុចបី <strong>(⋮)</strong> នៅជ្រុងលើស្តាំនៃ Chrome / Edge<br>
+                        ២. ជ្រើសរើស <strong>"Save and share"</strong> ឬ <strong>"Cast, save, and share"</strong><br>
+                        ៣. ចុច <strong>"Create shortcut..." (បង្កើតផ្លូវកាត់)</strong><br>
+                        ៤. ធីកយក <strong>"Open as window"</strong> រួចចុច <strong>"Create"</strong>។
+                    </div>
+
+                    <div class="alert alert-success py-2 px-3 small mb-0">
+                        <i class="bi bi-check-circle-fill me-1"></i> បន្ទាប់ពីធ្វើរួច កម្មវិធីនឹងបង្ហាញ Icon លើ <strong>Desktop</strong> របស់កុំព្យូទ័រ លោកអ្នកអាចចុចបើកប្រើបានភ្លាមៗ!
+                    </div>
+                </div>
+            `,
+            confirmButtonText: 'ខ្ញុំយល់ហើយ (Got it)',
+            confirmButtonColor: '#0d6efd',
+            showCancelButton: true,
+            cancelButtonText: 'លាក់ប៊ូតុងនេះ',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+                dismissPWAInstall();
+            }
+        });
+    }
+};
+
+window.dismissPWAInstall = function(e) {
+    if (e) e.stopPropagation();
+    const container = document.getElementById('pwa-install-container');
+    if (container) container.style.display = 'none';
+    localStorage.setItem('pwaDismissed', 'true');
+};
 
 window.addEventListener('appinstalled', () => {
-    const btn = document.getElementById('pwa-install-btn');
-    if (btn) btn.style.display = 'none';
+    const container = document.getElementById('pwa-install-container');
+    if (container) container.style.display = 'none';
     window.deferredPrompt = null;
+    localStorage.setItem('pwaDismissed', 'true');
 });
 
-// Run once on load for iOS
+// Run once on load
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(checkPWAStatus, 1000);
 });
