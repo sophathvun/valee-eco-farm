@@ -890,6 +890,9 @@ window.setBatchStatus = async function(newStatus) {
 
 // ====== 8. DELETE BATCH ======
 window.deletePayrollBatch = async function(batchId) {
+    if (!batchId && currentBatch) batchId = currentBatch.id;
+    if (!batchId) return;
+
     const res = await Swal.fire({
         title: 'បញ្ជាក់ការលុប!',
         text: 'តើអ្នកពិតជាចង់លុបតារាងបើកប្រាក់ខែនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានឡើយ!',
@@ -910,7 +913,11 @@ window.deletePayrollBatch = async function(batchId) {
                 timer: 1400,
                 showConfirmButton: false
             });
-            await loadPayrollBatches();
+            if (currentBatch && currentBatch.id === batchId) {
+                closePayrollDetail();
+            } else {
+                await loadPayrollBatches();
+            }
         } catch (err) {
             console.error("Error deleting batch:", err);
             Swal.fire('បញ្ហា', err.message, 'error');
