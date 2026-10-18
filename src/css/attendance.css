@@ -1,8 +1,12 @@
 /* ====== ATTENDANCE PAGE FULL-HEIGHT & RESPONSIVE LAYOUT ====== */
 #attendance-view {
+    display: none !important;
+}
+
+#attendance-view.active {
     height: calc(100vh - 110px);
     min-height: 520px;
-    display: flex;
+    display: flex !important;
     flex-direction: column;
 }
 
