@@ -6,203 +6,207 @@
         margin-bottom: 0.35rem;
     }
 </style>
-<div class="row">
-                <!-- Modal for Employee Form -->
-                <div class="modal fade" id="employeeModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-lg modal-fullscreen-md-down">
-                        <div class="modal-content">
-                            <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title fw-bold">បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី</h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="employeeForm">
-                                    <div class="row">
-                                        <div class="col-md-4 text-center mb-3">
-                                            <label class="form-label d-block">រូបថតបុគ្គលិក (Photo)</label>
-                                            <div id="emp-photo-dropzone" class="rounded mx-auto p-3 mb-2 bg-light d-flex flex-column align-items-center justify-content-center" style="cursor: pointer; width: 100%; height: 220px; border: 2px dashed #0dcaf0; transition: 0.3s;">
-                                                <div class="rounded-3 overflow-hidden mb-2 bg-white shadow-sm" style="width: 150px; height: 150px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; position: relative;">
-                                                    <img id="emp-photo-preview" src="assets/images/default-avatar.svg" style="width: 100%; height: 100%; object-fit: cover;">
-                                                    <span id="emp-photo-placeholder" style="font-size: 1.25rem; color: #495057; position: absolute; bottom: 6px; right: 6px; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">📷</span>
-                                                </div>
-                                                <small class="text-muted fw-bold">Drag &amp; Drop ឬ ចុចដើម្បីប្ដូររូបថត</small>
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-outline-danger w-100 py-1 fw-bold shadow-sm mb-2" id="btn-remove-emp-photo" style="display: none;" onclick="removeEmployeePhoto()"><i class="bi bi-trash3 me-1"></i>លុបរូបថតចេញ (Remove Photo)</button>
-                                            <input type="file" id="emp-photo" accept="image/*" class="d-none">
 
-                                            <!-- Bank QR Code Upload Field -->
-                                            <div class="mt-3 pt-2 border-top">
-                                                <label class="form-label d-block fw-bold small text-success"><i class="bi bi-qr-code me-1"></i>Bank QR (Scan to Pay)</label>
-                                                <div id="emp-bank-qr-dropzone" class="rounded mx-auto p-2 mb-1 bg-light d-flex flex-column align-items-center justify-content-center" style="cursor: pointer; width: 100%; height: 130px; border: 2px dashed #198754; transition: 0.3s;" onclick="document.getElementById('emp-bank-qr').click()">
-                                                    <div class="rounded overflow-hidden bg-white shadow-sm d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; border: 1px solid #ccc; position: relative;">
-                                                        <img id="emp-bank-qr-preview" src="" style="width: 100%; height: 100%; object-fit: contain; display: none;">
-                                                        <span id="emp-bank-qr-placeholder" class="text-muted text-center" style="font-size: 0.72rem;"><i class="bi bi-qr-code-scan fs-3 text-success"></i><br>Upload QR</span>
-                                                    </div>
-                                                    <small class="text-muted fw-bold mt-1" style="font-size: 0.68rem;">ចុចដើម្បីជ្រើសរើសរូប QR</small>
-                                                </div>
-                                                <button type="button" class="btn btn-sm btn-outline-danger w-100 py-0 fw-bold shadow-sm" id="btn-remove-emp-bank-qr" style="display: none; font-size: 0.72rem;" onclick="removeEmployeeBankQrInForm()"><i class="bi bi-trash3 me-1"></i>លុប QR ចេញ</button>
-                                                <input type="file" id="emp-bank-qr" accept="image/*" class="d-none">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">អត្តលេខ (Emp ID)</label>
-                                                    <input type="text" class="form-control" id="emp-code" required readonly placeholder="Ex: VEF-0001">
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">លេខអត្តសញ្ញាណបណ្ណ (National ID)</label>
-                                                    <input type="text" class="form-control" id="emp-national-id" placeholder="បញ្ចូលលេខអត្តសញ្ញាណបណ្ណ">
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">ឈ្មោះ (Name)</label>
-                                                    <input type="text" class="form-control" id="emp-name" required>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">ឈ្មោះឡាតាំង</label>
-                                                    <input type="text" class="form-control" id="emp-latin-name" placeholder="Name in English (Latin)">
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">ភេទ (Gender)</label>
-                                                    <select class="form-select" id="emp-gender">
-                                                        <option value="ប្រុស">ប្រុស (Male)</option>
-                                                        <option value="ស្រី">ស្រី (Female)</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">ថ្ងៃខែឆ្នាំកំណើត (DOB)</label>
-                                                    <input type="date" class="form-control" id="emp-dob">
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">លេខទូរស័ព្ទ (Phone)</label>
-                                                    <input type="text" class="form-control" id="emp-phone">
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">ផ្នែកការងារ (Department)</label>
-                                                    <select class="form-select" id="emp-department" required>
-                                                        <option value="">-- ជ្រើសរើសផ្នែក --</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">តួនាទី (Position)</label>
-                                                    <select class="form-select" id="emp-position" required>
-                                                        <option value="">-- ជ្រើសរើសតួនាទី --</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">ប្រភេទការងារ (Type)</label>
-                                                    <select class="form-select" id="emp-type">
-                                                        <option value="Full-Time">ពេញម៉ោង (Full-Time)</option>
-                                                        <option value="Part-Time">ក្រៅម៉ោង (Part-Time)</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-12 mb-3">
-                                                    <label class="form-label">ប្រាក់ឈ្នួលគោល (Base Rate) USD</label>
-                                                    <div class="input-group">
-                                                        <select class="form-select" id="emp-currency" style="max-width: 90px;" required>
-                                                            <option value="USD">$</option>
-                                                            <option value="KHR">៛</option>
-                                                        </select>
-                                                        <input type="number" class="form-control" id="emp-salary" min="0" step="0.01" required>
-                                                        <select class="form-select" id="emp-wage-type" style="max-width: 150px;">
-                                                            <option value="Monthly">គិតជាខែ</option>
-                                                            <option value="Daily">គិតជាថ្ងៃ</option>
-                                                            <option value="Shift">គិតជាវេន</option>
-                                                            <option value="Hourly">គិតជាម៉ោង</option>
-                                                        </select>
-                                                    </div>
-                                                <div class="col-12 mt-2 pt-2 border-top">
-                                                    <div class="fw-bold text-success small mb-2"><i class="bi bi-bank me-1"></i>ព័ត៌មានគណនីធនាគារ (Bank Account Details)</div>
-                                                    <div class="row g-2">
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small mb-1">ឈ្មោះធនាគារ (Bank)</label>
-                                                            <input type="text" class="form-control form-control-sm" id="emp-bank-name" placeholder="Ex: ABA, ACLEDA...">
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small mb-1">លេខគណនី (A/C No)</label>
-                                                            <input type="text" class="form-control form-control-sm" id="emp-bank-account" placeholder="Ex: 001 234 567">
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small mb-1">ឈ្មោះម្ចាស់គណនី (A/C Name)</label>
-                                                            <input type="text" class="form-control form-control-sm" id="emp-bank-account-name" placeholder="Ex: CHORK SREYOUN">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <button type="submit" class="btn btn-success w-100 text-white fw-bold mt-3">រក្សាទុក</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm border-primary">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 text-primary fw-bold">បញ្ជីបុគ្គលិក (Employee List)</h5>
-                        <button class="btn btn-primary btn-sm" onclick="openAddEmployeeModal()"><i class="bi bi-plus-lg"></i> បន្ថែមបុគ្គលិកថ្មី</button>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped text-center align-middle mb-0" id="employeeTable">
-                                <thead class="table-darkgreen">
-                                    <tr>
-                                        <th>រូបថត</th>
-                                        <th>អត្តលេខ</th>
-                                        <th>លេខអត្តសញ្ញាណបណ្ណ</th>
-                                        <th>ឈ្មោះបុគ្គលិក</th>
-                                        <th>ភេទ</th>
-                                        <th>ផ្នែកការងារ</th>
-                                        <th>តួនាទី</th>
-                                        <th>ប្រភេទការងារ</th>
-                                        <th>លេខទូរស័ព្ទ</th>
-                                        <th>ប្រាក់ខែគោល</th>
-                                        <th>សកម្មភាព</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="employeeList">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PHOTO VIEWER MODAL WITH ZOOM & DOWNLOAD -->
-                <div class="modal fade" id="empPhotoViewerModal" tabindex="-1" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content shadow-lg border-0">
-                            <div class="modal-header bg-dark text-white py-2">
-                                <h5 class="modal-title fw-bold fs-6 d-flex align-items-center mb-0">
-                                    <i class="bi bi-person-bounding-box me-2 text-info"></i>
-                                    <span id="viewer-emp-name">រូបថតបុគ្គលិក</span>
-                                    <span id="viewer-emp-code" class="badge bg-secondary ms-2 small"></span>
-                                </h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body p-2 bg-dark">
-                                <!-- Image Display Viewport -->
-                                <div id="viewer-photo-wrapper" style="width: 100%; height: 380px; overflow: hidden; background: #111; border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; cursor: grab;">
-                                    <img id="viewer-emp-img" src="" alt="Employee Photo" style="max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.12s ease; user-select: none;">
+<!-- Modal for Employee Form -->
+<div class="modal fade" id="employeeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-fullscreen-md-down">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="employeeForm">
+                    <div class="row">
+                        <!-- Left: Photos & QR -->
+                        <div class="col-md-4 text-center mb-3">
+                            <label class="form-label d-block">រូបថតបុគ្គលិក (Photo)</label>
+                            <div id="emp-photo-dropzone" class="rounded mx-auto p-3 mb-2 bg-light d-flex flex-column align-items-center justify-content-center" style="cursor: pointer; width: 100%; height: 220px; border: 2px dashed #0dcaf0; transition: 0.3s;">
+                                <div class="rounded-3 overflow-hidden mb-2 bg-white shadow-sm" style="width: 150px; height: 150px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; position: relative;">
+                                    <img id="emp-photo-preview" src="assets/images/default-avatar.svg" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <span id="emp-photo-placeholder" style="font-size: 1.25rem; color: #495057; position: absolute; bottom: 6px; right: 6px; background: rgba(255,255,255,0.9); padding: 4px 8px; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">📷</span>
                                 </div>
-                                <!-- Zoom & Download Controls -->
-                                <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mt-2 p-1 bg-secondary bg-opacity-25 rounded">
-                                    <div class="d-flex align-items-center gap-1">
-                                        <button type="button" class="btn btn-sm btn-outline-light px-2" onclick="zoomEmpPhoto(-0.2)" title="Zoom Out"><i class="bi bi-zoom-out"></i></button>
-                                        <span id="viewer-zoom-level" class="badge bg-dark px-2 py-1" style="min-width: 48px;">100%</span>
-                                        <button type="button" class="btn btn-sm btn-outline-light px-2" onclick="zoomEmpPhoto(0.2)" title="Zoom In"><i class="bi bi-zoom-in"></i></button>
-                                        <button type="button" class="btn btn-sm btn-outline-warning px-2" onclick="resetEmpPhotoZoom()" title="Reset Zoom"><i class="bi bi-arrow-repeat"></i></button>
+                                <small class="text-muted fw-bold">Drag &amp; Drop ឬ ចុចដើម្បីប្ដូររូបថត</small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-danger w-100 py-1 fw-bold shadow-sm mb-2" id="btn-remove-emp-photo" style="display: none;" onclick="removeEmployeePhoto()"><i class="bi bi-trash3 me-1"></i>លុបរូបថតចេញ (Remove Photo)</button>
+                            <input type="file" id="emp-photo" accept="image/*" class="d-none">
+
+                            <!-- Bank QR Code Upload Field -->
+                            <div class="mt-3 pt-2 border-top">
+                                <label class="form-label d-block fw-bold small text-success"><i class="bi bi-qr-code me-1"></i>Bank QR (Scan to Pay)</label>
+                                <div id="emp-bank-qr-dropzone" class="rounded mx-auto p-2 mb-1 bg-light d-flex flex-column align-items-center justify-content-center" style="cursor: pointer; width: 100%; height: 130px; border: 2px dashed #198754; transition: 0.3s;" onclick="document.getElementById('emp-bank-qr').click()">
+                                    <div class="rounded overflow-hidden bg-white shadow-sm d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; border: 1px solid #ccc; position: relative;">
+                                        <img id="emp-bank-qr-preview" src="" style="width: 100%; height: 100%; object-fit: contain; display: none;">
+                                        <span id="emp-bank-qr-placeholder" class="text-muted text-center" style="font-size: 0.72rem;"><i class="bi bi-qr-code-scan fs-3 text-success"></i><br>Upload QR</span>
                                     </div>
-                                    <div>
-                                        <button type="button" class="btn btn-sm btn-success fw-bold px-3 shadow-sm" id="viewer-download-btn" onclick="downloadEmpPhotoJpg()">
-                                            <i class="bi bi-download me-1"></i>ទាញយក JPG
-                                        </button>
+                                    <small class="text-muted fw-bold mt-1" style="font-size: 0.68rem;">ចុចដើម្បីជ្រើសរើសរូប QR</small>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger w-100 py-0 fw-bold shadow-sm" id="btn-remove-emp-bank-qr" style="display: none; font-size: 0.72rem;" onclick="removeEmployeeBankQrInForm()"><i class="bi bi-trash3 me-1"></i>លុប QR ចេញ</button>
+                                <input type="file" id="emp-bank-qr" accept="image/*" class="d-none">
+                            </div>
+                        </div>
+
+                        <!-- Right: Employee Info Fields -->
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">អត្តលេខ (Emp ID)</label>
+                                    <input type="text" class="form-control" id="emp-code" required readonly placeholder="Ex: VEF-0001">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">លេខអត្តសញ្ញាណបណ្ណ (National ID)</label>
+                                    <input type="text" class="form-control" id="emp-national-id" placeholder="បញ្ចូលលេខអត្តសញ្ញាណបណ្ណ">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">ឈ្មោះ (Name)</label>
+                                    <input type="text" class="form-control" id="emp-name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">ឈ្មោះឡាតាំង</label>
+                                    <input type="text" class="form-control" id="emp-latin-name" placeholder="Name in English (Latin)">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">ភេទ (Gender)</label>
+                                    <select class="form-select" id="emp-gender">
+                                        <option value="ប្រុស">ប្រុស (Male)</option>
+                                        <option value="ស្រី">ស្រី (Female)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">ថ្ងៃខែឆ្នាំកំណើត (DOB)</label>
+                                    <input type="date" class="form-control" id="emp-dob">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">លេខទូរស័ព្ទ (Phone)</label>
+                                    <input type="text" class="form-control" id="emp-phone">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">ផ្នែកការងារ (Department)</label>
+                                    <select class="form-select" id="emp-department" required>
+                                        <option value="">-- ជ្រើសរើសផ្នែក --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">តួនាទី (Position)</label>
+                                    <select class="form-select" id="emp-position" required>
+                                        <option value="">-- ជ្រើសរើសតួនាទី --</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">ប្រភេទការងារ (Type)</label>
+                                    <select class="form-select" id="emp-type">
+                                        <option value="Full-Time">ពេញម៉ោង (Full-Time)</option>
+                                        <option value="Part-Time">ក្រៅម៉ោង (Part-Time)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">ប្រាក់ឈ្នួលគោល (Base Rate) USD</label>
+                                    <div class="input-group">
+                                        <select class="form-select" id="emp-currency" style="max-width: 90px;" required>
+                                            <option value="USD">$</option>
+                                            <option value="KHR">៛</option>
+                                        </select>
+                                        <input type="number" class="form-control" id="emp-salary" min="0" step="0.01" required>
+                                        <select class="form-select" id="emp-wage-type" style="max-width: 150px;">
+                                            <option value="Monthly">គិតជាខែ</option>
+                                            <option value="Daily">គិតជាថ្ងៃ</option>
+                                            <option value="Shift">គិតជាវេន</option>
+                                            <option value="Hourly">គិតជាម៉ោង</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-2 pt-2 border-top">
+                                    <div class="fw-bold text-success small mb-2"><i class="bi bi-bank me-1"></i>ព័ត៌មានគណនីធនាគារ (Bank Account Details)</div>
+                                    <div class="row g-2">
+                                        <div class="col-md-4">
+                                            <label class="form-label small mb-1">ឈ្មោះធនាគារ (Bank)</label>
+                                            <input type="text" class="form-control form-control-sm" id="emp-bank-name" placeholder="Ex: ABA, ACLEDA...">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small mb-1">លេខគណនី (A/C No)</label>
+                                            <input type="text" class="form-control form-control-sm" id="emp-bank-account" placeholder="Ex: 001 234 567">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small mb-1">ឈ្មោះម្ចាស់គណនី (A/C Name)</label>
+                                            <input type="text" class="form-control form-control-sm" id="emp-bank-account-name" placeholder="Ex: CHORK SREYOUN">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer py-2 bg-dark border-secondary">
-                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">បិទ (Close)</button>
-                            </div>
+                            <button type="submit" class="btn btn-success w-100 text-white fw-bold mt-3">រក្សាទុក</button>
                         </div>
                     </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-primary">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-primary fw-bold">បញ្ជីបុគ្គលិក (Employee List)</h5>
+        <button class="btn btn-primary btn-sm" onclick="openAddEmployeeModal()"><i class="bi bi-plus-lg"></i> បន្ថែមបុគ្គលិកថ្មី</button>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped text-center align-middle mb-0" id="employeeTable">
+                <thead class="table-darkgreen">
+                    <tr>
+                        <th>រូបថត</th>
+                        <th>អត្តលេខ</th>
+                        <th>លេខអត្តសញ្ញាណបណ្ណ</th>
+                        <th>ឈ្មោះបុគ្គលិក</th>
+                        <th>ភេទ</th>
+                        <th>ផ្នែកការងារ</th>
+                        <th>តួនាទី</th>
+                        <th>ប្រភេទការងារ</th>
+                        <th>លេខទូរស័ព្ទ</th>
+                        <th>ប្រាក់ខែគោល</th>
+                        <th>សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeList">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- PHOTO VIEWER MODAL WITH ZOOM & DOWNLOAD -->
+<div class="modal fade" id="empPhotoViewerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-dark text-white py-2">
+                <h5 class="modal-title fw-bold fs-6 d-flex align-items-center mb-0">
+                    <i class="bi bi-person-bounding-box me-2 text-info"></i>
+                    <span id="viewer-emp-name">រូបថតបុគ្គលិក</span>
+                    <span id="viewer-emp-code" class="badge bg-secondary ms-2 small"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-2 bg-dark">
+                <!-- Image Display Viewport -->
+                <div id="viewer-photo-wrapper" style="width: 100%; height: 380px; overflow: hidden; background: #111; border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; cursor: grab;">
+                    <img id="viewer-emp-img" src="" alt="Employee Photo" style="max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.12s ease; user-select: none;">
                 </div>
+                <!-- Zoom & Download Controls -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mt-2 p-1 bg-secondary bg-opacity-25 rounded">
+                    <div class="d-flex align-items-center gap-1">
+                        <button type="button" class="btn btn-sm btn-outline-light px-2" onclick="zoomEmpPhoto(-0.2)" title="Zoom Out"><i class="bi bi-zoom-out"></i></button>
+                        <span id="viewer-zoom-level" class="badge bg-dark px-2 py-1" style="min-width: 48px;">100%</span>
+                        <button type="button" class="btn btn-sm btn-outline-light px-2" onclick="zoomEmpPhoto(0.2)" title="Zoom In"><i class="bi bi-zoom-in"></i></button>
+                        <button type="button" class="btn btn-sm btn-outline-warning px-2" onclick="resetEmpPhotoZoom()" title="Reset Zoom"><i class="bi bi-arrow-repeat"></i></button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-success fw-bold px-3 shadow-sm" id="viewer-download-btn" onclick="downloadEmpPhotoJpg()">
+                            <i class="bi bi-download me-1"></i>ទាញយក JPG
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer py-2 bg-dark border-secondary">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">បិទ (Close)</button>
+            </div>
+        </div>
+    </div>
+</div>

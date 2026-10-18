@@ -59,6 +59,7 @@ async function loadEmployees() {
         tbody.appendChild(tr);
     });
 }
+window.loadEmployees = loadEmployees;
 
 window.openAddEmployeeModal = async function() {
     editingEmployeeId = null;
