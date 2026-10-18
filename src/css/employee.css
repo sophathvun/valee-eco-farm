@@ -7,3 +7,64 @@
     margin-bottom: 0.35rem;
 }
 
+/* Compact Employee Table Styling */
+#employeeTable {
+    font-size: 0.82rem;
+    margin-bottom: 0;
+}
+
+#employeeTable thead th {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 6px !important;
+    white-space: nowrap;
+    vertical-align: middle;
+    letter-spacing: 0.2px;
+}
+
+#employeeTable tbody td {
+    font-size: 0.82rem;
+    padding: 6px 6px !important;
+    vertical-align: middle;
+}
+
+#employeeTable tbody td .emp-name-km {
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+#employeeTable tbody td .emp-name-latin {
+    font-size: 0.7rem;
+}
+
+#employeeTable tbody td .badge {
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 3px 6px;
+}
+
+#employeeTable tbody td img.emp-avatar {
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#employeeTable tbody td img.emp-avatar:hover {
+    transform: scale(1.08);
+}
+
+#employeeTable tbody td .btn-sm {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+}
+
+#employeeTable tbody td .btn-sm svg {
+    width: 14px;
+    height: 14px;
+}
+
+

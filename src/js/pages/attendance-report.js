@@ -187,13 +187,13 @@ window.generateAttendanceReport = async function() {
                             <div class="d-flex align-items-center">
                                 <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 24px; height: 24px; object-fit: cover;">
                                 <div style="line-height: 1.15; overflow: hidden; white-space: nowrap;">
-                                    <div class="fw-bold text-dark emp-name-km" style="font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.name}">${emp.name}</div>
-                                    <div class="text-muted emp-name-latin" style="font-size: 0.65rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
+                                    <div class="fw-bold text-dark emp-name-km" style="font-size: 0.76rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.name}">${emp.name}</div>
+                                    <div class="text-muted emp-name-latin" style="font-size: 0.62rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="align-middle text-center col-type">
-                            <span class="badge ${emp.type === 'Part-Time' ? 'bg-warning text-dark' : 'bg-primary bg-opacity-75 text-white'} px-1 py-1" style="font-size: 0.65rem; font-weight: 500;">
+                            <span class="badge ${emp.type === 'Part-Time' ? 'bg-warning text-dark' : 'bg-primary bg-opacity-75 text-white'} px-1 py-1" style="font-size: 0.62rem; font-weight: 500;">
                                 ${emp.type || 'Full-Time'}
                             </span>
                         </td>`;

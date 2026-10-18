@@ -47,7 +47,7 @@
 .att-table {
     border-collapse: separate !important;
     border-spacing: 0 !important;
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     width: max-content;
     min-width: 100%;
     margin-bottom: 0;
@@ -68,6 +68,7 @@
     height: 30px;
     padding: 3px 2px !important;
     font-weight: 700;
+    font-size: 0.75rem;
 }
 
 /* Row 2 sticky header (ព្រឹក / ល្ងាច / P / A / L) */
@@ -80,6 +81,7 @@
     height: 22px;
     padding: 1px 0 !important;
     font-weight: 600;
+    font-size: 0.68rem;
 }
 
 /* Sticky Top-Left Corner (Employee Header - spans both rows) */
@@ -95,6 +97,7 @@
     max-width: 210px;
     width: 185px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    font-size: 0.76rem;
 }
 
 /* Sticky Top-Right Corner (Totals Header in Row 1) */
@@ -219,7 +222,7 @@
     max-width: 42px;
     text-align: center;
     padding: 3px 2px !important;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
 }
 
 .att-table th.col-type,
@@ -230,14 +233,15 @@
     text-align: center;
     padding: 3px 2px !important;
     white-space: nowrap;
+    font-size: 0.72rem;
 }
 
 /* Department Group Header Row */
 .att-table tr.dept-header-row td.dept-header-cell {
     background-color: #f1f5f9 !important;
     color: #1e293b !important;
-    padding: 5px 10px !important;
-    font-size: 0.8rem;
+    padding: 4px 10px !important;
+    font-size: 0.76rem;
     font-weight: 700;
     border-top: 1px solid #cbd5e1 !important;
     border-bottom: 1.5px solid #cbd5e1 !important;
