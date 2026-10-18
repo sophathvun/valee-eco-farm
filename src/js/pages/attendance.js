@@ -91,9 +91,9 @@ function renderAttendanceTable(employees) {
             <td class="text-start align-middle col-emp">
                 <div class="d-flex align-items-center">
                     <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 28px; height: 28px; object-fit: cover;">
-                    <div style="line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        <div class="fw-bold text-body emp-name-km" style="font-size: 0.78rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${emp.name}">${emp.name}</div>
-                        <div class="text-muted emp-name-latin" style="font-size: 0.64rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
+                    <div style="line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-top: 2px;">
+                        <div class="text-body emp-name-km" style="font-size: 0.78rem; font-weight: normal; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${emp.name}">${emp.name}</div>
+                        <div class="text-muted emp-name-latin" style="font-size: 0.64rem; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
                     </div>
                 </div>
             </td>

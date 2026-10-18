@@ -30,7 +30,9 @@
 
 #employeeTable tbody td .emp-name-km {
     font-size: 0.82rem;
-    font-weight: 600;
+    font-weight: normal;
+    line-height: 1.35;
+    padding-top: 1px;
 }
 
 #employeeTable tbody td .emp-name-latin {

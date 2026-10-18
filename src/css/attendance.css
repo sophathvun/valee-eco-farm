@@ -185,7 +185,7 @@
     min-width: 170px;
     max-width: 210px;
     width: 185px;
-    padding: 3px 6px !important;
+    padding: 4px 6px !important;
     box-shadow: 2px 0 5px rgba(0,0,0,0.05);
 }
 .att-table tbody tr:hover td.col-emp {
@@ -204,7 +204,17 @@
     width: 165px;
     min-width: 165px;
     max-width: 165px;
+    padding: 4px 6px !important;
     box-shadow: none;
+}
+
+.emp-name-km {
+    font-weight: normal !important;
+    line-height: 1.35 !important;
+    padding-top: 1px;
+}
+.emp-name-latin {
+    line-height: 1.2 !important;
 }
 #attendance-table-container .att-table tbody td.col-type {
     position: sticky;

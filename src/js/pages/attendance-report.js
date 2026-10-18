@@ -186,9 +186,9 @@ window.generateAttendanceReport = async function() {
                         <td class="text-start align-middle col-emp">
                             <div class="d-flex align-items-center">
                                 <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 24px; height: 24px; object-fit: cover;">
-                                <div style="line-height: 1.15; overflow: hidden; white-space: nowrap;">
-                                    <div class="fw-bold text-dark emp-name-km" style="font-size: 0.76rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.name}">${emp.name}</div>
-                                    <div class="text-muted emp-name-latin" style="font-size: 0.62rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
+                                <div style="line-height: 1.35; overflow: hidden; white-space: nowrap; padding-top: 2px;">
+                                    <div class="text-dark emp-name-km" style="font-size: 0.76rem; font-weight: normal; line-height: 1.35; overflow: hidden; text-overflow: ellipsis;" title="${emp.name}">${emp.name}</div>
+                                    <div class="text-muted emp-name-latin" style="font-size: 0.62rem; line-height: 1.2; overflow: hidden; text-overflow: ellipsis;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
                                 </div>
                             </div>
                         </td>

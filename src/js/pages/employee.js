@@ -40,7 +40,7 @@ async function loadEmployees() {
             <td class="fw-bold text-primary">${emp.code || 'N/A'}</td>
             <td>${emp.nationalId || '-'}</td>
             <td class="text-start">
-                <div class="fw-bold text-dark emp-name-km">${emp.name}</div>
+                <div class="text-dark emp-name-km">${emp.name}</div>
                 ${emp.latinName ? `<div class="text-muted emp-name-latin">${emp.latinName}</div>` : ''}
             </td>
             <td>${emp.gender}</td>
