@@ -1616,9 +1616,7 @@ window.printPayrollMaster = async function(batchId) {
                         <th rowspan="2" style="width: 60px; vertical-align: middle;">តួនាទី</th>
                         <th rowspan="2" style="width: 50px; vertical-align: middle;">ប្រភេទ</th>
                         <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">ប្រាក់ខែគោល</th>
-                        <th rowspan="2" style="width: 25px; vertical-align: middle;">P</th>
-                        <th rowspan="2" style="width: 25px; vertical-align: middle;">L</th>
-                        <th rowspan="2" style="width: 25px; vertical-align: middle;">A</th>
+                        <th colspan="3" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">វត្តមាន</th>
                         <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">ប្រាក់គោលកន្លះខែ</th>
                         <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">កាត់អវត្តមាន</th>
                         <th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding: 2px 0;">ប្រាក់បន្ថែម</th>
@@ -1628,6 +1626,9 @@ window.printPayrollMaster = async function(batchId) {
                     <tr style="background-color: #146c43; color: #ffffff;">
                         <th style="width: 50px; text-align: right; padding: 2px 3px;">ប្រាក់ ($)</th>
                         <th style="width: 60px; text-align: right; padding: 2px 3px;">ប្រាក់ (៛)</th>
+                        <th style="width: 25px; text-align: center; padding: 2px 2px; background-color: #15803d; color: #fff;">P</th>
+                        <th style="width: 25px; text-align: center; padding: 2px 2px; background-color: #b45309; color: #fff;">L</th>
+                        <th style="width: 25px; text-align: center; padding: 2px 2px; background-color: #b91c1c; color: #fff;">A</th>
                         <th style="width: 50px; text-align: right; padding: 2px 3px;">ប្រាក់ ($)</th>
                         <th style="width: 60px; text-align: right; padding: 2px 3px;">ប្រាក់ (៛)</th>
                         <th style="width: 50px; text-align: right; padding: 2px 3px;">ប្រាក់ ($)</th>
