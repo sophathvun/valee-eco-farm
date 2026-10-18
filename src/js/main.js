@@ -125,6 +125,16 @@ async function applyBranding() {
             } else {
                 localStorage.removeItem('cachedSidebarLogo');
             }
+            if (brand.reportLogo) {
+                localStorage.setItem('cachedReportLogo', brand.reportLogo);
+                const rLogo = document.getElementById('brand-logo-report-att');
+                if (rLogo) {
+                    rLogo.src = brand.reportLogo;
+                    rLogo.style.display = 'block';
+                }
+            } else {
+                localStorage.removeItem('cachedReportLogo');
+            }
             if (brand.favicon) {
                 let link = document.querySelector("link[rel~='icon']");
                 if (!link) {

@@ -9,6 +9,38 @@ function formatReportDate(dateStr) {
     return `${d}-${mName}-${y}`;
 }
 
+window.loadAttendanceReportLogo = async function() {
+    const logoEl = document.getElementById('brand-logo-report-att');
+    if (!logoEl) return;
+    
+    // 1. Try local storage cache for instant rendering
+    const cached = localStorage.getItem('cachedReportLogo');
+    if (cached) {
+        logoEl.src = cached;
+        logoEl.style.display = 'block';
+    }
+    
+    // 2. Fetch from Firebase brandSettings
+    try {
+        if (typeof db !== 'undefined') {
+            if (!db.brandSettings) db.brandSettings = new FirebaseStore('brandSettings');
+            const brand = await db.brandSettings.get(1);
+            if (brand) {
+                const logoUrl = brand.reportLogo || brand.sidebarLogo || 'assets/images/logo.png';
+                if (logoUrl) {
+                    logoEl.src = logoUrl;
+                    logoEl.style.display = 'block';
+                    if (brand.reportLogo) {
+                        localStorage.setItem('cachedReportLogo', brand.reportLogo);
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Error loading report logo:', e);
+    }
+};
+
 window.initAttendanceReport = function() {
     const fromInput = document.getElementById('repAttFrom');
     const toInput = document.getElementById('repAttTo');
@@ -23,6 +55,8 @@ window.initAttendanceReport = function() {
         toInput.value = `${yyyy}-${mm}-${String(lastDay).padStart(2, '0')}`;
     }
     
+    loadAttendanceReportLogo();
+    
     if (typeof generateAttendanceReport === 'function') {
         generateAttendanceReport();
     }
@@ -33,15 +67,6 @@ window.initAttendanceReport = function() {
                 if (res && res.appName) {
                     const el = document.getElementById('brand-name-report-att');
                     if (el) el.innerText = res.appName;
-                }
-            });
-        }
-        if (db.brandSettings) {
-            db.brandSettings.get(1).then(brand => {
-                const logoEl = document.getElementById('brand-logo-report-att');
-                if (brand && brand.reportLogo && logoEl) {
-                    logoEl.src = brand.reportLogo;
-                    logoEl.style.display = 'block';
                 }
             });
         }
@@ -266,7 +291,11 @@ window.generateAttendanceReport = async function() {
     }
 };
 
-window.printAttReport = function() {
+window.printAttReport = async function() {
+    if (typeof loadAttendanceReportLogo === 'function') {
+        await loadAttendanceReportLogo();
+    }
+    
     let style = document.getElementById('dynamic-print-orientation');
     if (!style) {
         style = document.createElement('style');
@@ -289,5 +318,13 @@ window.printAttReport = function() {
     
     setTimeout(() => {
         window.print();
-    }, 250);
+    }, 300);
 };
+
+// Initial load check for logo
+setTimeout(() => {
+    if (typeof loadAttendanceReportLogo === 'function') {
+        loadAttendanceReportLogo();
+    }
+}, 150);
+

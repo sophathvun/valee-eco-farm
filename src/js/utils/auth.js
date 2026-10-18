@@ -351,6 +351,10 @@ window.showTab = function(tabId, subId = null) {
     if (tabId === 'attendance') {
         if (typeof initAttendance === 'function') initAttendance();
     }
+    
+    if (tabId === 'attendance-report') {
+        if (typeof initAttendanceReport === 'function') initAttendanceReport();
+    }
 }
 
 function formatCurrency(amount, currency) {
