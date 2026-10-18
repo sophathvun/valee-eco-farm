@@ -555,7 +555,9 @@ window.viewPayrollDetail = async function(batchId) {
 
         batch.items.forEach(it => {
             const cur = it.currency || 'USD';
-            const b = parseFloat(it.baseSalary) || 0;
+            const isPartTime = (it.type === 'Part-Time');
+            const dRate = parseFloat(it.dailyRate) || (isPartTime ? (parseFloat(it.baseSalary) || 0) : ((parseFloat(it.baseSalary) || 0) / 30));
+            const b = isPartTime ? (dRate * 30) : (parseFloat(it.baseSalary) || 0);
             const pb = parseFloat(it.periodBaseSalary) || 0;
             const ad = parseFloat(it.absenceDeduction) || 0;
             const al = parseFloat(it.allowance) || 0;
@@ -652,24 +654,23 @@ window.viewPayrollDetail = async function(batchId) {
                 const typeBadge = isPartTime ? '<span class="badge bg-warning text-dark px-1">Part-Time</span>' : '<span class="badge bg-primary bg-opacity-75 text-white px-1">Full-Time</span>';
                 
                 const cur = it.currency || 'USD';
-                const b = parseFloat(it.baseSalary) || 0;
+                const dRate = parseFloat(it.dailyRate) || (isPartTime ? (parseFloat(it.baseSalary) || 0) : ((parseFloat(it.baseSalary) || 0) / 30));
+                const b = isPartTime ? (dRate * 30) : (parseFloat(it.baseSalary) || 0);
                 const pb = parseFloat(it.periodBaseSalary) || 0;
                 const ad = parseFloat(it.absenceDeduction) || 0;
                 const al = parseFloat(it.allowance) || 0;
                 const od = parseFloat(it.otherDeduction) || 0;
                 const net = parseFloat(it.netSalary) || 0;
 
-                // Base Salary display
-                const baseUSDDisplay = cur === 'USD' ? formatPayCurrency(b, 'USD') : '<span class="text-muted">-</span>';
-                const baseKHRDisplay = cur === 'KHR' ? formatPayCurrency(b, 'KHR') : '<span class="text-muted">-</span>';
+                // Base Salary display (Full month equivalent for both Full-Time and Part-Time)
+                const baseNoteHtml = isPartTime ? `<br><small class="text-muted" style="font-size: 0.72rem;">(${formatPayCurrency(dRate, cur)}/ថ្ងៃ × 30)</small>` : '';
+                const baseUSDDisplay = cur === 'USD' ? `${formatPayCurrency(b, 'USD')}${baseNoteHtml}` : '<span class="text-muted">-</span>';
+                const baseKHRDisplay = cur === 'KHR' ? `${formatPayCurrency(b, 'KHR')}${baseNoteHtml}` : '<span class="text-muted">-</span>';
 
-                // Period Base display
-                let periodBaseUSDDisplay = '<span class="text-muted">-</span>';
-                let periodBaseKHRDisplay = '<span class="text-muted">-</span>';
-                if (!isPartTime) {
-                    if (cur === 'USD') periodBaseUSDDisplay = formatPayCurrency(pb, 'USD');
-                    else periodBaseKHRDisplay = formatPayCurrency(pb, 'KHR');
-                }
+                // Period Base display (Shows actual period base earnings)
+                const periodNoteHtml = isPartTime ? `<br><small class="text-muted" style="font-size: 0.72rem;">(${it.workedDays} ថ្ងៃ)</small>` : '';
+                const periodBaseUSDDisplay = cur === 'USD' ? `${formatPayCurrency(pb, 'USD')}${periodNoteHtml}` : '<span class="text-muted">-</span>';
+                const periodBaseKHRDisplay = cur === 'KHR' ? `${formatPayCurrency(pb, 'KHR')}${periodNoteHtml}` : '<span class="text-muted">-</span>';
 
                 // Absence Deduction display
                 let deductUSDDisplay = '<span class="text-muted">-</span>';
@@ -1480,7 +1481,8 @@ window.printPayrollMaster = async function(batchId) {
         emps.forEach(it => {
             const isPartTime = (it.type === 'Part-Time');
             const cur = it.currency || 'USD';
-            const b = parseFloat(it.baseSalary) || 0;
+            const dRate = parseFloat(it.dailyRate) || (isPartTime ? (parseFloat(it.baseSalary) || 0) : ((parseFloat(it.baseSalary) || 0) / 30));
+            const b = isPartTime ? (dRate * 30) : (parseFloat(it.baseSalary) || 0);
             const pb = parseFloat(it.periodBaseSalary) || 0;
             const ad = parseFloat(it.absenceDeduction) || 0;
             const al = parseFloat(it.allowance) || 0;
@@ -1507,15 +1509,13 @@ window.printPayrollMaster = async function(batchId) {
             gTotL += (it.leaveDays || 0);
             gTotA += (it.absentDays || 0);
 
-            const baseUSD = cur === 'USD' ? formatPayCurrency(b, 'USD') : '<span style="color: #94a3b8;">-</span>';
-            const baseKHR = cur === 'KHR' ? formatPayCurrency(b, 'KHR') : '<span style="color: #94a3b8;">-</span>';
+            const baseNote = isPartTime ? `<br><small style="color: #64748b; font-size: 6.8px;">(${formatPayCurrency(dRate, cur)}/ថ្ងៃ×30)</small>` : '';
+            const baseUSD = cur === 'USD' ? `${formatPayCurrency(b, 'USD')}${baseNote}` : '<span style="color: #94a3b8;">-</span>';
+            const baseKHR = cur === 'KHR' ? `${formatPayCurrency(b, 'KHR')}${baseNote}` : '<span style="color: #94a3b8;">-</span>';
 
-            let periodUSD = '<span style="color: #94a3b8;">-</span>';
-            let periodKHR = '<span style="color: #94a3b8;">-</span>';
-            if (!isPartTime) {
-                if (cur === 'USD') periodUSD = formatPayCurrency(pb, 'USD');
-                else periodKHR = formatPayCurrency(pb, 'KHR');
-            }
+            const periodNote = isPartTime ? `<br><small style="color: #64748b; font-size: 6.8px;">(${it.workedDays} ថ្ងៃ)</small>` : '';
+            const periodUSD = cur === 'USD' ? `${formatPayCurrency(pb, 'USD')}${periodNote}` : '<span style="color: #94a3b8;">-</span>';
+            const periodKHR = cur === 'KHR' ? `${formatPayCurrency(pb, 'KHR')}${periodNote}` : '<span style="color: #94a3b8;">-</span>';
 
             let deductUSD = '<span style="color: #94a3b8;">-</span>';
             let deductKHR = '<span style="color: #94a3b8;">-</span>';
@@ -1762,7 +1762,8 @@ window.exportPayrollExcel = async function(batchId) {
     batch.items.forEach((it, idx) => {
         const cur = it.currency || 'USD';
         const isPartTime = (it.type === 'Part-Time');
-        const b = parseFloat(it.baseSalary) || 0;
+        const dRate = parseFloat(it.dailyRate) || (isPartTime ? (parseFloat(it.baseSalary) || 0) : ((parseFloat(it.baseSalary) || 0) / 30));
+        const b = isPartTime ? (dRate * 30) : (parseFloat(it.baseSalary) || 0);
         const pb = parseFloat(it.periodBaseSalary) || 0;
         const ad = parseFloat(it.absenceDeduction) || 0;
         const al = parseFloat(it.allowance) || 0;
@@ -1780,10 +1781,8 @@ window.exportPayrollExcel = async function(batchId) {
             baseKHR = b;
             sumBaseKHR += b;
 
-            if (!isPartTime) {
-                periodKHR = pb;
-                sumPeriodKHR += pb;
-            }
+            periodKHR = pb;
+            sumPeriodKHR += pb;
 
             if (ad > 0) {
                 absKHR = ad;
@@ -1806,10 +1805,8 @@ window.exportPayrollExcel = async function(batchId) {
             baseUSD = b;
             sumBaseUSD += b;
 
-            if (!isPartTime) {
-                periodUSD = pb;
-                sumPeriodUSD += pb;
-            }
+            periodUSD = pb;
+            sumPeriodUSD += pb;
 
             if (ad > 0) {
                 absUSD = ad;
