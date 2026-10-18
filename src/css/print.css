@@ -328,12 +328,16 @@
         white-space: nowrap !important;
     }
     .print-table td.col-type .badge {
-        font-size: 6.5px !important;
-        padding: 1px 3px !important;
-        font-weight: 600 !important;
-        border: 0.5px solid #cbd5e1 !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        color: #000000 !important;
+        border: none !important;
+        padding: 0 !important;
+        font-size: 7.5px !important;
+        font-weight: normal !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        display: inline !important;
     }
 
     /* Alternating Day Column Backgrounds in Print */
