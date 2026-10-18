@@ -697,11 +697,8 @@ window.viewPayrollDetail = async function(batchId) {
                     <td colspan="11" class="text-end py-2 px-3 text-success">
                         <i class="bi bi-calculator me-1"></i> សរុបរួមស្មើនឹង ($ និង ៛) <small class="text-muted fw-normal">(អត្រាប្តូរប្រាក់ 1$ = ${exRate.toLocaleString('en-US')} ៛) :</small>
                     </td>
-                    <td class="text-end py-2 px-2 fw-bold text-success fs-6">
-                        ${formatPayCurrency(grandTotalAllUSD, 'USD')}
-                    </td>
-                    <td class="text-end py-2 px-2 fw-bold text-success fs-6">
-                        ${formatPayCurrency(grandTotalAllKHR, 'KHR')}
+                    <td colspan="2" class="text-end py-2 px-3 fw-bold text-success fs-6">
+                        ${formatPayCurrency(grandTotalAllUSD, 'USD')} = ${formatPayCurrency(grandTotalAllKHR, 'KHR')}
                     </td>
                     <td></td>
                 </tr>
@@ -1373,10 +1370,11 @@ window.printPayrollMaster = async function(batchId) {
                     </tr>
                     <tr style="background-color: #d1fae5; font-weight: bold; border-top: 1px solid #10b981; border-bottom: 2px solid #0f5132;">
                         <td colspan="11" style="text-align: right; padding-right: 12px; color: #065f46; font-size: 9px;">
-                            សរុបរួមគិតស្មើ ($ និង ៛) <span style="font-weight: normal; color: #475569; font-size: 8px;">(អត្រាប្តូរប្រាក់ 1$ = ${exRate.toLocaleString('en-US')} ៛) :</span>
+                            សរុបរួមស្មើនឹង ($ និង ៛) <span style="font-weight: normal; color: #475569; font-size: 8px;">(អត្រាប្តូរប្រាក់ 1$ = ${exRate.toLocaleString('en-US')} ៛) :</span>
                         </td>
-                        <td style="text-align: right; color: #047857; font-size: 10px; font-weight: bold;">${formatPayCurrency(grandTotalPrintUSD, 'USD')}</td>
-                        <td style="text-align: right; color: #047857; font-size: 10px; font-weight: bold;">${formatPayCurrency(grandTotalPrintKHR, 'KHR')}</td>
+                        <td colspan="2" style="text-align: right; color: #047857; font-size: 10px; font-weight: bold; padding-right: 8px;">
+                            ${formatPayCurrency(grandTotalPrintUSD, 'USD')} = ${formatPayCurrency(grandTotalPrintKHR, 'KHR')}
+                        </td>
                     </tr>
                 </tfoot>
             </table>
@@ -1482,7 +1480,7 @@ window.exportPayrollExcel = async function(batchId) {
     const grandTotalKHR = (sumExcelUSD * exRate) + sumExcelKHR;
 
     csvContent += `\n"","","","","","","","","","","","","","","","","","","សរុបតាមរូបិយប័ណ្ណ",${sumExcelUSD},${sumExcelKHR}\n`;
-    csvContent += `"","","","","","","","","","","","","","","","","","","សរុបរួម (1$ = ${exRate} ៛)",${grandTotalUSD.toFixed(2)},${Math.round(grandTotalKHR)}\n`;
+    csvContent += `"","","","","","","","","","","","","","","","","","","សរុបរួម (1$ = ${exRate} ៛)","${formatPayCurrency(grandTotalUSD, 'USD')} = ${formatPayCurrency(grandTotalKHR, 'KHR')}"\n`;
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
