@@ -450,7 +450,11 @@ window.handleGeneratePayroll = async function(e) {
                 deductionNote: deductionNote,
                 grossSalary: grossSalary,
                 netSalary: netSalary,
-                status: 'Pending'
+                status: 'Pending',
+                bankQr: emp.bankQr || '',
+                bankName: emp.bankName || '',
+                bankAccount: emp.bankAccount || '',
+                bankAccountName: emp.bankAccountName || ''
             });
         });
 
@@ -732,10 +736,10 @@ window.viewPayrollDetail = async function(batchId) {
                         <td class="fw-bold text-success text-end">${netKHRDisplay}</td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-primary btn-sm px-2" onclick="openEditItemModal(${it.empId})" title="កែប្រាក់បន្ថែម/កាត់">
+                                <button class="btn btn-outline-primary btn-sm px-2" onclick="openEditItemModal('${it.empId}')" title="កែប្រាក់បន្ថែម/កាត់">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <button class="btn btn-outline-success btn-sm px-2" onclick="viewPayslip(${batch.id}, ${it.empId})" title="ប័ណ្ណបើកប្រាក់ (Payslip)">
+                                <button class="btn btn-outline-success btn-sm px-2" onclick="viewPayslip('${batch.id}', '${it.empId}')" title="ប័ណ្ណបើកប្រាក់ (Payslip)">
                                     <i class="bi bi-receipt"></i>
                                 </button>
                             </div>
@@ -1211,15 +1215,34 @@ window.deletePayrollBatch = async function(batchId) {
 };
 
 // ====== 9. EMPLOYEE PAYSLIP ======
-window.viewPayslip = function(batchId, empId) {
+window.viewPayslip = async function(batchId, empId) {
     let batch = currentBatch;
-    if (!batch || batch.id !== batchId) {
-        batch = currentPayrollBatches.find(b => b.id === batchId);
+    if (!batch || String(batch.id) !== String(batchId)) {
+        batch = currentPayrollBatches.find(b => String(b.id) === String(batchId));
+    }
+    if (!batch && typeof db !== 'undefined' && db.payroll) {
+        batch = await db.payroll.get(batchId);
     }
     if (!batch) return;
 
-    const item = batch.items.find(it => it.empId === empId);
+    const item = batch.items.find(it => String(it.empId) === String(empId));
     if (!item) return;
+
+    // Fetch latest employee data to ensure fresh bank QR & details even for older batches
+    let emp = null;
+    try {
+        if (typeof db !== 'undefined' && db.employees) {
+            emp = await db.employees.get(empId);
+        }
+    } catch (e) {
+        console.warn('Could not fetch employee details for payslip bank info:', e);
+    }
+
+    const bankQr = (emp && emp.bankQr) || item.bankQr || '';
+    const bankName = (emp && emp.bankName) || item.bankName || '';
+    const bankAccount = (emp && emp.bankAccount) || item.bankAccount || '';
+    const bankAccountName = (emp && emp.bankAccountName) || item.bankAccountName || (emp && (emp.nameKh || emp.name)) || item.empName || '';
+    const hasBankData = Boolean(bankQr || bankName || bankAccount);
 
     const reportLogo = localStorage.getItem('cachedReportLogo') || localStorage.getItem('cachedSidebarLogo') || 'assets/images/logo.png';
     const cur = item.currency || 'USD';
@@ -1367,7 +1390,7 @@ window.viewPayslip = function(batchId, empId) {
             </div>
 
             <!-- Net Salary Box -->
-            <div class="payslip-total-box d-flex justify-content-between align-items-center">
+            <div class="payslip-total-box d-flex justify-content-between align-items-center mb-3">
                 <div>
                     <div class="text-success fw-bold text-uppercase" style="font-size: 0.85rem; letter-spacing: 0.5px;">ប្រាក់បៀវត្សរ៍សុទ្ធទទួលបាន (NET SALARY)</div>
                     <small class="text-muted">បូកសរុបចំណូល ដកការកាត់អវត្តមាន និងកាត់ផ្សេងៗ (អត្រាប្តូរប្រាក់ 1$ = ${exRate.toLocaleString('en-US')} ៛)</small>
@@ -1375,6 +1398,68 @@ window.viewPayslip = function(batchId, empId) {
                 <div class="text-end">
                     <h3 class="mb-0 fw-bold text-success">${formatPayCurrency(netUSD, 'USD')}</h3>
                     <div class="fw-bold text-success fs-6">${formatPayCurrency(netKHR, 'KHR')}</div>
+                </div>
+            </div>
+
+            <!-- Bank QR Code & Payment Section -->
+            <div class="payslip-bank-box p-3 rounded mb-3 ${hasBankData ? '' : 'd-print-none'}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-qr-code text-primary fs-5 me-2"></i>
+                        <span class="fw-bold text-dark text-uppercase" style="font-size: 0.82rem; letter-spacing: 0.5px;">ព័ត៌មានគណនីធនាគារ & ស្កេនទូទាត់ (Bank Payment / Scan to Pay)</span>
+                    </div>
+                    <div class="d-print-none">
+                        <button type="button" class="btn btn-sm btn-light border py-0 px-2 text-primary" onclick="openEditBankInfoModal('${batch.id}', '${item.empId}')" title="កែសម្រួលព័ត៌មានធនាគារ">
+                            <i class="bi bi-pencil-square me-1"></i>កែព័ត៌មានធនាគារ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row align-items-center g-3">
+                    <!-- Left: QR Code -->
+                    <div class="col-auto text-center">
+                        ${bankQr ? `
+                            <div class="payslip-qr-container bg-white p-1 rounded border shadow-sm d-inline-block">
+                                <img src="${bankQr}" class="payslip-qr-img" alt="Bank QR Code">
+                            </div>
+                        ` : `
+                            <div class="payslip-qr-placeholder border border-2 border-dashed rounded d-flex flex-column align-items-center justify-content-center p-2 d-print-none" style="width: 100px; height: 100px; cursor: pointer; background: #ffffff;" onclick="document.getElementById('payslip-qr-file-input-${item.empId}').click()" title="ចុចដើម្បីបញ្ចូល QR Code">
+                                <i class="bi bi-qr-code-scan fs-3 text-primary"></i>
+                                <span class="small text-muted mt-1" style="font-size: 0.72rem; line-height: 1.1;">+ Bank QR</span>
+                            </div>
+                        `}
+                    </div>
+
+                    <!-- Right: Bank Details & Actions -->
+                    <div class="col">
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <div class="small text-muted" style="font-size: 0.75rem;">ធនាគារ (Bank Name):</div>
+                                <div class="fw-bold text-dark" style="font-size: 0.88rem;">${bankName || '<span class="text-muted fw-normal fst-italic">មិនទាន់កំណត់</span>'}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="small text-muted" style="font-size: 0.75rem;">លេខគណនី (Account No):</div>
+                                <div class="fw-bold text-primary font-monospace" style="font-size: 0.92rem;">${bankAccount || '<span class="text-muted fw-normal fst-italic">មិនទាន់កំណត់</span>'}</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="small text-muted" style="font-size: 0.75rem;">ឈ្មោះម្ចាស់គណនី (Account Name):</div>
+                                <div class="fw-bold text-dark text-uppercase" style="font-size: 0.88rem;">${bankAccountName || item.empName}</div>
+                            </div>
+                        </div>
+
+                        <!-- Action buttons (d-print-none) -->
+                        <div class="mt-2 pt-2 border-top d-flex flex-wrap gap-2 d-print-none">
+                            <input type="file" id="payslip-qr-file-input-${item.empId}" accept="image/*" class="d-none" onchange="uploadEmployeeBankQr(event, '${batch.id}', '${item.empId}')">
+                            <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 0.78rem;" onclick="document.getElementById('payslip-qr-file-input-${item.empId}').click()">
+                                <i class="bi bi-cloud-arrow-up me-1"></i>${bankQr ? 'ផ្លាស់ប្តូរ QR Code' : '+ បញ្ចូល Bank QR Code'}
+                            </button>
+                            ${bankQr ? `
+                                <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" style="font-size: 0.78rem;" onclick="removeEmployeeBankQr('${batch.id}', '${item.empId}')">
+                                    <i class="bi bi-trash me-1"></i>លុប QR
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1400,6 +1485,240 @@ window.viewPayslip = function(batchId, empId) {
     if (modalEl) {
         const m = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
         m.show();
+    }
+};
+
+// Image Compression Helper for Bank QR Code
+window.compressQrImage = function(file, maxDimension = 600, quality = 0.9) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = reject;
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onerror = reject;
+            img.onload = () => {
+                let { width, height } = img;
+                if (width > maxDimension || height > maxDimension) {
+                    if (width > height) {
+                        height = Math.round((height * maxDimension) / width);
+                        width = maxDimension;
+                    } else {
+                        width = Math.round((width * maxDimension) / height);
+                        height = maxDimension;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+
+                // Fill white background so transparent PNGs/QRs don't turn black
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // JPEG at 0.9 keeps QR crisp and sharp for scanning while keeping size ~30KB-50KB
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+};
+
+// Upload Bank QR Code directly from Payslip
+window.uploadEmployeeBankQr = async function(event, batchId, empId) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        Swal.fire('ឯកសារមិនត្រឹមត្រូវ', 'សូមជ្រើសរើសឯកសាររូបភាព (JPG, PNG) សម្រាប់ QR Code!', 'warning');
+        return;
+    }
+
+    try {
+        Swal.fire({
+            title: 'កំពុងបញ្ចូល QR Code...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        const compressedBase64 = await window.compressQrImage(file, 600, 0.9);
+
+        // 1. Update Employee in db.employees
+        if (typeof db !== 'undefined' && db.employees) {
+            await db.employees.update(empId, { bankQr: compressedBase64 });
+        }
+
+        // 2. Update Batch in db.payroll if batch exists
+        if (batchId) {
+            let batch = currentBatch && String(currentBatch.id) === String(batchId) ? currentBatch : null;
+            if (!batch && db.payroll) {
+                batch = await db.payroll.get(batchId);
+            }
+            if (batch && Array.isArray(batch.items)) {
+                const item = batch.items.find(it => String(it.empId) === String(empId));
+                if (item) {
+                    item.bankQr = compressedBase64;
+                    await db.payroll.update(batch.id, batch);
+                }
+            }
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'ជោគជ័យ',
+            text: 'បានរក្សាទុក Bank QR Code រួចរាល់!',
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+        // Re-render payslip modal to show new QR immediately
+        await window.viewPayslip(batchId, empId);
+
+    } catch (err) {
+        console.error("Error uploading bank QR:", err);
+        Swal.fire('បញ្ហា', 'មិនអាចបញ្ចូល QR Code បានទេ: ' + err.message, 'error');
+    }
+};
+
+// Remove Bank QR Code directly from Payslip
+window.removeEmployeeBankQr = async function(batchId, empId) {
+    const confirmRes = await Swal.fire({
+        title: 'លុប Bank QR Code?',
+        text: 'តើអ្នកពិតជាចង់លុបរូបភាព QR Code នេះមែនទេ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'បាទ/ចាស លុបចេញ',
+        cancelButtonText: 'បោះបង់'
+    });
+
+    if (!confirmRes.isConfirmed) return;
+
+    try {
+        // 1. Update Employee in db.employees
+        if (typeof db !== 'undefined' && db.employees) {
+            await db.employees.update(empId, { bankQr: '' });
+        }
+
+        // 2. Update Batch in db.payroll
+        if (batchId) {
+            let batch = currentBatch && String(currentBatch.id) === String(batchId) ? currentBatch : null;
+            if (!batch && db.payroll) {
+                batch = await db.payroll.get(batchId);
+            }
+            if (batch && Array.isArray(batch.items)) {
+                const item = batch.items.find(it => String(it.empId) === String(empId));
+                if (item) {
+                    item.bankQr = '';
+                    await db.payroll.update(batch.id, batch);
+                }
+            }
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'បានលុបរួចរាល់',
+            timer: 1200,
+            showConfirmButton: false
+        });
+
+        // Re-render payslip
+        await window.viewPayslip(batchId, empId);
+
+    } catch (err) {
+        console.error("Error removing bank QR:", err);
+        Swal.fire('បញ្ហា', err.message, 'error');
+    }
+};
+
+// Open Quick Edit Bank Info Modal from Payslip
+window.openEditBankInfoModal = async function(batchId, empId) {
+    try {
+        let emp = null;
+        if (typeof db !== 'undefined' && db.employees) {
+            emp = await db.employees.get(empId);
+        }
+        let batchItem = null;
+        if (currentBatch && Array.isArray(currentBatch.items)) {
+            batchItem = currentBatch.items.find(it => String(it.empId) === String(empId));
+        }
+
+        const currentBankName = (emp && emp.bankName) || (batchItem && batchItem.bankName) || '';
+        const currentAccount = (emp && emp.bankAccount) || (batchItem && batchItem.bankAccount) || '';
+        const currentAccName = (emp && emp.bankAccountName) || (batchItem && batchItem.bankAccountName) || (emp && (emp.nameKh || emp.name)) || (batchItem && batchItem.empName) || '';
+
+        const { value: formValues } = await Swal.fire({
+            title: 'ព័ត៌មានគណនីធនាគារ',
+            html: `
+                <div class="text-start px-2">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">ឈ្មោះធនាគារ (Bank Name)</label>
+                        <input id="swal-bank-name" class="form-control" placeholder="ឧ. ABA Bank, ACLEDA, Canadia, Wing..." value="${currentBankName.replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">លេខគណនី (Account Number)</label>
+                        <input id="swal-bank-account" class="form-control font-monospace" placeholder="ឧ. 000 123 456" value="${currentAccount.replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">ឈ្មោះម្ចាស់គណនី (Account Name)</label>
+                        <input id="swal-bank-acc-name" class="form-control text-uppercase" placeholder="ឧ. SOK CHANTHA" value="${currentAccName.replace(/"/g, '&quot;')}">
+                    </div>
+                </div>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'រក្សាទុក',
+            cancelButtonText: 'បោះបង់',
+            confirmButtonColor: '#198754',
+            preConfirm: () => {
+                return {
+                    bankName: document.getElementById('swal-bank-name').value.trim(),
+                    bankAccount: document.getElementById('swal-bank-account').value.trim(),
+                    bankAccountName: document.getElementById('swal-bank-acc-name').value.trim()
+                };
+            }
+        });
+
+        if (!formValues) return;
+
+        // Update employee in db.employees
+        if (typeof db !== 'undefined' && db.employees) {
+            await db.employees.update(empId, formValues);
+        }
+
+        // Update batch item in db.payroll
+        if (batchId) {
+            let batch = currentBatch && String(currentBatch.id) === String(batchId) ? currentBatch : null;
+            if (!batch && db.payroll) {
+                batch = await db.payroll.get(batchId);
+            }
+            if (batch && Array.isArray(batch.items)) {
+                const item = batch.items.find(it => String(it.empId) === String(empId));
+                if (item) {
+                    item.bankName = formValues.bankName;
+                    item.bankAccount = formValues.bankAccount;
+                    item.bankAccountName = formValues.bankAccountName;
+                    await db.payroll.update(batch.id, batch);
+                }
+            }
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'រក្សាទុកជោគជ័យ',
+            timer: 1200,
+            showConfirmButton: false
+        });
+
+        await window.viewPayslip(batchId, empId);
+
+    } catch (err) {
+        console.error("Error updating bank info:", err);
+        Swal.fire('បញ្ហា', err.message, 'error');
     }
 };
 

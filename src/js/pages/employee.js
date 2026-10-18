@@ -75,8 +75,11 @@ window.openAddEmployeeModal = async function() {
         preview.dataset.hasCustom = 'false';
     }
     if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
-    if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
-    
+    if (document.getElementById('emp-bank-name')) document.getElementById('emp-bank-name').value = '';
+    if (document.getElementById('emp-bank-account')) document.getElementById('emp-bank-account').value = '';
+    if (document.getElementById('emp-bank-account-name')) document.getElementById('emp-bank-account-name').value = '';
+    if (typeof removeEmployeeBankQrInForm === 'function') removeEmployeeBankQrInForm();
+
     const modalTitle = document.querySelector('#employeeModal .modal-title');
     if (modalTitle) modalTitle.textContent = 'បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី';
     
@@ -158,6 +161,23 @@ window.editEmployee = async function(id) {
         }
         if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
         if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
+
+        // Bank details & QR
+        if (document.getElementById('emp-bank-name')) document.getElementById('emp-bank-name').value = emp.bankName || '';
+        if (document.getElementById('emp-bank-account')) document.getElementById('emp-bank-account').value = emp.bankAccount || '';
+        if (document.getElementById('emp-bank-account-name')) document.getElementById('emp-bank-account-name').value = emp.bankAccountName || '';
+        const qrPreview = document.getElementById('emp-bank-qr-preview');
+        const qrPlaceholder = document.getElementById('emp-bank-qr-placeholder');
+        const qrRemoveBtn = document.getElementById('btn-remove-emp-bank-qr');
+        if (emp.bankQr) {
+            if (qrPreview) { qrPreview.src = emp.bankQr; qrPreview.style.display = 'block'; }
+            if (qrPlaceholder) qrPlaceholder.style.display = 'none';
+            if (qrRemoveBtn) qrRemoveBtn.style.display = 'block';
+        } else {
+            if (qrPreview) { qrPreview.src = ''; qrPreview.style.display = 'none'; }
+            if (qrPlaceholder) qrPlaceholder.style.display = 'block';
+            if (qrRemoveBtn) qrRemoveBtn.style.display = 'none';
+        }
         
         const subBtn = document.querySelector('#employeeForm button[type="submit"]');
         if (subBtn) subBtn.innerHTML = 'រក្សាទុក (Update)';
@@ -215,6 +235,12 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         const photoEl = document.getElementById('emp-photo-preview');
         const photo = (photoEl && photoEl.dataset.hasCustom === 'true' && photoEl.getAttribute('src')) ? photoEl.getAttribute('src') : '';
 
+        const bankName = document.getElementById('emp-bank-name') ? document.getElementById('emp-bank-name').value.trim() : '';
+        const bankAccount = document.getElementById('emp-bank-account') ? document.getElementById('emp-bank-account').value.trim() : '';
+        const bankAccountName = document.getElementById('emp-bank-account-name') ? document.getElementById('emp-bank-account-name').value.trim() : '';
+        const qrPreview = document.getElementById('emp-bank-qr-preview');
+        const bankQr = (qrPreview && qrPreview.style.display !== 'none' && qrPreview.getAttribute('src')) ? qrPreview.getAttribute('src') : '';
+
         const allEmps = await db.employees.toArray();
         const isDuplicate = allEmps.some(e => e.code === code && e.id !== editingEmployeeId);
         if (isDuplicate) {
@@ -237,7 +263,11 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
             wageType: wageType || 'Monthly',
             currency: currency || 'USD',
             salary: isNaN(salary) ? 0 : salary,
-            photo: photo || ''
+            photo: photo || '',
+            bankName: bankName || '',
+            bankAccount: bankAccount || '',
+            bankAccountName: bankAccountName || '',
+            bankQr: bankQr || ''
         };
         if (editingEmployeeId) {
             await db.employees.update(editingEmployeeId, data);
@@ -251,6 +281,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         document.getElementById('emp-type').value = 'Full-Time';
         document.getElementById('emp-wage-type').value = 'Monthly';
         if(document.getElementById('emp-currency')) document.getElementById('emp-currency').value = 'USD';
+        if (typeof removeEmployeeBankQrInForm === 'function') removeEmployeeBankQrInForm();
         editingEmployeeId = null;
         const prevPhoto = document.getElementById('emp-photo-preview');
         if (prevPhoto) {
@@ -325,6 +356,46 @@ window.removeEmployeePhoto = function() {
     if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
 };
 updateRemovePhotoBtnVisibility();
+
+// ====== BANK QR HELPER FOR EMPLOYEE FORM ======
+window.removeEmployeeBankQrInForm = function() {
+    const preview = document.getElementById('emp-bank-qr-preview');
+    const placeholder = document.getElementById('emp-bank-qr-placeholder');
+    const removeBtn = document.getElementById('btn-remove-emp-bank-qr');
+    const input = document.getElementById('emp-bank-qr');
+    if (preview) {
+        preview.src = '';
+        preview.style.display = 'none';
+    }
+    if (placeholder) placeholder.style.display = 'block';
+    if (removeBtn) removeBtn.style.display = 'none';
+    if (input) input.value = '';
+};
+
+const bankQrFileInput = document.getElementById('emp-bank-qr');
+if (bankQrFileInput) {
+    bankQrFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+            if (typeof compressQrImage === 'function') {
+                const compressed = await compressQrImage(file, 600, 0.9);
+                const preview = document.getElementById('emp-bank-qr-preview');
+                const placeholder = document.getElementById('emp-bank-qr-placeholder');
+                const removeBtn = document.getElementById('btn-remove-emp-bank-qr');
+                if (preview) {
+                    preview.src = compressed;
+                    preview.style.display = 'block';
+                }
+                if (placeholder) placeholder.style.display = 'none';
+                if (removeBtn) removeBtn.style.display = 'block';
+            }
+        } catch (err) {
+            console.error("Error processing QR image:", err);
+            Swal.fire('បញ្ហា', 'មិនអាចអានរូបភាព QR បានឡើយ', 'error');
+        }
+    });
+}
 
 if (dropzone && photoInput) {
     dropzone.addEventListener('click', () => photoInput.click());
