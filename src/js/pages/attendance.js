@@ -57,7 +57,9 @@ function renderAttendanceTable(employees) {
     if (!thead || !tbody) return;
 
     // Build Header
-    let tr1 = `<tr><th rowspan="2" class="align-middle col-emp">បុគ្គលិក (Employee)</th>`;
+    let tr1 = `<tr>
+        <th rowspan="2" class="align-middle col-emp">បុគ្គលិក (Employee)</th>
+        <th rowspan="2" class="align-middle col-type">ប្រភេទការងារ<br><small style="font-size: 0.65rem;">(Type)</small></th>`;
     let tr2 = `<tr>`;
     
     for (let d = 1; d <= currentDaysInMonth; d++) {
@@ -78,7 +80,7 @@ function renderAttendanceTable(employees) {
     tbody.innerHTML = '';
 
     if (employees.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${currentDaysInMonth * 2 + 4}" class="text-muted py-4">មិនមានទិន្នន័យបុគ្គលិកទេ!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${currentDaysInMonth * 2 + 5}" class="text-muted py-4">មិនមានទិន្នន័យបុគ្គលិកទេ!</td></tr>`;
         return;
     }
 
@@ -90,10 +92,15 @@ function renderAttendanceTable(employees) {
                 <div class="d-flex align-items-center">
                     <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 28px; height: 28px; object-fit: cover;">
                     <div style="line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        <div class="fw-bold text-body emp-name-text" style="font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${emp.name}">${emp.name}</div>
-                        <div class="text-muted" style="font-size: 0.68rem;">${emp.code || ''}</div>
+                        <div class="fw-bold text-body emp-name-km" style="font-size: 0.78rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${emp.name}">${emp.name}</div>
+                        <div class="text-muted emp-name-latin" style="font-size: 0.64rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
                     </div>
                 </div>
+            </td>
+            <td class="align-middle text-center col-type">
+                <span class="badge ${emp.type === 'Part-Time' ? 'bg-warning text-dark' : 'bg-primary bg-opacity-75 text-white'} px-1 py-1" style="font-size: 0.64rem; font-weight: 500;">
+                    ${emp.type || 'Full-Time'}
+                </span>
             </td>`;
             
         let totalP = 0, totalA = 0, totalL = 0;
