@@ -1106,27 +1106,35 @@ window.viewPayslip = function(batchId, empId) {
     }
 };
 
-window.triggerPrintCurrentPayslip = function() {
-    let style = document.getElementById('dynamic-payslip-print');
+function executePayrollPrint(elementId, orientation = 'landscape') {
+    let style = document.getElementById('dynamic-print-orientation');
     if (!style) {
         style = document.createElement('style');
-        style.id = 'dynamic-payslip-print';
+        style.id = 'dynamic-print-orientation';
         document.head.appendChild(style);
     }
-    style.innerHTML = '@page { size: A4 portrait; margin: 10mm; } @media print { @page { size: A4 portrait; margin: 10mm; } }';
+    style.innerHTML = `@media print { @page { size: A4 ${orientation}; margin: 8mm; } }`;
 
-    document.body.classList.add('printing-single-payslip');
-
-    const cleanup = () => {
-        document.body.classList.remove('printing-single-payslip');
-        window.removeEventListener('afterprint', cleanup);
-    };
-    window.addEventListener('afterprint', cleanup);
-    setTimeout(cleanup, 10000);
+    document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
+    const target = document.getElementById(elementId);
+    if (target) {
+        target.classList.add('print-template');
+    }
 
     setTimeout(() => {
         window.print();
     }, 250);
+}
+
+window.triggerPrintCurrentPayslip = function() {
+    const payslipContainer = document.getElementById('payslip-render-container');
+    if (!payslipContainer) return;
+
+    const printArea = document.getElementById('print-area-payslip');
+    if (!printArea) return;
+
+    printArea.innerHTML = payslipContainer.innerHTML;
+    executePayrollPrint('print-area-payslip', 'portrait');
 };
 
 // ====== 10. PRINT MASTER PAYROLL SHEET (A4 LANDSCAPE) ======
@@ -1282,27 +1290,7 @@ window.printPayrollMaster = async function(batchId) {
     if (!printContainer) return;
 
     printContainer.innerHTML = printHtml;
-
-    let style = document.getElementById('dynamic-master-payroll-print');
-    if (!style) {
-        style = document.createElement('style');
-        style.id = 'dynamic-master-payroll-print';
-        document.head.appendChild(style);
-    }
-    style.innerHTML = '@page { size: A4 landscape; margin: 8mm; } @media print { @page { size: A4 landscape; margin: 8mm; } }';
-
-    document.body.classList.add('printing-payroll-master');
-
-    const cleanup = () => {
-        document.body.classList.remove('printing-payroll-master');
-        window.removeEventListener('afterprint', cleanup);
-    };
-    window.addEventListener('afterprint', cleanup);
-    setTimeout(cleanup, 10000);
-
-    setTimeout(() => {
-        window.print();
-    }, 250);
+    executePayrollPrint('print-area-payroll-master', 'landscape');
 };
 
 // ====== 11. EXPORT EXCEL (CSV WITH UTF-8 BOM) ======

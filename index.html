@@ -7,11 +7,11 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <link rel="stylesheet" href="assets/cropper.min.css">
-    <link rel="stylesheet" href="src/css/global.css?v=1792310000">
-    <link rel="stylesheet" href="src/css/print.css?v=1792310000">
-    <link rel="stylesheet" href="src/css/employee.css?v=1792310000">
-    <link rel="stylesheet" href="src/css/attendance.css?v=1792310000">
-    <link rel="stylesheet" href="src/css/payroll.css?v=1792310000">
+    <link rel="stylesheet" href="src/css/global.css?v=1792310500">
+    <link rel="stylesheet" href="src/css/print.css?v=1792310500">
+    <link rel="stylesheet" href="src/css/employee.css?v=1792310500">
+    <link rel="stylesheet" href="src/css/attendance.css?v=1792310500">
+    <link rel="stylesheet" href="src/css/payroll.css?v=1792310500">
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
@@ -521,7 +521,11 @@
 
 </div>
 
-    
+    <!-- ================= HIDDEN PRINT AREA FOR PAYROLL MASTER SHEET ================= -->
+    <div id="print-area-payroll-master" class="print-container"></div>
+
+    <!-- ================= HIDDEN PRINT AREA FOR PAYSLIP ================= -->
+    <div id="print-area-payslip" class="print-container"></div>
 
 <!-- Scripts -->
     <script src="assets/dexie.min.js"></script>
@@ -663,10 +667,10 @@
         </div>
     </div>
 
-    <script type="module" src="src/js/main.js?v=1792310000"></script>
+    <script type="module" src="src/js/main.js?v=1792310500"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=1792310000').then(reg => {
+            navigator.serviceWorker.register('sw.js?v=1792310500').then(reg => {
                 reg.update();
             });
         }

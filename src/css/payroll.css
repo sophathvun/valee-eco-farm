@@ -165,40 +165,23 @@
     text-align: center;
 }
 
-/* Master Payroll Sheet Print Styles */
+/* Master Payroll Sheet & Payslip Print Styles */
 @media print {
-    body.printing-payroll-master .d-print-none,
-    body.printing-payroll-master #sidebar,
-    body.printing-payroll-master .top-navbar,
-    body.printing-payroll-master .mobile-bottom-nav,
-    body.printing-payroll-master #payroll-main-wrapper,
-    body.printing-payroll-master .modal-backdrop {
-        display: none !important;
-    }
-
-    body.printing-payroll-master #print-area-payroll-master {
-        display: block !important;
-        position: static !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    body.printing-payroll-master table.payroll-master-print-table {
+    #print-area-payroll-master table.payroll-master-print-table {
         width: 100% !important;
         border-collapse: collapse !important;
         font-size: 8.5px !important;
     }
 
-    body.printing-payroll-master table.payroll-master-print-table th,
-    body.printing-payroll-master table.payroll-master-print-table td {
+    #print-area-payroll-master table.payroll-master-print-table th,
+    #print-area-payroll-master table.payroll-master-print-table td {
         border: 1px solid #475569 !important;
         padding: 3px 4px !important;
         text-align: center;
         vertical-align: middle;
     }
 
-    body.printing-payroll-master table.payroll-master-print-table thead th {
+    #print-area-payroll-master table.payroll-master-print-table thead th {
         background-color: #198754 !important;
         color: #ffffff !important;
         -webkit-print-color-adjust: exact !important;
@@ -206,7 +189,7 @@
         font-size: 8.5px !important;
     }
 
-    body.printing-payroll-master .master-dept-row td {
+    #print-area-payroll-master .master-dept-row td {
         background-color: #e2e8f0 !important;
         font-weight: bold !important;
         text-align: left !important;
@@ -214,37 +197,7 @@
         print-color-adjust: exact !important;
     }
 
-    /* Single Payslip Print Mode */
-    body.printing-single-payslip .d-print-none,
-    body.printing-single-payslip #sidebar,
-    body.printing-single-payslip .top-navbar,
-    body.printing-single-payslip .mobile-bottom-nav,
-    body.printing-single-payslip #payroll-main-wrapper,
-    body.printing-single-payslip .modal-backdrop,
-    body.printing-single-payslip .modal-header,
-    body.printing-single-payslip .btn-close {
-        display: none !important;
-    }
-
-    body.printing-single-payslip #payslipModal {
-        position: static !important;
-        display: block !important;
-        opacity: 1 !important;
-        padding: 0 !important;
-        background: transparent !important;
-    }
-
-    body.printing-single-payslip #payslipModal .modal-dialog {
-        max-width: 100% !important;
-        margin: 0 !important;
-    }
-
-    body.printing-single-payslip #payslipModal .modal-content {
-        border: none !important;
-        box-shadow: none !important;
-    }
-
-    body.printing-single-payslip .payslip-wrapper {
+    #print-area-payslip .payslip-wrapper {
         border: 2px solid #000 !important;
         box-shadow: none !important;
         margin: 0 auto !important;

@@ -79,12 +79,51 @@
     
     #print-area-invoice.print-template,
     #print-area-report.print-template,
-    #print-area-analytics.print-template { 
+    #print-area-analytics.print-template,
+    #print-area-payroll-master.print-template,
+    #print-area-payslip.print-template { 
         display: block !important; 
         position: absolute;
         left: 0;
         top: 0;
         width: 100%; 
+        visibility: visible !important;
+        background: #ffffff !important;
+    }
+
+    #print-area-payroll-master.print-template *,
+    #print-area-payslip.print-template * {
+        visibility: visible !important;
+    }
+
+    #print-area-payroll-master table.payroll-master-print-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 8.5px !important;
+    }
+
+    #print-area-payroll-master table.payroll-master-print-table th,
+    #print-area-payroll-master table.payroll-master-print-table td {
+        border: 1px solid #475569 !important;
+        padding: 3px 4px !important;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    #print-area-payroll-master table.payroll-master-print-table thead th {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        font-size: 8.5px !important;
+    }
+
+    #print-area-payroll-master .master-dept-row td {
+        background-color: #e2e8f0 !important;
+        font-weight: bold !important;
+        text-align: left !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
     
     /* Attendance Report print template is in flow */
