@@ -39,8 +39,10 @@ async function loadEmployees() {
             <td><img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" style="width:50px; height:50px; object-fit:cover; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" onclick="viewEmployeePhoto(${emp.id})" title="ចុចដើម្បីមើលរូបធំ និងទាញយក"></td>
             <td class="fw-bold text-primary">${emp.code || 'N/A'}</td>
             <td>${emp.nationalId || '-'}</td>
-            <td class="fw-bold">${emp.name}</td>
-            <td>${emp.latinName || '-'}</td>
+            <td class="text-start">
+                <div class="fw-bold text-dark" style="font-size: 0.9rem;">${emp.name}</div>
+                ${emp.latinName ? `<div class="text-muted small" style="font-size: 0.75rem;">${emp.latinName}</div>` : ''}
+            </td>
             <td>${emp.gender}</td>
             <td>${emp.department || ''}</td>
             <td>${emp.position}</td>
