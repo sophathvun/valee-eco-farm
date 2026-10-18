@@ -1,28 +1,30 @@
-<div class="row">
-    <div class="card shadow-sm border-0 border-top border-primary border-4">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h5 class="mb-0 text-primary fw-bold">📅 គ្រប់គ្រងវត្តមានប្រចាំខែ (Monthly Attendance)</h5>
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <input type="month" class="form-control" id="attendanceMonth" onchange="loadAttendance()" style="width: auto;">
-                <button class="btn btn-primary" onclick="loadAttendance()" title="ស្វែងរក"><i class="bi bi-search"></i></button>
-                <button class="btn btn-outline-success fw-bold" onclick="openApplyAllPModal()" title="ដាក់វត្តមាន P គ្រប់បុគ្គលិក">
-                    <i class="bi bi-check2-square"></i> ដាក់ P គ្រប់បុគ្គលិក
-                </button>
-                <button class="btn btn-success" onclick="saveAllAttendance()">
-                    <i class="bi bi-save"></i> រក្សាទុកវត្តមាន
-                </button>
+<div class="row g-0 h-100">
+    <div class="col-12 h-100">
+        <div class="card shadow-sm border-0 border-top border-primary border-4 h-100 d-flex flex-column att-main-card">
+            <div class="card-header bg-body d-flex justify-content-between align-items-center flex-wrap gap-2 py-2">
+                <h5 class="mb-0 text-primary fw-bold" style="font-size: 1.05rem;">📅 គ្រប់គ្រងវត្តមានប្រចាំខែ (Monthly Attendance)</h5>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <input type="month" class="form-control form-control-sm" id="attendanceMonth" onchange="loadAttendance()" style="width: auto;">
+                    <button class="btn btn-sm btn-primary" onclick="loadAttendance()" title="ស្វែងរក"><i class="bi bi-search"></i></button>
+                    <button class="btn btn-sm btn-outline-success fw-bold" onclick="openApplyAllPModal()" title="ដាក់វត្តមាន P គ្រប់បុគ្គលិក">
+                        <i class="bi bi-check2-square me-1"></i>ដាក់ P គ្រប់បុគ្គលិក
+                    </button>
+                    <button class="btn btn-sm btn-success fw-bold" onclick="saveAllAttendance()">
+                        <i class="bi bi-save me-1"></i>រក្សាទុកវត្តមាន
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive" id="attendance-table-container">
-                <table class="table table-hover table-bordered align-middle text-center mb-0 att-table">
-                    <thead class="table-darkgreen" id="attendanceHead">
-                        <!-- Dynamically generated -->
-                    </thead>
-                    <tbody id="attendanceList">
-                        <!-- Dynamically generated -->
-                    </tbody>
-                </table>
+            <div class="card-body p-0 flex-grow-1 overflow-hidden d-flex flex-column">
+                <div class="table-responsive flex-grow-1" id="attendance-table-container">
+                    <table class="table table-hover table-bordered align-middle text-center mb-0 att-table">
+                        <thead class="table-darkgreen" id="attendanceHead">
+                            <!-- Dynamically generated -->
+                        </thead>
+                        <tbody id="attendanceList">
+                            <!-- Dynamically generated -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

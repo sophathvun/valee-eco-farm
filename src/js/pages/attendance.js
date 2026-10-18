@@ -52,10 +52,12 @@ function renderAttendanceTable(employees) {
     let tr2 = `<tr>`;
     
     for (let d = 1; d <= currentDaysInMonth; d++) {
-        tr1 += `<th colspan="2" class="border-start border-end text-center day-header" onclick="openApplyAllPModal(${d})" title="ចុចទីនេះដើម្បីដាក់ P គ្រប់បុគ្គលិកនៅថ្ងៃទី ${d}">
-            ${d} <i class="bi bi-check2 text-light" style="font-size: 0.75rem;"></i>
+        const isEven = (d % 2 === 0);
+        const dayHeaderClass = isEven ? 'day-header-even' : 'day-header-odd';
+        tr1 += `<th colspan="2" class="border-start border-end text-center day-header ${dayHeaderClass}" onclick="openApplyAllPModal(${d})" title="ចុចទីនេះដើម្បីដាក់ P គ្រប់បុគ្គលិកនៅថ្ងៃទី ${d}">
+            ${d} <i class="bi bi-check2 text-white-50" style="font-size: 0.65rem;"></i>
         </th>`;
-        tr2 += `<th class="border-start"><small>ព្រឹក</small></th><th class="border-end"><small>ល្ងាច</small></th>`;
+        tr2 += `<th class="col-shift ${dayHeaderClass} border-start"><small>ព្រឹក</small></th><th class="col-shift ${dayHeaderClass} border-end day-border-right"><small>ល្ងាច</small></th>`;
     }
     
     tr1 += `<th colspan="3" class="col-total col-total-header">សរុប (Total)</th></tr>`;
@@ -67,7 +69,7 @@ function renderAttendanceTable(employees) {
     tbody.innerHTML = '';
 
     if (employees.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${currentDaysInMonth * 2 + 4}" class="text-muted">មិនមានទិន្នន័យបុគ្គលិកទេ!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${currentDaysInMonth * 2 + 4}" class="text-muted py-4">មិនមានទិន្នន័យបុគ្គលិកទេ!</td></tr>`;
         return;
     }
 
@@ -77,10 +79,10 @@ function renderAttendanceTable(employees) {
         let html = `
             <td class="text-start align-middle col-emp">
                 <div class="d-flex align-items-center">
-                    <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border" style="width: 30px; height: 30px; object-fit: cover;">
-                    <div style="line-height: 1.2;">
-                        <div class="fw-bold text-dark" style="font-size: 0.85rem;">${emp.name}</div>
-                        <div class="text-muted" style="font-size: 0.7rem;">${emp.code || ''}</div>
+                    <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 28px; height: 28px; object-fit: cover;">
+                    <div style="line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <div class="fw-bold text-body emp-name-text" style="font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${emp.name}">${emp.name}</div>
+                        <div class="text-muted" style="font-size: 0.68rem;">${emp.code || ''}</div>
                     </div>
                 </div>
             </td>`;
@@ -88,6 +90,8 @@ function renderAttendanceTable(employees) {
         let totalP = 0, totalA = 0, totalL = 0;
 
         for (let d = 1; d <= currentDaysInMonth; d++) {
+            const isEven = (d % 2 === 0);
+            const dayClass = isEven ? 'day-even-col' : 'day-odd-col';
             const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
             const rec = currentAttendanceData[emp.id] ? currentAttendanceData[emp.id][dateStr] : null;
             
@@ -109,13 +113,13 @@ function renderAttendanceTable(employees) {
             let mClass = mVal ? mVal : 'none';
             let aClass = aVal ? aVal : 'none';
 
-            html += `<td class="border-start p-1"><div class="att-cell att-${mClass}" ${mClick}>${mVal}</div></td>
-                     <td class="border-end p-1"><div class="att-cell att-${aClass}" ${aClick}>${aVal}</div></td>`;
+            html += `<td class="col-shift ${dayClass} border-start"><div class="att-cell att-${mClass}" ${mClick}>${mVal}</div></td>
+                     <td class="col-shift ${dayClass} border-end day-border-right"><div class="att-cell att-${aClass}" ${aClick}>${aVal}</div></td>`;
         }
 
-        html += `<td class="col-total col-total-p text-success fw-bold p-1" id="tot-p-${emp.id}">${totalP}</td>
-                 <td class="col-total col-total-a text-danger fw-bold p-1" id="tot-a-${emp.id}">${totalA}</td>
-                 <td class="col-total col-total-l text-warning fw-bold p-1" id="tot-l-${emp.id}">${totalL}</td>`;
+        html += `<td class="col-total col-total-p text-success fw-bold" id="tot-p-${emp.id}">${totalP}</td>
+                 <td class="col-total col-total-a text-danger fw-bold" id="tot-a-${emp.id}">${totalA}</td>
+                 <td class="col-total col-total-l text-warning fw-bold" id="tot-l-${emp.id}">${totalL}</td>`;
 
         tr.innerHTML = html;
         tbody.appendChild(tr);

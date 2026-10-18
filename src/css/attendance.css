@@ -1,99 +1,348 @@
+/* ====== ATTENDANCE PAGE FULL-HEIGHT & RESPONSIVE LAYOUT ====== */
+#attendance-view {
+    height: calc(100vh - 110px);
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+}
+
+#attendance-view .card.att-main-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+#attendance-view .card-header {
+    flex-shrink: 0;
+}
+
+#attendance-view .card-body {
+    flex: 1 1 auto;
+    min-height: 0; /* Important for flex child scroll */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
 #attendance-table-container {
-    max-height: 70vh;
-    overflow: auto;
+    flex: 1 1 auto;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: auto !important;
+    position: relative;
+    background-color: var(--bs-body-bg, #ffffff);
+}
+
+/* ====== TABLE BASE & STICKY HEADER ====== */
+.att-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    font-size: 0.8rem;
+    width: max-content;
+    min-width: 100%;
+    margin-bottom: 0;
 }
 
 .att-table th, .att-table td {
     white-space: nowrap;
-    padding: 0.15rem 0.1rem; /* Compact padding */
-    font-size: 0.85rem;
+    box-sizing: border-box;
 }
 
-/* Sticky first column (Employee Name) */
-.att-table .col-emp {
+/* Row 1 sticky header (Day Numbers & Group Headers) */
+.att-table thead tr:first-child th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #198754;
+    color: #ffffff;
+    height: 30px;
+    padding: 3px 2px !important;
+    font-weight: 700;
+}
+
+/* Row 2 sticky header (ព្រឹក / ល្ងាច / P / A / L) */
+.att-table thead tr:nth-child(2) th {
+    position: sticky;
+    top: 30px;
+    z-index: 9;
+    background-color: #198754;
+    color: #ffffff;
+    height: 22px;
+    padding: 1px 0 !important;
+    font-weight: 600;
+}
+
+/* Sticky Top-Left Corner (Employee Header - spans both rows) */
+.att-table thead th.col-emp {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 30;
+    background-color: #198754 !important;
+    color: #ffffff !important;
+    border-right: 2px solid #0f5132 !important;
+    min-width: 170px;
+    max-width: 210px;
+    width: 185px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* Sticky Top-Right Corner (Totals Header in Row 1) */
+.att-table thead th.col-total-header {
+    position: sticky;
+    top: 0;
+    right: 0px !important;
+    z-index: 25;
+    background-color: #198754 !important;
+    color: #ffffff !important;
+    min-width: 102px !important;
+    max-width: 102px !important;
+    width: 102px !important;
+    border-left: 2px solid #0f5132 !important;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* Row 2 Sticky Total Columns (P, A, L) */
+.att-table thead th.col-total-p {
+    position: sticky;
+    top: 30px;
+    right: 68px !important;
+    z-index: 24;
+    background-color: #198754 !important;
+    color: #86efac !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    width: 34px !important;
+    border-left: 2px solid #0f5132 !important;
+}
+.att-table thead th.col-total-a {
+    position: sticky;
+    top: 30px;
+    right: 34px !important;
+    z-index: 24;
+    background-color: #198754 !important;
+    color: #fca5a5 !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    width: 34px !important;
+}
+.att-table thead th.col-total-l {
+    position: sticky;
+    top: 30px;
+    right: 0px !important;
+    z-index: 24;
+    background-color: #198754 !important;
+    color: #fde047 !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    width: 34px !important;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* ====== STICKY BODY COLUMNS ====== */
+
+/* Sticky Left: Employee Column in Body */
+.att-table tbody td.col-emp {
     position: sticky;
     left: 0;
-    z-index: 2;
-    background-color: #fff;
-    min-width: 200px;
+    z-index: 5;
+    background-color: #ffffff;
+    border-right: 2px solid #cbd5e1 !important;
+    min-width: 170px;
+    max-width: 210px;
+    width: 185px;
+    padding: 3px 6px !important;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
 }
-.att-table thead .col-emp {
-    background-color: #198754; /* Match table-darkgreen */
-    z-index: 3;
+.att-table tbody tr:hover td.col-emp {
+    background-color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .att-table tbody td.col-emp {
+    background-color: #1e293b !important;
+    border-right-color: #334155 !important;
+}
+[data-bs-theme="dark"] .att-table tbody tr:hover td.col-emp {
+    background-color: #334155 !important;
 }
 
-/* Sticky last columns (Totals) */
-.att-table th.col-total, .att-table td.col-total {
+/* Sticky Right: Total Columns in Body */
+.att-table tbody td.col-total {
     position: sticky;
-    z-index: 2;
-    background-color: #f8f9fa;
-    font-weight: bold;
-    min-width: 40px;
-    max-width: 40px;
-    box-sizing: border-box;
+    z-index: 5;
+    background-color: #f8fafc;
+    font-weight: 700;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    width: 34px !important;
     text-align: center;
+    padding: 2px 1px !important;
+    font-size: 0.76rem;
 }
-.att-table thead th.col-total {
-    background-color: #198754;
-    z-index: 3;
+.att-table tbody tr:hover td.col-total {
+    background-color: #e2e8f0 !important;
 }
-
-/* Top header total needs to span exactly 120px to cover P (40) + A (40) + L (40) */
-.att-table thead th.col-total-header {
-    min-width: 120px !important;
-    max-width: 120px !important;
+.att-table tbody td.col-total-p {
+    right: 68px !important;
+    border-left: 2px solid #cbd5e1 !important;
+}
+.att-table tbody td.col-total-a {
+    right: 34px !important;
+}
+.att-table tbody td.col-total-l {
     right: 0px !important;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+}
+[data-bs-theme="dark"] .att-table tbody td.col-total {
+    background-color: #1a2234 !important;
+    border-left-color: #334155 !important;
+}
+[data-bs-theme="dark"] .att-table tbody tr:hover td.col-total {
+    background-color: #263348 !important;
 }
 
-.att-table th.col-total-p, .att-table td.col-total-p { right: 80px; }
-.att-table th.col-total-a, .att-table td.col-total-a { right: 40px; }
-.att-table th.col-total-l, .att-table td.col-total-l { right: 0px; }
+/* ====== SHIFT COLUMNS & ALTERNATING DAY BACKGROUNDS ====== */
 
-/* Interactive cell styling */
+.att-table th.col-shift,
+.att-table td.col-shift {
+    width: 22px;
+    min-width: 20px;
+    max-width: 25px;
+    padding: 2px 1px !important;
+    text-align: center;
+    box-sizing: border-box;
+}
+.att-table th.col-shift small {
+    font-size: 0.6rem;
+    letter-spacing: -0.5px;
+    display: block;
+    line-height: 1;
+}
+
+/* Alternating Column Backgrounds for Days (Odd vs Even) */
+.att-table td.day-odd-col {
+    background-color: #ffffff;
+}
+.att-table tr:hover td.day-odd-col {
+    background-color: #f8fafc;
+}
+
+.att-table td.day-even-col {
+    background-color: #f1f5f9; /* Distinct soft light slate/ice tint */
+}
+.att-table tr:hover td.day-even-col {
+    background-color: #e2e8f0;
+}
+
+[data-bs-theme="dark"] .att-table td.day-odd-col {
+    background-color: #0f172a;
+}
+[data-bs-theme="dark"] .att-table tr:hover td.day-odd-col {
+    background-color: #1e293b;
+}
+
+[data-bs-theme="dark"] .att-table td.day-even-col {
+    background-color: #1e293b;
+}
+[data-bs-theme="dark"] .att-table tr:hover td.day-even-col {
+    background-color: #334155;
+}
+
+/* Distinct border separator at the end of each day */
+.att-table .day-border-right {
+    border-right: 1.5px solid #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .att-table .day-border-right {
+    border-right: 1.5px solid #475569 !important;
+}
+
+/* Alternating Header Colors for Days */
+.att-table thead th.day-header-odd {
+    background-color: #198754 !important;
+}
+.att-table thead th.day-header-even {
+    background-color: #157347 !important; /* Slightly deeper green */
+}
+.att-table thead th.day-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s;
+}
+.att-table thead th.day-header:hover {
+    background-color: #0f5132 !important;
+}
+
+/* ====== COMPACT ATTENDANCE STATUS BADGES (P, A, L) ====== */
 .att-cell {
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 700;
     user-select: none;
-    width: 22px;
-    height: 22px;
-    font-size: 0.75rem;
+    width: 17px;
+    height: 17px;
+    font-size: 0.6rem;
+    line-height: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    transition: all 0.2s;
+    border-radius: 3px;
+    transition: transform 0.1s ease, filter 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12);
 }
-
 .att-cell:hover {
-    filter: brightness(0.9);
+    filter: brightness(0.85);
+    transform: scale(1.15);
 }
 
 .att-P {
     background-color: #198754; /* Success Green */
-    color: white;
+    color: #ffffff;
 }
 .att-A {
     background-color: #dc3545; /* Danger Red */
-    color: white;
+    color: #ffffff;
 }
 .att-L {
-    background-color: #ffc107; /* Warning Yellow */
-    color: black;
+    background-color: #f59e0b; /* Warning Amber/Yellow */
+    color: #000000;
 }
 .att-none {
-    background-color: #e9ecef; /* Light gray for no data */
+    background-color: rgba(203, 213, 225, 0.4);
     color: transparent;
+    box-shadow: none;
+    border: 1px dashed rgba(148, 163, 184, 0.4);
+}
+.att-none:hover {
+    border-color: #198754;
+    background-color: rgba(25, 135, 84, 0.18);
+}
+[data-bs-theme="dark"] .att-none {
+    background-color: rgba(51, 65, 85, 0.4);
+    border-color: rgba(71, 85, 105, 0.4);
 }
 
-.att-table thead th.day-header {
-    cursor: pointer;
-    transition: background-color 0.2s;
-    user-select: none;
+/* ====== SMOOTH SCROLLBAR ====== */
+#attendance-table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
 }
-
-.att-table thead th.day-header:hover {
-    background-color: #146c43 !important;
+#attendance-table-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
 }
-
-
-
+#attendance-table-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+#attendance-table-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+[data-bs-theme="dark"] #attendance-table-container::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+[data-bs-theme="dark"] #attendance-table-container::-webkit-scrollbar-thumb {
+    background: #475569;
+}
