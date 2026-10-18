@@ -252,17 +252,31 @@
     }
 
     /* Shift Columns in Print */
+    .print-table th.col-shift,
+    .print-table td.col-shift {
+        width: 18px !important;
+        min-width: 17px !important;
+        max-width: 20px !important;
+        padding: 1px 0 !important;
+        text-align: center !important;
+    }
+
     .print-table th small {
-        font-size: 6.5px !important;
+        font-size: 5.8px !important;
+    }
+
+    /* Dotted border between morning and afternoon in Print */
+    .print-table .border-dotted-right {
+        border-right: 1px dotted #94a3b8 !important;
     }
 
     /* Status Badges in Print (P, A, L) */
     .print-table .att-cell,
     #rep-attendance-table-container .att-cell {
-        width: 14px !important;
-        height: 14px !important;
-        line-height: 14px !important;
-        font-size: 7.5px !important;
+        width: 13px !important;
+        height: 13px !important;
+        line-height: 13px !important;
+        font-size: 7px !important;
         font-weight: 700 !important;
         border-radius: 2px !important;
         display: inline-flex !important;
@@ -305,9 +319,9 @@
     /* Job Type Column in Print */
     .print-table th.col-type,
     .print-table td.col-type {
-        width: 55px !important;
-        min-width: 48px !important;
-        max-width: 62px !important;
+        width: 52px !important;
+        min-width: 46px !important;
+        max-width: 58px !important;
         padding: 2px 2px !important;
         text-align: center !important;
         font-size: 7.5px !important;
@@ -354,12 +368,25 @@
         font-size: 8px !important;
         font-weight: 700 !important;
         padding: 3px 6px !important;
-        border-top: 1.5px solid #94a3b8 !important;
-        border-bottom: 1.5px solid #94a3b8 !important;
-        border-left: 4px solid #198754 !important;
+        border-top: 1px solid #94a3b8 !important;
+        border-bottom: 1px solid #94a3b8 !important;
+        border-left: 1px solid #94a3b8 !important;
+        border-right: 1px solid #94a3b8 !important;
         text-align: left !important;
         page-break-after: avoid !important;
         break-after: avoid !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .print-table .dept-inner-indicator {
+        display: inline-block !important;
+        width: 3.5px !important;
+        height: 11px !important;
+        background-color: #198754 !important;
+        border-radius: 1.5px !important;
+        margin-right: 6px !important;
+        flex-shrink: 0 !important;
+        vertical-align: middle;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }

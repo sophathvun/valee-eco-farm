@@ -66,7 +66,7 @@ function renderAttendanceTable(employees) {
         tr1 += `<th colspan="2" class="border-start border-end text-center day-header ${dayHeaderClass}" onclick="openApplyAllPModal(${d})" title="ចុចទីនេះដើម្បីដាក់ P គ្រប់បុគ្គលិកនៅថ្ងៃទី ${d}">
             ${d} <i class="bi bi-check2 text-white-50" style="font-size: 0.65rem;"></i>
         </th>`;
-        tr2 += `<th class="col-shift ${dayHeaderClass} border-start"><small>ព្រឹក</small></th><th class="col-shift ${dayHeaderClass} border-end day-border-right"><small>ល្ងាច</small></th>`;
+        tr2 += `<th class="col-shift ${dayHeaderClass} border-start border-dotted-right"><small>ព្រឹក</small></th><th class="col-shift ${dayHeaderClass} border-end day-border-right"><small>ល្ងាច</small></th>`;
     }
     
     tr1 += `<th colspan="3" class="col-total col-total-header">សរុប (Total)</th></tr>`;
@@ -122,7 +122,7 @@ function renderAttendanceTable(employees) {
             let mClass = mVal ? mVal : 'none';
             let aClass = aVal ? aVal : 'none';
 
-            html += `<td class="col-shift ${dayClass} border-start"><div class="att-cell att-${mClass}" ${mClick}>${mVal}</div></td>
+            html += `<td class="col-shift ${dayClass} border-start border-dotted-right"><div class="att-cell att-${mClass}" ${mClick}>${mVal}</div></td>
                      <td class="col-shift ${dayClass} border-end day-border-right"><div class="att-cell att-${aClass}" ${aClick}>${aVal}</div></td>`;
         }
 

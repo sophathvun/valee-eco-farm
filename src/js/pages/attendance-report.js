@@ -149,8 +149,8 @@ window.generateAttendanceReport = async function() {
                 const parts = dateStr.split('-');
                 const isEven = (dIdx % 2 === 1);
                 const hClass = isEven ? 'day-header-even' : 'day-header-odd';
-                tr1 += `<th colspan="2" class="${hClass} border-start border-end day-border-right">${parts[2]}/${parts[1]}</th>`;
-                tr2 += `<th class="${hClass} border-start"><small>ព្រឹក</small></th><th class="${hClass} border-end day-border-right"><small>ល្ងាច</small></th>`;
+                tr1 += `<th colspan="2" class="${hClass} day-border-right">${parts[2]}/${parts[1]}</th>`;
+                tr2 += `<th class="${hClass} col-shift border-dotted-right"><small>ព្រឹក</small></th><th class="${hClass} col-shift day-border-right"><small>ល្ងាច</small></th>`;
             });
             
             tr1 += `<th colspan="3" class="col-total col-total-header">សរុប (Total)</th></tr>`;
@@ -166,12 +166,15 @@ window.generateAttendanceReport = async function() {
                 const deptEmps = deptMap[dept];
                 if (!deptEmps || deptEmps.length === 0) return;
 
-                // Department Header Row
+                // Department Header Row with Inner Indicator (No protruding outer border)
                 tbodyHtml += `
                     <tr class="dept-header-row">
                         <td colspan="${totalCols}" class="text-start dept-header-cell">
-                            <span class="dept-header-title"><i class="bi bi-diagram-3-fill me-1 text-primary"></i>ផ្នែក៖ <strong>${dept}</strong></span>
-                            <span class="dept-header-count text-muted ms-2 small">(${deptEmps.length} នាក់)</span>
+                            <div class="d-flex align-items-center">
+                                <span class="dept-inner-indicator"></span>
+                                <span class="dept-header-title"><i class="bi bi-diagram-3-fill me-1 text-success"></i>ផ្នែក៖ <strong>${dept}</strong></span>
+                                <span class="dept-header-count text-muted ms-2 small">(${deptEmps.length} នាក់)</span>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -182,15 +185,15 @@ window.generateAttendanceReport = async function() {
                         <td class="align-middle text-center col-no fw-bold text-muted">${seqNo}</td>
                         <td class="text-start align-middle col-emp">
                             <div class="d-flex align-items-center">
-                                <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 26px; height: 26px; object-fit: cover;">
-                                <div style="line-height: 1.18; overflow: hidden; white-space: nowrap;">
-                                    <div class="fw-bold text-dark emp-name-km" style="font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.name}">${emp.name}</div>
-                                    <div class="text-muted emp-name-latin" style="font-size: 0.68rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
+                                <img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle me-2 border flex-shrink-0" style="width: 24px; height: 24px; object-fit: cover;">
+                                <div style="line-height: 1.15; overflow: hidden; white-space: nowrap;">
+                                    <div class="fw-bold text-dark emp-name-km" style="font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.name}">${emp.name}</div>
+                                    <div class="text-muted emp-name-latin" style="font-size: 0.65rem; overflow: hidden; text-overflow: ellipsis;" title="${emp.latinName || ''}">${emp.latinName || ''}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="align-middle text-center col-type">
-                            <span class="badge ${emp.type === 'Part-Time' ? 'bg-warning text-dark' : 'bg-primary bg-opacity-75 text-white'} px-1 py-1" style="font-size: 0.68rem; font-weight: 500;">
+                            <span class="badge ${emp.type === 'Part-Time' ? 'bg-warning text-dark' : 'bg-primary bg-opacity-75 text-white'} px-1 py-1" style="font-size: 0.65rem; font-weight: 500;">
                                 ${emp.type || 'Full-Time'}
                             </span>
                         </td>`;
@@ -223,8 +226,8 @@ window.generateAttendanceReport = async function() {
                         let mClass = mVal ? mVal : 'none';
                         let aClass = aVal ? aVal : 'none';
 
-                        html += `<td class="border-start ${dayClass} p-1"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
-                                 <td class="border-end ${dayClass} day-border-right p-1"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
+                        html += `<td class="col-shift ${dayClass} border-dotted-right p-0"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
+                                 <td class="col-shift ${dayClass} day-border-right p-0"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
                     });
 
                     html += `<td class="col-total col-total-p text-success fw-bold p-1">${totalP}</td>

@@ -236,35 +236,52 @@
 .att-table tr.dept-header-row td.dept-header-cell {
     background-color: #f1f5f9 !important;
     color: #1e293b !important;
-    padding: 6px 12px !important;
-    font-size: 0.82rem;
+    padding: 5px 10px !important;
+    font-size: 0.8rem;
     font-weight: 700;
-    border-top: 2px solid #cbd5e1 !important;
+    border-top: 1px solid #cbd5e1 !important;
     border-bottom: 1.5px solid #cbd5e1 !important;
-    border-left: 4px solid #198754 !important;
+    border-left: 1px solid #cbd5e1 !important;
+    border-right: 1px solid #cbd5e1 !important;
     text-align: left !important;
+}
+.att-table .dept-inner-indicator {
+    display: inline-block;
+    width: 4px;
+    height: 14px;
+    background-color: #198754;
+    border-radius: 2px;
+    margin-right: 8px;
+    flex-shrink: 0;
 }
 [data-bs-theme="dark"] .att-table tr.dept-header-row td.dept-header-cell {
     background-color: #1e293b !important;
     color: #f1f5f9 !important;
     border-color: #334155 !important;
-    border-left-color: #198754 !important;
 }
 
 .att-table th.col-shift,
 .att-table td.col-shift {
-    width: 22px;
-    min-width: 20px;
-    max-width: 25px;
-    padding: 2px 1px !important;
+    width: 20px;
+    min-width: 18px;
+    max-width: 22px;
+    padding: 1px 0 !important;
     text-align: center;
     box-sizing: border-box;
 }
 .att-table th.col-shift small {
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     letter-spacing: -0.5px;
     display: block;
     line-height: 1;
+}
+
+/* Dotted border between morning and afternoon */
+.att-table .border-dotted-right {
+    border-right: 1px dotted #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .att-table .border-dotted-right {
+    border-right-color: #475569 !important;
 }
 
 /* Alternating Column Backgrounds for Days (Odd vs Even) */
@@ -325,14 +342,14 @@
     cursor: pointer;
     font-weight: 700;
     user-select: none;
-    width: 17px;
-    height: 17px;
-    font-size: 0.6rem;
+    width: 15px;
+    height: 15px;
+    font-size: 0.58rem;
     line-height: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 3px;
+    border-radius: 2.5px;
     transition: transform 0.1s ease, filter 0.15s ease;
     box-shadow: 0 1px 2px rgba(0,0,0,0.12);
 }
