@@ -170,6 +170,9 @@
                         <button class="btn btn-secondary btn-sm" onclick="printPayrollMaster()">
                             <i class="bi bi-printer me-1"></i> បោះពុម្ពតារាងរួម
                         </button>
+                        <button class="btn btn-outline-dark btn-sm btn-payroll-fullscreen-toggle" onclick="togglePayrollFullscreen()" title="ពង្រីកពេញអេក្រង់ (Full Screen - Esc)">
+                            <i class="bi bi-arrows-fullscreen me-1"></i> <span>ពេញអេក្រង់</span>
+                        </button>
                         <div class="dropdown">
                             <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-check2-circle me-1"></i> ប្តូរស្ថានភាព
@@ -206,15 +209,45 @@
             </div>
         </div>
 
-        <!-- Detail Employees Table -->
-        <div class="card shadow-sm border-0 rounded-3 mb-4 d-print-none">
+        <!-- Detail Employees Table Card -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4 d-print-none payroll-table-card">
+            <!-- Table Controls Bar: Search, Zoom Scale & Fullscreen -->
+            <div class="card-header bg-white py-2 px-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 360px;">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" id="payrollDetailSearch" class="form-control border-start-0 ps-1" placeholder="ស្វែងរកតាមឈ្មោះ ឬផ្នែក..." oninput="filterPayrollDetailTable()">
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Zoom & Scale Controls -->
+                    <div class="d-flex align-items-center bg-light border rounded px-2 py-1 gap-1">
+                        <small class="text-muted me-1 fw-bold" style="font-size: 0.74rem;">ទំហំតារាង៖</small>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.72rem;" onclick="setPayrollTableScale(-0.1)" title="បង្រួមតូចជាងមុន (Zoom Out)">
+                            <i class="bi bi-dash-lg"></i>
+                        </button>
+                        <span id="payroll-scale-indicator" class="badge bg-secondary text-white" style="font-size: 0.72rem; min-width: 42px;">100%</span>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.72rem;" onclick="setPayrollTableScale(0.1)" title="ពង្រីកធំជាងមុន (Zoom In)">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                        <button class="btn btn-sm btn-link text-decoration-none py-0 px-1 text-muted" style="font-size: 0.72rem;" onclick="setPayrollTableScale(0)" title="កំណត់ទំហំដើម (Reset 100%)">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                    </div>
+
+                    <!-- Direct Fullscreen trigger button on card -->
+                    <button class="btn btn-sm btn-outline-success btn-payroll-fullscreen-toggle" onclick="togglePayrollFullscreen()" title="ពង្រីកតារាងពេញអេក្រង់ (Full Screen Table)">
+                        <i class="bi bi-arrows-fullscreen me-1"></i> <span>ពេញអេក្រង់</span>
+                    </button>
+                </div>
+            </div>
             <div class="card-body p-0">
-                <div class="table-responsive">
+                <div class="table-responsive payroll-table-container">
                     <table class="table table-bordered table-hover align-middle mb-0 text-center payroll-detail-table">
                         <thead class="table-darkgreen text-white">
                             <tr>
-                                <th rowspan="2" class="align-middle" style="width: 40px;">ល.រ</th>
-                                <th rowspan="2" class="align-middle text-start" style="min-width: 170px;">ឈ្មោះ (Staff Name)</th>
+                                <th rowspan="2" class="align-middle col-sticky-1" style="width: 40px;">ល.រ</th>
+                                <th rowspan="2" class="align-middle text-start col-sticky-2" style="min-width: 170px;">ឈ្មោះ (Staff Name)</th>
                                 <th rowspan="2" class="align-middle" style="width: 85px;">ប្រភេទការងារ</th>
                                 <th colspan="2" class="align-middle text-center py-1">ប្រាក់ខែគោល</th>
                                 <th rowspan="2" class="align-middle bg-success text-white" style="width: 45px;" title="ចំនួនថ្ងៃវត្តមាន (P)">P</th>

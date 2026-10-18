@@ -49,28 +49,153 @@
 
 /* Department row in detail table */
 .payroll-dept-header-row td {
-    background-color: #f1f5f9 !important;
+    background-color: var(--bs-tertiary-bg, #f1f5f9) !important;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--bs-body-color, #1e293b);
     border-top: 2px solid #cbd5e1 !important;
     border-bottom: 2px solid #cbd5e1 !important;
 }
 
-/* Detail Table Typography & Sizing */
+/* Detail Table Typography, Sizing & Responsiveness */
+:root {
+    --payroll-table-font: 0.80rem;
+    --payroll-table-pad-y: 6px;
+    --payroll-table-pad-x: 6px;
+}
+
+@media (min-width: 1600px) {
+    :root {
+        --payroll-table-font: 0.85rem;
+        --payroll-table-pad-y: 7px;
+        --payroll-table-pad-x: 8px;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1599px) {
+    :root {
+        --payroll-table-font: 0.78rem;
+        --payroll-table-pad-y: 5px;
+        --payroll-table-pad-x: 6px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    :root {
+        --payroll-table-font: 0.72rem;
+        --payroll-table-pad-y: 4px;
+        --payroll-table-pad-x: 5px;
+    }
+}
+
+@media (max-width: 991px) {
+    :root {
+        --payroll-table-font: 0.68rem;
+        --payroll-table-pad-y: 3px;
+        --payroll-table-pad-x: 4px;
+    }
+}
+
+.payroll-table-container {
+    width: 100% !important;
+    max-height: calc(100vh - 280px);
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    position: relative;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Custom Scrollbar for smooth scrolling */
+.payroll-table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.payroll-table-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+.payroll-table-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.payroll-detail-table {
+    width: 100% !important;
+    font-size: var(--payroll-table-font) !important;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
 .payroll-detail-table th,
 .payroll-detail-table td {
-    padding: 6px 8px !important;
-    font-size: 0.82rem;
+    padding: var(--payroll-table-pad-y) var(--payroll-table-pad-x) !important;
+    font-size: inherit;
+    white-space: nowrap;
+    border-color: var(--bs-border-color, #dee2e6) !important;
 }
+
 .payroll-detail-table thead th {
     vertical-align: middle !important;
 }
+
 .payroll-detail-table .col-emp-name {
-    font-size: 0.85rem;
+    font-size: 1.05em;
     line-height: 1.25;
 }
+
+/* Sticky Header */
+.payroll-detail-table thead tr:first-child th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #0f5132 !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.payroll-detail-table thead tr:nth-child(2) th {
+    position: sticky;
+    top: 29px;
+    z-index: 10;
+    background-color: #146c43 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.12);
+}
+
+/* Sticky Columns for Horizontal Scrolling */
+.payroll-detail-table th.col-sticky-1,
+.payroll-detail-table td.col-sticky-1 {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background-color: var(--bs-body-bg, #ffffff);
+}
+.payroll-detail-table th.col-sticky-2,
+.payroll-detail-table td.col-sticky-2 {
+    position: sticky;
+    left: 40px;
+    z-index: 3;
+    background-color: var(--bs-body-bg, #ffffff);
+    box-shadow: 3px 0 6px -2px rgba(0, 0, 0, 0.12);
+}
+.payroll-detail-table thead th.col-sticky-1 {
+    z-index: 20;
+    background-color: #0f5132 !important;
+    color: #ffffff !important;
+}
+.payroll-detail-table thead th.col-sticky-2 {
+    z-index: 20;
+    background-color: #0f5132 !important;
+    color: #ffffff !important;
+}
+
+/* Department row sticky across horizontal scroll */
+.payroll-detail-table tr.payroll-dept-header-row td {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+}
+
+/* Table Footer Sticky & Formatting */
 .payroll-detail-table tfoot tr.payroll-foot-subtotal td {
-    background-color: #f1f5f9 !important;
+    background-color: var(--bs-tertiary-bg, #f1f5f9) !important;
     font-weight: 700;
     border-top: 2px solid #0f5132 !important;
 }
@@ -78,6 +203,73 @@
     background-color: #ecfdf5 !important;
     font-weight: 700;
     border-bottom: 2px solid #10b981 !important;
+}
+[data-bs-theme="dark"] .payroll-detail-table tfoot tr.payroll-foot-grandtotal td {
+    background-color: #064e3b !important;
+    color: #a7f3d0 !important;
+}
+
+.payroll-detail-table tfoot td.col-sticky-foot {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background-color: var(--bs-tertiary-bg, #f1f5f9) !important;
+    box-shadow: 3px 0 6px -2px rgba(0, 0, 0, 0.12);
+}
+.payroll-detail-table tfoot tr.payroll-foot-grandtotal td.col-sticky-foot {
+    background-color: #ecfdf5 !important;
+}
+[data-bs-theme="dark"] .payroll-detail-table tfoot tr.payroll-foot-grandtotal td.col-sticky-foot {
+    background-color: #064e3b !important;
+}
+
+/* Fullscreen Mode for Payroll Detail View */
+#payroll-detail-view.payroll-fullscreen-active {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999 !important;
+    background-color: var(--bs-body-bg, #f8f9fa) !important;
+    padding: 10px 14px !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+#payroll-detail-view.payroll-fullscreen-active > .card:first-child {
+    margin-bottom: 8px !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+#payroll-detail-view.payroll-fullscreen-active .payroll-table-card {
+    flex-grow: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 0 !important;
+    height: 100% !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+}
+
+#payroll-detail-view.payroll-fullscreen-active .payroll-table-card .card-body {
+    flex-grow: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+}
+
+#payroll-detail-view.payroll-fullscreen-active .payroll-table-container {
+    flex-grow: 1 !important;
+    max-height: 100% !important;
+    height: 100% !important;
+    border-radius: 0 !important;
 }
 
 /* Payslip Design */

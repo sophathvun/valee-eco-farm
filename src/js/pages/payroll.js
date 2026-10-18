@@ -703,8 +703,8 @@ window.viewPayrollDetail = async function(batchId) {
 
                 html += `
                     <tr>
-                        <td class="fw-bold text-muted">${seq++}</td>
-                        <td class="text-start">
+                        <td class="fw-bold text-muted col-sticky-1">${seq++}</td>
+                        <td class="text-start col-sticky-2">
                             <div class="d-flex align-items-center">
                                 <img src="${it.empPhoto || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle border me-2 flex-shrink-0" style="width: 28px; height: 28px; object-fit: cover;">
                                 <div style="line-height: 1.25;">
@@ -751,7 +751,7 @@ window.viewPayrollDetail = async function(batchId) {
         if (tfoot) {
             tfoot.innerHTML = `
                 <tr class="payroll-foot-subtotal">
-                    <td colspan="3" class="text-center py-2">សរុបតាមរូបិយប័ណ្ណ (${batch.items.length} នាក់)</td>
+                    <td colspan="3" class="text-center py-2 col-sticky-foot">សរុបតាមរូបិយប័ណ្ណ (${batch.items.length} នាក់)</td>
                     <td class="text-end fw-semibold">${formatPayCurrency(sumBaseUSD, 'USD')}</td>
                     <td class="text-end fw-semibold">${formatPayCurrency(sumBaseKHR, 'KHR')}</td>
                     <td class="text-success fw-bold">${gTotP}</td>
@@ -770,7 +770,7 @@ window.viewPayrollDetail = async function(batchId) {
                     <td></td>
                 </tr>
                 <tr class="payroll-foot-grandtotal">
-                    <td colspan="3" class="text-center py-2 px-2 text-success fw-bold">
+                    <td colspan="3" class="text-center py-2 px-2 text-success fw-bold col-sticky-foot">
                         <i class="bi bi-calculator me-1"></i> សរុបរួមស្មើនឹង ($ និង ៛)<br><small class="text-muted fw-normal">(អត្រា 1$ = ${exRate.toLocaleString('en-US')} ៛)</small>
                     </td>
                     <td colspan="2" class="text-end py-2 px-2 fw-bold text-primary">
@@ -797,6 +797,14 @@ window.viewPayrollDetail = async function(batchId) {
             `;
         }
 
+        // Restore user's saved table zoom/scale preference
+        setTimeout(() => {
+            const savedScale = parseFloat(localStorage.getItem('payrollTableScale')) || 1.0;
+            if (typeof window.setPayrollTableScale === 'function') {
+                window.setPayrollTableScale(savedScale, true);
+            }
+        }, 30);
+
     } catch (err) {
         console.error("Error viewing payroll detail:", err);
         Swal.fire('បញ្ហា', err.message, 'error');
@@ -804,12 +812,130 @@ window.viewPayrollDetail = async function(batchId) {
 };
 
 window.closePayrollDetail = function() {
+    const detailView = document.getElementById('payroll-detail-view');
+    if (detailView && detailView.classList.contains('payroll-fullscreen-active')) {
+        window.togglePayrollFullscreen();
+    }
     currentBatch = null;
     document.getElementById('payroll-detail-view').style.display = 'none';
     document.getElementById('payroll-kpi-cards').style.display = 'flex';
     document.getElementById('payroll-batches-view').style.display = 'block';
     loadPayrollBatches();
 };
+
+// ====== RESPONSIVE TABLE SCALE & FULLSCREEN CONTROLS ======
+window.setPayrollTableScale = function(val, isDirect = false) {
+    const table = document.querySelector('.payroll-detail-table');
+    if (!table) return;
+
+    let currentScale = parseFloat(table.getAttribute('data-scale')) || 1.0;
+    if (isDirect) {
+        currentScale = val;
+    } else if (val === 0) {
+        currentScale = 1.0;
+    } else {
+        currentScale = Math.min(1.4, Math.max(0.65, currentScale + val));
+    }
+    currentScale = Math.round(currentScale * 100) / 100;
+
+    table.setAttribute('data-scale', currentScale);
+    table.style.setProperty('--payroll-table-font', `${(0.80 * currentScale).toFixed(3)}rem`);
+    table.style.setProperty('--payroll-table-pad-y', `${Math.max(2, Math.round(6 * currentScale))}px`);
+    table.style.setProperty('--payroll-table-pad-x', `${Math.max(3, Math.round(6 * currentScale))}px`);
+
+    const indicator = document.getElementById('payroll-scale-indicator');
+    if (indicator) {
+        indicator.textContent = `${Math.round(currentScale * 100)}%`;
+    }
+    localStorage.setItem('payrollTableScale', currentScale);
+};
+
+window.togglePayrollFullscreen = function() {
+    const detailView = document.getElementById('payroll-detail-view');
+    if (!detailView) return;
+
+    const isFullscreen = detailView.classList.toggle('payroll-fullscreen-active');
+    const btns = document.querySelectorAll('.btn-payroll-fullscreen-toggle');
+
+    if (isFullscreen) {
+        btns.forEach(btn => {
+            btn.classList.add('active', 'btn-dark');
+            btn.classList.remove('btn-outline-dark', 'btn-outline-success');
+            btn.innerHTML = '<i class="bi bi-fullscreen-exit me-1"></i> <span>បិទពេញអេក្រង់</span>';
+            btn.title = 'ចាកចេញពីពេញអេក្រង់ (Exit Fullscreen - Esc)';
+        });
+
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
+    } else {
+        btns.forEach(btn => {
+            btn.classList.remove('active', 'btn-dark');
+            btn.classList.add('btn-outline-dark');
+            btn.innerHTML = '<i class="bi bi-arrows-fullscreen me-1"></i> <span>ពេញអេក្រង់</span>';
+            btn.title = 'ពង្រីកពេញអេក្រង់ (Full Screen)';
+        });
+
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        }
+    }
+};
+
+window.filterPayrollDetailTable = function() {
+    const query = (document.getElementById('payrollDetailSearch')?.value || '').toLowerCase().trim();
+    const rows = document.querySelectorAll('#payrollDetailItemsList tr');
+    
+    let currentDeptRow = null;
+    let deptHasVisibleEmps = false;
+
+    rows.forEach(tr => {
+        if (tr.classList.contains('payroll-dept-header-row')) {
+            if (currentDeptRow && !deptHasVisibleEmps && query) {
+                currentDeptRow.style.display = 'none';
+            }
+            currentDeptRow = tr;
+            deptHasVisibleEmps = false;
+            tr.style.display = '';
+        } else {
+            const text = tr.textContent.toLowerCase();
+            if (!query || text.includes(query)) {
+                tr.style.display = '';
+                deptHasVisibleEmps = true;
+            } else {
+                tr.style.display = 'none';
+            }
+        }
+    });
+
+    if (currentDeptRow && !deptHasVisibleEmps && query) {
+        currentDeptRow.style.display = 'none';
+    }
+};
+
+// Global escape key listener to exit fullscreen
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const detailView = document.getElementById('payroll-detail-view');
+        if (detailView && detailView.classList.contains('payroll-fullscreen-active')) {
+            window.togglePayrollFullscreen();
+        }
+    }
+});
+
+// Fullscreenchange event listener
+document.addEventListener('fullscreenchange', () => {
+    const detailView = document.getElementById('payroll-detail-view');
+    if (!detailView) return;
+    if (!document.fullscreenElement && detailView.classList.contains('payroll-fullscreen-active')) {
+        detailView.classList.remove('payroll-fullscreen-active');
+        document.querySelectorAll('.btn-payroll-fullscreen-toggle').forEach(btn => {
+            btn.classList.remove('active', 'btn-dark');
+            btn.classList.add('btn-outline-dark');
+            btn.innerHTML = '<i class="bi bi-arrows-fullscreen me-1"></i> <span>ពេញអេក្រង់</span>';
+        });
+    }
+});
 
 // ====== 5. RE-SYNC ATTENDANCE ======
 window.resyncBatchAttendance = async function() {
