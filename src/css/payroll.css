@@ -124,6 +124,44 @@
     border-spacing: 0;
 }
 
+/* Payroll Batches List Table */
+.payroll-batches-table {
+    font-size: 0.82rem !important;
+}
+
+.payroll-batches-table thead th,
+#payroll-batches-view table thead th {
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    padding: 8px 8px !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+    color: #334155 !important;
+    background-color: #f8fafc !important;
+    border-bottom: 2px solid #cbd5e1 !important;
+    letter-spacing: 0.1px;
+}
+
+.payroll-batches-table tbody td,
+#payroll-batches-view table tbody td {
+    font-size: 0.82rem !important;
+    padding: 8px 8px !important;
+    vertical-align: middle !important;
+}
+
+[data-bs-theme="dark"] .payroll-batches-table thead th,
+[data-bs-theme="dark"] #payroll-batches-view table thead th {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+    border-bottom-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] .payroll-batches-table tbody td,
+[data-bs-theme="dark"] #payroll-batches-view table tbody td {
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
+
 .payroll-detail-table th,
 .payroll-detail-table td {
     padding: var(--payroll-table-pad-y) var(--payroll-table-pad-x) !important;
@@ -134,6 +172,9 @@
 
 .payroll-detail-table thead th {
     vertical-align: middle !important;
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.1px;
 }
 
 .payroll-detail-table .col-emp-name {
