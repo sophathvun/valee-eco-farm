@@ -713,7 +713,7 @@ window.viewPayrollDetail = async function(batchId) {
                             <div class="d-flex align-items-center">
                                 <img src="${it.empPhoto || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="rounded-circle border me-2 flex-shrink-0" style="width: 28px; height: 28px; object-fit: cover;">
                                 <div style="line-height: 1.25;">
-                                    <div class="fw-bold text-dark col-emp-name">${it.empName}</div>
+                                    <div class="fw-bold text-body col-emp-name">${it.empName}</div>
                                     <div class="text-muted small">${it.empLatinName || it.empCode || ''}</div>
                                 </div>
                             </div>

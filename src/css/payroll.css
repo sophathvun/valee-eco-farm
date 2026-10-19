@@ -159,31 +159,18 @@
     box-shadow: 0 2px 3px rgba(0,0,0,0.12);
 }
 
-/* Sticky Columns for Horizontal Scrolling */
+/* Column Widths & Clean Alignments (Zero Gaps & Perfect Container Fit) */
 .payroll-detail-table th.col-sticky-1,
 .payroll-detail-table td.col-sticky-1 {
-    position: sticky;
-    left: 0;
-    z-index: 3;
-    background-color: var(--bs-body-bg, #ffffff);
+    width: 45px;
+    min-width: 40px;
+    max-width: 50px;
+    text-align: center !important;
 }
 .payroll-detail-table th.col-sticky-2,
 .payroll-detail-table td.col-sticky-2 {
-    position: sticky;
-    left: 40px;
-    z-index: 3;
-    background-color: var(--bs-body-bg, #ffffff);
-    box-shadow: 3px 0 6px -2px rgba(0, 0, 0, 0.12);
-}
-.payroll-detail-table thead th.col-sticky-1 {
-    z-index: 20;
-    background-color: #0f5132 !important;
-    color: #ffffff !important;
-}
-.payroll-detail-table thead th.col-sticky-2 {
-    z-index: 20;
-    background-color: #0f5132 !important;
-    color: #ffffff !important;
+    min-width: 180px;
+    text-align: left !important;
 }
 
 /* Department row sticky across horizontal scroll */
@@ -210,11 +197,7 @@
 }
 
 .payroll-detail-table tfoot td.col-sticky-foot {
-    position: sticky;
-    left: 0;
-    z-index: 3;
     background-color: var(--bs-tertiary-bg, #f1f5f9) !important;
-    box-shadow: 3px 0 6px -2px rgba(0, 0, 0, 0.12);
 }
 .payroll-detail-table tfoot tr.payroll-foot-grandtotal td.col-sticky-foot {
     background-color: #ecfdf5 !important;
