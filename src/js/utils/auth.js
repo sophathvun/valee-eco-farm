@@ -388,6 +388,11 @@ window.showTab = function(tabId, subId = null) {
         }
     }
 
+    if (tabId === 'dashboard') {
+        if (typeof loadData === 'function') loadData();
+        if (typeof loadEmployeeDashboardWidgets === 'function') loadEmployeeDashboardWidgets();
+    }
+
     if (tabId === 'reports') {
         populateYearFilter();
         if (subId) currentReportTab = subId;
