@@ -1,15 +1,57 @@
 // ======= AUTHENTICATION LOGIC =======
 let currentUser = null;
 
+function showPermissionExpiredAlert() {
+    if (typeof Swal === 'undefined') {
+        alert('Cloud Firestore Security Rules បានផុតកំណត់ (Expired)!\nសូមចូល Firebase Console ដើម្បីប្តូរទៅ allow read, write: if true;');
+        return;
+    }
+    Swal.fire({
+        icon: 'warning',
+        title: 'សិទ្ធិទិន្នន័យបានផុតកំណត់ (Permission Expired)',
+        html: `
+            <div style="text-align: left; font-size: 14px; line-height: 1.6; color: #374151;">
+                <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <p style="color: #991b1b; font-weight: bold; margin: 0 0 4px 0;">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Firestore Security Rules 30-Day Expired
+                    </p>
+                    <p style="margin: 0; font-size: 13px; color: #7f1d1d;">
+                        ច្បាប់សុវត្ថិភាព Firebase Firestore បានផុតកំណត់រយៈពេលសាកល្បង 30 ថ្ងៃ (កំណត់នៅថ្ងៃ 19-10-2026) ធ្វើឱ្យរាល់ប្រតិបត្តិការទិន្នន័យត្រូវបានបិទ។
+                    </p>
+                </div>
+                <p style="font-weight: 600; margin-bottom: 6px; color: #111827;">
+                    ដំណោះស្រាយសម្រាប់ Admin (ត្រឹមតែ 1 នាទី):
+                </p>
+                <ol style="margin-left: 20px; padding: 0; margin-bottom: 14px; font-size: 13px;">
+                    <li style="margin-bottom: 4px;">ចូលទៅកាន់ <a href="https://console.firebase.google.com/project/valee-eco-farm/firestore/rules" target="_blank" style="color: #2563eb; text-decoration: underline; font-weight: 600;">Firebase Console Rules</a></li>
+                    <li style="margin-bottom: 4px;">ប្តូរច្បាប់ទៅជា: <br><code style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px; color: #1e293b; font-weight: bold;">allow read, write: if true;</code></li>
+                    <li>ចុចប៊ូតុងពណ៌ខៀវ <b>Publish</b> រួច Refresh ប្រព័ន្ធ នោះនឹងដំណើរការធម្មតាវិញភ្លាមៗ។</li>
+                </ol>
+            </div>
+        `,
+        confirmButtonText: 'យល់ព្រម',
+        confirmButtonColor: '#059669',
+        width: '520px'
+    });
+}
+
 async function checkLogin() {
-    let userCount = await db.users.count();
-    if (userCount === 0) {
-        // Create default admin if DB is fresh
-        await db.users.add({
-            username: 'admin',
-            password: '123456',
-            permissions: ['dashboard', 'invoice_add', 'invoice_list', 'income', 'expense', 'reports', 'settings', 'employee_manage', 'perm_add', 'perm_edit', 'perm_delete']
-        });
+    try {
+        let userCount = await db.users.count();
+        if (userCount === 0) {
+            // Create default admin if DB is fresh
+            await db.users.add({
+                username: 'admin',
+                password: '123456',
+                permissions: ['dashboard', 'invoice_add', 'invoice_list', 'income', 'expense', 'reports', 'settings', 'employee_manage', 'perm_add', 'perm_edit', 'perm_delete']
+            });
+        }
+    } catch (err) {
+        console.error("checkLogin count error:", err);
+        const errMsg = String(err && err.message || err);
+        if (errMsg.toLowerCase().includes('permission')) {
+            showPermissionExpiredAlert();
+        }
     }
 
     const sessionUser = localStorage.getItem('currentUser');
@@ -74,8 +116,13 @@ window.loginUser = async function() {
             Swal.fire({icon: 'info', text: 'ឈ្មោះគណនី ឬ លេខសម្ងាត់មិនត្រឹមត្រូវទេ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
         }
     } catch (err) {
-        if (typeof Swal !== 'undefined') Swal.fire({icon: 'error', title: 'Database Error', text: err.message, confirmButtonText: 'យល់ព្រម'}); else alert('Database Error: ' + err.message);
         console.error(err);
+        const errMsg = String(err && err.message || err);
+        if (errMsg.toLowerCase().includes('permission')) {
+            showPermissionExpiredAlert();
+        } else {
+            if (typeof Swal !== 'undefined') Swal.fire({icon: 'error', title: 'Database Error', text: errMsg, confirmButtonText: 'យល់ព្រម'}); else alert('Database Error: ' + errMsg);
+        }
     }
 };
 

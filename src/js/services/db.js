@@ -11,6 +11,9 @@ async function retryOperation(fn, retries = 3, delay = 1000) {
             return await fn();
         } catch (err) {
             lastError = err;
+            if (err && (err.code === 'permission-denied' || String(err.message).toLowerCase().includes('permission'))) {
+                throw err;
+            }
             console.warn(`Firestore operation attempt ${i + 1} failed, retrying...`, err);
             await new Promise(r => setTimeout(r, delay * (i + 1)));
         }
