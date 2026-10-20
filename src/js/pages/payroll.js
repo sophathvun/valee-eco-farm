@@ -1641,6 +1641,10 @@ window.openEditBankInfoModal = async function(batchId, empId) {
         let emp = null;
         if (typeof db !== 'undefined' && db.employees) {
             emp = await db.employees.get(empId);
+            if (!emp) {
+                const allEmps = await db.employees.toArray();
+                emp = allEmps.find(e => String(e.id) === String(empId) || String(e.code) === String(empId));
+            }
         }
         let batchItem = null;
         if (currentBatch && Array.isArray(currentBatch.items)) {
@@ -1651,13 +1655,32 @@ window.openEditBankInfoModal = async function(batchId, empId) {
         const currentAccount = (emp && emp.bankAccount) || (batchItem && batchItem.bankAccount) || '';
         const currentAccName = (emp && emp.bankAccountName) || (batchItem && batchItem.bankAccountName) || (emp && (emp.nameKh || emp.name)) || (batchItem && batchItem.empName) || '';
 
+        // Temporarily remove tabindex on payslipModal to guarantee focus is never blocked
+        const pModal = document.getElementById('payslipModal');
+        if (pModal) {
+            pModal.removeAttribute('tabindex');
+        }
+
         const { value: formValues } = await Swal.fire({
             title: 'ព័ត៌មានគណនីធនាគារ',
             html: `
                 <div class="text-start px-2">
                     <div class="mb-3">
                         <label class="form-label small fw-bold">ឈ្មោះធនាគារ (Bank Name)</label>
-                        <input id="swal-bank-name" class="form-control" placeholder="ឧ. ABA Bank, ACLEDA, Canadia, Wing..." value="${currentBankName.replace(/"/g, '&quot;')}">
+                        <input id="swal-bank-name" list="swal-bank-suggestions" class="form-control" placeholder="ឧ. ABA Bank, ACLEDA, Canadia, Wing..." value="${currentBankName.replace(/"/g, '&quot;')}">
+                        <datalist id="swal-bank-suggestions">
+                            <option value="ABA Bank">
+                            <option value="ACLEDA Bank">
+                            <option value="Canadia Bank">
+                            <option value="Wing Bank">
+                            <option value="Sathapana Bank">
+                            <option value="Vattanac Bank">
+                            <option value="Chip Mong Bank">
+                            <option value="J Trust Royal Bank">
+                            <option value="Prince Bank">
+                            <option value="TrueMoney">
+                            <option value="Bakong">
+                        </datalist>
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-bold">លេខគណនី (Account Number)</label>
@@ -1671,26 +1694,45 @@ window.openEditBankInfoModal = async function(batchId, empId) {
             `,
             focusConfirm: false,
             showCancelButton: true,
-            confirmButtonText: 'រក្សាទុក',
+            confirmButtonText: '<i class="bi bi-check2 me-1"></i>រក្សាទុក',
             cancelButtonText: 'បោះបង់',
             confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            didOpen: () => {
+                const bName = document.getElementById('swal-bank-name');
+                const bAcc = document.getElementById('swal-bank-account');
+                const bAccName = document.getElementById('swal-bank-acc-name');
+                if (bName) {
+                    setTimeout(() => bName.focus(), 150);
+                }
+                const onEnter = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        Swal.clickConfirm();
+                    }
+                };
+                if (bName) bName.addEventListener('keydown', onEnter);
+                if (bAcc) bAcc.addEventListener('keydown', onEnter);
+                if (bAccName) bAccName.addEventListener('keydown', onEnter);
+            },
             preConfirm: () => {
                 return {
-                    bankName: document.getElementById('swal-bank-name').value.trim(),
-                    bankAccount: document.getElementById('swal-bank-account').value.trim(),
-                    bankAccountName: document.getElementById('swal-bank-acc-name').value.trim()
+                    bankName: document.getElementById('swal-bank-name') ? document.getElementById('swal-bank-name').value.trim() : '',
+                    bankAccount: document.getElementById('swal-bank-account') ? document.getElementById('swal-bank-account').value.trim() : '',
+                    bankAccountName: document.getElementById('swal-bank-acc-name') ? document.getElementById('swal-bank-acc-name').value.trim() : ''
                 };
             }
         });
 
         if (!formValues) return;
 
-        // Update employee in db.employees
+        // 1. Update employee in db.employees
         if (typeof db !== 'undefined' && db.employees) {
-            await db.employees.update(empId, formValues);
+            const targetId = (emp && emp.id) ? emp.id : empId;
+            await db.employees.update(targetId, formValues);
         }
 
-        // Update batch item in db.payroll
+        // 2. Update batch item in db.payroll
         if (batchId) {
             let batch = currentBatch && String(currentBatch.id) === String(batchId) ? currentBatch : null;
             if (!batch && db.payroll) {
@@ -1703,6 +1745,19 @@ window.openEditBankInfoModal = async function(batchId, empId) {
                     item.bankAccount = formValues.bankAccount;
                     item.bankAccountName = formValues.bankAccountName;
                     await db.payroll.update(batch.id, batch);
+                }
+            }
+        }
+
+        // 3. Keep in-memory batches in sync
+        if (Array.isArray(window.currentPayrollBatches)) {
+            const cachedB = window.currentPayrollBatches.find(b => String(b.id) === String(batchId));
+            if (cachedB && Array.isArray(cachedB.items)) {
+                const it = cachedB.items.find(i => String(i.empId) === String(empId));
+                if (it) {
+                    it.bankName = formValues.bankName;
+                    it.bankAccount = formValues.bankAccount;
+                    it.bankAccountName = formValues.bankAccountName;
                 }
             }
         }

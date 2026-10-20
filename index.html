@@ -534,6 +534,17 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/bootstrap.bundle.min.js"></script>
+    <script>
+        // Prevent Bootstrap Modal focus trap from blocking typing inside SweetAlert2 or other nested popups
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal && bootstrap.Modal.prototype._initializeFocusTrap) {
+            bootstrap.Modal.prototype._initializeFocusTrap = function () {
+                return {
+                    activate: function () {},
+                    deactivate: function () {}
+                };
+            };
+        }
+    </script>
     <script src="assets/cropper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
 
@@ -683,12 +694,12 @@
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=1792391000').then(reg => {
+            navigator.serviceWorker.register('sw.js?v=1792459000').then(reg => {
                 reg.update();
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792391000"></script>
+    <script type="module" src="src/js/main.js?v=1792459000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">
