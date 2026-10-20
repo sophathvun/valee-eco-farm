@@ -23,11 +23,13 @@ function formatPayCurrency(amount, currency = 'USD') {
     return '$' + new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
 }
 
-// Helper: Format Date
+// Helper: Format Date (DD-MMM-YYYY, e.g. 01-Oct-2026)
 function formatPayDate(dateStr) {
     if (!dateStr || dateStr.length !== 10) return dateStr || '';
     const [y, m, d] = dateStr.split('-');
-    return `${d}/${m}/${y}`;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthName = months[parseInt(m, 10) - 1] || m;
+    return `${d}-${monthName}-${y}`;
 }
 
 // ====== 1. INITIALIZATION ======
@@ -1265,7 +1267,7 @@ window.viewPayslip = async function(batchId, empId) {
                     <img src="${reportLogo}" class="payslip-logo me-3" onerror="this.style.display='none'">
                     <div>
                         <div class="payslip-title">ប័ណ្ណបើកប្រាក់បៀវត្សរ៍</div>
-                        <div class="payslip-subtitle">VALEE ECO FARM • EMPLOYEE PAYSLIP</div>
+                        <div class="payslip-subtitle">EMPLOYEE PAYSLIP</div>
                     </div>
                 </div>
                 <div class="text-end">
@@ -1293,12 +1295,12 @@ window.viewPayslip = async function(batchId, empId) {
                     </div>
                 </div>
                 <hr class="my-2 text-muted">
-                <div class="row g-1 small text-muted">
-                    <div class="col-6">
-                        <strong>វដ្តទូទាត់៖</strong> ${batch.title}
+                <div class="row g-1 text-muted" style="font-size: 0.72rem; line-height: 1.35;">
+                    <div class="col-7">
+                        <strong class="text-dark">វដ្តទូទាត់៖</strong> <span>${batch.title}</span>
                     </div>
-                    <div class="col-6 text-end">
-                        <strong>កាលបរិច្ឆេទ៖</strong> ${formatPayDate(batch.startDate)} ដល់ ${formatPayDate(batch.endDate)}
+                    <div class="col-5 text-end">
+                        <strong class="text-dark">កាលបរិច្ឆេទ៖</strong> <span>${formatPayDate(batch.startDate)} ដល់ ${formatPayDate(batch.endDate)}</span>
                     </div>
                 </div>
             </div>
@@ -1466,10 +1468,10 @@ window.viewPayslip = async function(batchId, empId) {
             <!-- Signatures -->
             <div class="row text-center payslip-signatures">
                 <div class="col-4">
-                    <div class="payslip-signature-line">អ្នករៀបចំ (Prepared By)</div>
+                    <div class="payslip-signature-line">រៀបចំដោយ (Prepared By)</div>
                 </div>
                 <div class="col-4">
-                    <div class="payslip-signature-line">អ្នកអនុម័ត (Approved By)</div>
+                    <div class="payslip-signature-line">អនុម័តដោយ (Approved By)</div>
                 </div>
                 <div class="col-4">
                     <div class="payslip-signature-line">ហត្ថលេខាបុគ្គលិក (Employee)</div>
@@ -2089,13 +2091,13 @@ window.printPayrollMaster = async function(batchId) {
             <!-- Signatures Footer -->
             <div style="display: flex; justify-content: space-between; margin-top: 35px; text-align: center; font-size: 8.5px;">
                 <div style="width: 25%;">
-                    <div style="border-top: 1px dashed #475569; padding-top: 5px;">អ្នករៀបចំ (Prepared By)</div>
+                    <div style="border-top: 1px dashed #475569; padding-top: 5px;">រៀបចំដោយ (Prepared By)</div>
                 </div>
                 <div style="width: 25%;">
-                    <div style="border-top: 1px dashed #475569; padding-top: 5px;">អ្នកត្រួតពិនិត្យ (Checked By)</div>
+                    <div style="border-top: 1px dashed #475569; padding-top: 5px;">ត្រួតពិនិត្យដោយ (Checked By)</div>
                 </div>
                 <div style="width: 25%;">
-                    <div style="border-top: 1px dashed #475569; padding-top: 5px;">អ្នកអនុម័ត (Approved By)</div>
+                    <div style="border-top: 1px dashed #475569; padding-top: 5px;">អនុម័តដោយ (Approved By)</div>
                 </div>
             </div>
         </div>
