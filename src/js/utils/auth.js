@@ -66,9 +66,11 @@ async function checkLogin() {
             applyPermissions();
             if (typeof loadSystemSettings === 'function') loadSystemSettings();
 
-            // Restore active page from localStorage or URL hash
-            const savedTab = localStorage.getItem('activeTab') || (location.hash ? location.hash.replace('#', '').split('/')[0] : 'dashboard');
-            const savedSub = localStorage.getItem('activeSubTab') || (location.hash && location.hash.includes('/') ? location.hash.split('/')[1] : null);
+            // Restore active page from pending click, localStorage or URL hash
+            const pending = window._pendingTab;
+            window._pendingTab = null;
+            const savedTab = (pending && pending.tabId) || localStorage.getItem('activeTab') || (location.hash ? location.hash.replace('#', '').split('/')[0] : 'dashboard');
+            const savedSub = (pending && pending.subId) || localStorage.getItem('activeSubTab') || (location.hash && location.hash.includes('/') ? location.hash.split('/')[1] : null);
             if (hasPermission(savedTab)) {
                 showTab(savedTab, savedSub);
             } else {
@@ -386,7 +388,8 @@ window.showTab = function(tabId, subId = null) {
         }
     });
     
-    document.getElementById(tabId + '-view').classList.add('active');
+    const targetView = document.getElementById(tabId + '-view');
+    if (targetView) targetView.classList.add('active');
 
     // Auto-close sidebar on mobile
     const sidebar = document.querySelector('.sidebar');
@@ -425,9 +428,11 @@ window.showTab = function(tabId, subId = null) {
     });
     
     // Close mobile sidebar if open
-    document.querySelector('.sidebar').classList.remove('mobile-open');
+    if (sidebar) sidebar.classList.remove('mobile-open');
     
-    window.updateTopNavbarTitle(tabId, subId);
+    if (typeof window.updateTopNavbarTitle === 'function') {
+        window.updateTopNavbarTitle(tabId, subId);
+    }
 
     if (tabId === 'dashboard') {
         if (typeof loadData === 'function') loadData();
@@ -439,7 +444,7 @@ window.showTab = function(tabId, subId = null) {
     }
 
     if (tabId === 'reports') {
-        populateYearFilter();
+        if (typeof populateYearFilter === 'function') populateYearFilter();
         if (subId) currentReportTab = subId;
         if (typeof switchReportTab === 'function') switchReportTab(currentReportTab);
     }
@@ -471,6 +476,13 @@ window.showTab = function(tabId, subId = null) {
         const activeView = document.getElementById(tabId + '-view');
         if (activeView) window.applyTranslations(activeView);
     }
+};
+
+// Replay any pending tab navigation requested before auth.js was loaded
+if (window._pendingTab) {
+    const pt = window._pendingTab;
+    window._pendingTab = null;
+    window.showTab(pt.tabId, pt.subId);
 }
 
 function formatCurrency(amount, currency) {

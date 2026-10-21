@@ -7,25 +7,25 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <link rel="stylesheet" href="assets/cropper.min.css">
-    <link rel="stylesheet" href="src/css/global.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/print.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/dashboard.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/invoice.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/invoice-list.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/income.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/expense.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/reports.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/employee.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/attendance.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/attendance-report.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/payroll.css?v=1792590000">
-    <link rel="stylesheet" href="src/css/settings.css?v=1792590000">
+    <link rel="stylesheet" href="src/css/global.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/print.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/dashboard.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/invoice.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/invoice-list.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/income.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/expense.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/reports.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/employee.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/attendance.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/attendance-report.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/payroll.css?v=1792601000">
+    <link rel="stylesheet" href="src/css/settings.css?v=1792601000">
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <script src="src/js/utils/i18n.js?v=1792590000"></script>
+    <script src="src/js/utils/i18n.js?v=1792601000"></script>
 
     <!-- Dark Mode Sync & Theme Switcher API (Synchronous early execution) -->
     <script>
@@ -106,6 +106,61 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateTheme();
         });
+    </script>
+
+    <!-- Early Core Navigation & Stubs to prevent ReferenceError before modules load -->
+    <script>
+        window._pendingTab = null;
+        window.showTab = function(tabId, subId = null) {
+            window._pendingTab = { tabId: tabId, subId: subId };
+            try {
+                localStorage.setItem('activeTab', tabId);
+                if (subId) {
+                    localStorage.setItem('activeSubTab', subId);
+                } else {
+                    localStorage.removeItem('activeSubTab');
+                }
+                history.replaceState(null, '', '#' + tabId + (subId ? '/' + subId : ''));
+            } catch(e) {}
+
+            try {
+                const view = document.getElementById(tabId + '-view');
+                if (view) {
+                    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                    view.classList.add('active');
+                }
+                document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.sidebar .sys-menu-item').forEach(el => el.classList.remove('active-group'));
+                const navEl = document.getElementById('nav-' + tabId);
+                if (navEl) {
+                    navEl.classList.add('active');
+                    const parent = navEl.closest('.sys-menu-item');
+                    if (parent) parent.classList.add('active-group');
+                }
+                if (typeof updateBottomNav === 'function' && navEl) {
+                    const bottomNav = document.querySelector(`.mobile-bottom-nav a[onclick*="'${tabId}'"]`);
+                    if (bottomNav) updateBottomNav(bottomNav);
+                }
+            } catch(e) {}
+        };
+
+        if (typeof window.filterSidebarMenu !== 'function') {
+            window.filterSidebarMenu = function() {};
+        }
+
+        if (typeof window.updateBottomNav !== 'function') {
+            window.updateBottomNav = function(element) {
+                document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+                if (element) element.classList.add('active');
+            };
+        }
+
+        if (typeof window.logoutUser !== 'function') {
+            window.logoutUser = function() {
+                localStorage.removeItem('currentUser');
+                location.reload();
+            };
+        }
     </script>
 </head>
 <body class="bg-light">
@@ -807,12 +862,12 @@
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=1792590000').then(reg => {
+            navigator.serviceWorker.register('sw.js?v=1792601000').then(reg => {
                 reg.update();
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792590000"></script>
+    <script type="module" src="src/js/main.js?v=1792601000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">
