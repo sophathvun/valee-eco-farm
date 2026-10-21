@@ -1,0 +1,71 @@
+/* expense.css - Expense Page Styles */
+
+/* Expense Form */
+.expense-form-card {
+    border-top: 3px solid #dc3545 !important;
+}
+
+/* Hide empty notes */
+#recentExpenseList td:nth-child(7):empty {
+    display: none !important;
+}
+
+/* Mobile Card View with Ribbon Numbering */
+@media (max-width: 768px) {
+    #recentExpenseList {
+        counter-reset: expenseCounter;
+    }
+
+    #recentExpenseList tr {
+        counter-increment: expenseCounter;
+        padding: 12px !important;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #recentExpenseList tr::before {
+        content: counter(expenseCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #dc3545; /* Expense Red */
+        color: white;
+        font-size: 15px;
+        font-weight: bold;
+        padding: 3px 16px;
+        border-bottom-right-radius: 14px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+
+    /* Summary Card at the bottom */
+    #recentExpenseList + tfoot {
+        position: static !important;
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+        background: var(--bs-body-bg);
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: 1px solid var(--bs-border-color);
+        overflow: hidden;
+    }
+
+    #recentExpenseList + tfoot tr {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background-color: transparent !important;
+    }
+
+    #recentExpenseList + tfoot tr:nth-child(1) {
+        padding: 12px;
+    }
+    #recentExpenseList + tfoot tr:nth-child(1) td:first-child {
+        display: none !important;
+    }
+}

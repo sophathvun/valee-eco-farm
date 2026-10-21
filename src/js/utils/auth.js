@@ -1,4 +1,4 @@
-// ======= AUTHENTICATION LOGIC =======
+﻿// ======= AUTHENTICATION LOGIC =======
 let currentUser = null;
 
 function showPermissionExpiredAlert() {
@@ -35,38 +35,58 @@ function showPermissionExpiredAlert() {
     });
 }
 
-async function checkLogin() {
+async function ensureDefaultAdmin() {
     try {
-        let userCount = await db.users.count();
-        if (userCount === 0) {
-            // Create default admin if DB is fresh
-            await db.users.add({
-                username: 'admin',
-                password: '123456',
-                permissions: ['dashboard', 'invoice_add', 'invoice_list', 'income', 'expense', 'reports', 'settings', 'employee_manage', 'perm_add', 'perm_edit', 'perm_delete']
-            });
+        if (typeof db !== 'undefined' && db.users) {
+            let userCount = await db.users.count();
+            if (userCount === 0) {
+                await db.users.add({
+                    username: 'admin',
+                    password: '123456',
+                    permissions: ['dashboard', 'invoice_add', 'invoice_list', 'income', 'expense', 'reports', 'settings', 'employee_manage', 'perm_add', 'perm_edit', 'perm_delete']
+                });
+            }
         }
     } catch (err) {
-        console.error("checkLogin count error:", err);
-        const errMsg = String(err && err.message || err);
-        if (errMsg.toLowerCase().includes('permission')) {
-            showPermissionExpiredAlert();
-        }
+        console.warn("Background admin check error:", err);
     }
+}
 
+async function checkLogin() {
     const sessionUser = localStorage.getItem('currentUser');
     if (sessionUser) {
-        currentUser = JSON.parse(sessionUser);
-        document.getElementById('login-view').style.display = 'none';
-        document.getElementById('main-wrapper').style.display = 'flex';
-        const topUser = document.getElementById('top-user-name');
-        if (topUser) topUser.textContent = (currentUser && currentUser.username ? currentUser.username : '').toUpperCase();
-        applyPermissions();
-        loadSystemSettings(); // Wait, let's just apply permissions
+        try {
+            currentUser = JSON.parse(sessionUser);
+            const loginView = document.getElementById('login-view');
+            const mainWrapper = document.getElementById('main-wrapper');
+            if (loginView) loginView.style.display = 'none';
+            if (mainWrapper) mainWrapper.style.display = 'flex';
+            const topUser = document.getElementById('top-user-name');
+            if (topUser) topUser.textContent = (currentUser && currentUser.username ? currentUser.username : '').toUpperCase();
+            applyPermissions();
+            if (typeof loadSystemSettings === 'function') loadSystemSettings();
+
+            // Restore active page from localStorage or URL hash
+            const savedTab = localStorage.getItem('activeTab') || (location.hash ? location.hash.replace('#', '').split('/')[0] : 'dashboard');
+            const savedSub = localStorage.getItem('activeSubTab') || (location.hash && location.hash.includes('/') ? location.hash.split('/')[1] : null);
+            if (hasPermission(savedTab)) {
+                showTab(savedTab, savedSub);
+            } else {
+                const fallbackTab = ['dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'reports', 'employee', 'attendance', 'payroll', 'settings'].find(t => hasPermission(t)) || 'dashboard';
+                showTab(fallbackTab);
+            }
+        } catch (e) {
+            console.error('Error restoring session:', e);
+        }
+
+        setTimeout(ensureDefaultAdmin, 200);
         return true;
     } else {
-        document.getElementById('login-view').style.display = 'flex';
-        document.getElementById('main-wrapper').style.display = 'none';
+        const loginView = document.getElementById('login-view');
+        const mainWrapper = document.getElementById('main-wrapper');
+        if (loginView) loginView.style.display = 'flex';
+        if (mainWrapper) mainWrapper.style.display = 'none';
+        setTimeout(ensureDefaultAdmin, 200);
         return false;
     }
 }
@@ -262,6 +282,15 @@ window.previewLogo = function(input) {
 let currentSettingsTab = 'categories';
 
 window.showTab = function(tabId, subId = null) {
+    try {
+        localStorage.setItem('activeTab', tabId);
+        if (subId) {
+            localStorage.setItem('activeSubTab', subId);
+        } else {
+            localStorage.removeItem('activeSubTab');
+        }
+        history.replaceState(null, '', '#' + tabId + (subId ? '/' + subId : ''));
+    } catch (e) {}
     if (tabId === 'income') {
         const incEx = document.getElementById('inc-exchange-rate');
         if (incEx && !incEx.value) incEx.value = window.sysExchangeRate || 4100;

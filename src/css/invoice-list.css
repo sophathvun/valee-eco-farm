@@ -1,0 +1,112 @@
+/* invoice-list.css - Invoice List Page Styles */
+
+.invoice-list-table th,
+.invoice-list-table td {
+    vertical-align: middle;
+    font-size: 0.88rem;
+}
+
+/* Mobile Card View for Invoices */
+@media (max-width: 768px) {
+    #invoiceListBody {
+        display: block;
+        counter-reset: invoiceCounter;
+    }
+
+    #invoiceListBody tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        counter-increment: invoiceCounter;
+        padding: 12px !important;
+        margin-bottom: 12px;
+        background-color: var(--bs-body-bg);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    [data-bs-theme="dark"] #invoiceListBody tr {
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    #invoiceListBody tr::before {
+        content: counter(invoiceCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #0dcaf0;
+        color: white;
+        padding: 4px 16px;
+        font-weight: bold;
+        border-bottom-right-radius: 14px;
+        z-index: 1;
+        font-size: 13px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
+
+    #invoiceListBody td {
+        display: block !important;
+        text-align: left !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    /* Col 2: Invoice No */
+    #invoiceListBody td:nth-child(2) {
+        grid-column: 1 / 2;
+        grid-row: 1;
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--bs-body-color);
+        padding-left: 50px !important;
+        line-height: 1.2;
+    }
+
+    /* Col 1: Date */
+    #invoiceListBody td:nth-child(1) {
+        grid-column: 2 / 3;
+        grid-row: 1;
+        text-align: right !important;
+        font-size: 12px;
+        color: var(--bs-secondary-color);
+    }
+
+    /* Col 3: Customer */
+    #invoiceListBody td:nth-child(3) {
+        grid-column: 1 / 2;
+        grid-row: 2;
+        font-size: 14px;
+        color: var(--bs-body-color);
+        margin-top: 8px;
+    }
+
+    /* Col 4: Phone */
+    #invoiceListBody td:nth-child(4) {
+        grid-column: 2 / 3;
+        grid-row: 2;
+        font-size: 13px;
+        color: var(--bs-secondary-color);
+        margin-top: 8px;
+        text-align: right !important;
+    }
+
+    /* Col 5: Total Amount */
+    #invoiceListBody td:nth-child(5) {
+        grid-column: 1 / 2;
+        grid-row: 3;
+        font-size: 15px;
+        font-weight: 700;
+        color: #198754;
+        margin-top: 8px;
+    }
+
+    /* Col 6: Actions */
+    #invoiceListBody td:nth-child(6) {
+        grid-column: 2 / 3;
+        grid-row: 3;
+        text-align: right !important;
+        margin-top: 8px;
+    }
+}

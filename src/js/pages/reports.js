@@ -1,4 +1,4 @@
-// ====== PRINT LIST REPORTS ======
+﻿// ====== PRINT LIST REPORTS ======
 async function printListReport(type) {
     let allTx = await db.transactions.toArray();
     allTx.sort((a, b) => {
@@ -792,33 +792,7 @@ async function exportData() {
     downloadAnchorNode.remove();
 }
 
-// Initial Load
-checkLogin().then((isLoggedIn) => {
-    loadCategories();
-    if(typeof loadUnits === 'function') loadUnits();
-    loadPreparers();
-    if(typeof loadUsersAndRoles === 'function') loadUsersAndRoles();
-    addInvoiceRow();
-    generateInvoiceNumber();
-    loadInvoices();
-    loadData();
-    if(typeof loadEmployees === 'function') loadEmployees();
-    if(typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
-    if(typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
-}).catch(err => {
-    console.error("Initial load error:", err);
-});
-
-// Auto-update PWA logic
-let refreshing = false;
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-            refreshing = true;
-            window.location.reload();
-        }
-    });
-}
+// Initial Load and PWA lifecycle are centrally orchestrated in main.js and index.html
 // PWA Install Logic
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {

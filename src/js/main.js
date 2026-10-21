@@ -1,4 +1,4 @@
-// main.js - Application Entry Point
+﻿// main.js - Application Entry Point
 
 // List of templates to load in order
 const viewsToLoad = [
@@ -16,7 +16,7 @@ const viewsToLoad = [
 ];
 
 async function initializeApp() {
-    await applyBranding();
+    applyBranding();
     const container = document.getElementById('main-content-container');
     
     // 1. Fetch and inject all HTML templates
@@ -102,6 +102,28 @@ async function initializeApp() {
             altInput: true,
             altFormat: 'd-m-Y',
             allowInput: true
+        });
+    }
+
+    // 3. Central Application Initialization & Session Restoration
+    if (typeof checkLogin === 'function') {
+        checkLogin().then((isLoggedIn) => {
+            if (isLoggedIn) {
+                if (typeof loadCategories === 'function') loadCategories();
+                if (typeof loadUnits === 'function') loadUnits();
+                if (typeof loadPreparers === 'function') loadPreparers();
+                if (typeof loadUsersAndRoles === 'function') loadUsersAndRoles();
+                if (typeof addInvoiceRow === 'function') addInvoiceRow();
+                if (typeof generateInvoiceNumber === 'function') generateInvoiceNumber();
+                if (typeof loadInvoices === 'function') loadInvoices();
+                if (typeof loadData === 'function') loadData();
+                if (typeof loadEmployees === 'function') loadEmployees();
+                if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
+                if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
+                if (typeof initPayroll === 'function') initPayroll();
+            }
+        }).catch(err => {
+            console.error('Initialization error:', err);
         });
     }
 }

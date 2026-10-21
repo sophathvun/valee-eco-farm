@@ -1,0 +1,128 @@
+/* invoice.css - Invoice Creation & Print Styles */
+
+/* Screen Editor Styles */
+.invoice-box {
+    font-family: 'Khmer OS Battambang', system-ui, sans-serif;
+    color: var(--bs-body-color);
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+.invoice-header-left h3 {
+    color: #198754;
+    font-weight: bold;
+    font-family: 'Khmer OS Muol Light', cursive;
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+}
+.invoice-header-left p {
+    margin: 2px 0;
+    font-size: 14px;
+}
+.invoice-header-right p {
+    margin: 2px 0;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    width: 250px;
+}
+
+.invoice-title {
+    text-align: center;
+    margin: 20px 0;
+}
+.invoice-title h2 {
+    font-family: 'Khmer OS Muol Light', cursive;
+    margin-bottom: 0;
+    font-size: 1.5rem;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+.invoice-table th,
+.invoice-table td {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    padding: 6px 8px;
+    text-align: center;
+}
+.invoice-table th {
+    background-color: rgba(25, 135, 84, 0.12);
+    font-weight: bold;
+}
+
+.invoice-summary {
+    width: 320px;
+    float: right;
+    margin-bottom: 40px;
+    border-collapse: collapse;
+}
+.invoice-summary td {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    padding: 6px 10px;
+    text-align: right;
+}
+.invoice-summary .bg-green {
+    background-color: rgba(25, 135, 84, 0.12);
+}
+
+.invoice-footer {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    margin-top: 50px;
+    clear: both;
+}
+.invoice-footer-box {
+    width: 30%;
+}
+.invoice-footer-line {
+    margin-top: 80px;
+    border-top: 1px dashed var(--bs-border-color, #94a3b8);
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Dedicated Print Styles for Invoices */
+@media print {
+    body:not(.printing-report) #print-area-invoice.print-template {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        visibility: visible !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 10mm;
+    }
+
+    #print-area-invoice * {
+        visibility: visible !important;
+        color: #000000 !important;
+    }
+
+    #print-area-invoice .invoice-table th {
+        background-color: #e2efda !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    #print-area-invoice .invoice-summary .bg-green {
+        background-color: #e2efda !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    #print-area-invoice .invoice-footer-line {
+        border-top: 1px solid #000000 !important;
+    }
+}

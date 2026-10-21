@@ -1,0 +1,70 @@
+/* reports.css - Financial Reports Page & Print Styles */
+
+/* Report Tabs */
+#reportTabs .nav-link {
+    color: #495057;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+#reportTabs .nav-link:hover {
+    background-color: #f1f5f9;
+}
+#reportTabs .nav-link.active {
+    background-color: #198754;
+    color: #ffffff !important;
+}
+
+/* Report Tables */
+.table-darkgreen th {
+    background-color: #198754 !important;
+    color: #ffffff !important;
+}
+
+#report-tables-wrapper {
+    background: var(--bs-body-bg);
+}
+
+/* Dedicated Print Styles for Financial Reports */
+@media print {
+    body:not(.printing-report) #print-area-report.print-template,
+    body:not(.printing-report) #print-area-analytics.print-template {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        visibility: visible !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 8mm;
+    }
+
+    #print-area-report *,
+    #print-area-analytics * {
+        visibility: visible !important;
+    }
+
+    #print-area-report table,
+    #print-area-analytics table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 11px !important;
+    }
+
+    #print-area-report table th,
+    #print-area-report table td,
+    #print-area-analytics table th,
+    #print-area-analytics table td {
+        border: 1px solid #475569 !important;
+        padding: 5px 6px !important;
+    }
+
+    #print-area-report table thead th,
+    #print-area-analytics table thead th {
+        background-color: #198754 !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}

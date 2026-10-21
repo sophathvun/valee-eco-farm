@@ -1,0 +1,71 @@
+/* income.css - Income Page Styles */
+
+/* Income Form */
+.income-form-card {
+    border-top: 3px solid #198754 !important;
+}
+
+/* Hide empty notes */
+#recentIncomeList td:nth-child(7):empty {
+    display: none !important;
+}
+
+/* Mobile Card View with Ribbon Numbering */
+@media (max-width: 768px) {
+    #recentIncomeList {
+        counter-reset: incomeCounter;
+    }
+
+    #recentIncomeList tr {
+        counter-increment: incomeCounter;
+        padding: 12px !important;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #recentIncomeList tr::before {
+        content: counter(incomeCounter, decimal-leading-zero);
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: #198754; /* Income Green */
+        color: white;
+        font-size: 15px;
+        font-weight: bold;
+        padding: 3px 16px;
+        border-bottom-right-radius: 14px;
+        box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+        z-index: 1;
+    }
+
+    /* Summary Card at the bottom */
+    #recentIncomeList + tfoot {
+        position: static !important;
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+        background: var(--bs-body-bg);
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: 1px solid var(--bs-border-color);
+        overflow: hidden;
+    }
+
+    #recentIncomeList + tfoot tr {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        background-color: transparent !important;
+    }
+
+    #recentIncomeList + tfoot tr:nth-child(1) {
+        padding: 12px;
+    }
+    #recentIncomeList + tfoot tr:nth-child(1) td:first-child {
+        display: none !important;
+    }
+}

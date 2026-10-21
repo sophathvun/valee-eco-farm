@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="km">
 <head>
     <meta charset="UTF-8">
@@ -7,11 +7,19 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <link rel="stylesheet" href="assets/cropper.min.css">
-    <link rel="stylesheet" href="src/css/global.css?v=1792391000">
-    <link rel="stylesheet" href="src/css/print.css?v=1792391000">
-    <link rel="stylesheet" href="src/css/employee.css?v=1792391000">
-    <link rel="stylesheet" href="src/css/attendance.css?v=1792391000">
-    <link rel="stylesheet" href="src/css/payroll.css?v=1792462000">
+    <link rel="stylesheet" href="src/css/global.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/print.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/dashboard.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/invoice.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/invoice-list.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/income.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/expense.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/reports.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/employee.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/attendance.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/attendance-report.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/payroll.css?v=1792500000">
+    <link rel="stylesheet" href="src/css/settings.css?v=1792500000">
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
@@ -52,6 +60,15 @@
         document.getElementById('error-box').style.display = 'block';
         document.getElementById('error-box').innerHTML += '<p>Promise Rejection: ' + (event.reason ? event.reason.toString() : 'Unknown') + '</p>';
     });
+    </script>
+
+    <!-- Instant Auth Check: Hide Login and Show Main Wrapper immediately if user is logged in -->
+    <script>
+        (function() {
+            if (localStorage.getItem('currentUser')) {
+                document.write('<style id="pre-auth-style">#login-view{display:none!important;}#main-wrapper{display:flex!important;}</style>');
+            }
+        })();
     </script>
 
     <!-- Login View -->
@@ -694,12 +711,12 @@
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=1792462000').then(reg => {
+            navigator.serviceWorker.register('sw.js?v=1792500000').then(reg => {
                 reg.update();
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792462000"></script>
+    <script type="module" src="src/js/main.js?v=1792500000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">
