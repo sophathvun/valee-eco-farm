@@ -220,7 +220,101 @@ function printElement(elId, orientation = 'portrait') {
     }, 300);
 }
 
+function ensureInvoicePrintTemplate() {
+    let printArea = document.getElementById('print-area-invoice');
+    if (!printArea) {
+        printArea = document.createElement('div');
+        printArea.id = 'print-area-invoice';
+        printArea.className = 'print-container invoice-box';
+        document.body.appendChild(printArea);
+    }
+    if (!document.getElementById('p-inv-date') || !document.getElementById('p-inv-items')) {
+        printArea.innerHTML = `
+        <div class="mb-3 text-start">
+            <img src="assets/images/logo.png" alt="Logo" style="height: 80px; width: auto; max-width: 350px; object-fit: contain;" class="sys-logo">
+        </div>
+        <div class="invoice-header">
+            <div class="invoice-header-left">
+                <table style="font-size: 14px;">
+                    <tr><td colspan="3" style="padding-bottom: 2px;">លិខិតអនុញ្ញាតលេខ: ១១១៨ អនព.នគស</td></tr>
+                    <tr><td style="padding-bottom: 2px; vertical-align: top;">អាសយដ្ឋាន</td><td style="padding-bottom: 2px; padding-left: 5px; padding-right: 5px; vertical-align: top;">៖</td><td style="padding-bottom: 2px;" id="sys-addr-kh">ភូមិព្រីង ឃុំយាយម៉ៅ<br>ស្រុកភ្នំស្រួច ខេត្តកំពង់ស្ពឺ</td></tr>
+                    <tr><td style="padding-bottom: 2px; vertical-align: top;">លេខទូរសព្ទ/Tel</td><td style="padding-bottom: 2px; padding-left: 5px; padding-right: 5px; vertical-align: top;">៖</td><td style="padding-bottom: 2px;" id="sys-phone">095 989 708</td></tr>
+                </table>
+            </div>
+            <div class="invoice-header-right">
+                <table style="font-size: 14px;">
+                    <tr><td style="padding-bottom: 2px;">កាលបរិច្ឆេទ/Date</td><td style="padding-bottom: 2px; padding-left: 5px; padding-right: 15px;">:</td><td style="padding-bottom: 2px;" id="p-inv-date"></td></tr>
+                    <tr><td style="padding-bottom: 2px;">ល.វិក្កយបត្រ/Invoice N°</td><td style="padding-bottom: 2px; padding-left: 5px; padding-right: 15px;">:</td><td style="padding-bottom: 2px; font-weight: bold; color: red;" id="p-inv-no"></td></tr>
+                    <tr><td style="padding-bottom: 2px;">អតិថិជន/Customer</td><td style="padding-bottom: 2px; padding-left: 5px; padding-right: 15px;">:</td><td style="padding-bottom: 2px;" id="p-inv-customer"></td></tr>
+                    <tr><td style="padding-bottom: 2px;">លេខទូរស័ព្ទ/Phone</td><td style="padding-bottom: 2px; padding-left: 5px; padding-right: 15px;">:</td><td style="padding-bottom: 2px;" id="p-inv-phone"></td></tr>
+                    <tr><td style="padding-bottom: 2px;">អាសយដ្ឋាន/Address</td><td style="padding-bottom: 2px; padding-left: 5px; padding-right: 15px;">:</td><td style="padding-bottom: 2px;" id="p-inv-address"></td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="invoice-title">
+            <h2 style="font-family: 'Khmer OS Muol Light', cursive !important;">វិក្កយបត្រ</h2>
+            <h3>INVOICE</h3>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%">ល.រ<br>No.</th>
+                    <th style="width: 15%">លេខផលិតផល<br>Item</th>
+                    <th style="width: 35%">បរិយាយមុខទំនិញ<br>Description</th>
+                    <th style="width: 15%">មាឌ/ឯកតា<br>Mass/Unit</th>
+                    <th style="width: 15%">តម្លៃ/ឯកតា<br>Price/Unit</th>
+                    <th style="width: 15%">សរុប<br>Total</th>
+                </tr>
+            </thead>
+            <tbody id="p-inv-items"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" rowspan="3" style="position: relative; border-left: none !important; border-bottom: none !important;">
+                        <div style="position: absolute; top: 10px; left: 10px; text-align: left;">
+                            <table style="border: none !important; font-weight: bold; font-size: 13px; margin-bottom: 5px;">
+                                <tr>
+                                    <td style="border: none !important; padding: 2px; width: 30px;"><img src="assets/images/Bank_logo.png" alt="Bank" style="width: 24px; height: 24px; border-radius: 50%;"></td>
+                                    <td style="border: none !important; padding: 2px;">លេខគណនេយ្យ</td>
+                                    <td style="border: none !important; padding: 2px;">: 3600-00555525-11 ($)</td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none !important; padding: 2px;"></td>
+                                    <td style="border: none !important; padding: 2px;"></td>
+                                    <td style="border: none !important; padding: 2px;">: 3600-00555525-12 (៛)</td>
+                                </tr>
+                            </table>
+                            <div style="text-align: center; margin-left: 20px;">
+                                <img src="assets/images/VALEEYQR.png" alt="QR Code" style="width: 110px; height: 110px; border-radius: 10px;">
+                            </div>
+                        </div>
+                    </td>
+                    <td colspan="2" class="bg-green" style="text-align: right; background-color: #d4edda !important; padding: 5px;">សរុប / Subtotal :</td>
+                    <td id="p-inv-subtotal" style="text-align: right; padding: 5px;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="bg-green" style="text-align: right; background-color: #d4edda !important; padding: 5px;">សេវាដឹកជញ្ជូន / Delivery Fee :</td>
+                    <td id="p-inv-delivery" style="text-align: right; padding: 5px;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="bg-green" style="text-align: right; font-weight: bold; background-color: #c3e6cb !important; padding: 5px;">តម្លៃសរុប / Grand Total :</td>
+                    <td id="p-inv-grandtotal" style="font-weight: bold; text-align: right; padding: 5px;"></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="invoice-footer" style="margin-top: 100px;">
+            <div class="invoice-footer-box"><p>ប្រគល់ទំនិញដោយ<br>Goods handover by</p><div class="invoice-footer-line"></div></div>
+            <div class="invoice-footer-box"><p>ពិនិត្យ និងអនុម័តដោយ<br>Checked and Approved by</p><div class="invoice-footer-line"></div></div>
+            <div class="invoice-footer-box"><p>ទទួលទំនិញដោយ<br>Received by</p><div class="invoice-footer-line"></div></div>
+        </div>
+        `;
+    }
+}
+
 async function populateAndPrintInvoice(inv) {
+    ensureInvoicePrintTemplate();
     try {
         const brand = await db.brandSettings.get(1);
         if (brand && brand.reportLogo) {
