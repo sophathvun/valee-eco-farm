@@ -434,6 +434,10 @@ window.showTab = function(tabId, subId = null) {
         if (typeof loadEmployeeDashboardWidgets === 'function') loadEmployeeDashboardWidgets();
     }
 
+    if (tabId === 'invoice-list') {
+        if (typeof loadInvoices === 'function') loadInvoices();
+    }
+
     if (tabId === 'reports') {
         populateYearFilter();
         if (subId) currentReportTab = subId;
@@ -461,6 +465,11 @@ window.showTab = function(tabId, subId = null) {
 
     if (tabId === 'payroll') {
         if (typeof initPayroll === 'function') initPayroll();
+    }
+
+    if (typeof window.applyTranslations === 'function') {
+        const activeView = document.getElementById(tabId + '-view');
+        if (activeView) window.applyTranslations(activeView);
     }
 }
 

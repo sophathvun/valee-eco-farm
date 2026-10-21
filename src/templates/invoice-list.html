@@ -1,7 +1,6 @@
-
                 <div class="card shadow-sm border-0 border-top border-info border-4">
                     <div class="card-header bg-body d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 text-info fw-bold">ប្រវត្តិវិក្កយបត្រ (Invoice History)</h5>
+                        <h5 class="mb-0 text-info fw-bold" data-i18n="invoice_history_title">ប្រវត្តិវិក្កយបត្រ (Invoice History)</h5>
                         <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#invFilterCollapse" aria-expanded="false">
                             <i class="bi bi-funnel"></i>
                         </button>
@@ -10,19 +9,19 @@
                         <div class="card-body bg-body-tertiary pb-2 pt-2 border-bottom">
                             <div class="row align-items-end">
                                 <div class="col-md-3 mb-2">
-                                    <label class="form-label" style="font-size: 13px;">ស្វែងរកលេខវិក្កយបត្រ</label>
-                                    <input type="text" class="form-control form-control-sm" id="search-inv-no" placeholder="ឧ. 001" oninput="loadInvoices()">
+                                    <label class="form-label" style="font-size: 13px;" data-i18n="search_inv_no">ស្វែងរកលេខវិក្កយបត្រ</label>
+                                    <input type="text" class="form-control form-control-sm" id="search-inv-no" placeholder="ឧ. 001" data-i18n-placeholder="search_inv_placeholder" oninput="loadInvoices()">
                                 </div>
                                 <div class="col-md-3 mb-2">
-                                    <label class="form-label" style="font-size: 13px;">ចាប់ពីថ្ងៃទី (From)</label>
+                                    <label class="form-label" style="font-size: 13px;" data-i18n="from_date">ចាប់ពីថ្ងៃទី (From)</label>
                                     <input type="date" class="form-control form-control-sm" id="search-inv-from" onchange="loadInvoices()">
                                 </div>
                                 <div class="col-md-3 mb-2">
-                                    <label class="form-label" style="font-size: 13px;">ដល់ថ្ងៃទី (To)</label>
+                                    <label class="form-label" style="font-size: 13px;" data-i18n="to_date">ដល់ថ្ងៃទី (To)</label>
                                     <input type="date" class="form-control form-control-sm" id="search-inv-to" onchange="loadInvoices()">
                                 </div>
                                 <div class="col-md-3 mb-2">
-                                    <button class="btn btn-sm btn-secondary w-100" onclick="clearInvoiceFilters()">សម្អាត (Clear)</button>
+                                    <button class="btn btn-sm btn-secondary w-100" onclick="clearInvoiceFilters()" data-i18n="btn_clear">សម្អាត (Clear)</button>
                                 </div>
                             </div>
                         </div>
@@ -31,7 +30,15 @@
                         <div class="table-responsive">
                             <table class="table table-hover mb-0 text-center">
                                 <thead class="table-darkgreen">
-                                    <tr><th>កាលបរិច្ឆេទ</th><th>លេខវិក្កយបត្រ</th><th>អតិថិជន</th><th>លេខទូរស័ព្ទ</th><th>ការបង់ប្រាក់</th><th>សរុបរួម (Grand Total)</th><th>សកម្មភាព</th></tr>
+                                    <tr>
+                                        <th data-i18n="date">កាលបរិច្ឆេទ</th>
+                                        <th data-i18n="invoice_no">លេខវិក្កយបត្រ</th>
+                                        <th data-i18n="customer_name">អតិថិជន</th>
+                                        <th data-i18n="phone">លេខទូរស័ព្ទ</th>
+                                        <th data-i18n="payment_method">ការបង់ប្រាក់</th>
+                                        <th data-i18n="grand_total">សរុបរួម (Grand Total)</th>
+                                        <th data-i18n="actions">សកម្មភាព</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="invoiceListBody"></tbody>
                             </table>

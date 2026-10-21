@@ -1,30 +1,30 @@
-﻿                <div class="card shadow-sm border-0 border-top border-primary border-4">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 text-primary fw-bold">បង្កើតវិក្កយបត្រ (Invoice)</h5>
-                        <span class="badge bg-info text-dark">ពេលព្រីនវិក្កយបត្រ វានឹងកត់ត្រាចូលជាចំណូលដោយស្វ័យប្រវត្តិ!</span>
+                <div class="card shadow-sm border-0 border-top border-primary border-4">
+                    <div class="card-header bg-body d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-primary fw-bold" data-i18n="new_invoice_title">បង្កើតវិក្កយបត្រ (Invoice)</h5>
+                        <span class="badge bg-info text-dark" data-i18n="invoice_auto_income_note">ពេលព្រីនវិក្កយបត្រ វានឹងកត់ត្រាចូលជាចំណូលដោយស្វ័យប្រវត្តិ!</span>
                     </div>
                     <div class="card-body">
                         <form id="invoiceForm">
                             <!-- Invoice Header Details -->
                             <div class="row mb-3">
                                 <div class="col-md-2">
-                                    <label class="form-label">លេខវិក្កយបត្រ (N°)</label>
+                                    <label class="form-label" data-i18n="invoice_no_field">លេខវិក្កយបត្រ (N°)</label>
                                     <input type="text" class="form-control" id="inv-no" required placeholder="001">
                                 </div>
                                 <div class="col-md-2">
-                                    <label class="form-label">កាលបរិច្ឆេទ (Date)</label>
+                                    <label class="form-label" data-i18n="date_field">កាលបរិច្ឆេទ (Date)</label>
                                     <input type="date" class="form-control" id="inv-date" required>
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">អតិថិជន (Customer)</label>
+                                    <label class="form-label" data-i18n="customer_field">អតិថិជន (Customer)</label>
                                     <input type="text" class="form-control" id="inv-customer" required>
                                 </div>
                                 <div class="col-md-2">
-                                    <label class="form-label">លេខទូរស័ព្ទ (Phone)</label>
+                                    <label class="form-label" data-i18n="phone_field">លេខទូរស័ព្ទ (Phone)</label>
                                     <input type="text" class="form-control" id="inv-phone">
                                 </div>
                                 <div class="col-md-3">
-                                    <label class="form-label">អាសយដ្ឋាន (Address)</label>
+                                    <label class="form-label" data-i18n="address_field">អាសយដ្ឋាន (Address)</label>
                                     <input type="text" class="form-control" id="inv-address">
                                 </div>
                             </div>
@@ -34,52 +34,50 @@
                                 <table class="table table-bordered text-center" id="inv-items-table">
                                     <thead class="table-darkgreen">
                                         <tr>
-                                            <th>លេខផលិតផល (Item)</th>
-                                            <th>បរិយាយមុខទំនិញ (Description)</th>
-                                            <th>មាឌ/ឯកតា (Mass/Unit)</th>
-                                            <th>តម្លៃ/ឯកតា (Price/Unit)</th>
-                                            <th>សរុប (Total)</th>
-                                            <th>សកម្មភាព</th>
+                                            <th data-i18n="th_item_no">លេខផលិតផល (Item)</th>
+                                            <th data-i18n="th_item_desc">បរិយាយមុខទំនិញ (Description)</th>
+                                            <th data-i18n="th_mass_unit">មាឌ/ឯកតា (Mass/Unit)</th>
+                                            <th data-i18n="th_price_unit">តម្លៃ/ឯកតា (Price/Unit)</th>
+                                            <th data-i18n="th_total">សរុប (Total)</th>
+                                            <th data-i18n="actions">សកម្មភាព</th>
                                         </tr>
                                     </thead>
                                     <tbody id="inv-items-body"></tbody>
                                 </table>
                             </div>
-                            <button type="button" class="btn btn-outline-primary mb-3" onclick="addInvoiceRow()">+ បន្ថែមទំនិញ (Add Item)</button>
+                            <button type="button" class="btn btn-outline-primary mb-3" onclick="addInvoiceRow()" data-i18n="btn_add_item">+ បន្ថែមទំនិញ (Add Item)</button>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label class="form-label">ប្រភេទចំណូល (ពេលកត់ត្រាចូលប្រព័ន្ធ)</label>
+                                        <label class="form-label" data-i18n="lbl_income_category">ប្រភេទចំណូល (ពេលកត់ត្រាចូលប្រព័ន្ធ)</label>
                                         <select class="form-select" id="inv-income-category" required></select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">រូបិយប័ណ្ណនៃវិក្កយបត្រនេះ</label>
+                                        <label class="form-label" data-i18n="lbl_invoice_currency">រូបិយប័ណ្ណនៃវិក្កយបត្រនេះ</label>
                                         <select class="form-select" id="inv-currency" onchange="calculateInvoiceTotal()">
-                                            <option value="KHR" selected>ប្រាក់រៀល (៛)</option>
-                                            <option value="USD">ដុល្លារសហរដ្ឋអាមេរិក ($)</option>
+                                            <option value="KHR" selected data-i18n="currency_khr">ប្រាក់រៀល (៛)</option>
+                                            <option value="USD" data-i18n="currency_usd">ដុល្លារសហរដ្ឋអាមេរិក ($)</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">វិធីទូទាត់ (Payment Method)</label>
+                                        <label class="form-label" data-i18n="lbl_payment_method">វិធីទូទាត់ (Payment Method)</label>
                                         <select class="form-select" id="inv-method" required>
-                                            <option value="Cash">សាច់ប្រាក់ (Cash)</option>
-                                            <option value="Bank">ធនាគារ (Bank)</option>
+                                            <option value="Cash" data-i18n="method_cash">សាច់ប្រាក់ (Cash)</option>
+                                            <option value="Bank" data-i18n="method_bank">ធនាគារ (Bank)</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <table class="table table-borderless text-end">
-                                        <tr><td>សរុប (Subtotal):</td><td><input type="text" class="form-control text-end" id="inv-subtotal" readonly value="0"></td></tr>
-                                        <tr><td>សេវាដឹកជញ្ជូន (Delivery Fee):</td><td><input type="text" inputmode="decimal" class="form-control text-end" id="inv-delivery" onfocus="this.value = parseCurrencyStr(this.value) || ''" onblur="this.value = formatCurrency(parseCurrencyStr(this.value), document.getElementById('inv-currency').value)" value="0" step="0.01" oninput="calculateInvoiceTotal()"></td></tr>
-                                        <tr><th>តម្លៃសរុប (Grand Total):</th><td><input type="text" class="form-control text-end fw-bold" id="inv-grandtotal" readonly value="0"></td></tr>
+                                        <tr><td data-i18n="lbl_subtotal">សរុប (Subtotal):</td><td><input type="text" class="form-control text-end" id="inv-subtotal" readonly value="0"></td></tr>
+                                        <tr><td data-i18n="lbl_delivery_fee">សេវាដឹកជញ្ជូន (Delivery Fee):</td><td><input type="text" inputmode="decimal" class="form-control text-end" id="inv-delivery" onfocus="this.value = parseCurrencyStr(this.value) || ''" onblur="this.value = formatCurrency(parseCurrencyStr(this.value), document.getElementById('inv-currency').value)" value="0" step="0.01" oninput="calculateInvoiceTotal()"></td></tr>
+                                        <tr><th data-i18n="lbl_grand_total">តម្លៃសរុប (Grand Total):</th><td><input type="text" class="form-control text-end fw-bold" id="inv-grandtotal" readonly value="0"></td></tr>
                                     </table>
                                 </div>
                             </div>
                             <hr>
-                            <button type="submit" id="btn-save-invoice" class="btn btn-primary w-100 py-3 fs-5">រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ (Save & Print)</button>
-                            <button type="button" class="btn btn-secondary w-100 py-2 mt-2" onclick="resetInvoiceForm()">បោះបង់ (Cancel / Reset)</button>
+                            <button type="submit" id="btn-save-invoice" class="btn btn-primary w-100 py-3 fs-5" data-i18n="btn_save_print_invoice">រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ (Save & Print)</button>
+                            <button type="button" class="btn btn-secondary w-100 py-2 mt-2" onclick="resetInvoiceForm()" data-i18n="btn_cancel_reset">បោះបង់ (Cancel / Reset)</button>
                         </form>
                     </div>
                 </div>
-
-
