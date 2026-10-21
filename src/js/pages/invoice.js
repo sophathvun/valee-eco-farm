@@ -183,6 +183,12 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
 });
 
 function printElement(elId, orientation = 'portrait') {
+    const target = document.getElementById(elId);
+    if (!target) {
+        console.warn('Print target element not found:', elId);
+        return;
+    }
+
     const now = new Date();
     const y = now.getFullYear();
     const m = String(now.getMonth() + 1).padStart(2, '0');
@@ -200,7 +206,7 @@ function printElement(elId, orientation = 'portrait') {
     style.innerHTML = `@media print { @page { size: A4 ${orientation}; margin: 10mm; } }`;
 
     document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
-    document.getElementById(elId).classList.add('print-template');
+    target.classList.add('print-template');
 
     const cleanup = () => {
         document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
@@ -218,7 +224,8 @@ async function populateAndPrintInvoice(inv) {
     try {
         const brand = await db.brandSettings.get(1);
         if (brand && brand.reportLogo) {
-            document.querySelector('#print-area-invoice .sys-logo').src = brand.reportLogo;
+            const logo = document.querySelector('#print-area-invoice .sys-logo');
+            if (logo) logo.src = brand.reportLogo;
         }
     } catch(e) {}
     let formattedDate = inv.date;
@@ -232,38 +239,49 @@ async function populateAndPrintInvoice(inv) {
             formattedDate = `${day}-${months[monthIndex]}-${year}`;
         }
     }
-    document.getElementById('p-inv-date').textContent = formattedDate;
-    document.getElementById('p-inv-no').textContent = inv.invNo;
-    document.getElementById('p-inv-customer').textContent = inv.customer;
-    document.getElementById('p-inv-phone').textContent = inv.phone || '';
-    document.getElementById('p-inv-address').textContent = inv.address || '';
+
+    const cur = inv.currency || 'USD';
+    const elDate = document.getElementById('p-inv-date');
+    if (elDate) elDate.textContent = formattedDate;
+    const elNo = document.getElementById('p-inv-no');
+    if (elNo) elNo.textContent = inv.invNo;
+    const elCust = document.getElementById('p-inv-customer');
+    if (elCust) elCust.textContent = inv.customer;
+    const elPhone = document.getElementById('p-inv-phone');
+    if (elPhone) elPhone.textContent = inv.phone || '';
+    const elAddr = document.getElementById('p-inv-address');
+    if (elAddr) elAddr.textContent = inv.address || '';
 
     const pTbody = document.getElementById('p-inv-items');
-    pTbody.innerHTML = '';
-    
-    const cur = inv.currency || 'USD';
-    
-    inv.items.forEach((item, index) => {
-        pTbody.innerHTML += `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${item.id}</td>
-                <td>${item.desc}</td>
-                <td>${item.mass} ${item.unit || ''}</td>
-                <td class="text-end">${formatCurrency(item.price, cur)}</td>
-                <td class="text-end">${formatCurrency(item.total, cur)}</td>
-            </tr>
-        `;
-    });
+    if (pTbody) {
+        pTbody.innerHTML = '';
+        if (Array.isArray(inv.items)) {
+            inv.items.forEach((item, index) => {
+                pTbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.id || ''}</td>
+                        <td>${item.desc || ''}</td>
+                        <td>${item.mass || ''} ${item.unit || ''}</td>
+                        <td class="text-end">${formatCurrency(item.price || 0, cur)}</td>
+                        <td class="text-end">${formatCurrency(item.total || 0, cur)}</td>
+                    </tr>
+                `;
+            });
 
-    const emptyRowsNeeded = 10 - inv.items.length;
-    for(let i=0; i<emptyRowsNeeded; i++) {
-        pTbody.innerHTML += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td class="text-end"></td><td class="text-end"></td></tr>`;
+            const emptyRowsNeeded = Math.max(0, 10 - inv.items.length);
+            for(let i=0; i<emptyRowsNeeded; i++) {
+                pTbody.innerHTML += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td class="text-end"></td><td class="text-end"></td></tr>`;
+            }
+        }
     }
 
-    document.getElementById('p-inv-subtotal').textContent = formatCurrency(inv.subtotal, cur);
-    document.getElementById('p-inv-delivery').textContent = formatCurrency(inv.delivery || 0, cur);
-    document.getElementById('p-inv-grandtotal').textContent = formatCurrency(inv.grandTotal, cur);
+    const elSub = document.getElementById('p-inv-subtotal');
+    if (elSub) elSub.textContent = formatCurrency(inv.subtotal || 0, cur);
+    const elDel = document.getElementById('p-inv-delivery');
+    if (elDel) elDel.textContent = formatCurrency(inv.delivery || 0, cur);
+    const elGrand = document.getElementById('p-inv-grandtotal');
+    if (elGrand) elGrand.textContent = formatCurrency(inv.grandTotal || 0, cur);
 
     printElement('print-area-invoice');
 }

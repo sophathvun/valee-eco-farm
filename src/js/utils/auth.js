@@ -365,10 +365,13 @@ window.showTab = function(tabId, subId = null) {
         const expEx = document.getElementById('exp-exchange-rate');
         if (expEx && !expEx.value) expEx.value = window.sysExchangeRate || 4100;
     }
-    // Clean up all print containers and print classes when switching tabs
+    // Clean up active print templates and only empty purely dynamic containers when switching tabs
     document.querySelectorAll('.print-container').forEach(el => {
         el.classList.remove('print-template');
-        el.innerHTML = '';
+    });
+    ['print-area-payroll-master', 'print-area-payslip'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
     });
     document.body.classList.remove('printing-report');
 

@@ -1797,7 +1797,10 @@ function executePayrollPrint(elementId, orientation = 'landscape') {
     const cleanup = () => {
         document.querySelectorAll('.print-container').forEach(el => {
             el.classList.remove('print-template');
-            el.innerHTML = '';
+        });
+        ['print-area-payroll-master', 'print-area-payslip'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = '';
         });
         window.removeEventListener('afterprint', cleanup);
     };

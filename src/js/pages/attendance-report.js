@@ -299,7 +299,10 @@ window.printAttReport = async function() {
     // Purge any lingering print templates and empty payslip/payroll containers
     document.querySelectorAll('.print-container').forEach(el => {
         el.classList.remove('print-template');
-        el.innerHTML = '';
+    });
+    ['print-area-payroll-master', 'print-area-payslip'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
     });
 
     let style = document.getElementById('dynamic-print-orientation');
@@ -315,7 +318,10 @@ window.printAttReport = async function() {
         document.body.classList.remove('printing-report');
         document.querySelectorAll('.print-container').forEach(el => {
             el.classList.remove('print-template');
-            el.innerHTML = '';
+        });
+        ['print-area-payroll-master', 'print-area-payslip'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = '';
         });
         window.removeEventListener('afterprint', cleanup);
     };

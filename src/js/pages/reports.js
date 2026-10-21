@@ -1,4 +1,4 @@
-﻿// ====== PRINT LIST REPORTS ======
+// ====== PRINT LIST REPORTS ======
 async function printListReport(type) {
     let allTx = await db.transactions.toArray();
     allTx.sort((a, b) => {
@@ -23,7 +23,8 @@ async function printListReport(type) {
     if (fromDate) filtered = filtered.filter(tx => tx.date >= fromDate);
     if (toDate) filtered = filtered.filter(tx => tx.date <= toDate);
 
-    document.getElementById('p-rep-title').textContent = title;
+    const elRepTitle = document.getElementById('p-rep-title');
+    if (elRepTitle) elRepTitle.textContent = title;
     
     let dateRangeStr = '';
     if (fromDate && toDate) dateRangeStr = `ចាប់ពីថ្ងៃទី ${formatKhmerDate(fromDate)} ដល់ថ្ងៃទី ${formatKhmerDate(toDate)}`;
@@ -31,10 +32,11 @@ async function printListReport(type) {
     else if (toDate) dateRangeStr = `រហូតដល់ថ្ងៃទី ${formatKhmerDate(toDate)}`;
     else dateRangeStr = `របាយការណ៍សរុបទាំងអស់`;
     
-    document.getElementById('p-rep-date').textContent = dateRangeStr;
+    const elRepDate = document.getElementById('p-rep-date');
+    if (elRepDate) elRepDate.textContent = dateRangeStr;
 
     const tbody = document.getElementById('p-rep-items');
-    tbody.innerHTML = '';
+    if (tbody) tbody.innerHTML = '';
     
     let cashKhr = 0, cashUsd = 0, bankKhr = 0, bankUsd = 0;
 
@@ -220,7 +222,8 @@ async function generateReport() {
         document.getElementById('filterDay').value = 'all';
     }
     
-    document.getElementById('reportSummaryText').textContent = summaryText;
+    const elReportSummary = document.getElementById('reportSummaryText');
+    if (elReportSummary) elReportSummary.textContent = summaryText;
 
     const allTx = await db.transactions.toArray();
     const filtered = allTx.filter(tx => tx.date && tx.date.startsWith(prefix));
@@ -415,7 +418,7 @@ async function generateReport() {
     else if (currentReportTab === 'income' || currentReportTab === 'expense') {
         const isInc = currentReportTab === 'income';
         const tbody = document.getElementById(isInc ? 'rep-inc-tbody' : 'rep-exp-tbody');
-        tbody.innerHTML = '';
+        if (tbody) tbody.innerHTML = '';
         
         const groups = {};
         const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
