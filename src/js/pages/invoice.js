@@ -203,7 +203,7 @@ function printElement(elId, orientation = 'portrait') {
         style.id = 'dynamic-print-orientation';
         document.head.appendChild(style);
     }
-    style.innerHTML = `@media print { @page { size: A4 ${orientation}; margin: 10mm; } }`;
+    style.innerHTML = `@media print { @page { size: A4 ${orientation}; margin: 5mm 10mm 6mm 10mm; } }`;
 
     document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
     target.classList.add('print-template');
@@ -234,8 +234,8 @@ function ensureInvoicePrintTemplate() {
     const isCorrupted = thCheck && (!thCheck.innerHTML.includes('Description') || !thCheck.innerHTML.includes('Item'));
     if (!document.getElementById('p-inv-date') || !document.getElementById('p-inv-items') || isCorrupted) {
         printArea.innerHTML = `
-        <div class="mb-3 text-start">
-            <img src="assets/images/logo.png" alt="Logo" style="height: 80px; width: auto; max-width: 350px; object-fit: contain;" class="sys-logo">
+        <div class="mb-2 text-start invoice-logo-wrapper" style="margin-top: 0; padding-top: 0;">
+            <img src="assets/images/logo.png" alt="Logo" style="height: 65px; width: auto; max-width: 300px; object-fit: contain; margin-top: 0;" class="sys-logo">
         </div>
         <div class="invoice-header">
             <div class="invoice-header-left">
@@ -308,7 +308,7 @@ function ensureInvoicePrintTemplate() {
             </tfoot>
         </table>
 
-        <div class="invoice-footer" style="margin-top: 100px;">
+        <div class="invoice-footer" style="margin-top: 40px;">
             <div class="invoice-footer-box"><p>ប្រគល់ទំនិញដោយ<br>Goods handover by</p><div class="invoice-footer-line"></div></div>
             <div class="invoice-footer-box"><p>ពិនិត្យ និងអនុម័តដោយ<br>Checked and Approved by</p><div class="invoice-footer-line"></div></div>
             <div class="invoice-footer-box"><p>ទទួលទំនិញដោយ<br>Received by</p><div class="invoice-footer-line"></div></div>

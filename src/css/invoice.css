@@ -77,14 +77,14 @@
     display: flex;
     justify-content: space-between;
     text-align: center;
-    margin-top: 50px;
+    margin-top: 40px;
     clear: both;
 }
 .invoice-footer-box {
     width: 30%;
 }
 .invoice-footer-line {
-    margin-top: 80px;
+    margin-top: 60px;
     border-top: 1px dashed var(--bs-border-color, #94a3b8);
     width: 80%;
     margin-left: auto;
@@ -102,7 +102,20 @@
         visibility: visible !important;
         background: #ffffff !important;
         color: #000000 !important;
-        padding: 10mm;
+        padding: 0 10mm 6mm 10mm !important;
+        margin: 0 !important;
+    }
+
+    #print-area-invoice .invoice-logo-wrapper {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        margin-bottom: 6px !important;
+    }
+
+    #print-area-invoice .invoice-logo-wrapper img,
+    #print-area-invoice .sys-logo {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
     }
 
     #print-area-invoice * {
