@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <link rel="stylesheet" href="assets/cropper.min.css">
-    <link rel="stylesheet" href="src/css/global.css?v=1792510000">
+    <link rel="stylesheet" href="src/css/global.css?v=1792530000">
     <link rel="stylesheet" href="src/css/print.css?v=1792510000">
     <link rel="stylesheet" href="src/css/dashboard.css?v=1792510000">
     <link rel="stylesheet" href="src/css/invoice.css?v=1792510000">
@@ -78,12 +78,12 @@
             <!-- Left Panel -->
             <div class="login-left position-relative">
                 <div class="d-flex justify-content-end mb-2">
-                    <div class="btn-group btn-group-sm rounded-pill p-1 border shadow-sm lang-pill-box" role="group" aria-label="Login Language Switcher">
+                    <div class="btn-group btn-group-sm rounded-pill p-1 border shadow-sm lang-pill-box" role="group" aria-label="Login Language Switcher" data-no-i18n="true">
                         <button type="button" class="btn btn-sm rounded-pill px-2 py-0 border-0 fw-bold lang-btn" id="login-lang-km" onclick="setLanguage('km')" title="ភាសាខ្មែរ">
-                            <span>🇰🇭</span> <span class="ms-1" style="font-size: 0.8rem;">ខ្មែរ</span>
+                            <img src="assets/images/flag-kh.svg" alt="Cambodia Flag" class="flag-img"> <span class="ms-1" style="font-size: 0.8rem;">ខ្មែរ</span>
                         </button>
                         <button type="button" class="btn btn-sm rounded-pill px-2 py-0 border-0 fw-bold lang-btn" id="login-lang-en" onclick="setLanguage('en')" title="English">
-                            <span>🇬🇧</span> <span class="ms-1" style="font-size: 0.8rem;">EN</span>
+                            <img src="assets/images/flag-gb.svg" alt="UK Flag" class="flag-img"> <span class="ms-1" style="font-size: 0.8rem;">EN</span>
                         </button>
                     </div>
                 </div>
@@ -293,9 +293,13 @@
                 <li class="nav-item px-3 py-2 border-top border-secondary mt-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <small class="text-white-50" data-i18n="system_language">🌐 ភាសា / Lang</small>
-                        <div class="btn-group btn-group-sm">
-                            <button type="button" class="btn btn-sm btn-outline-light py-0 px-2 fw-bold lang-btn" id="sidebar-lang-km" onclick="setLanguage('km')">🇰🇭 ខ្មែរ</button>
-                            <button type="button" class="btn btn-sm btn-outline-light py-0 px-2 fw-bold lang-btn" id="sidebar-lang-en" onclick="setLanguage('en')">🇬🇧 EN</button>
+                        <div class="btn-group btn-group-sm" data-no-i18n="true">
+                            <button type="button" class="btn btn-sm btn-outline-light py-0 px-2 fw-bold lang-btn d-inline-flex align-items-center" id="sidebar-lang-km" onclick="setLanguage('km')">
+                                <img src="assets/images/flag-kh.svg" alt="Cambodia Flag" class="flag-img me-1"> ខ្មែរ
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-light py-0 px-2 fw-bold lang-btn d-inline-flex align-items-center" id="sidebar-lang-en" onclick="setLanguage('en')">
+                                <img src="assets/images/flag-gb.svg" alt="UK Flag" class="flag-img me-1"> EN
+                            </button>
                         </div>
                     </div>
                 </li>
@@ -353,13 +357,15 @@
                 
                 <div class="d-flex align-items-center">
                     <!-- Top Navbar Language Switcher -->
-                    <div class="lang-switch-wrapper me-3">
+                    <div class="lang-switch-wrapper me-3" data-no-i18n="true">
                         <div class="btn-group btn-group-sm rounded-pill p-1 border shadow-sm lang-pill-box" role="group" aria-label="Language Switcher">
                             <button type="button" class="btn btn-sm rounded-pill px-2 py-0 border-0 fw-bold lang-btn" id="lang-btn-km" onclick="setLanguage('km')" title="ភាសាខ្មែរ">
-                                <span>🇰🇭</span> <span class="d-none d-sm-inline ms-1" style="font-size: 0.8rem;">ខ្មែរ</span>
+                                <img src="assets/images/flag-kh.svg" alt="Cambodia Flag" class="flag-img">
+                                <span class="d-none d-sm-inline ms-1" style="font-size: 0.8rem;">ខ្មែរ</span>
                             </button>
                             <button type="button" class="btn btn-sm rounded-pill px-2 py-0 border-0 fw-bold lang-btn" id="lang-btn-en" onclick="setLanguage('en')" title="English">
-                                <span>🇬🇧</span> <span class="d-none d-sm-inline ms-1" style="font-size: 0.8rem;">EN</span>
+                                <img src="assets/images/flag-gb.svg" alt="UK Flag" class="flag-img">
+                                <span class="d-none d-sm-inline ms-1" style="font-size: 0.8rem;">EN</span>
                             </button>
                         </div>
                     </div>
