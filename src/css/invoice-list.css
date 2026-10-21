@@ -110,3 +110,68 @@
         margin-top: 8px;
     }
 }
+
+/* ================= DARK MODE STYLES FOR INVOICE LIST ================= */
+[data-bs-theme="dark"] #invoice-list-view .card {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-bs-theme="dark"] #invoice-list-view .card-header {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155 !important;
+}
+
+[data-bs-theme="dark"] #invoice-list-view .card-header h5 {
+    color: #38bdf8 !important;
+}
+
+[data-bs-theme="dark"] #invFilterCollapse .card-body {
+    background-color: #0f172a !important;
+    border-bottom: 1px solid #334155 !important;
+}
+
+[data-bs-theme="dark"] #invFilterCollapse .form-label {
+    color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] #invFilterCollapse .form-control {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] #invoice-list-view thead.table-darkgreen th {
+    background-color: #064e3b !important;
+    color: #a7f3d0 !important;
+    border-color: #047857 !important;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] #invoiceListBody tr {
+    background-color: #1e293b;
+    border-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] #invoiceListBody tr:hover {
+    background-color: #27354a !important;
+}
+
+[data-bs-theme="dark"] #invoiceListBody td {
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+    vertical-align: middle;
+}
+
+[data-bs-theme="dark"] #invoiceListBody .badge.bg-info {
+    background-color: rgba(13, 202, 240, 0.2) !important;
+    color: #38bdf8 !important;
+    border: 1px solid rgba(56, 189, 248, 0.35) !important;
+}
+
+[data-bs-theme="dark"] #invoiceListBody .badge.bg-success {
+    background-color: rgba(25, 135, 84, 0.25) !important;
+    color: #4ade80 !important;
+    border: 1px solid rgba(74, 222, 128, 0.35) !important;
+}

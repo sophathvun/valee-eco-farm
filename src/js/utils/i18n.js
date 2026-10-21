@@ -189,6 +189,7 @@
 
             // Invoices Specific
             new_invoice_title: "បង្កើតវិក្កយបត្រ (Invoice)",
+            create_invoice_title: "បង្កើតវិក្កយបត្រ (Invoice)",
             invoice_auto_income_note: "ពេលព្រីនវិក្កយបត្រ វានឹងកត់ត្រាចូលជាចំណូលដោយស្វ័យប្រវត្តិ!",
             invoice_no_field: "លេខវិក្កយបត្រ (N°)",
             date_field: "កាលបរិច្ឆេទ (Date)",
@@ -315,7 +316,7 @@
 
             // Navigation Menu
             menu_dashboard: "Dashboard",
-            menu_invoice: "New Invoice",
+            menu_invoice: "Create Invoice",
             menu_invoice_list: "Invoice List",
             menu_income: "Income",
             menu_expense: "Expense",
@@ -343,7 +344,7 @@
 
             // Tab Titles
             tab_dashboard: "Dashboard",
-            tab_invoice: "New Invoice",
+            tab_invoice: "Create Invoice",
             tab_invoice_list: "Invoice List",
             tab_income: "Income",
             tab_expense: "Expense",
@@ -450,7 +451,8 @@
             btn_save_print: "Save & Print",
 
             // Invoices Specific
-            new_invoice_title: "New Invoice",
+            new_invoice_title: "Create Invoice",
+            create_invoice_title: "Create Invoice",
             invoice_auto_income_note: "When printing invoice, it will be automatically recorded as income!",
             invoice_no_field: "Invoice No. (N°)",
             date_field: "Date",
@@ -661,7 +663,8 @@
             "តម្លៃរាយ": "Unit Price",
             "+ បន្ថែមជួរ": "+ Add Item Row",
             "រក្សាទុក និង ព្រីន": "Save & Print",
-            "បង្កើតវិក្កយបត្រ (Invoice)": "New Invoice",
+            "បង្កើតវិក្កយបត្រ (Invoice)": "Create Invoice",
+            "New Invoice": "Create Invoice",
             "ពេលព្រីនវិក្កយបត្រ វានឹងកត់ត្រាចូលជាចំណូលដោយស្វ័យប្រវត្តិ!": "When printing invoice, it will be automatically recorded as income!",
             "លេខវិក្កយបត្រ (N°)": "Invoice No. (N°)",
             "កាលបរិច្ឆេទ (Date)": "Date",

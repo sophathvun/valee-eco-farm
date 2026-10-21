@@ -12539,4 +12539,161 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
     color: #ffd43b !important;
 }
 
+/* ================= UNIVERSAL DARK MODE ENHANCEMENTS ================= */
+
+/* 1. Flatpickr Calendar Popup */
+[data-bs-theme="dark"] .flatpickr-calendar {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+    color: #f8fafc !important;
+}
+[data-bs-theme="dark"] .flatpickr-calendar.arrowTop::before,
+[data-bs-theme="dark"] .flatpickr-calendar.arrowTop::after {
+    border-bottom-color: #1e293b !important;
+}
+[data-bs-theme="dark"] .flatpickr-calendar.arrowBottom::before,
+[data-bs-theme="dark"] .flatpickr-calendar.arrowBottom::after {
+    border-top-color: #1e293b !important;
+}
+[data-bs-theme="dark"] .flatpickr-months {
+    background: #0f172a !important;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+[data-bs-theme="dark"] .flatpickr-months .flatpickr-month,
+[data-bs-theme="dark"] .flatpickr-current-month,
+[data-bs-theme="dark"] .flatpickr-current-month .cur-month,
+[data-bs-theme="dark"] .flatpickr-current-month input.cur-year {
+    color: #f8fafc !important;
+    fill: #f8fafc !important;
+}
+[data-bs-theme="dark"] .flatpickr-months .flatpickr-prev-month,
+[data-bs-theme="dark"] .flatpickr-months .flatpickr-next-month {
+    color: #cbd5e1 !important;
+    fill: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .flatpickr-months .flatpickr-prev-month:hover,
+[data-bs-theme="dark"] .flatpickr-months .flatpickr-next-month:hover {
+    color: #10b981 !important;
+    fill: #10b981 !important;
+}
+[data-bs-theme="dark"] span.flatpickr-weekday {
+    background: #0f172a !important;
+    color: #94a3b8 !important;
+    font-weight: 600;
+}
+[data-bs-theme="dark"] .flatpickr-day {
+    color: #e2e8f0 !important;
+    border-radius: 6px !important;
+}
+[data-bs-theme="dark"] .flatpickr-day:hover,
+[data-bs-theme="dark"] .flatpickr-day:focus {
+    background: #334155 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .flatpickr-day.today {
+    border-color: #10b981 !important;
+    background: transparent !important;
+    color: #34d399 !important;
+}
+[data-bs-theme="dark"] .flatpickr-day.selected,
+[data-bs-theme="dark"] .flatpickr-day.startRange,
+[data-bs-theme="dark"] .flatpickr-day.endRange {
+    background: #10b981 !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .flatpickr-day.prevMonthDay,
+[data-bs-theme="dark"] .flatpickr-day.nextMonthDay {
+    color: #475569 !important;
+}
+[data-bs-theme="dark"] .flatpickr-day.disabled,
+[data-bs-theme="dark"] .flatpickr-day.disabled:hover {
+    color: #334155 !important;
+}
+
+/* 2. Badges in Dark Mode */
+[data-bs-theme="dark"] .badge.bg-info,
+[data-bs-theme="dark"] .badge.bg-info.text-dark {
+    background-color: rgba(13, 202, 240, 0.2) !important;
+    color: #38bdf8 !important;
+    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+}
+[data-bs-theme="dark"] .badge.bg-success {
+    background-color: rgba(25, 135, 84, 0.25) !important;
+    color: #4ade80 !important;
+    border: 1px solid rgba(74, 222, 128, 0.4) !important;
+}
+[data-bs-theme="dark"] .badge.bg-warning,
+[data-bs-theme="dark"] .badge.bg-warning.text-dark {
+    background-color: rgba(255, 193, 7, 0.2) !important;
+    color: #facc15 !important;
+    border: 1px solid rgba(250, 204, 21, 0.4) !important;
+}
+[data-bs-theme="dark"] .badge.bg-danger {
+    background-color: rgba(220, 53, 69, 0.25) !important;
+    color: #f87171 !important;
+    border: 1px solid rgba(248, 113, 113, 0.4) !important;
+}
+[data-bs-theme="dark"] .badge.bg-secondary {
+    background-color: #334155 !important;
+    color: #cbd5e1 !important;
+    border: 1px solid #475569 !important;
+}
+
+/* 3. Native Select Options */
+[data-bs-theme="dark"] select.form-select,
+[data-bs-theme="dark"] select.form-select option {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+/* 4. Table Thead and Borderless Tables */
+[data-bs-theme="dark"] .table-darkgreen th {
+    background-color: #064e3b !important;
+    color: #a7f3d0 !important;
+    border-color: #047857 !important;
+}
+[data-bs-theme="dark"] .table-darkred th {
+    background-color: #7f1d1d !important;
+    color: #fecaca !important;
+    border-color: #991b1b !important;
+}
+[data-bs-theme="dark"] .table-borderless,
+[data-bs-theme="dark"] .table-borderless tr,
+[data-bs-theme="dark"] .table-borderless td,
+[data-bs-theme="dark"] .table-borderless th {
+    border: 0 !important;
+    background-color: transparent !important;
+}
+
+/* 5. Modals */
+[data-bs-theme="dark"] .modal-content {
+    background-color: #1e293b !important;
+    border: 1px solid #334155 !important;
+    color: #f8fafc !important;
+}
+[data-bs-theme="dark"] .modal-header.bg-light {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+}
+[data-bs-theme="dark"] .modal-footer {
+    border-color: #334155 !important;
+}
+
+/* 6. SweetAlert2 */
+[data-bs-theme="dark"] .swal2-popup {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155 !important;
+}
+[data-bs-theme="dark"] .swal2-title {
+    color: #f8fafc !important;
+}
+[data-bs-theme="dark"] .swal2-html-container {
+    color: #cbd5e1 !important;
+}
+
 

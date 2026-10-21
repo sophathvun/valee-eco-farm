@@ -126,3 +126,142 @@
         border-top: 1px solid #000000 !important;
     }
 }
+
+/* ================= DARK MODE STYLES FOR INVOICE ================= */
+[data-bs-theme="dark"] #invoice-view .card {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-bs-theme="dark"] #invoice-view .card-header {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155 !important;
+}
+
+[data-bs-theme="dark"] #invoice-view .card-header h5 {
+    color: #60a5fa !important;
+}
+
+[data-bs-theme="dark"] #invoice-view .badge.bg-info,
+[data-bs-theme="dark"] #invoice-view .badge.bg-info.text-dark {
+    background-color: rgba(13, 202, 240, 0.18) !important;
+    color: #38bdf8 !important;
+    border: 1px solid rgba(56, 189, 248, 0.45) !important;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] #invoice-view .form-label {
+    color: #cbd5e1 !important;
+    font-weight: 500;
+}
+
+[data-bs-theme="dark"] #invoice-view .form-control,
+[data-bs-theme="dark"] #invoice-view .form-select {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] #invoice-view .form-control:focus,
+[data-bs-theme="dark"] #invoice-view .form-select:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25) !important;
+}
+
+[data-bs-theme="dark"] #invoice-view .form-control::placeholder {
+    color: #64748b !important;
+}
+
+[data-bs-theme="dark"] #invoice-view hr {
+    border-color: #334155 !important;
+    opacity: 0.6;
+}
+
+[data-bs-theme="dark"] #inv-items-table {
+    border-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] #inv-items-table thead.table-darkgreen th {
+    background-color: #064e3b !important;
+    color: #a7f3d0 !important;
+    border-color: #047857 !important;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] #inv-items-table tbody td {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    vertical-align: middle;
+}
+
+[data-bs-theme="dark"] #inv-items-table .input-group-text {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] #invoice-view .table-borderless,
+[data-bs-theme="dark"] #invoice-view .table-borderless tr,
+[data-bs-theme="dark"] #invoice-view .table-borderless td,
+[data-bs-theme="dark"] #invoice-view .table-borderless th {
+    border: none !important;
+    background-color: transparent !important;
+}
+
+[data-bs-theme="dark"] #invoice-view .table-borderless td {
+    color: #cbd5e1 !important;
+    font-size: 15px;
+    vertical-align: middle;
+}
+
+[data-bs-theme="dark"] #invoice-view .table-borderless th {
+    color: #f8fafc !important;
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+[data-bs-theme="dark"] #inv-subtotal {
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+    font-weight: 600;
+}
+
+[data-bs-theme="dark"] #inv-delivery {
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] #inv-grandtotal {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #34d399 !important;
+    border: 2px solid #059669 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700;
+}
+
+[data-bs-theme="dark"] #invoice-view #btn-save-invoice {
+    background-color: #2563eb !important;
+    border-color: #1d4ed8 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35) !important;
+}
+
+[data-bs-theme="dark"] #invoice-view #btn-save-invoice:hover {
+    background-color: #1d4ed8 !important;
+    border-color: #1e40af !important;
+}
+
+[data-bs-theme="dark"] #invoice-view .btn-secondary {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+    color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] #invoice-view .btn-secondary:hover {
+    background-color: #475569 !important;
+    border-color: #64748b !important;
+    color: #ffffff !important;
+}
