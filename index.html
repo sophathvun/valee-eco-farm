@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <link rel="stylesheet" href="assets/cropper.min.css">
-    <link rel="stylesheet" href="src/css/global.css?v=1792550000">
+    <link rel="stylesheet" href="src/css/global.css?v=1792560000">
     <link rel="stylesheet" href="src/css/print.css?v=1792510000">
     <link rel="stylesheet" href="src/css/dashboard.css?v=1792510000">
     <link rel="stylesheet" href="src/css/invoice.css?v=1792510000">
@@ -25,10 +25,59 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <script src="src/js/utils/i18n.js?v=1792550000"></script>
+    <script src="src/js/utils/i18n.js?v=1792560000"></script>
 
-    <!-- Dark Mode Sync -->
+    <!-- Dark Mode Sync & Theme Switcher API (Synchronous early execution) -->
     <script>
+        function updateThemeButtons() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme') || localStorage.getItem('sysTheme') || 'light';
+            const isDark = currentTheme === 'dark';
+
+            const btnLight = document.getElementById('theme-btn-light');
+            const btnDark = document.getElementById('theme-btn-dark');
+
+            if (btnLight && btnDark) {
+                if (!isDark) {
+                    btnLight.classList.add('active');
+                    btnLight.classList.remove('text-muted');
+                    btnDark.classList.remove('active');
+                    btnDark.classList.add('text-muted');
+                } else {
+                    btnDark.classList.add('active');
+                    btnDark.classList.remove('text-muted');
+                    btnLight.classList.remove('active');
+                    btnLight.classList.add('text-muted');
+                }
+            }
+
+            const themeSwitch = document.getElementById('themeSwitch');
+            if (themeSwitch) {
+                themeSwitch.checked = isDark;
+            }
+        }
+
+        function setTheme(theme) {
+            const isDark = theme === 'dark';
+            
+            if (isDark) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+                if (document.body) document.body.classList.add('dark-theme');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+                if (document.body) document.body.classList.remove('dark-theme');
+            }
+            
+            localStorage.setItem('sysTheme', isDark ? 'dark' : 'light');
+            updateThemeButtons();
+
+            window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: isDark ? 'dark' : 'light' } }));
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme') || localStorage.getItem('sysTheme') || 'light';
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        }
+
         function updateTheme() {
             const savedTheme = localStorage.getItem('sysTheme');
             let theme = 'light';
@@ -43,12 +92,20 @@
             } else {
                 if (document.body) document.body.classList.remove('dark-theme');
             }
-            if (typeof window.updateThemeButtons === 'function') {
-                window.updateThemeButtons();
-            }
+            updateThemeButtons();
         }
+
+        window.setTheme = setTheme;
+        window.toggleTheme = toggleTheme;
+        window.updateThemeButtons = updateThemeButtons;
+        window.updateTheme = updateTheme;
+
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme);
         updateTheme();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTheme();
+        });
     </script>
 </head>
 <body class="bg-light">
@@ -750,12 +807,12 @@
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=1792550000').then(reg => {
+            navigator.serviceWorker.register('sw.js?v=1792560000').then(reg => {
                 reg.update();
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792550000"></script>
+    <script type="module" src="src/js/main.js?v=1792560000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">
