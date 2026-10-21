@@ -12,7 +12,7 @@
                                     <span class="fw-bold" id="totalIncBank"></span>
                                 </div>
                                 <h5 class="mb-0 text-success text-end mt-3" id="totalIncUnified">$0.00 | ៛0</h5>
-<div class="mt-3 text-end border-top pt-2"><small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-info-circle me-1"></i>អត្រាប្តូរប្រាក់៖ 1$ = <span class="rate-display"></span>៛</small></div>
+<div class="mt-3 text-end border-top pt-2"><small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-info-circle me-1"></i><span data-i18n="exchange_rate_label">អត្រាប្តូរប្រាក់៖</span> 1$ = <span class="rate-display"></span>៛</small></div>
                             </div>
                         </div>
                     </div>
@@ -29,7 +29,7 @@
                                     <span class="fw-bold" id="totalExpBank"></span>
                                 </div>
                                 <h5 class="mb-0 text-danger text-end mt-3" id="totalExpUnified">$0.00 | ៛0</h5>
-<div class="mt-3 text-end border-top pt-2"><small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-info-circle me-1"></i>អត្រាប្តូរប្រាក់៖ 1$ = <span class="rate-display"></span>៛</small></div>
+<div class="mt-3 text-end border-top pt-2"><small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-info-circle me-1"></i><span data-i18n="exchange_rate_label">អត្រាប្តូរប្រាក់៖</span> 1$ = <span class="rate-display"></span>៛</small></div>
                             </div>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                                     <span class="fw-bold" id="totalBalBank"></span>
                                 </div>
                                 <h5 class="mb-0 text-primary text-end mt-3" id="totalBalUnified">$0.00 | ៛0</h5>
-<div class="mt-3 text-end border-top pt-2"><small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-info-circle me-1"></i>អត្រាប្តូរប្រាក់៖ 1$ = <span class="rate-display"></span>៛</small></div>
+<div class="mt-3 text-end border-top pt-2"><small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-info-circle me-1"></i><span data-i18n="exchange_rate_label">អត្រាប្តូរប្រាក់៖</span> 1$ = <span class="rate-display"></span>៛</small></div>
                             </div>
                         </div>
                     </div>
@@ -62,19 +62,19 @@
                             </div>
                             <div>
                                 <h5 class="fw-bold mb-0 text-body" style="font-family: 'Khmer OS Siemreap', sans-serif;">
-                                    ទិដ្ឋភាពទូទៅនៃធនធានមនុស្ស <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 0.72rem; font-weight: 500;">HR &amp; Workforce</span>
+                                    <span data-i18n="hr_overview">ទិដ្ឋភាពទូទៅនៃធនធានមនុស្ស</span> <span class="badge bg-primary-subtle text-primary border border-primary-subtle ms-1" style="font-size: 0.72rem; font-weight: 500;">HR &amp; Workforce</span>
                                 </h5>
-                                <small class="text-muted" style="font-size: 0.78rem;">
+                                <small class="text-muted" style="font-size: 0.78rem;" data-i18n="hr_overview_desc">
                                     សង្ខេបព័ត៌មានបុគ្គលិក វត្តមានប្រចាំថ្ងៃ និងចំណាយបៀវត្សរ៍ជាក់ស្តែង
                                 </small>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm d-inline-flex align-items-center" onclick="showTab('attendance')">
-                                <i class="bi bi-calendar-check me-1"></i> <span>កត់វត្តមាន</span>
+                                <i class="bi bi-calendar-check me-1"></i> <span data-i18n="btn_take_attendance">កត់វត្តមាន</span>
                             </button>
                             <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm d-inline-flex align-items-center" onclick="showTab('employee')">
-                                <i class="bi bi-person-plus me-1"></i> <span>គ្រប់គ្រងបុគ្គលិក</span>
+                                <i class="bi bi-person-plus me-1"></i> <span data-i18n="btn_manage_staff">គ្រប់គ្រងបុគ្គលិក</span>
                             </button>
                         </div>
                     </div>
@@ -86,21 +86,21 @@
                             <div class="card hr-kpi-card shadow-sm h-100 border-0" onclick="showTab('employee')" style="cursor: pointer;" title="ចុចដើម្បីមើលបញ្ជីបុគ្គលិក">
                                 <div class="card-body p-3">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <span class="text-muted fw-medium" style="font-size: 0.82rem;">បុគ្គលិកសរុប</span>
+                                        <span class="text-muted fw-medium" style="font-size: 0.82rem;" data-i18n="total_workforce">បុគ្គលិកសរុប</span>
                                         <div class="hr-badge-icon bg-indigo-subtle text-indigo">
                                             <i class="bi bi-people-fill"></i>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-baseline mb-2">
                                         <h3 class="fw-bold mb-0 text-body me-2" id="hr-total-emps">0</h3>
-                                        <span class="text-muted" style="font-size: 0.85rem;">នាក់</span>
+                                        <span class="text-muted" style="font-size: 0.85rem;" id="hr-unit-staff" data-i18n="unit_staff">នាក់</span>
                                     </div>
                                     <div class="d-flex flex-wrap gap-1 align-items-center pt-2 border-top" style="font-size: 0.75rem;">
                                         <span class="badge bg-light text-dark border">
-                                            <i class="bi bi-gender-male text-primary me-1"></i>ប្រុស: <strong id="hr-male-count">0</strong>
+                                            <i class="bi bi-gender-male text-primary me-1"></i><span data-i18n="male">ប្រុស</span>: <strong id="hr-male-count">0</strong>
                                         </span>
                                         <span class="badge bg-light text-dark border">
-                                            <i class="bi bi-gender-female text-danger me-1"></i>ស្រី: <strong id="hr-female-count">0</strong>
+                                            <i class="bi bi-gender-female text-danger me-1"></i><span data-i18n="female">ស្រី</span>: <strong id="hr-female-count">0</strong>
                                         </span>
                                         <span class="badge bg-primary-subtle text-primary ms-auto" id="hr-fulltime-pill">
                                             FT: 0
@@ -115,7 +115,7 @@
                             <div class="card hr-kpi-card shadow-sm h-100 border-0" onclick="showTab('attendance')" style="cursor: pointer;" title="ចុចដើម្បីមើល ឬកត់វត្តមាន">
                                 <div class="card-body p-3">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <span class="text-muted fw-medium" style="font-size: 0.82rem;">វត្តមានថ្ងៃនេះ</span>
+                                        <span class="text-muted fw-medium" style="font-size: 0.82rem;" data-i18n="today_attendance">វត្តមានថ្ងៃនេះ</span>
                                         <div class="hr-badge-icon bg-emerald-subtle text-emerald">
                                             <i class="bi bi-calendar-check-fill"></i>
                                         </div>
@@ -147,7 +147,7 @@
                             <div class="card hr-kpi-card shadow-sm h-100 border-0" onclick="showTab('payroll')" style="cursor: pointer;" title="ចុចដើម្បីមើលការបើកប្រាក់បៀវត្សរ៍">
                                 <div class="card-body p-3">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <span class="text-muted fw-medium" style="font-size: 0.82rem;">ប៉ាន់ស្មានបៀវត្សរ៍ប្រចាំខែ</span>
+                                        <span class="text-muted fw-medium" style="font-size: 0.82rem;" data-i18n="est_payroll">ប៉ាន់ស្មានបៀវត្សរ៍ប្រចាំខែ</span>
                                         <div class="hr-badge-icon bg-amber-subtle text-amber">
                                             <i class="bi bi-cash-coin"></i>
                                         </div>
@@ -169,14 +169,14 @@
                             <div class="card hr-kpi-card shadow-sm h-100 border-0" onclick="showTab('settings', 'emp_structure')" style="cursor: pointer;" title="ចុចដើម្បីមើលរចនាសម្ព័ន្ធការងារ">
                                 <div class="card-body p-3">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <span class="text-muted fw-medium" style="font-size: 0.82rem;">រចនាសម្ព័ន្ធការងារ</span>
+                                        <span class="text-muted fw-medium" style="font-size: 0.82rem;" data-i18n="org_structure">រចនាសម្ព័ន្ធការងារ</span>
                                         <div class="hr-badge-icon bg-purple-subtle text-purple">
                                             <i class="bi bi-diagram-3-fill"></i>
                                         </div>
                                     </div>
                                     <div class="d-flex align-items-baseline mb-2">
                                         <h3 class="fw-bold mb-0 text-body me-2" id="hr-dept-count">0</h3>
-                                        <span class="text-muted" style="font-size: 0.85rem;">ផ្នែកការងារ</span>
+                                        <span class="text-muted" style="font-size: 0.85rem;" data-i18n="unit_departments">ផ្នែកការងារ</span>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center pt-2 border-top" style="font-size: 0.75rem;">
                                         <span class="text-truncate text-muted" style="max-width: 80%;" id="hr-top-dept">
@@ -196,7 +196,7 @@
                             <div class="card shadow-sm border-0 h-100 hr-panel-card">
                                 <div class="card-header bg-transparent py-3 border-bottom d-flex justify-content-between align-items-center">
                                     <h6 class="fw-bold mb-0 text-body d-flex align-items-center">
-                                        <i class="bi bi-pie-chart-fill text-primary me-2"></i> បែងចែកបុគ្គលិកតាមផ្នែក
+                                        <i class="bi bi-pie-chart-fill text-primary me-2"></i> <span data-i18n="workforce_by_dept">បែងចែកបុគ្គលិកតាមផ្នែក</span>
                                     </h6>
                                     <span class="badge bg-secondary-subtle text-secondary rounded-pill px-2 py-1" style="font-size: 0.7rem;" id="hr-dept-total-badge">
                                         0 ផ្នែក
@@ -213,7 +213,7 @@
                                 </div>
                                 <div class="card-footer bg-transparent py-2 border-top text-end">
                                     <a href="javascript:void(0)" class="text-decoration-none text-primary" style="font-size: 0.8rem;" onclick="showTab('employee')">
-                                        មើលបញ្ជីបុគ្គលិកទាំងអស់ <i class="bi bi-arrow-right ms-1"></i>
+                                        <span data-i18n="view_all_staff">មើលបញ្ជីបុគ្គលិកទាំងអស់</span> <i class="bi bi-arrow-right ms-1"></i>
                                     </a>
                                 </div>
                             </div>
@@ -225,17 +225,17 @@
                                 <div class="card-header bg-transparent py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
                                     <div>
                                         <h6 class="fw-bold mb-0 text-body d-flex align-items-center">
-                                            <i class="bi bi-clock-history text-success me-2"></i> វត្តមានបុគ្គលិកថ្ងៃនេះ
+                                            <i class="bi bi-clock-history text-success me-2"></i> <span data-i18n="today_live_attendance">វត្តមានបុគ្គលិកថ្ងៃនេះ</span>
                                         </h6>
                                         <small class="text-muted" style="font-size: 0.75rem;" id="hr-today-date-km">ថ្ងៃនេះ</small>
                                     </div>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="input-group input-group-sm" style="max-width: 170px;">
                                             <span class="input-group-text bg-transparent border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                                            <input type="text" id="hr-att-search" class="form-control border-start-0" placeholder="ស្វែងរក..." oninput="filterHrAttendanceList()">
+                                            <input type="text" id="hr-att-search" class="form-control border-start-0" placeholder="ស្វែងរក..." data-i18n-placeholder="search_ellipsis" oninput="filterHrAttendanceList()">
                                         </div>
                                         <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-2 py-1" style="font-size: 0.75rem;" onclick="showTab('attendance')">
-                                            <i class="bi bi-pencil-square me-1"></i>កត់វត្តមាន
+                                            <i class="bi bi-pencil-square me-1"></i><span data-i18n="btn_take_attendance">កត់វត្តមាន</span>
                                         </button>
                                     </div>
                                 </div>
@@ -244,10 +244,10 @@
                                         <table class="table table-hover align-middle mb-0 text-nowrap" style="font-size: 0.82rem;">
                                             <thead class="table-light sticky-top" style="z-index: 1;">
                                                 <tr>
-                                                    <th class="ps-3" style="width: 45%;">បុគ្គលិក</th>
-                                                    <th style="width: 25%;">ផ្នែក / មុខតំណែង</th>
-                                                    <th class="text-center" style="width: 15%;">ព្រឹក</th>
-                                                    <th class="text-center pe-3" style="width: 15%;">រសៀល</th>
+                                                    <th class="ps-3" style="width: 45%;" data-i18n="th_employee">បុគ្គលិក</th>
+                                                    <th style="width: 25%;" data-i18n="th_dept_pos">ផ្នែក / មុខតំណែង</th>
+                                                    <th class="text-center" style="width: 15%;" data-i18n="th_morning">ព្រឹក</th>
+                                                    <th class="text-center pe-3" style="width: 15%;" data-i18n="th_afternoon">រសៀល</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="hr-today-att-tbody">
@@ -264,13 +264,13 @@
                                 </div>
                                 <div class="card-footer bg-transparent py-2 border-top d-flex justify-content-between align-items-center">
                                     <div class="d-flex gap-2" style="font-size: 0.72rem;">
-                                        <span class="text-muted"><span class="badge bg-success-subtle text-success me-1">P</span>វត្តមាន</span>
-                                        <span class="text-muted"><span class="badge bg-warning-subtle text-warning me-1">L</span>ច្បាប់</span>
-                                        <span class="text-muted"><span class="badge bg-danger-subtle text-danger me-1">A</span>អវត្តមាន</span>
-                                        <span class="text-muted"><span class="badge bg-light text-secondary border me-1">-</span>មិនទាន់កត់</span>
+                                        <span class="text-muted"><span class="badge bg-success-subtle text-success me-1">P</span><span data-i18n="status_present">វត្តមាន</span></span>
+                                        <span class="text-muted"><span class="badge bg-warning-subtle text-warning me-1">L</span><span data-i18n="status_leave">ច្បាប់</span></span>
+                                        <span class="text-muted"><span class="badge bg-danger-subtle text-danger me-1">A</span><span data-i18n="status_absent">អវត្តមាន</span></span>
+                                        <span class="text-muted"><span class="badge bg-light text-secondary border me-1">-</span><span data-i18n="status_unmarked">មិនទាន់កត់</span></span>
                                     </div>
                                     <a href="javascript:void(0)" class="text-decoration-none text-success" style="font-size: 0.8rem;" onclick="showTab('attendance-report')">
-                                        របាយការណ៍វត្តមាន <i class="bi bi-arrow-right ms-1"></i>
+                                        <span data-i18n="menu_attendance_report">របាយការណ៍វត្តមាន</span> <i class="bi bi-arrow-right ms-1"></i>
                                     </a>
                                 </div>
                             </div>
@@ -285,11 +285,11 @@
                                     🎂
                                 </div>
                                 <div>
-                                    <span class="fw-bold text-body" style="font-size: 0.85rem;">ខួបកំណើតក្នុងខែនេះ (Birthdays This Month)៖</span>
+                                    <span class="fw-bold text-body" style="font-size: 0.85rem;" data-i18n="birthdays_this_month">ខួបកំណើតក្នុងខែនេះ (Birthdays This Month)៖</span>
                                     <span class="text-muted ms-1" style="font-size: 0.82rem;" id="hr-birthday-names"></span>
                                 </div>
                             </div>
-                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-1" style="font-size: 0.72rem;">
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-1" style="font-size: 0.72rem;" data-i18n="congratulations">
                                 🎉 អបអរសាទរ
                             </span>
                         </div>

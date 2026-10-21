@@ -271,14 +271,29 @@ async function loadEmployeeDashboardWidgets() {
         const dd = String(today.getDate()).padStart(2, '0');
         const todayStr = `${yyyy}-${mm}-${dd}`;
 
-        // Set Khmer date text
+        const isKm = (typeof window.i18n !== 'undefined' ? window.i18n.currentLang : (localStorage.getItem('sys_lang') || 'km')) === 'km';
+        const unitStaff = isKm ? 'នាក់' : 'staff';
+        const txtPresent = isKm ? 'វត្តមាន' : 'Present';
+        const txtLeave = isKm ? 'ច្បាប់' : 'Leave';
+        const txtAbsent = isKm ? 'អវត្តមាន' : 'Absent';
+        const txtPending = isKm ? 'មិនទាន់កត់' : 'Unmarked';
+
+        // Set date text (Bilingual)
         const elTodayKm = document.getElementById('hr-today-date-km');
         if (elTodayKm) {
-            const khmerDays = ['អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
-            const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
-            const dayName = khmerDays[today.getDay()];
-            const monthName = khmerMonths[today.getMonth()];
-            elTodayKm.textContent = `ថ្ងៃ${dayName} ទី ${dd} ខែ${monthName} ឆ្នាំ ${yyyy}`;
+            if (isKm) {
+                const khmerDays = ['អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+                const khmerMonths = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+                const dayName = khmerDays[today.getDay()];
+                const monthName = khmerMonths[today.getMonth()];
+                elTodayKm.textContent = `ថ្ងៃ${dayName} ទី ${dd} ខែ${monthName} ឆ្នាំ ${yyyy}`;
+            } else {
+                const engDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const engMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                const dayName = engDays[today.getDay()];
+                const monthName = engMonths[today.getMonth()];
+                elTodayKm.textContent = `${dayName}, ${dd} ${monthName} ${yyyy}`;
+            }
         }
 
         const todayRecords = (allAttendance || []).filter(r => r.date === todayStr);
@@ -309,17 +324,21 @@ async function loadEmployeeDashboardWidgets() {
         const rate = totalEmps > 0 ? Math.round((countP / totalEmps) * 100) : 0;
         const elRate = document.getElementById('hr-present-rate');
         if (elRate) elRate.textContent = `${rate}%`;
+
+        const elUnitStaff = document.getElementById('hr-unit-staff');
+        if (elUnitStaff) elUnitStaff.textContent = unitStaff;
+
         const elFraction = document.getElementById('hr-present-fraction');
-        if (elFraction) elFraction.textContent = `(${countP} / ${totalEmps} នាក់)`;
+        if (elFraction) elFraction.textContent = `(${countP} / ${totalEmps} ${unitStaff})`;
         
         const elP = document.getElementById('hr-att-p');
-        if (elP) elP.textContent = `${countP} វត្តមាន`;
+        if (elP) elP.textContent = `${countP} ${txtPresent}`;
         const elL = document.getElementById('hr-att-l');
-        if (elL) elL.textContent = `${countL} ច្បាប់`;
+        if (elL) elL.textContent = `${countL} ${txtLeave}`;
         const elA = document.getElementById('hr-att-a');
-        if (elA) elA.textContent = `${countA} អវត្តមាន`;
+        if (elA) elA.textContent = `${countA} ${txtAbsent}`;
         const elPending = document.getElementById('hr-att-pending');
-        if (elPending) elPending.textContent = `? ${countPending} មិនទាន់កត់`;
+        if (elPending) elPending.textContent = `? ${countPending} ${txtPending}`;
 
         // 3. Estimated Monthly Payroll
         const sysRate = window.sysExchangeRate || 4100;
@@ -356,7 +375,7 @@ async function loadEmployeeDashboardWidgets() {
         // 4. Departments & Positions
         const deptMap = {};
         allHrDashboardEmployees.forEach(emp => {
-            const d = (emp.department && emp.department.trim()) ? emp.department.trim() : 'ផ្សេងៗ (Other)';
+            const d = (emp.department && emp.department.trim()) ? emp.department.trim() : (isKm ? 'ផ្សេងៗ' : 'Other');
             deptMap[d] = (deptMap[d] || 0) + 1;
         });
 
@@ -365,7 +384,7 @@ async function loadEmployeeDashboardWidgets() {
         const elDeptCount = document.getElementById('hr-dept-count');
         if (elDeptCount) elDeptCount.textContent = deptCount;
         const elDeptTotalBadge = document.getElementById('hr-dept-total-badge');
-        if (elDeptTotalBadge) elDeptTotalBadge.textContent = `${deptCount} ផ្នែក`;
+        if (elDeptTotalBadge) elDeptTotalBadge.textContent = `${deptCount} ${isKm ? 'ផ្នែក' : 'Departments'}`;
 
         let topDeptName = '-';
         let maxDeptCount = 0;
@@ -377,12 +396,13 @@ async function loadEmployeeDashboardWidgets() {
         });
         const elTopDept = document.getElementById('hr-top-dept');
         if (elTopDept) {
-            elTopDept.innerHTML = `<i class="bi bi-star-fill text-warning me-1"></i>ច្រើនជាងគេ: <strong>${topDeptName}</strong> (${maxDeptCount} នាក់)`;
+            const topLabel = isKm ? 'ច្រើនជាងគេ:' : 'Top:';
+            elTopDept.innerHTML = `<i class="bi bi-star-fill text-warning me-1"></i>${topLabel} <strong>${topDeptName}</strong> (${maxDeptCount} ${unitStaff})`;
         }
 
         const elPosCount = document.getElementById('hr-pos-count');
         if (elPosCount) {
-            elPosCount.textContent = `${positions ? positions.length : 0} មុខតំណែង`;
+            elPosCount.textContent = `${positions ? positions.length : 0} ${isKm ? 'មុខតំណែង' : 'Positions'}`;
         }
 
         // 5. Render Department Distribution
@@ -403,9 +423,12 @@ function renderDepartmentDistribution(deptMap, totalEmps) {
     const container = document.getElementById('hr-dept-list-container');
     if (!container) return;
 
+    const isKm = (typeof window.i18n !== 'undefined' ? window.i18n.currentLang : (localStorage.getItem('sys_lang') || 'km')) === 'km';
+    const unitStaff = isKm ? 'នាក់' : 'staff';
+
     const entries = Object.entries(deptMap);
     if (entries.length === 0) {
-        container.innerHTML = `<div class="text-center text-muted py-4"><i class="bi bi-folder2-open fs-3 d-block mb-2"></i>មិនទាន់មានទិន្នន័យផ្នែកបុគ្គលិកនៅឡើយទេ</div>`;
+        container.innerHTML = `<div class="text-center text-muted py-4"><i class="bi bi-folder2-open fs-3 d-block mb-2"></i>${isKm ? 'មិនទាន់មានទិន្នន័យផ្នែកបុគ្គលិកនៅឡើយទេ' : 'No department data available yet'}</div>`;
         return;
     }
 
@@ -433,7 +456,7 @@ function renderDepartmentDistribution(deptMap, totalEmps) {
                         <i class="bi bi-building me-1" style="color: ${color};"></i> ${dept}
                     </span>
                     <span class="text-muted text-nowrap">
-                        <strong class="text-body">${count}</strong> នាក់ 
+                        <strong class="text-body">${count}</strong> ${unitStaff} 
                         <span class="badge border ms-1" style="font-size: 0.68rem; background-color: var(--bs-tertiary-bg);">${pct}%</span>
                     </span>
                 </div>
@@ -451,8 +474,10 @@ function renderTodayAttendanceTable(items) {
     const tbody = document.getElementById('hr-today-att-tbody');
     if (!tbody) return;
 
+    const isKm = (typeof window.i18n !== 'undefined' ? window.i18n.currentLang : (localStorage.getItem('sys_lang') || 'km')) === 'km';
+
     if (!items || items.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4"><i class="bi bi-people fs-3 d-block mb-2"></i>មិនមានបុគ្គលិកក្នុងប្រព័ន្ធទេ</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4"><i class="bi bi-people fs-3 d-block mb-2"></i>${isKm ? 'មិនមានបុគ្គលិកក្នុងប្រព័ន្ធទេ' : 'No employees in the system'}</td></tr>`;
         return;
     }
 
@@ -532,9 +557,10 @@ function renderBirthdaysThisMonth(employees, currentMonthStr) {
         return;
     }
 
+    const isKm = (typeof window.i18n !== 'undefined' ? window.i18n.currentLang : (localStorage.getItem('sys_lang') || 'km')) === 'km';
     const pills = bdayEmps.map(e => {
         const parts = e.dob.split('-');
-        const day = parts[2] ? ` (ថ្ងៃទី ${parts[2]})` : '';
+        const day = parts[2] ? (isKm ? ` (ថ្ងៃទី ${parts[2]})` : ` (Day ${parts[2]})`) : '';
         return `<strong class="text-body">${e.name}</strong>${day}`;
     }).join(' • ');
 

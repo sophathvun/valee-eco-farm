@@ -141,6 +141,25 @@
             male: "ប្រុស",
             female: "ស្រី",
             staff_count: "នាក់",
+            exchange_rate_label: "អត្រាប្តូរប្រាក់៖",
+            hr_overview: "ទិដ្ឋភាពទូទៅនៃធនធានមនុស្ស",
+            hr_overview_desc: "សង្ខេបព័ត៌មានបុគ្គលិក វត្តមានប្រចាំថ្ងៃ និងចំណាយបៀវត្សរ៍ជាក់ស្តែង",
+            total_workforce: "បុគ្គលិកសរុប",
+            unit_staff: "នាក់",
+            unit_departments: "ផ្នែកការងារ",
+            workforce_by_dept: "បែងចែកបុគ្គលិកតាមផ្នែក",
+            view_all_staff: "មើលបញ្ជីបុគ្គលិកទាំងអស់",
+            today_live_attendance: "វត្តមានបុគ្គលិកថ្ងៃនេះ",
+            search_ellipsis: "ស្វែងរក...",
+            th_employee: "បុគ្គលិក",
+            th_dept_pos: "ផ្នែក / មុខតំណែង",
+            birthdays_this_month: "ខួបកំណើតក្នុងខែនេះ (Birthdays This Month)៖",
+            congratulations: "🎉 អបអរសាទរ",
+            est_payroll: "ប៉ាន់ស្មានបៀវត្សរ៍ប្រចាំខែ",
+            org_structure: "រចនាសម្ព័ន្ធការងារ",
+            today_attendance: "វត្តមានថ្ងៃនេះ",
+            th_morning: "ព្រឹក",
+            th_afternoon: "រសៀល",
 
             // Transactions & Invoices
             btn_add_income: "+ បញ្ចូលចំណូល",
@@ -342,6 +361,25 @@
             male: "Male",
             female: "Female",
             staff_count: "Staff",
+            exchange_rate_label: "Exchange Rate:",
+            hr_overview: "HR & Workforce Overview",
+            hr_overview_desc: "Staff summary, daily attendance, and real-time payroll expenses",
+            total_workforce: "Total Workforce",
+            unit_staff: "staff",
+            unit_departments: "Departments",
+            workforce_by_dept: "Workforce by Department",
+            view_all_staff: "View All Staff",
+            today_live_attendance: "Today's Live Attendance",
+            search_ellipsis: "Search...",
+            th_employee: "Staff",
+            th_dept_pos: "Department / Position",
+            th_morning: "Morning",
+            th_afternoon: "Afternoon",
+            birthdays_this_month: "Birthdays This Month:",
+            congratulations: "🎉 Congratulations",
+            est_payroll: "Estimated Monthly Payroll",
+            org_structure: "Workforce Structure",
+            today_attendance: "Today's Attendance",
 
             // Transactions & Invoices
             btn_add_income: "+ Add Income",
@@ -459,22 +497,42 @@
             "ធនាគារ": "Bank",
             "អត្រាប្តូរប្រាក់៖": "Exchange Rate:",
             "ទិដ្ឋភាពទូទៅនៃធនធានមនុស្ស (HR & Workforce)": "HR & Workforce Overview",
+            "ទិដ្ឋភាពទូទៅនៃធនធានមនុស្ស": "HR & Workforce Overview",
+            "សង្ខេបព័ត៌មានបុគ្គលិក វត្តមានប្រចាំថ្ងៃ និងចំណាយបៀវត្សរ៍ជាក់ស្តែង": "Staff summary, daily attendance, and real-time payroll expenses",
             "កត់វត្តមាន": "Take Attendance",
             "គ្រប់គ្រងបុគ្គលិក": "Manage Staff",
             "បុគ្គលិកសរុប (Total Workforce)": "Total Workforce",
+            "បុគ្គលិកសរុប": "Total Workforce",
             "វត្តមានថ្ងៃនេះ (Today's Live Attendance)": "Today's Live Attendance",
+            "វត្តមានថ្ងៃនេះ": "Today's Attendance",
             "ប៉ាន់ស្មានបៀវត្សរ៍ប្រចាំខែ (Estimated Monthly Payroll)": "Estimated Monthly Payroll",
+            "ប៉ាន់ស្មានបៀវត្សរ៍ប្រចាំខែ": "Estimated Monthly Payroll",
             "រចនាសម្ព័ន្ធការងារ (Departments & Structure)": "Departments & Structure",
+            "រចនាសម្ព័ន្ធការងារ": "Workforce Structure",
+            "ផ្នែកការងារ": "Departments",
             "បែងចែកបុគ្គលិកតាមផ្នែក (Workforce by Department)": "Workforce by Department",
+            "បែងចែកបុគ្គលិកតាមផ្នែក": "Workforce by Department",
+            "មើលបញ្ជីបុគ្គលិកទាំងអស់": "View All Staff",
             "វត្តមានបុគ្គលិកថ្ងៃនេះ (Today's Live Attendance Monitor)": "Today's Live Attendance Monitor",
+            "វត្តមានបុគ្គលិកថ្ងៃនេះ": "Today's Live Attendance",
             "ខួបកំណើតបុគ្គលិកក្នុងខែនេះ": "Birthdays This Month",
+            "ខួបកំណើតក្នុងខែនេះ (Birthdays This Month)៖": "Birthdays This Month:",
+            "🎉 អបអរសាទរ": "🎉 Congratulations",
             "ប្រវត្តិប្រតិបត្តិការចុងក្រោយ": "Recent Transactions",
             "គំនូសតាងចំណូល-ចំណាយ": "Income vs Expense Trend",
             "ពេញម៉ោង": "Full-Time",
             "ក្រៅម៉ោង": "Part-Time",
             "ប្រុស": "Male",
+            "ប្រុស:": "Male:",
             "ស្រី": "Female",
+            "ស្រី:": "Female:",
             "នាក់": "staff",
+            "ស្វែងរក...": "Search...",
+            "បុគ្គលិក": "Staff",
+            "ផ្នែក / មុខតំណែង": "Department / Position",
+            "ព្រឹក": "Morning",
+            "រសៀល": "Afternoon",
+            "របាយការណ៍វត្តមាន": "Attendance Report",
 
             // Transactions & Invoices
             "ប្រវត្តិបញ្ចូលចំណូល": "Income Records",
@@ -695,8 +753,13 @@
 
         // Re-render dashboard or active tab widgets if functions exist
         const activeTab = localStorage.getItem('activeTab') || 'dashboard';
-        if (activeTab === 'dashboard' && typeof window.loadData === 'function') {
-            setTimeout(window.loadData, 50);
+        if (activeTab === 'dashboard') {
+            if (typeof window.loadData === 'function') {
+                setTimeout(window.loadData, 50);
+            }
+            if (typeof window.loadEmployeeDashboardWidgets === 'function') {
+                setTimeout(window.loadEmployeeDashboardWidgets, 60);
+            }
         }
     }
 
