@@ -649,8 +649,6 @@
         applyBtnState(document.getElementById('lang-btn-km'), document.getElementById('lang-btn-en'));
         // Login screen switchers
         applyBtnState(document.getElementById('login-lang-km'), document.getElementById('login-lang-en'));
-        // Sidebar switchers
-        applyBtnState(document.getElementById('sidebar-lang-km'), document.getElementById('sidebar-lang-en'));
         // Settings page radio/switchers if available
         const settingKm = document.getElementById('setting-lang-km');
         const settingEn = document.getElementById('setting-lang-en');
