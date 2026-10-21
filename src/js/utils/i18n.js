@@ -812,12 +812,18 @@
 
     // 6. DOM Translation Scanner
     function applyTranslations(root = document) {
+        if (!root) return;
+        if (root.nodeType === Node.ELEMENT_NODE && (root.hasAttribute('data-no-i18n') || root.id === 'print-area-invoice' || root.classList.contains('print-container') || (root.closest && root.closest('[data-no-i18n], .print-container, #print-area-invoice')))) {
+            return;
+        }
+
         const lang = currentLang;
         document.documentElement.setAttribute('lang', lang);
 
         // A. Translate elements with data-i18n attribute
         const i18nElements = root.querySelectorAll('[data-i18n]');
         i18nElements.forEach(el => {
+            if (el.closest('[data-no-i18n], .print-container, #print-area-invoice')) return;
             const key = el.getAttribute('data-i18n');
             const translation = t(key);
             if (translation && translation !== key) {
@@ -832,6 +838,7 @@
         // B. Translate placeholders
         const placeholderElements = root.querySelectorAll('[data-i18n-placeholder]');
         placeholderElements.forEach(el => {
+            if (el.closest('[data-no-i18n], .print-container, #print-area-invoice')) return;
             const key = el.getAttribute('data-i18n-placeholder');
             const translation = t(key);
             if (translation) el.placeholder = translation;
@@ -840,6 +847,7 @@
         // C. Translate titles / tooltips
         const titleElements = root.querySelectorAll('[data-i18n-title]');
         titleElements.forEach(el => {
+            if (el.closest('[data-no-i18n], .print-container, #print-area-invoice')) return;
             const key = el.getAttribute('data-i18n-title');
             const translation = t(key);
             if (translation) el.title = translation;
@@ -850,8 +858,10 @@
         const candidateElements = root.querySelectorAll(targetSelectors);
 
         candidateElements.forEach(el => {
-            // Skip form inputs, text areas, editable areas, explicit ignores, or elements already handled by data-i18n
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.hasAttribute('data-no-i18n') || el.hasAttribute('data-i18n') || el.closest('.note-editable, [contenteditable="true"]')) {
+            // Skip form inputs, text areas, editable areas, print areas, explicit ignores, or elements already handled by data-i18n
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || 
+                el.hasAttribute('data-no-i18n') || el.hasAttribute('data-i18n') || 
+                el.closest('[data-no-i18n], .print-container, #print-area-invoice, .note-editable, [contenteditable="true"]')) {
                 return;
             }
 

@@ -228,7 +228,11 @@ function ensureInvoicePrintTemplate() {
         printArea.className = 'print-container invoice-box';
         document.body.appendChild(printArea);
     }
-    if (!document.getElementById('p-inv-date') || !document.getElementById('p-inv-items')) {
+    printArea.setAttribute('data-no-i18n', 'true');
+
+    const thCheck = printArea.querySelector('thead');
+    const isCorrupted = thCheck && (!thCheck.innerHTML.includes('Description') || !thCheck.innerHTML.includes('Item'));
+    if (!document.getElementById('p-inv-date') || !document.getElementById('p-inv-items') || isCorrupted) {
         printArea.innerHTML = `
         <div class="mb-3 text-start">
             <img src="assets/images/logo.png" alt="Logo" style="height: 80px; width: auto; max-width: 350px; object-fit: contain;" class="sys-logo">
