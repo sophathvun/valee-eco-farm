@@ -188,39 +188,39 @@
             btn_save_print: "រក្សាទុក និង ព្រីន",
 
             // Invoices Specific
-            new_invoice_title: "បង្កើតវិក្កយបត្រ (Invoice)",
-            create_invoice_title: "បង្កើតវិក្កយបត្រ (Invoice)",
+            new_invoice_title: "បង្កើតវិក្កយបត្រ",
+            create_invoice_title: "បង្កើតវិក្កយបត្រ",
             invoice_auto_income_note: "ពេលព្រីនវិក្កយបត្រ វានឹងកត់ត្រាចូលជាចំណូលដោយស្វ័យប្រវត្តិ!",
-            invoice_no_field: "លេខវិក្កយបត្រ (N°)",
-            date_field: "កាលបរិច្ឆេទ (Date)",
-            customer_field: "អតិថិជន (Customer)",
-            phone_field: "លេខទូរស័ព្ទ (Phone)",
-            address_field: "អាសយដ្ឋាន (Address)",
-            th_item_no: "លេខផលិតផល (Item)",
-            th_item_desc: "បរិយាយមុខទំនិញ (Description)",
-            th_mass_unit: "មាឌ/ឯកតា (Mass/Unit)",
-            th_price_unit: "តម្លៃ/ឯកតា (Price/Unit)",
-            th_total: "សរុប (Total)",
-            btn_add_item: "+ បន្ថែមទំនិញ (Add Item)",
-            lbl_income_category: "ប្រភេទចំណូល (ពេលកត់ត្រាចូលប្រព័ន្ធ)",
-            lbl_invoice_currency: "រូបិយប័ណ្ណនៃវិក្កយបត្រនេះ",
+            invoice_no_field: "លេខវិក្កយបត្រ",
+            date_field: "កាលបរិច្ឆេទ",
+            customer_field: "អតិថិជន",
+            phone_field: "លេខទូរស័ព្ទ",
+            address_field: "អាសយដ្ឋាន",
+            th_item_no: "លេខផលិតផល",
+            th_item_desc: "បរិយាយមុខទំនិញ",
+            th_mass_unit: "មាឌ/ឯកតា",
+            th_price_unit: "តម្លៃ/ឯកតា",
+            th_total: "សរុប",
+            btn_add_item: "+ បន្ថែមទំនិញ",
+            lbl_income_category: "ប្រភេទចំណូល",
+            lbl_invoice_currency: "រូបិយប័ណ្ណ",
             currency_khr: "ប្រាក់រៀល (៛)",
-            currency_usd: "ដុល្លារសហរដ្ឋអាមេរិក ($)",
-            lbl_payment_method: "វិធីទូទាត់ (Payment Method)",
-            method_cash: "សាច់ប្រាក់ (Cash)",
-            method_bank: "ធនាគារ (Bank)",
-            lbl_subtotal: "សរុប (Subtotal):",
-            lbl_delivery_fee: "សេវាដឹកជញ្ជូន (Delivery Fee):",
-            lbl_grand_total: "តម្លៃសរុប (Grand Total):",
-            btn_save_print_invoice: "រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ (Save & Print)",
-            btn_update_print_invoice: "កែប្រែ & ព្រីនវិក្កយបត្រ (Update & Print)",
-            btn_cancel_reset: "បោះបង់ (Cancel / Reset)",
+            currency_usd: "ដុល្លារ ($)",
+            lbl_payment_method: "វិធីទូទាត់",
+            method_cash: "សាច់ប្រាក់",
+            method_bank: "ធនាគារ",
+            lbl_subtotal: "សរុប៖",
+            lbl_delivery_fee: "សេវាដឹកជញ្ជូន៖",
+            lbl_grand_total: "តម្លៃសរុប៖",
+            btn_save_print_invoice: "រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ",
+            btn_update_print_invoice: "កែប្រែ & ព្រីនវិក្កយបត្រ",
+            btn_cancel_reset: "បោះបង់",
             desc_placeholder: "បរិយាយ...",
-            invoice_history_title: "ប្រវត្តិវិក្កយបត្រ (Invoice History)",
+            invoice_history_title: "ប្រវត្តិវិក្កយបត្រ",
             search_inv_no: "ស្វែងរកលេខវិក្កយបត្រ",
             search_inv_placeholder: "ឧ. 001",
-            btn_clear: "សម្អាត (Clear)",
-            btn_print: "ព្រីន (Print)",
+            btn_clear: "សម្អាត",
+            btn_print: "ព្រីន",
             no_invoices_found: "មិនមានទិន្នន័យវិក្កយបត្រទេ",
             alert_at_least_one_item: "សូមបញ្ចូលទំនិញយ៉ាងហោចណាស់មួយ!",
             alert_invoice_saved: "រក្សាទុកវិក្កយបត្រជោគជ័យ!",
@@ -454,7 +454,7 @@
             new_invoice_title: "Create Invoice",
             create_invoice_title: "Create Invoice",
             invoice_auto_income_note: "When printing invoice, it will be automatically recorded as income!",
-            invoice_no_field: "Invoice No. (N°)",
+            invoice_no_field: "Invoice No.",
             date_field: "Date",
             customer_field: "Customer Name",
             phone_field: "Phone Number",
@@ -465,7 +465,7 @@
             th_price_unit: "Unit Price",
             th_total: "Total",
             btn_add_item: "+ Add Item",
-            lbl_income_category: "Income Category (System Record)",
+            lbl_income_category: "Income Category",
             lbl_invoice_currency: "Invoice Currency",
             currency_khr: "Khmer Riel (៛)",
             currency_usd: "US Dollar ($)",
@@ -663,10 +663,12 @@
             "តម្លៃរាយ": "Unit Price",
             "+ បន្ថែមជួរ": "+ Add Item Row",
             "រក្សាទុក និង ព្រីន": "Save & Print",
-            "បង្កើតវិក្កយបត្រ (Invoice)": "Create Invoice",
             "New Invoice": "Create Invoice",
             "ពេលព្រីនវិក្កយបត្រ វានឹងកត់ត្រាចូលជាចំណូលដោយស្វ័យប្រវត្តិ!": "When printing invoice, it will be automatically recorded as income!",
-            "លេខវិក្កយបត្រ (N°)": "Invoice No. (N°)",
+
+            // Fallback for legacy bracketed phrases
+            "បង្កើតវិក្កយបត្រ (Invoice)": "Create Invoice",
+            "លេខវិក្កយបត្រ (N°)": "Invoice No.",
             "កាលបរិច្ឆេទ (Date)": "Date",
             "អតិថិជន (Customer)": "Customer Name",
             "លេខទូរស័ព្ទ (Phone)": "Phone Number",
@@ -677,10 +679,8 @@
             "តម្លៃ/ឯកតា (Price/Unit)": "Unit Price",
             "សរុប (Total)": "Total",
             "+ បន្ថែមទំនិញ (Add Item)": "+ Add Item",
-            "ប្រភេទចំណូល (ពេលកត់ត្រាចូលប្រព័ន្ធ)": "Income Category (System Record)",
+            "ប្រភេទចំណូល (ពេលកត់ត្រាចូលប្រព័ន្ធ)": "Income Category",
             "រូបិយប័ណ្ណនៃវិក្កយបត្រនេះ": "Invoice Currency",
-            "ប្រាក់រៀល (៛)": "Khmer Riel (៛)",
-            "ដុល្លារសហរដ្ឋអាមេរិក ($)": "US Dollar ($)",
             "វិធីទូទាត់ (Payment Method)": "Payment Method",
             "សាច់ប្រាក់ (Cash)": "Cash",
             "ធនាគារ (Bank)": "Bank Transfer",
@@ -691,12 +691,42 @@
             "កែប្រែ & ព្រីនវិក្កយបត្រ (Update & Print)": "Update & Print Invoice",
             "បោះបង់ (Cancel / Reset)": "Cancel / Reset",
             "ប្រវត្តិវិក្កយបត្រ (Invoice History)": "Invoice History",
-            "ស្វែងរកលេខវិក្កយបត្រ": "Search Invoice No.",
             "សម្អាត (Clear)": "Clear Filter",
             "ព្រីន (Print)": "Print",
             "សរុបរួម (Grand Total)": "Grand Total",
+
+            // Clean Khmer mappings (Will ensure en -> km maps to clean Khmer without brackets)
+            "បង្កើតវិក្កយបត្រ": "Create Invoice",
+            "លេខវិក្កយបត្រ": "Invoice No.",
+            "កាលបរិច្ឆេទ": "Date",
+            "អតិថិជន": "Customer Name",
+            "លេខទូរស័ព្ទ": "Phone Number",
+            "អាសយដ្ឋាន": "Address",
+            "លេខផលិតផល": "Item No.",
+            "បរិយាយមុខទំនិញ": "Description",
+            "មាឌ/ឯកតា": "Mass / Unit",
+            "តម្លៃ/ឯកតា": "Unit Price",
+            "សរុប": "Total",
+            "+ បន្ថែមទំនិញ": "+ Add Item",
+            "ប្រភេទចំណូល": "Income Category",
+            "រូបិយប័ណ្ណ": "Invoice Currency",
+            "ប្រាក់រៀល (៛)": "Khmer Riel (៛)",
+            "ដុល្លារសហរដ្ឋអាមេរិក ($)": "US Dollar ($)",
+            "វិធីទូទាត់": "Payment Method",
+            "សាច់ប្រាក់": "Cash",
+            "ធនាគារ": "Bank Transfer",
+            "សរុប៖": "Subtotal:",
+            "សេវាដឹកជញ្ជូន៖": "Delivery Fee:",
+            "តម្លៃសរុប៖": "Grand Total:",
+            "រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ": "Save as Income & Print Invoice",
+            "កែប្រែ & ព្រីនវិក្កយបត្រ": "Update & Print Invoice",
+            "បោះបង់": "Cancel / Reset",
+            "ប្រវត្តិវិក្កយបត្រ": "Invoice History",
+            "ស្វែងរកលេខវិក្កយបត្រ": "Search Invoice No.",
+            "សម្អាត": "Clear Filter",
+            "ព្រីន": "Print",
+            "សរុបរួម": "Grand Total",
             "ការបង់ប្រាក់": "Payment Method",
-            "អតិថិជន": "Customer",
 
             // Attendance & Payroll
             "កត់វត្តមានប្រចាំថ្ងៃ": "Daily Attendance Entry",
@@ -820,8 +850,8 @@
         const candidateElements = root.querySelectorAll(targetSelectors);
 
         candidateElements.forEach(el => {
-            // Skip form inputs, text areas, editable areas or explicit ignores
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.hasAttribute('data-no-i18n') || el.closest('.note-editable, [contenteditable="true"]')) {
+            // Skip form inputs, text areas, editable areas, explicit ignores, or elements already handled by data-i18n
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.hasAttribute('data-no-i18n') || el.hasAttribute('data-i18n') || el.closest('.note-editable, [contenteditable="true"]')) {
                 return;
             }
 
@@ -840,11 +870,13 @@
                         }
                     } else {
                         // Switch to Khmer
-                        if (el.hasAttribute('data-i18n-km')) {
-                            const originalKm = el.getAttribute('data-i18n-km');
-                            child.textContent = child.textContent.replace(text, originalKm);
-                        } else if (phraseMap.en_to_km[text]) {
+                        if (phraseMap.en_to_km[text]) {
                             child.textContent = child.textContent.replace(text, phraseMap.en_to_km[text]);
+                        } else if (el.hasAttribute('data-i18n-km')) {
+                            const originalKm = el.getAttribute('data-i18n-km');
+                            const enEquivalent = phraseMap.km_to_en[originalKm];
+                            const cleanKm = enEquivalent && phraseMap.en_to_km[enEquivalent] ? phraseMap.en_to_km[enEquivalent] : originalKm;
+                            child.textContent = child.textContent.replace(text, cleanKm);
                         }
                     }
                 }

@@ -90,7 +90,7 @@ function resetInvoiceForm() {
     const saveBtn = document.getElementById('btn-save-invoice');
     if (saveBtn) {
         saveBtn.setAttribute('data-i18n', 'btn_save_print_invoice');
-        saveBtn.textContent = isKm ? 'រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ (Save & Print)' : 'Save as Income & Print Invoice';
+        saveBtn.textContent = isKm ? 'រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ' : 'Save as Income & Print Invoice';
     }
     addInvoiceRow();
     generateInvoiceNumber();
@@ -309,7 +309,7 @@ async function loadInvoices() {
         const methodBadge = inv.method === 'Bank' 
             ? `<span class="badge bg-info">${isKm ? 'ធនាគារ' : 'Bank'}</span>` 
             : `<span class="badge bg-success">${isKm ? 'សាច់ប្រាក់' : 'Cash'}</span>`;
-        const printText = isKm ? 'ព្រីន (Print)' : 'Print';
+        const printText = isKm ? 'ព្រីន' : 'Print';
 
         tbody.innerHTML += `
             <tr>
@@ -400,7 +400,7 @@ async function editInvoice(id) {
     const saveBtn = document.getElementById('btn-save-invoice');
     if (saveBtn) {
         saveBtn.setAttribute('data-i18n', 'btn_update_print_invoice');
-        saveBtn.textContent = isKm ? 'កែប្រែ & ព្រីនវិក្កយបត្រ (Update & Print)' : 'Update & Print Invoice';
+        saveBtn.textContent = isKm ? 'កែប្រែ & ព្រីនវិក្កយបត្រ' : 'Update & Print Invoice';
     }
     showTab('invoice');
 }
@@ -453,9 +453,9 @@ window.addEventListener('languageChanged', () => {
     if (saveBtn) {
         const isKm = (window.i18n && window.i18n.currentLang === 'km');
         if (editingInvoiceId) {
-            saveBtn.textContent = isKm ? 'កែប្រែ & ព្រីនវិក្កយបត្រ (Update & Print)' : 'Update & Print Invoice';
+            saveBtn.textContent = isKm ? 'កែប្រែ & ព្រីនវិក្កយបត្រ' : 'Update & Print Invoice';
         } else {
-            saveBtn.textContent = isKm ? 'រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ (Save & Print)' : 'Save as Income & Print Invoice';
+            saveBtn.textContent = isKm ? 'រក្សាទុកជាចំណូល & ព្រីនវិក្កយបត្រ' : 'Save as Income & Print Invoice';
         }
     }
 });
