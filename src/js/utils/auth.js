@@ -1,4 +1,4 @@
-﻿// ======= AUTHENTICATION LOGIC =======
+// ======= AUTHENTICATION LOGIC =======
 let currentUser = null;
 
 function showPermissionExpiredAlert() {
@@ -281,6 +281,70 @@ window.previewLogo = function(input) {
 // currentReportTab is in utils.js
 let currentSettingsTab = 'categories';
 
+window.updateTopNavbarTitle = function(tId = null, sId = null) {
+    const tab = tId || localStorage.getItem('activeTab') || 'dashboard';
+    const sub = sId !== null ? sId : (localStorage.getItem('activeSubTab') || null);
+    const topText = document.getElementById('top-navbar-text');
+    if (!topText) return;
+
+    const navIcons = {
+        'dashboard': '🔘',
+        'invoice': '🧾',
+        'invoice-list': '🗂️',
+        'income': '💰',
+        'expense': '💸',
+        'reports': '📊',
+        'settings': '⚙️',
+        'employee': '👨‍💼',
+        'attendance': '📅',
+        'attendance-report': '📊',
+        'payroll': '💵'
+    };
+
+    const mainIco = `<span class="me-2">${navIcons[tab] || '☑'}</span>`;
+    const getT = (key, def) => (typeof window.t === 'function' ? window.t(key, def) : def);
+
+    const titleMap = {
+        'dashboard': getT('tab_dashboard', 'ទំព័រដើម'),
+        'invoice': getT('tab_invoice', 'បង្កើតវិក្កយបត្រ'),
+        'invoice-list': getT('tab_invoice_list', 'បញ្ជីវិក្កយបត្រ'),
+        'income': getT('tab_income', 'ចំណូល'),
+        'expense': getT('tab_expense', 'ចំណាយ'),
+        'reports': getT('tab_reports', 'របាយការណ៍'),
+        'settings': getT('tab_settings', 'ការកំណត់ទូទៅ'),
+        'employee': getT('tab_employee', 'គ្រប់គ្រងបុគ្គលិក'),
+        'attendance': getT('tab_attendance', 'គ្រប់គ្រងវត្តមាន'),
+        'attendance-report': getT('tab_attendance_report', 'របាយការណ៍វត្តមាន'),
+        'payroll': getT('tab_payroll', 'បើកប្រាក់បៀវត្សរ៍ (Payroll)')
+    };
+
+    const subMap = {
+        'summary': getT('sub_summary', 'ចំណូលចំណាយ'),
+        'income': getT('sub_income', 'ចំណូល'),
+        'expense': getT('sub_expense', 'ចំណាយ'),
+        'categories': getT('sub_categories', 'ប្រភេទចំណូល/ចំណាយ'),
+        'preparers': getT('sub_preparers', 'អ្នករៀបចំរបាយការណ៍'),
+        'farm_info': getT('sub_farm_info', 'ព័ត៌មានកសិដ្ឋាន'),
+        'users': getT('sub_users', 'បង្កើតអ្នកប្រើប្រាស់'),
+        'permissions': getT('sub_permissions', 'សិទ្ធិអ្នកប្រើប្រាស់'),
+        'roles': getT('sub_roles', 'តួនាទី'),
+        'emp_structure': getT('sub_emp_structure', 'រចនាសម្ព័ន្ធបុគ្គលិក'),
+        'shifts': getT('sub_shifts', 'ម៉ោងធ្វើការ'),
+        'list': getT('sub_list', 'បញ្ជីបុគ្គលិក'),
+        'attendance': getT('sub_attendance', 'គ្រប់គ្រងវត្តមាន'),
+        'attendance-report': getT('sub_attendance_report', 'របាយការណ៍វត្តមាន'),
+        'payroll': getT('sub_payroll', 'បើកប្រាក់បៀវត្សរ៍'),
+        'branding': getT('sub_branding', 'ការកំណត់យីហោ')
+    };
+
+    const mainTitle = titleMap[tab] || 'Dashboard';
+    if (sub && subMap[sub]) {
+        topText.innerHTML = `${mainIco} ${mainTitle} &gt; <span class="text-primary">${subMap[sub]}</span>`;
+    } else {
+        topText.innerHTML = `${mainIco} ${mainTitle}`;
+    }
+};
+
 window.showTab = function(tabId, subId = null) {
     try {
         localStorage.setItem('activeTab', tabId);
@@ -363,59 +427,7 @@ window.showTab = function(tabId, subId = null) {
     // Close mobile sidebar if open
     document.querySelector('.sidebar').classList.remove('mobile-open');
     
-    const titles = {
-        'dashboard': 'ទំព័រដើម',
-        'invoice': 'បង្កើតវិក្កយបត្រ',
-        'invoice-list': 'បញ្ជីវិក្កយបត្រ',
-        'income': 'ចំណូល',
-        'expense': 'ចំណាយ',
-        'reports': 'របាយការណ៍',
-        'settings': 'ការកំណត់ទូទៅ',
-        'employee': 'បញ្ជីបុគ្គលិក',
-        'attendance': 'គ្រប់គ្រងវត្តមាន',
-        'attendance-report': 'របាយការណ៍វត្តមាន',
-        'payroll': 'បើកប្រាក់បៀវត្សរ៍ (Payroll)'
-    };
-    
-    const subTitles = {
-        'summary': 'ចំណូលចំណាយ',
-        'income': 'ចំណូល',
-        'expense': 'ចំណាយ',
-        'categories': 'ប្រភេទចំណូល/ចំណាយ',
-        'preparers': 'អ្នករៀបចំរបាយការណ៍',
-        'farm_info': 'ព័ត៌មានកសិដ្ឋាន',
-        'users': 'បង្កើតអ្នកប្រើប្រាស់',
-        'permissions': 'សិទ្ធិអ្នកប្រើប្រាស់',
-        'roles': 'តួនាទី',
-        'emp_structure': 'រចនាសម្ព័ន្ធបុគ្គលិក',
-        'shifts': 'ម៉ោងធ្វើការ',
-        'list': 'បញ្ជីបុគ្គលិក',
-        'attendance': 'គ្រប់គ្រងវត្តមាន',
-        'attendance-report': 'របាយការណ៍វត្តមាន',
-        'payroll': 'បើកប្រាក់បៀវត្សរ៍'
-    };
-    
-    const icons = {
-        'dashboard': '🔘',
-        'invoice': '🧾',
-        'invoice-list': '🗂️',
-        'income': '💰',
-        'expense': '💸',
-        'reports': '📊',
-        'settings': '⚙️',
-        'employee': '👨‍💼',
-        'payroll': '💵'
-    };
-    
-    const topNavbarText = document.getElementById('top-navbar-text');
-    if (topNavbarText) {
-        const mainIcon = `<span class="me-2">${icons[tabId] || '☑'}</span>`;
-        if (subId && subTitles[subId]) {
-            topNavbarText.innerHTML = `${mainIcon} ${titles[tabId] || 'Dashboard'} &gt; <span class="text-primary">${subTitles[subId]}</span>`;
-        } else {
-            topNavbarText.innerHTML = `${mainIcon} ${titles[tabId] || 'Dashboard'}`;
-        }
-    }
+    window.updateTopNavbarTitle(tabId, subId);
 
     if (tabId === 'dashboard') {
         if (typeof loadData === 'function') loadData();

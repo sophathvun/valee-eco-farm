@@ -9,9 +9,9 @@ let currentReportTab = 'summary';
 
 Chart.defaults.font.family = "'Kantumruy Pro', 'Khmer OS Battambang', sans-serif";
 
-document.getElementById('inc-date').valueAsDate = new Date();
-document.getElementById('exp-date').valueAsDate = new Date();
-document.getElementById('inv-date').valueAsDate = new Date();
+const incD = document.getElementById('inc-date'); if (incD) incD.valueAsDate = new Date();
+const expD = document.getElementById('exp-date'); if (expD) expD.valueAsDate = new Date();
+const invD = document.getElementById('inv-date'); if (invD) invD.valueAsDate = new Date();
 
 function updateOnlineStatus() {
     const offlineBadge = document.getElementById('offline-status');

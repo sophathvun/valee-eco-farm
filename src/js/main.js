@@ -1,4 +1,4 @@
-﻿// main.js - Application Entry Point
+// main.js - Application Entry Point
 
 // List of templates to load in order
 const viewsToLoad = [
@@ -38,6 +38,11 @@ async function initializeApp() {
         } catch (error) {
             console.error(`Error loading template ${view}.html:`, error);
         }
+    }
+
+    // Apply translations to all newly injected HTML views
+    if (typeof applyTranslations === 'function') {
+        applyTranslations(container);
     }
 
     // 2. Load the main application logic sequentially AFTER all HTML is injected
@@ -121,6 +126,7 @@ async function initializeApp() {
                 if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
                 if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
                 if (typeof initPayroll === 'function') initPayroll();
+                if (typeof applyTranslations === 'function') applyTranslations();
             }
         }).catch(err => {
             console.error('Initialization error:', err);

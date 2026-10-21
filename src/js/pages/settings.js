@@ -775,6 +775,13 @@ async function loadBranding() {
             if (brand.favicon) document.getElementById('previewFavicon').src = brand.favicon;
             if (brand.mobileIcon) document.getElementById('previewMobileIcon').src = brand.mobileIcon;
         }
+        const curLang = localStorage.getItem('sys_lang') || 'km';
+        const kmRadio = document.getElementById('setting-lang-km');
+        const enRadio = document.getElementById('setting-lang-en');
+        if (kmRadio && enRadio) {
+            kmRadio.checked = (curLang === 'km');
+            enRadio.checked = (curLang === 'en');
+        }
     } catch (error) {
         console.error("Error loading branding:", error);
     }

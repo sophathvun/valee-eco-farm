@@ -520,6 +520,40 @@
                                     </form>
                                 </div>
                             </div>
+
+                            <!-- System Language Card -->
+                            <div class="card shadow-sm border-0 mt-3">
+                                <div class="card-header bg-body d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0 text-primary fw-bold" data-i18n="system_language">🌐 ភាសាប្រព័ន្ធ (System Language)</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted small mb-3">ជ្រើសរើសភាសាសម្រាប់ប្រើប្រាស់ក្នុងប្រព័ន្ធ (Select system default language):</p>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="card p-3 h-100 cursor-pointer border" onclick="setLanguage('km')" style="cursor: pointer;">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="settingLangRadio" id="setting-lang-km" value="km" onchange="setLanguage('km')">
+                                                    <label class="form-check-label fw-bold d-block" for="setting-lang-km">
+                                                        <span class="fs-5 me-1">🇰🇭</span> ភាសាខ្មែរ (Khmer)
+                                                    </label>
+                                                    <small class="text-muted">ប្រើប្រាស់ប្រព័ន្ធជាភាសាខ្មែរ</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card p-3 h-100 cursor-pointer border" onclick="setLanguage('en')" style="cursor: pointer;">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="settingLangRadio" id="setting-lang-en" value="en" onchange="setLanguage('en')">
+                                                    <label class="form-check-label fw-bold d-block" for="setting-lang-en">
+                                                        <span class="fs-5 me-1">🇬🇧</span> English (EN)
+                                                    </label>
+                                                    <small class="text-muted">Use system in English</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

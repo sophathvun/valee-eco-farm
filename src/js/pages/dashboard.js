@@ -50,8 +50,8 @@ async function loadData() {
                     tr.className = tx.type === 'income' ? 'tx-income' : 'tx-expense';
             tr.innerHTML = `
                 <td>${formatEngDate(tx.date)}</td>
-                <td><span class="badge ${tx.type === 'income' ? 'bg-success' : 'bg-danger'}">${tx.type === 'income' ? 'ចំណូល' : 'ចំណាយ'}</span></td>
-                <td>${tx.category} <span class="badge bg-secondary ms-1" style="font-size: 0.7rem;">${tx.paymentMethod === "Bank" ? "Bank" : "Cash"}</span></td>
+                <td><span class="badge ${tx.type === 'income' ? 'bg-success' : 'bg-danger'}">${tx.type === 'income' ? (typeof t === 'function' ? t('income', 'ចំណូល') : 'ចំណូល') : (typeof t === 'function' ? t('expense', 'ចំណាយ') : 'ចំណាយ')}</span></td>
+                <td>${tx.category} <span class="badge bg-secondary ms-1" style="font-size: 0.7rem;">${tx.paymentMethod === "Bank" ? (typeof t === 'function' ? t('bank', 'Bank') : 'Bank') : (typeof t === 'function' ? t('cash', 'Cash') : 'Cash')}</span></td>
                 <td class="${tx.type === 'income' ? 'text-success' : 'text-danger'}">${formatCurrency(tx.amount, cur)}</td>
                 <td class="d-none d-md-table-cell">${tx.note || ""}</td>
             `;
@@ -457,9 +457,10 @@ function renderTodayAttendanceTable(items) {
     }
 
     const badgeForShift = (val) => {
-        if (val === 'P') return `<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check me-1"></i>វត្តមាន</span>`;
-        if (val === 'L') return `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1"><i class="bi bi-clock-history me-1"></i>ច្បាប់</span>`;
-        if (val === 'A') return `<span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"><i class="bi bi-x me-1"></i>អវត្តមាន</span>`;
+        const getT = (k, d) => typeof window.t === 'function' ? window.t(k, d) : d;
+        if (val === 'P') return `<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check me-1"></i>${getT('status_present', 'វត្តមាន')}</span>`;
+        if (val === 'L') return `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1"><i class="bi bi-clock-history me-1"></i>${getT('status_leave', 'ច្បាប់')}</span>`;
+        if (val === 'A') return `<span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"><i class="bi bi-x me-1"></i>${getT('status_absent', 'អវត្តមាន')}</span>`;
         return `<span class="badge bg-light text-secondary border px-2 py-1">-</span>`;
     };
 
@@ -540,6 +541,15 @@ function renderBirthdaysThisMonth(employees, currentMonthStr) {
     namesEl.innerHTML = pills;
     section.style.display = 'block';
 }
+
+window.addEventListener('languageChanged', () => {
+    const activeTab = localStorage.getItem('activeTab') || 'dashboard';
+    if (activeTab === 'dashboard') {
+        if (typeof loadData === 'function') loadData();
+        if (typeof loadEmployeeDashboardWidgets === 'function') loadEmployeeDashboardWidgets();
+    }
+});
+
 
 
 
