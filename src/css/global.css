@@ -12485,4 +12485,58 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
     color: #ffffff !important;
 }
 
+/* ================= THEME SWITCHER STYLES ================= */
+.theme-pill-box {
+    background-color: var(--bs-tertiary-bg);
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+[data-bs-theme="dark"] .theme-pill-box {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.theme-btn {
+    transition: all 0.2s ease-in-out;
+    font-size: 0.8rem;
+    padding: 3px 10px !important;
+    border-radius: 50rem !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    background: transparent;
+    color: var(--bs-secondary-color);
+}
+
+.theme-btn.active {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.theme-btn#theme-btn-light.active {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.theme-btn#theme-btn-light.active i {
+    color: #212529 !important;
+}
+
+.theme-btn#theme-btn-dark.active {
+    background-color: #343a40 !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .theme-btn#theme-btn-dark.active {
+    background-color: #495057 !important;
+    color: #ffffff !important;
+}
+
+.theme-btn#theme-btn-dark.active i {
+    color: #ffd43b !important;
+}
+
 

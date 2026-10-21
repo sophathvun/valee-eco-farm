@@ -76,8 +76,35 @@ function filterSidebarMenu() {
     });
 }
 
-function toggleTheme() {
-    const isDark = document.getElementById('themeSwitch').checked;
+function updateThemeButtons() {
+    const currentTheme = document.documentElement.getAttribute('data-bs-theme') || localStorage.getItem('sysTheme') || 'light';
+    const isDark = currentTheme === 'dark';
+
+    const btnLight = document.getElementById('theme-btn-light');
+    const btnDark = document.getElementById('theme-btn-dark');
+
+    if (btnLight && btnDark) {
+        if (!isDark) {
+            btnLight.classList.add('active');
+            btnLight.classList.remove('text-muted');
+            btnDark.classList.remove('active');
+            btnDark.classList.add('text-muted');
+        } else {
+            btnDark.classList.add('active');
+            btnDark.classList.remove('text-muted');
+            btnLight.classList.remove('active');
+            btnLight.classList.add('text-muted');
+        }
+    }
+
+    const themeSwitch = document.getElementById('themeSwitch');
+    if (themeSwitch) {
+        themeSwitch.checked = isDark;
+    }
+}
+
+function setTheme(theme) {
+    const isDark = theme === 'dark';
     
     if (isDark) {
         document.documentElement.setAttribute('data-bs-theme', 'dark');
@@ -88,18 +115,34 @@ function toggleTheme() {
     }
     
     localStorage.setItem('sysTheme', isDark ? 'dark' : 'light');
+    updateThemeButtons();
+
+    window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: isDark ? 'dark' : 'light' } }));
 }
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-bs-theme') || localStorage.getItem('sysTheme') || 'light';
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+}
+
+window.setTheme = setTheme;
+window.toggleTheme = toggleTheme;
+window.updateThemeButtons = updateThemeButtons;
 
 // Initialize theme on load
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('sysTheme');
     const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    const theme = savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light');
     
-    const themeSwitch = document.getElementById('themeSwitch');
-    if (themeSwitch) {
-        themeSwitch.checked = isDark;
+    document.documentElement.setAttribute('data-bs-theme', theme);
+    if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+    } else {
+        document.body.classList.remove('dark-theme');
     }
+
+    updateThemeButtons();
 });
 
 // Global Image Compression Helper for Bank QR Code & Documents

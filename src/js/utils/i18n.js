@@ -48,6 +48,8 @@
             language: "ភាសា",
             khmer: "ភាសាខ្មែរ",
             english: "English",
+            theme_light: "ពន្លឺ",
+            theme_dark: "ងងឹត",
 
             // Navigation Menu
             menu_dashboard: "ទំព័រដើម",
@@ -268,6 +270,8 @@
             language: "Language",
             khmer: "Khmer",
             english: "English",
+            theme_light: "Light",
+            theme_dark: "Dark",
 
             // Navigation Menu
             menu_dashboard: "Dashboard",
@@ -522,6 +526,8 @@
             "គំនូសតាងចំណូល-ចំណាយ": "Income vs Expense Trend",
             "ពេញម៉ោង": "Full-Time",
             "ក្រៅម៉ោង": "Part-Time",
+            "ពន្លឺ": "Light",
+            "ងងឹត": "Dark",
             "ប្រុស": "Male",
             "ប្រុស:": "Male:",
             "ស្រី": "Female",
@@ -736,6 +742,9 @@
 
         // F. Update Switcher Buttons
         updateSwitcherButtons();
+        if (typeof window.updateThemeButtons === 'function') {
+            window.updateThemeButtons();
+        }
     }
 
     // 7. Change Language API
