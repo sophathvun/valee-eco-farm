@@ -1,0 +1,201 @@
+<!-- E-FACE BIOMETRIC ATTENDANCE SCANNER TEMPLATE -->
+<div class="container-fluid p-0">
+    <!-- Header Card -->
+    <div class="eface-header-card d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="eface-brand-badge">
+            <img src="assets/images/logo.png" id="eface-logo" class="eface-brand-logo" alt="Logo" onerror="this.src='assets/images/logo.png'">
+            <div>
+                <h5 class="mb-0 fw-bold text-white" style="letter-spacing: 0.5px;">វត្តមាន E-Face</h5>
+                <div class="small" style="color: var(--eface-neon-cyan); font-weight: 500;">E-Face Biometric Attendance</div>
+            </div>
+        </div>
+
+        <!-- Center: Real-Time Digital Clock -->
+        <div class="eface-clock-box text-center mx-auto mx-md-0">
+            <div id="eface-clock-time" class="eface-clock-time">--:--:--</div>
+            <div id="eface-clock-date" class="eface-clock-date">-- -- ----</div>
+        </div>
+
+        <!-- Right: Action Buttons -->
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-dark border border-secondary text-light px-3 py-2 rounded-3" id="btn-eface-flip" onclick="toggleEfaceCameraFacing()" title="ប្ដូរកាមេរ៉ា (Flip Front/Back Camera)">
+                <i class="bi bi-camera-reverse fs-6"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-dark border border-secondary text-light px-3 py-2 rounded-3" id="btn-eface-sound" onclick="toggleEfaceSound()" title="បិទ/បើកសម្លេង (Toggle Audio Chime)">
+                <i class="bi bi-volume-up fs-6" id="eface-sound-icon"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-info px-3 py-2 rounded-3" id="btn-eface-kiosk" onclick="toggleEfaceKioskMode()" title="ពេញអេក្រង់ (Fullscreen / Kiosk Mode)">
+                <i class="bi bi-arrows-fullscreen fs-6"></i> <span class="d-none d-sm-inline ms-1">Kiosk</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Scanner Stage -->
+    <div class="eface-stage">
+        <div class="eface-viewport-wrapper" id="eface-viewport-wrap">
+            <!-- Camera Video Stream -->
+            <video id="eface-video" playsinline autoplay muted></video>
+
+            <!-- Landmark & Detection Overlay Canvas -->
+            <canvas id="eface-canvas"></canvas>
+
+            <!-- Animated Radar Wave Effect -->
+            <div class="eface-radar-pulse" id="eface-radar"></div>
+
+            <!-- HUD Overlay -->
+            <div class="eface-hud-overlay">
+                <!-- 4 High-Tech Biometric Brackets -->
+                <div class="eface-corner-bracket bracket-tl"></div>
+                <div class="eface-corner-bracket bracket-tr"></div>
+                <div class="eface-corner-bracket bracket-bl"></div>
+                <div class="eface-corner-bracket bracket-br"></div>
+
+                <!-- Animated Laser Scan Beam -->
+                <div class="eface-scan-laser" id="eface-laser"></div>
+
+                <!-- Center Oval Target Guide -->
+                <div class="eface-target-guide" id="eface-guide"></div>
+
+                <!-- Top Shift Indicator Badge -->
+                <div class="eface-top-badge" id="eface-shift-badge">
+                    <span class="spinner-grow spinner-grow-sm text-info" style="width: 8px; height: 8px;"></span>
+                    <span id="eface-shift-name">កំពុងពិនិត្យវេន...</span>
+                </div>
+
+                <!-- Bottom Status Indicator inside Viewport -->
+                <div class="eface-bottom-status" id="eface-bottom-status">
+                    <span class="eface-status-dot" id="eface-status-dot"></span>
+                    <span id="eface-status-text" class="fw-semibold small">កំពុងរៀបចំប្រព័ន្ធស្កែនផ្ទៃមុខ...</span>
+                </div>
+            </div>
+
+            <!-- SUCCESS SCAN RESULT POPUP CARD -->
+            <div class="eface-result-card" id="eface-result-card">
+                <div>
+                    <!-- Avatar with Glowing Green Ring -->
+                    <div class="eface-avatar-wrap">
+                        <img src="assets/images/default-avatar.svg" id="eface-res-avatar" class="eface-avatar-img" alt="Employee Photo">
+                    </div>
+
+                    <!-- Name & Check-in Badge -->
+                    <div class="text-center mt-3">
+                        <h4 class="fw-bold mb-1 text-white" id="eface-res-name">UN SAMAN</h4>
+                        <div class="small text-muted" id="eface-res-subname">អ៊ុន សាម៉ាន</div>
+                        <div class="mt-2">
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 rounded-pill" id="eface-res-badge" style="font-size: 0.85rem;">
+                                <i class="bi bi-check-circle-fill me-1"></i> បានបំពេញរួចរាល់ (07:55:10)
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Details Table -->
+                    <div class="eface-details-table">
+                        <div class="eface-detail-row">
+                            <span class="eface-detail-label">អត្តលេខបុគ្គលិក<br><small>Employee ID</small></span>
+                            <span class="eface-detail-val text-info" id="eface-res-id">VEF-0001</span>
+                        </div>
+                        <div class="eface-detail-row">
+                            <span class="eface-detail-label">ទីតាំង / សាខា<br><small>Campus / Location</small></span>
+                            <span class="eface-detail-val" id="eface-res-campus">VALEE ECO FARM</span>
+                        </div>
+                        <div class="eface-detail-row">
+                            <span class="eface-detail-label">តួនាទី<br><small>Position</small></span>
+                            <span class="eface-detail-val" id="eface-res-position">Farm Specialist</span>
+                        </div>
+                        <div class="eface-detail-row">
+                            <span class="eface-detail-label">នាយកដ្ឋាន<br><small>Department</small></span>
+                            <span class="eface-detail-val" id="eface-res-dept">Operations</span>
+                        </div>
+                        <div class="eface-detail-row">
+                            <span class="eface-detail-label">វេនធ្វើការ<br><small>Work Shift</small></span>
+                            <span class="eface-detail-val text-warning" id="eface-res-shift">វេនព្រឹក (Morning)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Success Ribbon & Auto-dismiss Countdown -->
+                <div>
+                    <div class="eface-result-ribbon" id="eface-res-ribbon">
+                        <i class="bi bi-patch-check-fill me-1"></i> បានកត់ត្រាវត្តមានជោគជ័យ
+                    </div>
+                    <div class="eface-countdown-bar">
+                        <div class="eface-countdown-progress" id="eface-countdown-progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Controls Under Scanner -->
+        <div class="eface-controls">
+            <button type="button" class="btn-eface-primary" id="btn-eface-toggle" onclick="toggleEfaceScanning()">
+                <i class="bi bi-play-circle-fill fs-5" id="eface-toggle-icon"></i>
+                <span id="eface-toggle-text">ចាប់ផ្តើមស្កេន (Start)</span>
+            </button>
+            <button type="button" class="btn-eface-secondary" id="btn-eface-manual" onclick="openEfaceManualModal()">
+                <i class="bi bi-person-badge fs-5"></i>
+                <span>ស្កែនដោយដៃ</span>
+            </button>
+        </div>
+
+        <!-- Stats Bar Today -->
+        <div class="w-100 d-flex justify-content-between align-items-center mt-3 px-2 text-muted small">
+            <div>
+                <i class="bi bi-people me-1"></i> វត្តមានថ្ងៃនេះ: <strong class="text-white" id="eface-stat-total">0</strong> នាក់
+            </div>
+            <div>
+                <span class="badge bg-success bg-opacity-20 text-success me-1">ទាន់ពេល: <span id="eface-stat-ontime">0</span></span>
+                <span class="badge bg-warning bg-opacity-20 text-warning">យឺត: <span id="eface-stat-late">0</span></span>
+            </div>
+        </div>
+
+        <!-- Recent Scans List -->
+        <div class="eface-recent-section">
+            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-25">
+                <span class="small fw-bold text-light"><i class="bi bi-clock-history me-1 text-info"></i> បុគ្គលិកទើបស្កែនថ្មីៗ (Recent Scans)</span>
+                <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-info small" onclick="loadEfaceRecentScans()">Refresh</button>
+            </div>
+            <div id="eface-recent-list">
+                <div class="text-center py-3 text-muted small">មិនទាន់មានការស្កែននៅថ្ងៃនេះនៅឡើយទេ</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Manual Employee Check-In -->
+<div class="modal fade" id="efaceManualModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold text-info"><i class="bi bi-person-check-fill me-2"></i>កត់ត្រាវត្តមានដោយដៃ (Manual Check-In)</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-3">ប្រើប្រាស់ក្នុងករណីកាមេរ៉ាមិនដំណើរការ ឬបុគ្គលិកពាក់ម៉ាស/មួកសុវត្ថិភាព:</p>
+                <div class="mb-3">
+                    <label class="form-label text-light">ជ្រើសរើសបុគ្គលិក (Select Employee)</label>
+                    <select class="form-select bg-dark text-white border-secondary" id="eface-manual-emp-select">
+                        <option value="">-- ជ្រើសរើសបុគ្គលិក --</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-light">វេនធ្វើការ (Shift)</label>
+                    <select class="form-select bg-dark text-white border-secondary" id="eface-manual-shift-select">
+                        <option value="auto">ស្វ័យប្រវត្តិ តាមម៉ោងជាក់ស្តែង (Auto Shift)</option>
+                        <option value="morning">វេនព្រឹក (Morning)</option>
+                        <option value="afternoon">វេនរសៀល (Afternoon)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-light">កំណត់ចំណាំ (Note / Reason)</label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" id="eface-manual-note" placeholder="ឧ. Manual check-in via reception">
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">បោះបង់</button>
+                <button type="button" class="btn btn-success px-4" onclick="submitEfaceManualCheckIn()">
+                    <i class="bi bi-check-lg me-1"></i> កត់ត្រាវត្តមាន
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

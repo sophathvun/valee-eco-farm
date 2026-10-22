@@ -1,0 +1,536 @@
+/* ===================================================
+   E-FACE BIOMETRIC ATTENDANCE SCANNER - ULTRA PREMIUM STYLING
+   =================================================== */
+
+:root {
+    --eface-bg-gradient: radial-gradient(circle at 50% 20%, #152243 0%, #0a1122 65%, #050811 100%);
+    --eface-card-bg: rgba(18, 28, 52, 0.75);
+    --eface-card-border: rgba(56, 189, 248, 0.25);
+    --eface-neon-cyan: #00f2fe;
+    --eface-neon-blue: #4facfe;
+    --eface-neon-green: #10b981;
+    --eface-neon-amber: #f59e0b;
+    --eface-neon-red: #ef4444;
+}
+
+#eface-view {
+    min-height: calc(100vh - 70px);
+    background: var(--eface-bg-gradient);
+    color: #e2e8f0;
+    padding: 1.25rem;
+    font-family: 'Kantumruy Pro', 'Inter', system-ui, -apple-system, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Header */
+.eface-header-card {
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 0.85rem 1.25rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.eface-brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.eface-brand-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+}
+
+.eface-clock-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    border-radius: 12px;
+    padding: 0.35rem 0.85rem;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+.eface-clock-time {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--eface-neon-cyan);
+    text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+    line-height: 1.1;
+}
+
+.eface-clock-date {
+    font-size: 0.72rem;
+    color: #94a3b8;
+}
+
+/* Main Biometric Viewport Stage */
+.eface-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 540px;
+    margin: 1.25rem auto 0 auto;
+}
+
+.eface-viewport-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    max-height: 520px;
+    border-radius: 28px;
+    overflow: hidden;
+    background: #020617;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 242, 254, 0.15);
+    border: 2px solid rgba(56, 189, 248, 0.3);
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.eface-viewport-wrapper.state-matched {
+    border-color: var(--eface-neon-green);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 45px rgba(16, 185, 129, 0.4);
+}
+
+.eface-viewport-wrapper.state-warning {
+    border-color: var(--eface-neon-amber);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 45px rgba(245, 158, 11, 0.4);
+}
+
+/* Video & Canvas Elements */
+#eface-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* Default mirrored for selfie camera */
+}
+
+#eface-video.no-mirror {
+    transform: scaleX(1);
+}
+
+#eface-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    transform: scaleX(-1);
+}
+
+#eface-canvas.no-mirror {
+    transform: scaleX(1);
+}
+
+/* HUD Overlay Elements */
+.eface-hud-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.25rem;
+}
+
+/* Biometric Target Face Guide */
+.eface-target-guide {
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 220px;
+    height: 280px;
+    border-radius: 48%;
+    border: 2px dashed rgba(0, 242, 254, 0.45);
+    box-shadow: inset 0 0 25px rgba(0, 242, 254, 0.15);
+    transition: all 0.3s ease;
+}
+
+.eface-target-guide.active {
+    border-color: var(--eface-neon-green);
+    border-style: solid;
+    box-shadow: inset 0 0 35px rgba(16, 185, 129, 0.25), 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+/* 4 Cyber Brackets */
+.eface-corner-bracket {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-color: var(--eface-neon-cyan);
+    border-style: solid;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.6));
+}
+
+.bracket-tl {
+    top: 1.25rem;
+    left: 1.25rem;
+    border-width: 4px 0 0 4px;
+    border-top-left-radius: 16px;
+}
+
+.bracket-tr {
+    top: 1.25rem;
+    right: 1.25rem;
+    border-width: 4px 4px 0 0;
+    border-top-right-radius: 16px;
+}
+
+.bracket-bl {
+    bottom: 1.25rem;
+    left: 1.25rem;
+    border-width: 0 0 4px 4px;
+    border-bottom-left-radius: 16px;
+}
+
+.bracket-br {
+    bottom: 1.25rem;
+    right: 1.25rem;
+    border-width: 0 4px 4px 0;
+    border-bottom-right-radius: 16px;
+}
+
+.state-matched .eface-corner-bracket {
+    border-color: var(--eface-neon-green);
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.8));
+}
+
+/* Animated Biometric Laser Scan Line */
+.eface-scan-laser {
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, #00f2fe 30%, #ffffff 50%, #00f2fe 70%, transparent 100%);
+    box-shadow: 0 0 15px #00f2fe, 0 0 30px #00f2fe;
+    opacity: 0.85;
+    animation: efaceLaserSweep 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    z-index: 8;
+}
+
+@keyframes efaceLaserSweep {
+    0% {
+        top: 8%;
+        opacity: 0.1;
+    }
+    15% {
+        opacity: 0.95;
+    }
+    50% {
+        top: 88%;
+        opacity: 0.95;
+    }
+    85% {
+        opacity: 0.95;
+    }
+    100% {
+        top: 8%;
+        opacity: 0.1;
+    }
+}
+
+/* Radar Sweep Pulse */
+.eface-radar-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    animation: efaceRadarWave 3s ease-out infinite;
+    pointer-events: none;
+    z-index: 6;
+}
+
+@keyframes efaceRadarWave {
+    0% {
+        width: 100px;
+        height: 100px;
+        opacity: 0.8;
+    }
+    100% {
+        width: 440px;
+        height: 440px;
+        opacity: 0;
+    }
+}
+
+/* Top Badge & Shift Indicator */
+.eface-top-badge {
+    align-self: center;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 30px;
+    padding: 0.4rem 1.1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #f8fafc;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Bottom Status Banner inside Viewfinder */
+.eface-bottom-status {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 0.65rem 1rem;
+    text-align: center;
+    margin-bottom: 0.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.eface-status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--eface-neon-cyan);
+    box-shadow: 0 0 10px var(--eface-neon-cyan);
+    margin-right: 0.4rem;
+    animation: efacePulse 1.5s infinite;
+}
+
+@keyframes efacePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* SUCCESS SCAN RESULT POPUP CARD (MATCHES USER SAMPLE BEAUTIFULLY) */
+.eface-result-card {
+    position: absolute;
+    inset: 0.75rem;
+    background: rgba(10, 18, 36, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 2px solid rgba(16, 185, 129, 0.5);
+    border-radius: 22px;
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 25;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(16, 185, 129, 0.25);
+    transform: scale(0.92);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.eface-result-card.show {
+    transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Avatar with glowing ring */
+.eface-avatar-wrap {
+    position: relative;
+    width: 86px;
+    height: 86px;
+    margin: 0 auto;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, #10b981 0%, #00f2fe 100%);
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+}
+
+.eface-avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #020617;
+}
+
+/* Result Card Details Grid */
+.eface-details-table {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+}
+
+.eface-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.eface-detail-row:last-child {
+    border-bottom: none;
+}
+
+.eface-detail-label {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    line-height: 1.2;
+}
+
+.eface-detail-val {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #f8fafc;
+    text-align: right;
+}
+
+/* Success Ribbon at Bottom of Result Card */
+.eface-result-ribbon {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.35) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    color: #34d399;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+}
+
+/* Auto-dismiss Countdown Progress Bar */
+.eface-countdown-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.eface-countdown-progress {
+    height: 100%;
+    width: 100%;
+    background: var(--eface-neon-green);
+    transition: width 4s linear;
+}
+
+/* Control Buttons Under Scanner */
+.eface-controls {
+    width: 100%;
+    max-width: 540px;
+    margin: 1rem auto 0 auto;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-eface-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    border: none;
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: 14px;
+    padding: 0.85rem 1.25rem;
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.45);
+    transition: all 0.25s ease;
+    flex: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-eface-primary:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.6);
+    transform: translateY(-2px);
+    color: #ffffff;
+}
+
+.btn-eface-secondary {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #cbd5e1;
+    font-weight: 600;
+    border-radius: 14px;
+    padding: 0.85rem 1.1rem;
+    transition: all 0.25s ease;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.btn-eface-secondary:hover {
+    background: rgba(51, 65, 85, 0.8);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Recent Scans Ticker */
+.eface-recent-section {
+    width: 100%;
+    max-width: 540px;
+    margin: 1.25rem auto 0 auto;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 1rem 1.25rem;
+}
+
+.eface-recent-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.eface-recent-item:last-child {
+    border-bottom: none;
+}
+
+/* Kiosk Fullscreen Mode */
+body.eface-kiosk-mode #main-wrapper .sidebar,
+body.eface-kiosk-mode #top-navbar,
+body.eface-kiosk-mode .mobile-bottom-nav {
+    display: none !important;
+}
+
+body.eface-kiosk-mode #eface-view {
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+/* Mobile & Tablet Optimizations */
+@media (max-width: 576px) {
+    #eface-view {
+        padding: 0.75rem;
+    }
+    .eface-stage {
+        max-width: 100%;
+        margin-top: 0.75rem;
+    }
+    .eface-viewport-wrapper {
+        border-radius: 20px;
+        max-height: 440px;
+    }
+    .eface-target-guide {
+        width: 190px;
+        height: 240px;
+    }
+}

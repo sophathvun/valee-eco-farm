@@ -71,7 +71,13 @@ window.openAddEmployeeModal = async function() {
     if (document.getElementById('emp-currency')) document.getElementById('emp-currency').value = 'USD';
     
     const preview = document.getElementById('emp-photo-preview');
+    const badge = document.getElementById('emp-eface-status-badge');
+    if (badge) {
+        badge.className = 'badge bg-secondary bg-opacity-25 text-muted border px-2 py-1';
+        badge.innerHTML = 'មិនទាន់ចុះឈ្មោះ';
+    }
     if (preview) {
+        delete preview.dataset.faceDescriptor;
         preview.src = 'assets/images/default-avatar.svg';
         preview.dataset.hasCustom = 'false';
     }
@@ -151,6 +157,20 @@ window.editEmployee = async function(id) {
         if (wageTypeEl) wageTypeEl.value = emp.wageType || 'Monthly';
         
         const preview = document.getElementById('emp-photo-preview');
+        const badge = document.getElementById('emp-eface-status-badge');
+        if (emp.faceDescriptor && Array.isArray(emp.faceDescriptor) && emp.faceDescriptor.length > 0) {
+            if (badge) {
+                badge.className = 'badge bg-success bg-opacity-25 text-success border border-success px-2 py-1';
+                badge.innerHTML = '<i class="bi bi-shield-check me-1"></i> បានចុះឈ្មោះរួច';
+            }
+            if (preview) preview.dataset.faceDescriptor = JSON.stringify(emp.faceDescriptor);
+        } else {
+            if (badge) {
+                badge.className = 'badge bg-secondary bg-opacity-25 text-muted border px-2 py-1';
+                badge.innerHTML = 'មិនទាន់ចុះឈ្មោះ';
+            }
+            if (preview) delete preview.dataset.faceDescriptor;
+        }
         if (preview) {
             if (emp.photo) {
                 preview.src = emp.photo;
@@ -209,6 +229,7 @@ window.deleteEmployee = async function(id) {
         await db.employees.delete(id);
         Swal.fire({icon: 'success', text: 'លុបបុគ្គលិកជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         loadEmployees();
+    if (typeof buildEfaceMatcher === 'function') buildEfaceMatcher();
     }
 };
 
@@ -265,6 +286,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
             currency: currency || 'USD',
             salary: isNaN(salary) ? 0 : salary,
             photo: photo || '',
+            faceDescriptor: (photoEl && photoEl.dataset && photoEl.dataset.faceDescriptor) ? JSON.parse(photoEl.dataset.faceDescriptor) : (editingEmployeeId ? ((await db.employees.get(editingEmployeeId))?.faceDescriptor || null) : null),
             bankName: bankName || '',
             bankAccount: bankAccount || '',
             bankAccountName: bankAccountName || '',
@@ -278,6 +300,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
             Swal.fire({icon: 'success', text: 'បន្ថែមបុគ្គលិកថ្មីជោគជ័យ!', confirmButtonText: 'យល់ព្រម', timer: 1500});
         }
         
+        if (typeof buildEfaceMatcher === 'function') buildEfaceMatcher();
         document.getElementById('employeeForm').reset();
         document.getElementById('emp-type').value = 'Full-Time';
         document.getElementById('emp-wage-type').value = 'Monthly';

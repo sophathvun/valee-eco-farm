@@ -158,6 +158,9 @@ window.switchSettingsTab = function(tabId) {
     if (tabId === 'shifts') {
         loadShifts();
     }
+    if (tabId === 'telegram') {
+        loadTelegramSettings();
+    }
 }
 
 // ====== SHIFT MANAGEMENT ======

@@ -559,3 +559,73 @@
                 </div>
 
 
+
+                <!-- Telegram Settings Tab -->
+                <div id="settings-telegram-tab" class="settings-tab" style="display: none;">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="card shadow-sm border-0 border-top border-primary border-4">
+                                <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                            <i class="bi bi-telegram text-primary fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-0 fw-bold text-dark">ការកំណត់ Telegram Bot (Attendance Alerts)</h5>
+                                            <small class="text-muted">ផ្ញើដំណឹងវត្តមាន និងរូបថតបុគ្គលិកទៅកាន់ Telegram Group ដោយស្វ័យប្រវត្តិ</small>
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-switch fs-5">
+                                        <input class="form-check-input" type="checkbox" id="telegramAlertEnabled" checked>
+                                    </div>
+                                </div>
+                                <div class="card-body p-4">
+                                    <form id="telegramSettingsForm" onsubmit="saveTelegramSettings(event)">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Telegram Bot Token <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i class="bi bi-key-fill text-muted"></i></span>
+                                                <input type="text" class="form-control" id="telegramBotToken" placeholder="ឧទាហរណ៍: 7123456789:AAHk... (Bot Token ពី @BotFather)" required>
+                                            </div>
+                                            <small class="text-muted">ទទួលបាន Bot Token ដោយការផ្ញើសារ /newbot ទៅកាន់ <a href="https://t.me/BotFather" target="_blank" class="fw-bold text-decoration-none">@BotFather</a> លើ Telegram</small>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Telegram Chat ID / Group ID <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i class="bi bi-chat-dots-fill text-muted"></i></span>
+                                                <input type="text" class="form-control" id="telegramChatId" placeholder="ឧទាហរណ៍: -1001234567890 (Telegram Group ID)" required>
+                                            </div>
+                                            <small class="text-muted">បន្ថែម Bot របស់អ្នកចូលក្នុង Group រួចយក Group Chat ID (អាចប្រើ bot ដូចជា <a href="https://t.me/RawDataBot" target="_blank" class="fw-bold text-decoration-none">@RawDataBot</a> ដើម្បីមើល Group ID)</small>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">ឈ្មោះទីតាំង / សាខា (Campus / Location Name)</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i class="bi bi-geo-alt-fill text-muted"></i></span>
+                                                <input type="text" class="form-control" id="telegramFarmName" placeholder="VALEE ECO FARM">
+                                            </div>
+                                            <small class="text-muted">បង្ហាញនៅលើចំណងជើងនៃដំណឹងវត្តមានដែលផ្ញើទៅ Telegram</small>
+                                        </div>
+
+                                        <div class="alert alert-info border-0 d-flex align-items-center mb-4" style="background-color: #f0f7ff; border-left: 4px solid #0d6efd !important;">
+                                            <i class="bi bi-info-circle-fill text-primary fs-4 me-3"></i>
+                                            <div class="small">
+                                                <strong>ចំណាំ៖</strong> រាល់ពេលបុគ្គលិកស្កែនមុខតាមរយៈប្រព័ន្ធ <b>E-Face Attendance</b> ប្រព័ន្ធនឹងកត់ត្រាវត្តមានភ្លាមៗ និងផ្ញើសារដំណឹងព្រមទាំងរូបថតបុគ្គលិកចូលទៅកាន់ Telegram Group នេះក្នុងពេលដំណាលគ្នា។
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                            <button type="button" class="btn btn-outline-info" id="btnTestTelegram" onclick="testTelegramConnection()">
+                                                <i class="bi bi-send-check me-1"></i> តេស្តផ្ញើសារសាកល្បង (Test Alert)
+                                            </button>
+                                            <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">
+                                                <i class="bi bi-save me-1"></i> រក្សាទុកការកំណត់ (Save)
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>

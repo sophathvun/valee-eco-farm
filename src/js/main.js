@@ -9,6 +9,7 @@ const viewsToLoad = [
     'expense',
     'reports',
     'employee',
+    'eface',
     'attendance',
     'attendance-report',
     'payroll',
@@ -58,6 +59,7 @@ async function initializeApp() {
         'src/js/pages/dashboard.js',
         'src/js/pages/reports.js',
         'src/js/pages/employee.js',
+        'src/js/pages/eface.js',
         'src/js/pages/attendance.js',
         'src/js/pages/attendance-report.js',
         'src/js/pages/payroll.js'

@@ -74,7 +74,7 @@ async function checkLogin() {
             if (hasPermission(savedTab)) {
                 showTab(savedTab, savedSub);
             } else {
-                const fallbackTab = ['dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'reports', 'employee', 'attendance', 'payroll', 'settings'].find(t => hasPermission(t)) || 'dashboard';
+                const fallbackTab = ['dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'reports', 'employee', 'eface', 'attendance', 'payroll', 'settings'].find(t => hasPermission(t)) || 'dashboard';
                 showTab(fallbackTab);
             }
         } catch (e) {
@@ -298,6 +298,7 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
         'reports': '📊',
         'settings': '⚙️',
         'employee': '👨‍💼',
+        'eface': '📸',
         'attendance': '📅',
         'attendance-report': '📊',
         'payroll': '💵'
@@ -315,6 +316,7 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
         'reports': getT('tab_reports', 'របាយការណ៍'),
         'settings': getT('tab_settings', 'ការកំណត់ទូទៅ'),
         'employee': getT('tab_employee', 'គ្រប់គ្រងបុគ្គលិក'),
+        'eface': getT('tab_eface', 'វត្តមាន E-Face'),
         'attendance': getT('tab_attendance', 'គ្រប់គ្រងវត្តមាន'),
         'attendance-report': getT('tab_attendance_report', 'របាយការណ៍វត្តមាន'),
         'payroll': getT('tab_payroll', 'បើកប្រាក់បៀវត្សរ៍ (Payroll)')
@@ -336,7 +338,9 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
         'attendance': getT('sub_attendance', 'គ្រប់គ្រងវត្តមាន'),
         'attendance-report': getT('sub_attendance_report', 'របាយការណ៍វត្តមាន'),
         'payroll': getT('sub_payroll', 'បើកប្រាក់បៀវត្សរ៍'),
-        'branding': getT('sub_branding', 'ការកំណត់យីហោ')
+        'branding': getT('sub_branding', 'ការកំណត់យីហោ'),
+        'telegram': getT('sub_telegram', 'ការកំណត់ Telegram'),
+        'eface': getT('sub_eface', 'ស្កែនវត្តមាន E-Face')
     };
 
     const mainTitle = titleMap[tab] || 'Dashboard';
@@ -461,6 +465,14 @@ window.showTab = function(tabId, subId = null) {
         if (typeof loadEmployees === 'function') loadEmployees();
         if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
         if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
+    }
+    
+    // Stop camera if navigating away from eface
+    if (tabId !== 'eface' && typeof stopEfaceScanning === 'function') {
+        stopEfaceScanning();
+    }
+    if (tabId === 'eface') {
+        if (typeof initEface === 'function') initEface();
     }
     
     if (tabId === 'attendance') {

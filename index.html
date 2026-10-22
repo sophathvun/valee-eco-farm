@@ -7,25 +7,27 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <link rel="stylesheet" href="assets/cropper.min.css">
-    <link rel="stylesheet" href="src/css/global.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/print.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/dashboard.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/invoice.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/invoice-list.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/income.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/expense.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/reports.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/employee.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/attendance.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/attendance-report.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/payroll.css?v=1792660000">
-    <link rel="stylesheet" href="src/css/settings.css?v=1792660000">
+    <link rel="stylesheet" href="src/css/global.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/print.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/dashboard.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/invoice.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/invoice-list.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/income.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/expense.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/reports.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/employee.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/attendance.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/attendance-report.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/payroll.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/settings.css?v=1792670000">
+    <link rel="stylesheet" href="src/css/eface.css?v=1792670000">
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_green.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <script src="src/js/utils/i18n.js?v=1792660000"></script>
+    <script src="src/js/utils/i18n.js?v=1792670000"></script>
 
     <!-- Dark Mode Sync & Theme Switcher API (Synchronous early execution) -->
     <script>
@@ -356,6 +358,9 @@
                             <a href="#" class="nav-link submenu-link" id="nav-employee-list" data-i18n="menu_employee_list" onclick="showTab('employee');">📋 បញ្ជីបុគ្គលិក</a>
                         </li>
                         <li class="nav-item sys-menu-item" data-perm="employee_manage">
+                            <a href="#" class="nav-link submenu-link" id="nav-eface" data-i18n="menu_eface" onclick="showTab('eface');">📸 ស្កែនវត្តមាន E-Face</a>
+                        </li>
+                        <li class="nav-item sys-menu-item" data-perm="employee_manage">
                             <a href="#" class="nav-link submenu-link" id="nav-attendance" data-i18n="menu_attendance" onclick="showTab('attendance');">📅 គ្រប់គ្រងវត្តមាន</a>
                         </li>
                         <li class="nav-item sys-menu-item" data-perm="employee_manage">
@@ -405,6 +410,9 @@
                         </li>
                         <li class="nav-item sys-menu-item" data-perm="settings_branding">
                             <a href="#" class="nav-link submenu-link" id="nav-settings-branding" data-i18n="menu_settings_branding" onclick="showTab('settings', 'branding');">🎨 ការកំណត់យីហោ (Branding)</a>
+                        </li>
+                        <li class="nav-item sys-menu-item" data-perm="settings">
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-telegram" data-i18n="menu_settings_telegram" onclick="showTab('settings', 'telegram');">✈️ Telegram Alert</a>
                         </li>
                       </ul>
                   </li>
@@ -864,12 +872,12 @@
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=1792660000').then(reg => {
+            navigator.serviceWorker.register('sw.js?v=1792670000').then(reg => {
                 reg.update();
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792660000"></script>
+    <script type="module" src="src/js/main.js?v=1792670000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">
