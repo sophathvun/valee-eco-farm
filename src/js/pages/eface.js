@@ -993,24 +993,102 @@ function drawBiometricBoundingBox(ctx, box, strokeColor = '#00f2fe', landmarks =
     ctx.restore();
 }
 
+// ====== CALCULATE WORK HOURS (FULL-TIME VS PART-TIME) ======
+function calculateAttendanceHours(emp, rec, shifts) {
+    if (!rec) return { morningMins: 0, afternoonMins: 0, totalMinutes: 0, totalHours: 0, hoursStr: '--' };
+
+    const isPartTime = (emp && emp.type === 'Part-Time');
+    const [mInH, mInM] = (shifts.morningIn || '07:00').split(':').map(Number);
+    const [mOutH, mOutM] = (shifts.morningOut || '11:00').split(':').map(Number);
+    const [aInH, aInM] = (shifts.afternoonIn || '13:00').split(':').map(Number);
+    const [aOutH, aOutM] = (shifts.afternoonOut || '17:00').split(':').map(Number);
+
+    const mInScheduled = mInH * 60 + mInM;
+    const mOutScheduled = mOutH * 60 + mOutM;
+    const aInScheduled = aInH * 60 + aInM;
+    const aOutScheduled = aOutH * 60 + aOutM;
+
+    let morningMins = 0;
+    let afternoonMins = 0;
+
+    if (isPartTime) {
+        // Part-Time: 4 scans strictly (Morning In -> Morning Out, Afternoon In -> Afternoon Out)
+        // Actual morning worked
+        if (rec.scanTimeMorning && rec.scanTimeMorningOut) {
+            const [ih, im] = rec.scanTimeMorning.split(':').map(Number);
+            const [oh, om] = rec.scanTimeMorningOut.split(':').map(Number);
+            morningMins = Math.max(0, (oh * 60 + om) - (ih * 60 + im));
+        } else if (rec.scanTimeMorning && rec.morning === 'P' && !rec.scanTimeMorningOut && rec.checkOutTime && rec.checkOutTime < '13:00') {
+            const [ih, im] = rec.scanTimeMorning.split(':').map(Number);
+            const [oh, om] = rec.checkOutTime.split(':').map(Number);
+            morningMins = Math.max(0, (oh * 60 + om) - (ih * 60 + im));
+        }
+
+        // Actual afternoon worked
+        if (rec.scanTimeAfternoon && rec.scanTimeAfternoonOut) {
+            const [ih, im] = rec.scanTimeAfternoon.split(':').map(Number);
+            const [oh, om] = rec.scanTimeAfternoonOut.split(':').map(Number);
+            afternoonMins = Math.max(0, (oh * 60 + om) - (ih * 60 + im));
+        } else if (rec.scanTimeAfternoon && rec.afternoon === 'P' && !rec.scanTimeAfternoonOut && rec.checkOutTime && rec.checkOutTime >= '13:00') {
+            const [ih, im] = rec.scanTimeAfternoon.split(':').map(Number);
+            const [oh, om] = rec.checkOutTime.split(':').map(Number);
+            afternoonMins = Math.max(0, (oh * 60 + om) - (ih * 60 + im));
+        }
+    } else {
+        // Full-Time: 2 scans (Morning In -> Evening Out)
+        // 1. Morning: from actual morning in to scheduled morning out
+        const morningIn = rec.scanTimeMorning || rec.checkInTime || '';
+        if (morningIn && rec.morning !== 'A') {
+            const [ih, im] = morningIn.split(':').map(Number);
+            const inMins = ih * 60 + im;
+            const actualStart = Math.max(mInScheduled, inMins);
+            if (rec.scanTimeMorningOut && rec.scanTimeMorningOut < shifts.morningOut) {
+                // Checked out early in morning
+                const [oh, om] = rec.scanTimeMorningOut.split(':').map(Number);
+                morningMins = Math.max(0, (oh * 60 + om) - actualStart);
+            } else {
+                morningMins = Math.max(0, mOutScheduled - actualStart);
+            }
+        }
+
+        // 2. Afternoon: from scheduled afternoon in to actual evening scan-out
+        const eveningOut = rec.scanTimeAfternoonOut || rec.checkOutTime || '';
+        if (eveningOut && rec.afternoon !== 'A') {
+            const [oh, om] = eveningOut.split(':').map(Number);
+            const outMins = oh * 60 + om;
+            afternoonMins = Math.max(0, outMins - aInScheduled);
+        }
+    }
+
+    const totalMinutes = morningMins + afternoonMins;
+    const totalHours = +(totalMinutes / 60).toFixed(2);
+    const hrs = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    const hoursStr = totalMinutes > 0 ? `${hrs} ម៉ោង ${mins > 0 ? `${mins} នាទី` : ''}`.trim() : '--';
+
+    return {
+        morningMins,
+        afternoonMins,
+        totalMinutes,
+        totalHours,
+        hoursStr
+    };
+}
+window.calculateAttendanceHours = calculateAttendanceHours;
+
 // ====== ATTENDANCE RECORDING & TELEGRAM DISPATCH ======
 async function handleEfaceMatch(emp, detection) {
     if (window._efaceGpsLocked) return;
     const now = new Date();
     const nowMs = now.getTime();
 
-    // Anti-spam cooldown (ignore multiple detections within 60s for same employee)
-    if (efaceLastScanned[emp.id] && (nowMs - efaceLastScanned[emp.id]) < 60000) {
+    // Anti-spam cooldown (ignore multiple detections within 15s for same employee)
+    if (efaceLastScanned[emp.id] && (nowMs - efaceLastScanned[emp.id]) < 15000) {
         return;
     }
     efaceLastScanned[emp.id] = nowMs;
 
-    // Visual & Sound Feedback
-    playEfaceSuccessChime();
-    setTimeout(() => {
-        speakKhmerVoice('success', 'ស្កែនជោគជ័យ សូមអរគុណ');
-    }, 250);
-    updateEfaceStatus(`ស្គាល់អត្តសញ្ញាណ: ${emp.name}`, 'matched');
+    window._efaceCurrentMatchedEmp = emp;
 
     const shifts = await getEfaceWorkShifts();
     const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -1030,7 +1108,10 @@ async function handleEfaceMatch(emp, detection) {
     const aInMin = aInH * 60 + aInM;
     const aOutMin = aOutH * 60 + aOutM;
 
-    // Intelligent Check-In vs Check-Out window detection
+    const isPartTime = (emp.type === 'Part-Time');
+    const allAtt = await db.attendance.toArray();
+    const existing = allAtt.find(r => r.date === dateStr && String(r.empId) === String(emp.id));
+
     let scanMode = 'morning_in';
     let shiftKh = 'វេនព្រឹក: ស្កែនចូល (Morning In)';
     let isLate = false;
@@ -1038,102 +1119,189 @@ async function handleEfaceMatch(emp, detection) {
     let statusTextCustom = 'ទាន់ពេល (0 នាទី)';
     let isCheckOut = false;
 
-    if (currentMinFromMidnight < Math.round((mInMin + mOutMin) / 2)) {
-        // Morning Check-In (e.g. before ~09:00)
-        scanMode = 'morning_in';
-        shiftKh = 'វេនព្រឹក: ស្កែនចូល (Morning In)';
-        if (currentMinFromMidnight > mInMin + 5) {
-            isLate = true;
-            lateMins = currentMinFromMidnight - mInMin;
-            statusTextCustom = `យឺត (${lateMins} នាទី)`;
-        } else if (currentMinFromMidnight < mInMin) {
-            statusTextCustom = `មុនម៉ោង (${mInMin - currentMinFromMidnight} នាទី)`;
+    // --- CASE 1: PART-TIME (4 SCANS: Morning In/Out, Afternoon In/Out) ---
+    if (isPartTime) {
+        if (currentMinFromMidnight < Math.round((mInMin + mOutMin) / 2)) {
+            // Morning In
+            if (existing && existing.scanTimeMorning) {
+                updateEfaceStatus(`បានស្កែនរួចហើយ: ${emp.name}`, 'matched');
+                speakKhmerVoice('warning', `${emp.name} បានស្កែនចូលពេលព្រឹករួចហើយនៅម៉ោង ${existing.scanTimeMorning}`);
+                displayAlreadyScannedCard(emp, existing.scanTimeMorning, 'ចូលពេលព្រឹក (Morning In)', true);
+                stopEfaceScanning();
+                return;
+            }
+            scanMode = 'morning_in';
+            shiftKh = 'វេនព្រឹក: ស្កែនចូល (Morning In)';
+            if (currentMinFromMidnight > mInMin + 5) {
+                isLate = true;
+                lateMins = currentMinFromMidnight - mInMin;
+                statusTextCustom = `យឺត (${lateMins} នាទី)`;
+            } else if (currentMinFromMidnight < mInMin) {
+                statusTextCustom = `មុនម៉ោង (${mInMin - currentMinFromMidnight} នាទី)`;
+            } else {
+                statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+            }
+        } else if (currentMinFromMidnight < 12 * 60) {
+            // Morning Out
+            if (existing && existing.scanTimeMorningOut) {
+                updateEfaceStatus(`បានស្កែនរួចហើយ: ${emp.name}`, 'matched');
+                speakKhmerVoice('warning', `${emp.name} បានស្កែនចេញពេលព្រឹករួចហើយនៅម៉ោង ${existing.scanTimeMorningOut}`);
+                displayAlreadyScannedCard(emp, existing.scanTimeMorningOut, 'ចេញពេលព្រឹក (Morning Out)', false);
+                stopEfaceScanning();
+                return;
+            }
+            scanMode = 'morning_out';
+            shiftKh = 'វេនព្រឹក: ស្កែនចេញ (Morning Out)';
+            isCheckOut = true;
+            if (currentMinFromMidnight < mOutMin - 5) {
+                lateMins = mOutMin - currentMinFromMidnight;
+                statusTextCustom = `ចេញមុនម៉ោង (${lateMins} នាទី)`;
+            } else {
+                statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+            }
+        } else if (currentMinFromMidnight < Math.round((aInMin + aOutMin) / 2)) {
+            // Afternoon In
+            if (existing && existing.scanTimeAfternoon) {
+                updateEfaceStatus(`បានស្កែនរួចហើយ: ${emp.name}`, 'matched');
+                speakKhmerVoice('warning', `${emp.name} បានស្កែនចូលពេលរសៀលរួចហើយនៅម៉ោង ${existing.scanTimeAfternoon}`);
+                displayAlreadyScannedCard(emp, existing.scanTimeAfternoon, 'ចូលពេលរសៀល (Afternoon In)', true);
+                stopEfaceScanning();
+                return;
+            }
+            scanMode = 'afternoon_in';
+            shiftKh = 'វេនរសៀល: ស្កែនចូល (Afternoon In)';
+            if (currentMinFromMidnight > aInMin + 5) {
+                isLate = true;
+                lateMins = currentMinFromMidnight - aInMin;
+                statusTextCustom = `យឺត (${lateMins} នាទី)`;
+            } else {
+                statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+            }
         } else {
-            statusTextCustom = 'ទាន់ពេល (0 នាទី)';
-        }
-    } else if (currentMinFromMidnight < 12 * 60) {
-        // Morning Check-Out (Lunch break: ~09:00 - 12:00)
-        scanMode = 'morning_out';
-        shiftKh = 'វេនព្រឹក: ស្កែនចេញ (Morning Out)';
-        isCheckOut = true;
-        if (currentMinFromMidnight < mOutMin - 5) {
-            lateMins = mOutMin - currentMinFromMidnight;
-            statusTextCustom = `ចេញមុនម៉ោង (${lateMins} នាទី)`;
-        } else {
-            statusTextCustom = 'ទាន់ពេល (0 នាទី)';
-        }
-    } else if (currentMinFromMidnight < Math.round((aInMin + aOutMin) / 2)) {
-        // Afternoon Check-In (~12:00 - 15:00)
-        scanMode = 'afternoon_in';
-        shiftKh = 'វេនរសៀល: ស្កែនចូល (Afternoon In)';
-        if (currentMinFromMidnight > aInMin + 5) {
-            isLate = true;
-            lateMins = currentMinFromMidnight - aInMin;
-            statusTextCustom = `យឺត (${lateMins} នាទី)`;
-        } else {
-            statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+            // Afternoon Out
+            if (existing && existing.scanTimeAfternoonOut) {
+                updateEfaceStatus(`បានស្កែនរួចហើយ: ${emp.name}`, 'matched');
+                speakKhmerVoice('warning', `${emp.name} បានស្កែនចេញពេលល្ងាចរួចហើយនៅម៉ោង ${existing.scanTimeAfternoonOut}`);
+                displayAlreadyScannedCard(emp, existing.scanTimeAfternoonOut, 'ចេញពេលល្ងាច (Afternoon Out)', false);
+                stopEfaceScanning();
+                return;
+            }
+            scanMode = 'afternoon_out';
+            shiftKh = 'វេនរសៀល: ស្កែនចេញ (Afternoon Out)';
+            isCheckOut = true;
+            if (currentMinFromMidnight < aOutMin - 5) {
+                lateMins = aOutMin - currentMinFromMidnight;
+                statusTextCustom = `ចេញមុនម៉ោង (${lateMins} នាទី)`;
+            } else if (currentMinFromMidnight <= aOutMin + 15) {
+                statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+            } else {
+                lateMins = currentMinFromMidnight - aOutMin;
+                statusTextCustom = `លើសម៉ោង (${lateMins} នាទី)`;
+            }
         }
     } else {
-        // Afternoon Check-Out (Departure: >= 15:00)
-        scanMode = 'afternoon_out';
-        shiftKh = 'វេនរសៀល: ស្កែនចេញ (Afternoon Out)';
-        isCheckOut = true;
-        if (currentMinFromMidnight < aOutMin - 5) {
-            lateMins = aOutMin - currentMinFromMidnight;
-            statusTextCustom = `ចេញមុនម៉ោង (${lateMins} នាទី)`;
-        } else if (currentMinFromMidnight <= aOutMin + 15) {
-            statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+        // --- CASE 2: FULL-TIME (2 SCANS: Morning In -> Evening Out) ---
+        if (currentMinFromMidnight < 12 * 60) {
+            // Morning Period: Morning In
+            const existingIn = existing ? (existing.scanTimeMorning || existing.checkInTime) : '';
+            if (existingIn) {
+                updateEfaceStatus(`បានស្កែនរួចហើយ: ${emp.name}`, 'matched');
+                speakKhmerVoice('warning', `${emp.name} បានស្កែនចូលរួចហើយនៅម៉ោង ${existingIn}`);
+                displayAlreadyScannedCard(emp, existingIn, 'ចូលពេលព្រឹក (Morning In)', true);
+                stopEfaceScanning();
+                return;
+            }
+            scanMode = 'morning_in';
+            shiftKh = 'វេនព្រឹក: ស្កែនចូល (Morning In)';
+            if (currentMinFromMidnight > mInMin + 5) {
+                isLate = true;
+                lateMins = currentMinFromMidnight - mInMin;
+                statusTextCustom = `យឺត (${lateMins} នាទី)`;
+            } else if (currentMinFromMidnight < mInMin) {
+                statusTextCustom = `មុនម៉ោង (${mInMin - currentMinFromMidnight} នាទី)`;
+            } else {
+                statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+            }
+        } else if (currentMinFromMidnight >= 12 * 60 && currentMinFromMidnight < 13 * 60) {
+            // Lunch period (12:00 - 13:00)
+            const existingIn = existing ? (existing.scanTimeMorning || existing.checkInTime) : '';
+            if (existingIn) {
+                updateEfaceStatus(`បុគ្គលិកពេញម៉ោង: ${emp.name}`, 'matched');
+                speakKhmerVoice('warning', `${emp.name} បុគ្គលិកពេញម៉ោង មិនចាំបាច់ស្កែនពេលបាយថ្ងៃត្រង់ទេ`);
+                displayAlreadyScannedCard(emp, existingIn, 'ចូលពេលព្រឹក (ពេញម៉ោងមិនបាច់ស្កែនបាយថ្ងៃត្រង់)', true);
+                stopEfaceScanning();
+                return;
+            } else {
+                scanMode = 'afternoon_in';
+                shiftKh = 'វេនរសៀល: ស្កែនចូល (Afternoon In)';
+                statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+            }
         } else {
-            lateMins = currentMinFromMidnight - aOutMin;
-            statusTextCustom = `លើសម៉ោង (${lateMins} នាទី)`;
+            // Afternoon/Evening (>= 13:00): Evening Out
+            if (existing && existing.scanTimeAfternoonOut) {
+                updateEfaceStatus(`បានស្កែនរួចហើយ: ${emp.name}`, 'matched');
+                speakKhmerVoice('warning', `${emp.name} បានស្កែនចេញរួចហើយនៅម៉ោង ${existing.scanTimeAfternoonOut}`);
+                displayAlreadyScannedCard(emp, existing.scanTimeAfternoonOut, 'ចេញពេលល្ងាច (Evening Out)', false);
+                stopEfaceScanning();
+                return;
+            }
+            scanMode = 'afternoon_out';
+            shiftKh = 'វេនល្ងាច: ស្កែនចេញ (Evening Out)';
+            isCheckOut = true;
+            if (currentMinFromMidnight < aOutMin - 5) {
+                lateMins = aOutMin - currentMinFromMidnight;
+                statusTextCustom = `ចេញមុនម៉ោង (${lateMins} នាទី)`;
+            } else if (currentMinFromMidnight <= aOutMin + 15) {
+                statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+            } else {
+                lateMins = currentMinFromMidnight - aOutMin;
+                statusTextCustom = `លើសម៉ោង (${lateMins} នាទី)`;
+            }
         }
     }
 
-    const attStatus = 'P';
+    // Valid new scan: visual & sound feedback
+    playEfaceSuccessChime();
+    setTimeout(() => {
+        speakKhmerVoice('success', isCheckOut ? 'ស្កែនចេញជោគជ័យ សូមអរគុណ' : 'ស្កែនចូលជោគជ័យ សូមអរគុណ');
+    }, 250);
+    updateEfaceStatus(`ស្គាល់អត្តសញ្ញាណ: ${emp.name}`, 'matched');
+
     let totalHoursWorkedStr = '';
 
     // Save/Update in db.attendance
     try {
-        const allAtt = await db.attendance.toArray();
-        const existing = allAtt.find(r => r.date === dateStr && String(r.empId) === String(emp.id));
+        const updateData = {};
+        if (scanMode === 'morning_in') {
+            updateData.morning = 'P';
+            updateData.scanTimeMorning = timeStr;
+            updateData.checkInTime = timeStr;
+        } else if (scanMode === 'morning_out') {
+            updateData.scanTimeMorningOut = timeStr;
+            if (!existing || !existing.morning || existing.morning === 'A') updateData.morning = 'P';
+        } else if (scanMode === 'afternoon_in') {
+            updateData.afternoon = 'P';
+            updateData.scanTimeAfternoon = timeStr;
+            if (!existing || !existing.checkInTime) updateData.checkInTime = timeStr;
+        } else if (scanMode === 'afternoon_out') {
+            updateData.scanTimeAfternoonOut = timeStr;
+            updateData.checkOutTime = timeStr;
+            if (!existing || !existing.afternoon || existing.afternoon === 'A') updateData.afternoon = 'P';
+        }
+
+        if (isLate) {
+            updateData.note = (existing && existing.note ? existing.note + '; ' : '') + `Late ${lateMins}m (${scanMode})`;
+        }
+
+        // Merge to calculate hours
+        const mergedRec = existing ? { ...existing, ...updateData } : { empId: emp.id, empName: emp.name, date: dateStr, ...updateData };
+        const hoursCalc = calculateAttendanceHours(emp, mergedRec, shifts);
+        updateData.totalHoursWorked = hoursCalc.totalHours;
+        if (hoursCalc.hoursStr !== '--') {
+            totalHoursWorkedStr = hoursCalc.hoursStr;
+        }
 
         if (existing) {
-            const updateData = {};
-            if (scanMode === 'morning_in') {
-                updateData.morning = 'P';
-                updateData.scanTimeMorning = timeStr;
-                updateData.checkInTime = timeStr;
-            } else if (scanMode === 'morning_out') {
-                updateData.scanTimeMorningOut = timeStr;
-                if (!existing.morning || existing.morning === 'A') updateData.morning = 'P';
-            } else if (scanMode === 'afternoon_in') {
-                updateData.afternoon = 'P';
-                updateData.scanTimeAfternoon = timeStr;
-                if (!existing.checkInTime) updateData.checkInTime = timeStr;
-            } else if (scanMode === 'afternoon_out') {
-                updateData.scanTimeAfternoonOut = timeStr;
-                updateData.checkOutTime = timeStr;
-                if (!existing.afternoon || existing.afternoon === 'A') updateData.afternoon = 'P';
-            }
-
-            // Calculate total hours worked if check-in exists
-            const inT = existing.checkInTime || updateData.checkInTime || existing.scanTimeMorning;
-            const outT = updateData.checkOutTime || existing.checkOutTime || (isCheckOut ? timeStr : '');
-            if (inT && outT && inT !== outT) {
-                const [ih, im] = inT.split(':').map(Number);
-                const [oh, om] = outT.split(':').map(Number);
-                let span = (oh * 60 + om) - (ih * 60 + im);
-                if (ih < 12 && oh > 13) span = Math.max(0, span - 120); // deduct 2h lunch break
-                const netHrs = Math.max(0, span) / 60;
-                updateData.totalHoursWorked = +netHrs.toFixed(2);
-                const h = Math.floor(span / 60);
-                const m = span % 60;
-                totalHoursWorkedStr = `${h} ម៉ោង ${m > 0 ? `${m} នាទី` : ''}`.trim();
-            }
-
-            if (isLate) {
-                updateData.note = (existing.note ? existing.note + '; ' : '') + `Late ${lateMins}m (${scanMode})`;
-            }
             await db.attendance.update(existing.id, updateData);
         } else {
             const newRecord = {
@@ -1148,6 +1316,7 @@ async function handleEfaceMatch(emp, detection) {
                 scanTimeAfternoonOut: scanMode === 'afternoon_out' ? timeStr : '',
                 checkInTime: (scanMode === 'morning_in' || scanMode === 'afternoon_in') ? timeStr : '',
                 checkOutTime: (scanMode === 'morning_out' || scanMode === 'afternoon_out') ? timeStr : '',
+                totalHoursWorked: updateData.totalHoursWorked || 0,
                 note: isLate ? `Late ${lateMins}m (${scanMode})` : 'On-Time'
             };
             await db.attendance.add(newRecord);
@@ -1185,6 +1354,276 @@ async function handleEfaceMatch(emp, detection) {
     // Auto-stop scanning after successful scan as requested
     stopEfaceScanning();
 }
+
+// ====== DISPLAY ALREADY SCANNED POPUP CARD ======
+function displayAlreadyScannedCard(emp, existingTime, slotTitle, canEarlyOut = false) {
+    const card = document.getElementById('eface-result-card');
+    if (!card) return;
+
+    window._efaceCurrentMatchedEmp = emp;
+
+    const avatarEl = document.getElementById('eface-res-avatar');
+    const nameEl = document.getElementById('eface-res-name');
+    const subnameEl = document.getElementById('eface-res-subname');
+    const badgeEl = document.getElementById('eface-res-badge');
+    const idEl = document.getElementById('eface-res-id');
+    const campusEl = document.getElementById('eface-res-campus');
+    const deptEl = document.getElementById('eface-res-dept');
+    const posEl = document.getElementById('eface-res-position');
+    const shiftEl = document.getElementById('eface-res-shift');
+    const ribbonEl = document.getElementById('eface-res-ribbon');
+    const earlyOutWrap = document.getElementById('eface-res-earlyout-wrap');
+    const progressEl = document.getElementById('eface-countdown-progress');
+
+    if (avatarEl) avatarEl.src = emp.photo || 'assets/images/default-avatar.svg';
+    if (nameEl) nameEl.innerText = emp.latinName ? emp.latinName.toUpperCase() : emp.name;
+    if (subnameEl) subnameEl.innerText = emp.latinName ? emp.name : '';
+    if (idEl) idEl.innerText = emp.code || `EMP-${emp.id}`;
+    if (campusEl) campusEl.innerText = window.efaceCampusName || 'VALEE ECO FARM';
+    if (deptEl) deptEl.innerText = emp.department || 'Operations';
+    if (posEl) posEl.innerText = `${emp.position || 'បុគ្គលិក'} (${emp.type || 'Full-Time'})`;
+    if (shiftEl) shiftEl.innerText = slotTitle;
+
+    if (badgeEl) {
+        badgeEl.className = 'badge bg-warning bg-opacity-25 text-warning border border-warning px-3 py-2 rounded-pill';
+        badgeEl.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> បានស្កែន${slotTitle}រួចហើយ (${existingTime})`;
+    }
+
+    if (ribbonEl) {
+        ribbonEl.className = 'eface-result-ribbon bg-warning text-dark';
+        ribbonEl.innerHTML = `<i class="bi bi-info-circle-fill me-1"></i> បានកត់ត្រារួចហើយ មិនបាច់ស្កែនម្តងទៀតទេ`;
+    }
+
+    if (earlyOutWrap) {
+        earlyOutWrap.style.display = canEarlyOut ? 'block' : 'none';
+    }
+
+    card.classList.add('show');
+
+    if (progressEl) {
+        progressEl.style.transition = 'none';
+        progressEl.style.width = '100%';
+        setTimeout(() => {
+            progressEl.style.transition = 'width 5.0s linear';
+            progressEl.style.width = '0%';
+        }, 50);
+    }
+
+    if (efaceResultCardTimeout) clearTimeout(efaceResultCardTimeout);
+    efaceResultCardTimeout = setTimeout(() => {
+        card.classList.remove('show');
+    }, 5200);
+}
+
+// ====== EARLY CHECK-OUT HANDLERS ======
+window.triggerEarlyCheckoutFromCard = async function() {
+    if (!window._efaceCurrentMatchedEmp) return;
+    const emp = window._efaceCurrentMatchedEmp;
+    await window.triggerEarlyCheckout(emp.id);
+};
+
+window.triggerEarlyCheckout = async function(empId, customReason = '') {
+    try {
+        const emp = (await db.employees.toArray()).find(e => String(e.id) === String(empId));
+        if (!emp) {
+            Swal.fire('មិនមានទិន្នន័យ', 'រកមិនឃើញព័ត៌មានបុគ្គលិកនេះទេ!', 'warning');
+            return;
+        }
+
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
+        const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const currentMinFromMidnight = now.getHours() * 60 + now.getMinutes();
+        const shifts = await getEfaceWorkShifts();
+
+        const allAtt = await db.attendance.toArray();
+        let rec = allAtt.find(r => r.date === dateStr && String(r.empId) === String(emp.id));
+        if (!rec) {
+            Swal.fire('មិនទាន់ស្កែនចូល', 'បុគ្គលិកនេះមិនទាន់មានទិន្នន័យស្កែនចូលនៅថ្ងៃនេះទេ!', 'warning');
+            return;
+        }
+
+        const isPartTime = (emp.type === 'Part-Time');
+        const reason = customReason || 'មិនស្រួលខ្លួន / សុំចេញមុនម៉ោង';
+
+        const updateData = {
+            checkOutTime: timeStr,
+            note: (rec.note ? rec.note + ' • ' : '') + `ចេញមុនម៉ោង (${timeStr} - ${reason})`
+        };
+
+        if (isPartTime) {
+            if (currentMinFromMidnight < 12 * 60) {
+                updateData.scanTimeMorningOut = timeStr;
+            } else {
+                updateData.scanTimeAfternoonOut = timeStr;
+                updateData.afternoon = 'P';
+            }
+        } else {
+            // Full-Time
+            if (currentMinFromMidnight < 12 * 60) {
+                updateData.scanTimeMorningOut = timeStr;
+                updateData.afternoon = 'A';
+            } else {
+                updateData.scanTimeAfternoonOut = timeStr;
+                updateData.afternoon = 'P';
+            }
+        }
+
+        // Compute actual hours
+        const tempRec = { ...rec, ...updateData };
+        const hoursCalc = calculateAttendanceHours(emp, tempRec, shifts);
+        updateData.totalHoursWorked = hoursCalc.totalHours;
+
+        await db.attendance.update(rec.id, updateData);
+
+        const card = document.getElementById('eface-result-card');
+        if (card) card.classList.remove('show');
+
+        playEfaceSuccessChime();
+        speakKhmerVoice('early_out', `បានកត់ត្រាការស្កែនចេញមុនម៉ោងសម្រាប់ ${emp.name} រួចរាល់`);
+
+        dispatchEfaceEarlyOutTelegramAlert(emp, timeStr, dateStr, hoursCalc.hoursStr, reason);
+
+        loadEfaceRecentScans();
+
+        Swal.fire({
+            icon: 'success',
+            title: '🚪 ស្កែនចេញមុនម៉ោងជោគជ័យ!',
+            html: `
+                <div class="text-start fs-6">
+                    <div><strong>បុគ្គលិក:</strong> <span class="text-success">${emp.name}</span> (${emp.type || 'Full-Time'})</div>
+                    <div><strong>ម៉ោងចេញ:</strong> <span class="text-primary">${timeStr}</span></div>
+                    <div><strong>ម៉ោងបំពេញការងារជាក់ស្តែង:</strong> <span class="badge bg-primary text-white fs-6">${hoursCalc.hoursStr}</span></div>
+                    <div class="text-muted mt-2 small">មូលហេតុ៖ ${reason}</div>
+                </div>
+            `,
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#198754',
+            timer: 3500
+        });
+
+    } catch (err) {
+        console.error('Error during early check-out:', err);
+        Swal.fire('កំហុស', err.message || 'មានបញ្ហាក្នុងការស្កែនចេញមុនម៉ោង', 'error');
+    }
+};
+
+async function dispatchEfaceEarlyOutTelegramAlert(emp, timeStr, dateStr, hoursStr, reason) {
+    try {
+        let tSettings = {};
+        if (typeof db !== 'undefined' && db.telegramSettings) {
+            try { tSettings = (await db.telegramSettings.first()) || {}; } catch(e){}
+        }
+        const botToken = (tSettings.botToken && tSettings.botToken.trim()) || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ';
+        const chatId = (tSettings.chatId && tSettings.chatId.trim()) || '-5344695591';
+        if (tSettings.enabled === false) return;
+
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        };
+
+        const caption = 
+`🚨 <b>ដំណឹងស្កែនចេញមុនម៉ោង (EARLY CHECK-OUT)</b>
+━━━━━━━━━━━━━━━━━━
+👤 <b>បុគ្គលិក:</b> ${escapeHtml(emp.name)} ${emp.latinName ? `(${escapeHtml(emp.latinName)})` : ''}
+🆔 <b>អត្តលេខ:</b> <code>${escapeHtml(emp.code || `EMP-${emp.id}`)}</code>
+💼 <b>ប្រភេទការងារ:</b> ${escapeHtml(emp.type || 'Full-Time')}
+🏢 <b>ផ្នែក:</b> ${escapeHtml(emp.department || 'ទូទៅ')}
+📅 <b>កាលបរិច្ឆេទ:</b> ${dateStr}
+⏰ <b>ម៉ោងចេញជាក់ស្តែង:</b> <b>${timeStr}</b>
+⏱️ <b>ម៉ោងបំពេញការងារសរុប:</b> <b>${hoursStr}</b>
+📝 <b>មូលហេតុ:</b> ${escapeHtml(reason || 'មិនស្រួលខ្លួន / សុំចេញមុនម៉ោង')}
+📍 <b>ទីតាំង:</b> ${escapeHtml(window.efaceCampusName || 'VALEE ECO FARM')}
+━━━━━━━━━━━━━━━━━━
+<i>កត់ត្រាស្វ័យប្រវត្តិតាមរយៈប្រព័ន្ធ E-Face Scanner</i>`;
+
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: caption,
+                parse_mode: 'HTML'
+            })
+        });
+    } catch (e) {
+        console.warn('Early checkout telegram notice:', e);
+    }
+}
+
+window.openEfaceEarlyOutModal = async function() {
+    try {
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
+        const allAtt = await db.attendance.toArray();
+        const todayAtt = allAtt.filter(r => r.date === dateStr && (r.checkInTime || r.scanTimeMorning || r.scanTimeAfternoon));
+        const allEmps = await db.employees.toArray();
+        const empMap = {};
+        allEmps.forEach(e => empMap[e.id] = e);
+
+        const workingEmps = todayAtt.filter(r => empMap[r.empId]);
+
+        if (workingEmps.length === 0) {
+            Swal.fire({
+                icon: 'info',
+                title: 'មិនមានបុគ្គលិកកំពុងបំពេញការងារ',
+                text: 'មិនទាន់មានបុគ្គលិកណាបានស្កែនចូលនៅថ្ងៃនេះនៅឡើយទេ!',
+                confirmButtonText: 'យល់ព្រម',
+                confirmButtonColor: '#059669'
+            });
+            return;
+        }
+
+        let optionsHtml = workingEmps.map(r => {
+            const emp = empMap[r.empId] || { name: r.empName, type: 'Full-Time' };
+            const inTime = r.checkInTime || r.scanTimeMorning || r.scanTimeAfternoon || '--:--';
+            return `<option value="${r.empId}">${emp.name} (${emp.type || 'Full-Time'}) - ចូលម៉ោង ${inTime}</option>`;
+        }).join('');
+
+        const { value: formValues } = await Swal.fire({
+            title: '🚪 ស្កែនចេញមុនម៉ោង (Early Check-Out)',
+            html: `
+                <div class="text-start mb-3">
+                    <label class="form-label fw-bold">ជ្រើសរើសបុគ្គលិក</label>
+                    <select id="swal-earlyout-emp" class="form-select">
+                        ${optionsHtml}
+                    </select>
+                </div>
+                <div class="text-start mb-2">
+                    <label class="form-label fw-bold">មូលហេតុនៃការចេញមុនម៉ោង</label>
+                    <select id="swal-earlyout-reason" class="form-select mb-2">
+                        <option value="មិនស្រួលខ្លួន / ឈឺ">មិនស្រួលខ្លួន / ឈឺ</option>
+                        <option value="មានធុរៈបន្ទាន់ផ្ទាល់ខ្លួន">មានធុរៈបន្ទាន់ផ្ទាល់ខ្លួន</option>
+                        <option value="ច្បាប់អនុញ្ញាតពីប្រធានផ្នែក">ច្បាប់អនុញ្ញាតពីប្រធានផ្នែក</option>
+                        <option value="ផ្សេងៗ">ផ្សេងៗ</option>
+                    </select>
+                    <input type="text" id="swal-earlyout-note" class="form-control" placeholder="កំណត់ចំណាំបន្ថែម (បើមាន)...">
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: '<i class="bi bi-box-arrow-right"></i> បញ្ជាក់ស្កែនចេញ',
+            cancelButtonText: 'បោះបង់',
+            confirmButtonColor: '#dc3545',
+            focusConfirm: false,
+            preConfirm: () => {
+                const empId = document.getElementById('swal-earlyout-emp').value;
+                const reasonSelect = document.getElementById('swal-earlyout-reason').value;
+                const noteInput = document.getElementById('swal-earlyout-note').value;
+                const reason = noteInput ? `${reasonSelect} (${noteInput})` : reasonSelect;
+                return { empId, reason };
+            }
+        });
+
+        if (formValues) {
+            await window.triggerEarlyCheckout(formValues.empId, formValues.reason);
+        }
+
+    } catch (err) {
+        console.error('Error opening early out modal:', err);
+    }
+};
 
 // ====== HELPER: CONVERT BASE64 DATA URL TO BLOB ======
 function dataUrlToBlob(dataUrl) {
@@ -1402,6 +1841,14 @@ function displayEfaceResultCard(emp, timeStr, shiftKh, isLate, lateMins, statusT
     const posEl = document.getElementById('eface-res-position');
     const shiftEl = document.getElementById('eface-res-shift');
     const progressEl = document.getElementById('eface-countdown-progress');
+    const ribbonEl = document.getElementById('eface-res-ribbon');
+    const earlyOutWrap = document.getElementById('eface-res-earlyout-wrap');
+
+    if (earlyOutWrap) earlyOutWrap.style.display = 'none';
+    if (ribbonEl) {
+        ribbonEl.className = 'eface-result-ribbon';
+        ribbonEl.innerHTML = '<i class="bi bi-patch-check-fill me-1"></i> បានកត់ត្រាវត្តមានជោគជ័យ';
+    }
 
     if (avatarEl) avatarEl.src = emp.photo || 'assets/images/default-avatar.svg';
     if (nameEl) nameEl.innerText = emp.latinName ? emp.latinName.toUpperCase() : emp.name;

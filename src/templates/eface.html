@@ -150,6 +150,11 @@
                                 <i class="bi bi-check-circle-fill me-1"></i> បានបំពេញរួចរាល់ (07:55:10)
                             </span>
                         </div>
+                        <div id="eface-res-earlyout-wrap" class="mt-2" style="display: none;">
+                            <button type="button" class="btn btn-sm btn-danger fw-bold px-3 py-2 rounded-pill shadow-sm" id="btn-eface-res-earlyout" onclick="window.triggerEarlyCheckoutFromCard && window.triggerEarlyCheckoutFromCard()">
+                                <i class="bi bi-box-arrow-right me-1"></i> ស្កែនចេញមុនម៉ោង (Early Check-Out)
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Details Table -->
@@ -225,6 +230,10 @@
             <button type="button" class="btn-eface-secondary" id="btn-eface-manual" onclick="window.openEfaceManualModal && window.openEfaceManualModal()">
                 <i class="bi bi-person-badge fs-5"></i>
                 <span>ស្កែនដោយដៃ</span>
+            </button>
+            <button type="button" class="btn-eface-secondary text-warning border-warning border-opacity-25" id="btn-eface-earlyout" onclick="window.openEfaceEarlyOutModal && window.openEfaceEarlyOutModal()" title="ស្កែនចេញមុនម៉ោងសម្រាប់បុគ្គលិកមិនស្រួលខ្លួន/មានធុរៈ">
+                <i class="bi bi-box-arrow-right fs-5"></i>
+                <span>ចេញមុនម៉ោង</span>
             </button>
         </div>
 

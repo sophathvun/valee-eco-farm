@@ -448,7 +448,12 @@ window.generateTimesheetReport = async function() {
             let hoursStr = '--';
             let percentOf8h = 0;
 
-            if (checkIn && checkOut) {
+            if (r.totalHoursWorked) {
+                netWorkedMinutes = Math.round(r.totalHoursWorked * 60);
+            } else if (typeof calculateAttendanceHours === 'function') {
+                const calc = calculateAttendanceHours(emp, r, shifts);
+                netWorkedMinutes = calc.totalMinutes;
+            } else if (checkIn && checkOut) {
                 const [inH, inM] = checkIn.split(':').map(Number);
                 const [outH, outM] = checkOut.split(':').map(Number);
                 const startM = inH * 60 + inM;
@@ -466,10 +471,6 @@ window.generateTimesheetReport = async function() {
             } else if (checkIn && !checkOut) {
                 // Single session estimate
                 netWorkedMinutes = 240; // ~4 hours
-            }
-
-            if (r.totalHoursWorked) {
-                netWorkedMinutes = Math.round(r.totalHoursWorked * 60);
             }
 
             if (netWorkedMinutes > 0) {
@@ -1223,19 +1224,37 @@ window.saveScanRecordModal = async function() {
     const gpsDistance = document.getElementById('scanGpsInput').value.trim();
     const note = document.getElementById('scanNoteInput').value.trim();
 
-    // Auto-compute hours if 0 but in & out exist
-    if (hours === 0 && checkIn && checkOut) {
-        const [ih, im] = checkIn.split(':').map(Number);
-        const [oh, om] = checkOut.split(':').map(Number);
-        let span = (oh * 60 + om) - (ih * 60 + im);
-        if (span > 0) {
-            if (ih < 12 && oh > 13) span = Math.max(0, span - 120);
-            hours = +(span / 60).toFixed(2);
-        }
-    }
-
     try {
         const emp = await db.employees.get(Number(empId)) || await db.employees.get(empId);
+
+        // Auto-compute hours if 0 but in & out exist
+        if (hours === 0 && checkIn && checkOut) {
+            const shifts = (await db.workShifts.first()) || { morningIn: '07:00', morningOut: '11:00', afternoonIn: '13:00', afternoonOut: '17:00' };
+            const isPt = (emp && emp.type === 'Part-Time');
+            const dataPreview = {
+                checkInTime: checkIn,
+                checkOutTime: checkOut,
+                scanTimeMorning: checkIn < '12:00' ? checkIn : '',
+                scanTimeMorningOut: isPt ? '' : shifts.morningOut,
+                scanTimeAfternoon: checkIn >= '12:00' ? checkIn : (isPt ? '' : shifts.afternoonIn),
+                scanTimeAfternoonOut: checkOut,
+                morning,
+                afternoon
+            };
+            if (typeof calculateAttendanceHours === 'function') {
+                const calc = calculateAttendanceHours(emp, dataPreview, shifts);
+                hours = calc.totalHours;
+            } else {
+                const [ih, im] = checkIn.split(':').map(Number);
+                const [oh, om] = checkOut.split(':').map(Number);
+                let span = (oh * 60 + om) - (ih * 60 + im);
+                if (span > 0) {
+                    if (ih < 12 && oh > 13) span = Math.max(0, span - 120);
+                    hours = +(span / 60).toFixed(2);
+                }
+            }
+        }
+
         const data = {
             date: dateStr,
             empId: Number(empId) || empId,
