@@ -279,6 +279,10 @@ window.generateTimesheetReport = async function() {
 
                 if (isMorningPast || isAfternoonPast) {
                     employees.forEach(emp => {
+                        // Skip if date is before employee start date!
+                        if (emp.startDate && dStr < emp.startDate) {
+                            return;
+                        }
                         const key = `${emp.id}_${dStr}`;
                         if (!existingMap.has(key)) {
                             combinedRecords.push({
@@ -316,6 +320,12 @@ window.generateTimesheetReport = async function() {
 
         combinedRecords.forEach(r => {
             const emp = empMap[r.empId] || { name: r.empName || 'បុគ្គលិក', code: `EMP-${r.empId}`, photo: '', department: 'ទូទៅ', position: 'បុគ្គលិក' };
+
+            // Skip records before employee start date if no scan
+            if (emp.startDate && r.date && r.date < emp.startDate) {
+                const hasScan = r.checkInTime || r.scanTimeMorning || r.scanTimeAfternoon || r.checkOutTime || r.scanTimeMorningOut || r.scanTimeAfternoonOut;
+                if (!hasScan) return;
+            }
 
             // Department filter
             if (deptFilter !== 'all' && (emp.department || '').trim() !== deptFilter.trim()) {
@@ -881,8 +891,12 @@ window.generateAttendanceReport = async function() {
                     const todayObj = new Date();
                     const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
                     const currentHour = todayObj.getHours();
+                    const empStartDate = emp.startDate || '';
 
                     for (let d of daysArray) {
+                        if (empStartDate && d < empStartDate) {
+                            continue; // Skip pre-hire dates from report totals
+                        }
                         const rec = agg[emp.id] ? agg[emp.id][d] : null;
                         let m = (rec && rec.morning) ? rec.morning : '';
                         let a = (rec && rec.afternoon) ? rec.afternoon : '';
@@ -906,24 +920,30 @@ window.generateAttendanceReport = async function() {
                     chunk.forEach((dateStr, dIdx) => {
                         const isEven = (dIdx % 2 === 1);
                         const dayClass = isEven ? 'day-even-col' : 'day-odd-col';
-                        const rec = agg[emp.id] ? agg[emp.id][dateStr] : null;
-                        
-                        let mVal = (rec && rec.morning) ? rec.morning : '';
-                        let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
+                        const isBeforeJoin = empStartDate && (dateStr < empStartDate);
 
-                        if (dateStr < todayStr) {
-                            if (!mVal) mVal = 'A';
-                            if (!aVal) aVal = 'A';
-                        } else if (dateStr === todayStr) {
-                            if (currentHour >= 12 && !mVal) mVal = 'A';
-                            if (currentHour >= 18 && !aVal) aVal = 'A';
+                        if (isBeforeJoin) {
+                            html += `<td class="col-shift ${dayClass} border-dotted-right p-0"><div class="att-cell att-disabled" style="opacity: 0.35; cursor: not-allowed;" title="មិនទាន់ចូលធ្វើការ (ចូលធ្វើការថ្ងៃ ${empStartDate})">-</div></td>
+                                     <td class="col-shift ${dayClass} day-border-right p-0"><div class="att-cell att-disabled" style="opacity: 0.35; cursor: not-allowed;" title="មិនទាន់ចូលធ្វើការ (ចូលធ្វើការថ្ងៃ ${empStartDate})">-</div></td>`;
+                        } else {
+                            const rec = agg[emp.id] ? agg[emp.id][dateStr] : null;
+                            let mVal = (rec && rec.morning) ? rec.morning : '';
+                            let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
+
+                            if (dateStr < todayStr) {
+                                if (!mVal) mVal = 'A';
+                                if (!aVal) aVal = 'A';
+                            } else if (dateStr === todayStr) {
+                                if (currentHour >= 12 && !mVal) mVal = 'A';
+                                if (currentHour >= 18 && !aVal) aVal = 'A';
+                            }
+                            
+                            let mClass = mVal ? mVal : 'none';
+                            let aClass = aVal ? aVal : 'none';
+
+                            html += `<td class="col-shift ${dayClass} border-dotted-right p-0"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
+                                     <td class="col-shift ${dayClass} day-border-right p-0"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
                         }
-                        
-                        let mClass = mVal ? mVal : 'none';
-                        let aClass = aVal ? aVal : 'none';
-
-                        html += `<td class="col-shift ${dayClass} border-dotted-right p-0"><div class="att-cell att-${mClass}" style="cursor: default;">${mVal}</div></td>
-                                 <td class="col-shift ${dayClass} day-border-right p-0"><div class="att-cell att-${aClass}" style="cursor: default;">${aVal}</div></td>`;
                     });
 
                     html += `<td class="col-total col-total-p text-success fw-bold p-1">${totalP}</td>

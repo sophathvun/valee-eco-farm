@@ -448,6 +448,19 @@
     background-color: rgba(51, 65, 85, 0.4);
     border-color: rgba(71, 85, 105, 0.4);
 }
+.att-disabled {
+    background-color: transparent !important;
+    color: #94a3b8 !important;
+    box-shadow: none !important;
+    border: none !important;
+    cursor: not-allowed !important;
+    font-size: 0.65rem;
+    font-weight: normal;
+}
+.att-disabled:hover {
+    filter: none !important;
+    transform: none !important;
+}
 
 /* ====== SMOOTH SCROLLBAR ====== */
 #attendance-table-container::-webkit-scrollbar {

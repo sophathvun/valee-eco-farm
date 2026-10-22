@@ -373,6 +373,10 @@ window.handleGeneratePayroll = async function(e) {
             let aShifts = 0;
 
             attList.forEach(r => {
+                // Ignore records before employee start date (no absence deduction for pre-hire dates)
+                if (emp.startDate && r.date && r.date < emp.startDate) {
+                    return;
+                }
                 if (r.morning === 'P') pShifts++;
                 else if (r.morning === 'L') lShifts++;
                 else if (r.morning === 'A') aShifts++;
@@ -1017,6 +1021,10 @@ window.resyncBatchAttendance = async function() {
     if (!confirmRes.isConfirmed) return;
 
     try {
+        const emps = await db.employees.toArray();
+        const empMap = {};
+        emps.forEach(e => { empMap[e.id] = e; });
+
         const allAtt = await db.attendance.toArray();
         const rangeAtt = allAtt.filter(r => r.date >= currentBatch.startDate && r.date <= currentBatch.endDate);
 
@@ -1028,9 +1036,14 @@ window.resyncBatchAttendance = async function() {
 
         currentBatch.items.forEach(it => {
             const attList = empAttMap[it.empId] || [];
+            const emp = empMap[it.empId] || {};
             let pShifts = 0, lShifts = 0, aShifts = 0;
 
             attList.forEach(r => {
+                // Ignore records before employee start date (no absence deduction for pre-hire dates)
+                if (emp.startDate && r.date && r.date < emp.startDate) {
+                    return;
+                }
                 if (r.morning === 'P') pShifts++;
                 else if (r.morning === 'L') lShifts++;
                 else if (r.morning === 'A') aShifts++;

@@ -136,12 +136,41 @@ window.loadAttendance = async function() {
         console.warn('Attendance scan migration error:', migErr);
     }
 
+    // Auto-clean any records before employee startDate that were accidentally auto-marked as 'A'
+    try {
+        const empStartMap = {};
+        employees.forEach(e => { if (e.startDate) empStartMap[String(e.id)] = e.startDate; });
+        for (const r of allRecords) {
+            const sDate = empStartMap[String(r.empId)];
+            if (sDate && r.date && r.date < sDate) {
+                const hasScan = r.scanTimeMorning || r.scanTimeAfternoon || r.scanTimeMorningOut || r.scanTimeAfternoonOut || r.checkInTime || r.checkOutTime;
+                if (!hasScan && (r.morning === 'A' || r.afternoon === 'A')) {
+                    const patch = {};
+                    if (r.morning === 'A') patch.morning = '';
+                    if (r.afternoon === 'A') patch.afternoon = '';
+                    await db.attendance.update(r.id, patch);
+                    Object.assign(r, patch);
+                }
+            }
+        }
+    } catch (cleanErr) {
+        console.warn('Attendance pre-start cleanup error:', cleanErr);
+    }
+
     let records = allRecords.filter(r => r.date && r.date.startsWith(monthVal));
 
     currentAttendanceData = {};
     employees.forEach(emp => { currentAttendanceData[emp.id] = {}; });
 
     records.forEach(r => {
+        const emp = employees.find(e => String(e.id) === String(r.empId));
+        if (emp && emp.startDate && r.date < emp.startDate) {
+            const hasScan = r.scanTimeMorning || r.scanTimeAfternoon || r.scanTimeMorningOut || r.scanTimeAfternoonOut || r.checkInTime || r.checkOutTime;
+            if (!hasScan) {
+                if (r.morning === 'A') r.morning = '';
+                if (r.afternoon === 'A') r.afternoon = '';
+            }
+        }
         if (!currentAttendanceData[r.empId]) currentAttendanceData[r.empId] = {};
         currentAttendanceData[r.empId][r.date] = r;
     });
@@ -210,6 +239,7 @@ function renderAttendanceTable(employees) {
         const today = new Date();
         const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         const currentHour = today.getHours();
+        const empStartDate = emp.startDate || '';
 
         for (let d = 1; d <= currentDaysInMonth; d++) {
             const isEven = (d % 2 === 0);
@@ -217,16 +247,24 @@ function renderAttendanceTable(employees) {
             const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
             const rec = currentAttendanceData[emp.id] ? currentAttendanceData[emp.id][dateStr] : null;
             
+            const isBeforeJoin = empStartDate && (dateStr < empStartDate);
+
             let mVal = (rec && rec.morning) ? rec.morning : '';
             let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
 
-            // If staff has not scanned for past shifts, record/display as 'A' (Absent)
-            if (dateStr < todayStr) {
-                if (!mVal) mVal = 'A';
-                if (!aVal) aVal = 'A';
-            } else if (dateStr === todayStr) {
-                if (currentHour >= 12 && !mVal) mVal = 'A';
-                if (currentHour >= 18 && !aVal) aVal = 'A';
+            // If staff has not joined yet, NEVER record/display as 'A' (Absent)
+            if (isBeforeJoin) {
+                if (mVal === 'A') mVal = '';
+                if (aVal === 'A') aVal = '';
+            } else {
+                // If staff has not scanned for past shifts, record/display as 'A' (Absent)
+                if (dateStr < todayStr) {
+                    if (!mVal) mVal = 'A';
+                    if (!aVal) aVal = 'A';
+                } else if (dateStr === todayStr) {
+                    if (currentHour >= 12 && !mVal) mVal = 'A';
+                    if (currentHour >= 18 && !aVal) aVal = 'A';
+                }
             }
 
             // Sync back to currentAttendanceData for proper recalculation and save
@@ -238,23 +276,33 @@ function renderAttendanceTable(employees) {
                 currentAttendanceData[emp.id][dateStr].afternoon = aVal;
             }
             
-            // Tally totals
-            if (mVal === 'P') totalP += 0.5;
-            if (mVal === 'A') totalA += 0.5;
-            if (mVal === 'L') totalL += 0.5;
-            
-            if (aVal === 'P') totalP += 0.5;
-            if (aVal === 'A') totalA += 0.5;
-            if (aVal === 'L') totalL += 0.5;
+            // Tally totals (skip pre-hire dates)
+            if (!isBeforeJoin) {
+                if (mVal === 'P') totalP += 0.5;
+                if (mVal === 'A') totalA += 0.5;
+                if (mVal === 'L') totalL += 0.5;
+                
+                if (aVal === 'P') totalP += 0.5;
+                if (aVal === 'A') totalA += 0.5;
+                if (aVal === 'L') totalL += 0.5;
+            }
 
-            let mClick = `onclick="toggleAtt('${emp.id}', '${dateStr}', 'morning', this)"`;
-            let aClick = `onclick="toggleAtt('${emp.id}', '${dateStr}', 'afternoon', this)"`;
-            
-            let mClass = mVal ? mVal : 'none';
-            let aClass = aVal ? aVal : 'none';
+            if (isBeforeJoin) {
+                const disabledTitle = `មិនទាន់ចូលធ្វើការ (ចូលធ្វើការថ្ងៃ ${empStartDate})`;
+                let mClick = `onclick="toggleAtt('${emp.id}', '${dateStr}', 'morning', this)"`;
+                let aClick = `onclick="toggleAtt('${emp.id}', '${dateStr}', 'afternoon', this)"`;
+                html += `<td class="col-shift ${dayClass} border-start border-dotted-right"><div class="att-cell att-disabled" style="opacity: 0.35; cursor: not-allowed;" title="${disabledTitle}" ${mClick}>-</div></td>
+                         <td class="col-shift ${dayClass} border-end day-border-right"><div class="att-cell att-disabled" style="opacity: 0.35; cursor: not-allowed;" title="${disabledTitle}" ${aClick}>-</div></td>`;
+            } else {
+                let mClick = `onclick="toggleAtt('${emp.id}', '${dateStr}', 'morning', this)"`;
+                let aClick = `onclick="toggleAtt('${emp.id}', '${dateStr}', 'afternoon', this)"`;
+                
+                let mClass = mVal ? mVal : 'none';
+                let aClass = aVal ? aVal : 'none';
 
-            html += `<td class="col-shift ${dayClass} border-start border-dotted-right"><div class="att-cell att-${mClass}" ${mClick}>${mVal}</div></td>
-                     <td class="col-shift ${dayClass} border-end day-border-right"><div class="att-cell att-${aClass}" ${aClick}>${aVal}</div></td>`;
+                html += `<td class="col-shift ${dayClass} border-start border-dotted-right"><div class="att-cell att-${mClass}" ${mClick}>${mVal}</div></td>
+                         <td class="col-shift ${dayClass} border-end day-border-right"><div class="att-cell att-${aClass}" ${aClick}>${aVal}</div></td>`;
+            }
         }
 
         const bal = getEmployeeLeaveBalance(emp, currentYear, currentMonth, currentAttendanceData);
@@ -275,6 +323,18 @@ window.toggleAtt = function(empId, dateStr, shift, el) {
             icon: 'warning',
             title: 'គ្មានសិទ្ធិ',
             text: 'អ្នកមិនមានសិទ្ធិកែប្រែវត្តមានបុគ្គលិកទេ! សូមទាក់ទង Admin។',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#059669'
+        });
+        return;
+    }
+
+    const emp = (window._attendanceEmployees || []).find(e => String(e.id) === String(empId));
+    if (emp && emp.startDate && dateStr < emp.startDate) {
+        Swal.fire({
+            icon: 'info',
+            title: 'មិនទាន់ចូលបម្រើការងារ',
+            html: `បុគ្គលិក <strong class="text-success">${emp.name}</strong> បានចាប់ផ្តើមចូលធ្វើការនៅថ្ងៃទី <strong>${emp.startDate}</strong>។<br>កាលបរិច្ឆេទ <strong>${dateStr}</strong> គឺស្ថិតនៅមុនថ្ងៃចូលធ្វើការ ដូច្នេះមិនអាចកត់ត្រាវត្តមានបានទេ។`,
             confirmButtonText: 'យល់ព្រម',
             confirmButtonColor: '#059669'
         });
@@ -347,8 +407,17 @@ function recalcTotals(empId) {
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const currentHour = today.getHours();
 
+    const emp = (window._attendanceEmployees || []).find(e => String(e.id) === String(empId));
+    const empStartDate = emp ? (emp.startDate || '') : '';
+
     for (let d = 1; d <= currentDaysInMonth; d++) {
         const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        
+        // Skip pre-hire dates from attendance totals
+        if (empStartDate && dateStr < empStartDate) {
+            continue;
+        }
+
         const rec = currentAttendanceData[empId] ? currentAttendanceData[empId][dateStr] : null;
         
         let mVal = (rec && rec.morning) ? rec.morning : '';
@@ -377,7 +446,6 @@ function recalcTotals(empId) {
     if (pEl) pEl.innerText = totalP;
     if (aEl) aEl.innerText = totalA;
     if (lEl) {
-        const emp = (window._attendanceEmployees || []).find(e => String(e.id) === String(empId));
         const bal = getEmployeeLeaveBalance(emp, currentYear, currentMonth, currentAttendanceData);
         lEl.setAttribute('title', `Monthly Leave: បានប្រើ ${bal.used}/${bal.accrued} ថ្ងៃ (នៅសល់ ${bal.remaining} ថ្ងៃ)`);
         lEl.innerHTML = `<span class="text-nowrap" style="font-size: 0.78rem;">L: ${bal.used}/${bal.accrued}</span>`;
@@ -461,6 +529,11 @@ function applyPToAll(day, shift, employees) {
     const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
     employees.forEach(emp => {
+        // Skip employee if selected day is before their startDate
+        if (emp.startDate && dateStr < emp.startDate) {
+            return;
+        }
+
         if (!currentAttendanceData[emp.id]) currentAttendanceData[emp.id] = {};
         if (!currentAttendanceData[emp.id][dateStr]) {
             currentAttendanceData[emp.id][dateStr] = { morning: '', afternoon: '' };
@@ -532,6 +605,23 @@ window.saveAllAttendance = async function() {
         employees.forEach(emp => {
             for (let d = 1; d <= currentDaysInMonth; d++) {
                 const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                let ext = existingMap[`${emp.id}_${dateStr}`];
+
+                // If date is before employee start date, do not save or persist 'A'
+                if (emp.startDate && dateStr < emp.startDate) {
+                    if (ext && (ext.morning === 'A' || ext.afternoon === 'A')) {
+                        batchUpdates.push({
+                            id: ext.id,
+                            data: {
+                                ...ext,
+                                morning: ext.morning === 'A' ? '' : ext.morning,
+                                afternoon: ext.afternoon === 'A' ? '' : ext.afternoon
+                            }
+                        });
+                    }
+                    continue;
+                }
+
                 const rec = currentAttendanceData[emp.id] ? currentAttendanceData[emp.id][dateStr] : null;
                 
                 let mVal = (rec && rec.morning) ? rec.morning : '';
