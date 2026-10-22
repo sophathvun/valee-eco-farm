@@ -994,6 +994,8 @@ window.loadTelegramSettings = async function() {
         if (chatEl) chatEl.value = settings.chatId || '';
         if (farmEl) farmEl.value = settings.farmName || 'VALEE ECO FARM';
         if (enableEl) enableEl.checked = settings.enabled !== false;
+        const threshEl = document.getElementById('telegramFaceThreshold');
+        if (threshEl) threshEl.value = String(settings.faceMatchThreshold || '0.40');
     } catch (e) {
         console.error('Error loading telegram settings:', e);
     }
@@ -1013,6 +1015,7 @@ window.saveTelegramSettings = async function(e) {
             chatId: chatId,
             farmName: farmName,
             enabled: enabled,
+            faceMatchThreshold: parseFloat(document.getElementById('telegramFaceThreshold')?.value) || 0.40,
             updatedAt: new Date().toISOString()
         };
         if (existing) {

@@ -14,6 +14,8 @@ let efaceDetectionTimer = null;
 let efaceClockTimer = null;
 let efaceLastScanned = {}; // empId -> timestamp to prevent rapid duplicate scans
 let efaceResultCardTimeout = null;
+let efaceMatchBuffer = []; // Rolling buffer of { label, distance, time } for multi-frame confirmation
+window._efaceCurrentThreshold = 0.40; // Default strict threshold (0.40 prevents false positives)
 
 const EFACE_MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
 
@@ -236,31 +238,45 @@ window.buildEfaceMatcher = async function() {
         const employees = await db.employees.toArray();
         efaceEnrolledEmployees = employees;
 
+        // Fetch configured security threshold (default 0.40 - strict)
+        let threshold = 0.40;
+        try {
+            if (db.telegramSettings) {
+                const s = await db.telegramSettings.first();
+                if (s && s.faceMatchThreshold) {
+                    threshold = parseFloat(s.faceMatchThreshold) || 0.40;
+                }
+            }
+        } catch (e) {}
+        window._efaceCurrentThreshold = threshold;
+
         const labeledDescriptors = [];
         let autoEnrolledCount = 0;
 
         for (const emp of employees) {
-            // Check if employee has stored faceDescriptor
-            if (emp.faceDescriptor && Array.isArray(emp.faceDescriptor) && emp.faceDescriptor.length > 0) {
+            // Check if employee has explicitly stored valid faceDescriptor (128 float numbers)
+            if (emp.faceDescriptor && Array.isArray(emp.faceDescriptor) && emp.faceDescriptor.length === 128 && !emp.faceDescriptor.some(isNaN)) {
                 const descriptorFloat32 = new Float32Array(emp.faceDescriptor);
                 labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(String(emp.id), [descriptorFloat32]));
-            } else if (emp.photo && emp.photo.startsWith('data:image')) {
-                // Auto-enroll from existing base64 photo in background!
+            } else if (emp.photo && emp.photo.startsWith('data:image') && !emp.photo.includes('default-avatar.svg')) {
+                // Auto-enroll from existing base64 photo ONLY if high quality frontal face with score >= 0.85
                 try {
                     const img = new Image();
                     img.crossOrigin = 'anonymous';
                     img.src = emp.photo;
                     await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
 
-                    const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 320 }))
-                        .withFaceLandmarks()
-                        .withFaceDescriptor();
+                    if (img.naturalWidth >= 120 && img.naturalHeight >= 120) {
+                        const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.75 }))
+                            .withFaceLandmarks()
+                            .withFaceDescriptor();
 
-                    if (detection && detection.descriptor) {
-                        labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(String(emp.id), [detection.descriptor]));
-                        // Cache descriptor in Firestore so next time is instant
-                        db.employees.update(emp.id, { faceDescriptor: Array.from(detection.descriptor) }).catch(() => {});
-                        autoEnrolledCount++;
+                        if (detection && detection.detection && detection.detection.score >= 0.85 && detection.descriptor) {
+                            labeledDescriptors.push(new faceapi.LabeledFaceDescriptors(String(emp.id), [detection.descriptor]));
+                            // Cache valid descriptor in Firestore so next startup is immediate
+                            db.employees.update(emp.id, { faceDescriptor: Array.from(detection.descriptor) }).catch(() => {});
+                            autoEnrolledCount++;
+                        }
                     }
                 } catch (imgErr) {
                     // ignore photo decode errors
@@ -269,8 +285,8 @@ window.buildEfaceMatcher = async function() {
         }
 
         if (labeledDescriptors.length > 0) {
-            efaceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.52);
-            console.log(`E-Face matcher ready with ${labeledDescriptors.length} enrolled employees (Auto-enrolled: ${autoEnrolledCount}).`);
+            efaceMatcher = new faceapi.FaceMatcher(labeledDescriptors, threshold);
+            console.log(`E-Face matcher ready with ${labeledDescriptors.length} enrolled employees (Threshold: ${threshold}, Auto-enrolled: ${autoEnrolledCount}).`);
         } else {
             efaceMatcher = null;
             console.warn('E-Face: No employees with registered face descriptors or clear profile photos found.');
@@ -332,6 +348,7 @@ window.startEfaceScanning = async function() {
         });
 
         isEfaceScanning = true;
+        efaceMatchBuffer = [];
         updateToggleButton(true);
         updateEfaceStatus('កំពុងរង់ចាំការចាប់ផ្ទៃមុខ...', 'ready');
 
@@ -359,6 +376,7 @@ window.startEfaceScanning = async function() {
 
 window.stopEfaceScanning = function() {
     isEfaceScanning = false;
+    efaceMatchBuffer = [];
     if (efaceDetectionTimer) {
         clearTimeout(efaceDetectionTimer);
         efaceDetectionTimer = null;
@@ -417,6 +435,9 @@ function updateEfaceStatus(message, state) {
         } else if (state === 'loading') {
             dotEl.style.backgroundColor = 'var(--eface-neon-amber)';
             dotEl.style.boxShadow = '0 0 12px var(--eface-neon-amber)';
+        } else if (state === 'warning') {
+            dotEl.style.backgroundColor = 'var(--eface-neon-amber)';
+            dotEl.style.boxShadow = '0 0 12px var(--eface-neon-amber)';
         } else {
             dotEl.style.backgroundColor = 'var(--eface-neon-cyan)';
             dotEl.style.boxShadow = '0 0 12px var(--eface-neon-cyan)';
@@ -430,7 +451,7 @@ function updateEfaceStatus(message, state) {
     }
 }
 
-// ====== CONTINUOUS DETECTION LOOP ======
+// ====== CONTINUOUS DETECTION LOOP WITH MULTI-FRAME CONFIRMATION ======
 async function runEfaceDetectionLoop() {
     if (!isEfaceScanning || !efaceVideo || efaceVideo.paused || efaceVideo.ended) {
         return;
@@ -444,10 +465,10 @@ async function runEfaceDetectionLoop() {
                 efaceCanvas.height = efaceVideo.videoHeight;
             }
 
-            // Run Face Detection
+            // Run Face Detection with 68 Landmarks
             const detection = await faceapi.detectSingleFace(
                 efaceVideo,
-                new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 })
+                new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.55 })
             ).withFaceLandmarks().withFaceDescriptor();
 
             const ctx = efaceCanvas.getContext('2d');
@@ -457,25 +478,50 @@ async function runEfaceDetectionLoop() {
             if (detection) {
                 if (guide) guide.classList.add('active');
 
-                // Draw neon cyan bounding bracket on canvas
                 const box = detection.detection.box;
                 drawBiometricBoundingBox(ctx, box);
 
-                // Match face descriptor
-                if (efaceMatcher && detection.descriptor) {
+                // Check Face Size: Face must be sufficiently close to camera (at least 100x100px)
+                if (box.width < 100 || box.height < 100) {
+                    efaceMatchBuffer = [];
+                    updateEfaceStatus('សូមខិតចូលជិតកាមេរ៉ាបន្តិច (Please move closer)', 'warning');
+                } else if (efaceMatcher && detection.descriptor) {
+                    const threshold = window._efaceCurrentThreshold || 0.40;
                     const match = efaceMatcher.findBestMatch(detection.descriptor);
-                    if (match.label !== 'unknown') {
-                        const emp = efaceEnrolledEmployees.find(e => String(e.id) === String(match.label));
-                        if (emp) {
-                            await handleEfaceMatch(emp, detection);
+                    const distance = match.distance;
+
+                    // Strictly check threshold <= 0.40
+                    if (match.label !== 'unknown' && distance <= threshold) {
+                        const now = Date.now();
+                        efaceMatchBuffer.push({ label: match.label, distance: distance, time: now });
+
+                        // Filter to keep only recent frames within 1200ms matching this same employee
+                        efaceMatchBuffer = efaceMatchBuffer.filter(m => (now - m.time) < 1200 && m.label === match.label);
+                        const count = efaceMatchBuffer.length;
+
+                        // Require at least 3 matching frames of the SAME employee
+                        if (count >= 3) {
+                            const emp = efaceEnrolledEmployees.find(e => String(e.id) === String(match.label));
+                            efaceMatchBuffer = [];
+                            if (emp) {
+                                await handleEfaceMatch(emp, detection);
+                            }
+                        } else {
+                            const similarity = Math.round(Math.max(0, (1 - distance / 0.55)) * 100);
+                            updateEfaceStatus(`កំពុងផ្ទៀងផ្ទាត់... (${count}/3) [ស្រដៀង ${similarity}%]`, 'loading');
                         }
                     } else {
-                        updateEfaceStatus('រកមិនឃើញក្នុងបញ្ជីបុគ្គលិក (Unregistered Face)', 'warning');
+                        // Reset buffer when face does not match any registered employee
+                        efaceMatchBuffer = [];
+                        const distStr = distance ? distance.toFixed(2) : '--';
+                        updateEfaceStatus(`មិនស្គាល់អត្តសញ្ញាណ (Unregistered Face: ${distStr})`, 'warning');
                     }
                 } else {
+                    efaceMatchBuffer = [];
                     updateEfaceStatus('មិនទាន់មានទិន្នន័យផ្ទៃមុខបុគ្គលិកក្នុងប្រព័ន្ធ', 'warning');
                 }
             } else {
+                efaceMatchBuffer = [];
                 if (guide) guide.classList.remove('active');
                 updateEfaceStatus('កំពុងស្វែងរកផ្ទៃមុខ...', 'ready');
             }
@@ -484,9 +530,9 @@ async function runEfaceDetectionLoop() {
         console.warn('Detection loop notice:', loopErr);
     }
 
-    // Schedule next frame with 250ms cadence (smooth & low CPU/battery consumption)
+    // Schedule next frame with 200ms cadence (smooth & responsive)
     if (isEfaceScanning) {
-        efaceDetectionTimer = setTimeout(runEfaceDetectionLoop, 250);
+        efaceDetectionTimer = setTimeout(runEfaceDetectionLoop, 200);
     }
 }
 
@@ -585,7 +631,6 @@ async function handleEfaceMatch(emp, detection) {
     }
 
     const attStatus = isLate ? 'L' : 'P';
-    const statusLabel = isLate ? `Checked In (Late: ${lateMins}m)` : 'Checked In (On-Time)';
 
     // Save/Update in db.attendance
     try {
@@ -974,7 +1019,7 @@ window.enrollEmployeeFaceFromForm = async function() {
 
         const detection = await faceapi.detectSingleFace(
             img,
-            new faceapi.TinyFaceDetectorOptions({ inputSize: 320 })
+            new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.70 })
         ).withFaceLandmarks().withFaceDescriptor();
 
         if (!detection || !detection.descriptor) {

@@ -608,6 +608,21 @@
                                             <small class="text-muted">បង្ហាញនៅលើចំណងជើងនៃដំណឹងវត្តមានដែលផ្ញើទៅ Telegram</small>
                                         </div>
 
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">កម្រិតសុវត្ថិភាពស្កែនមុខ (Face Match Security Threshold)</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i class="bi bi-shield-lock-fill text-muted"></i></span>
+                                                <select class="form-select" id="telegramFaceThreshold">
+                                                    <option value="0.38">តឹងរ៉ឹងបំផុត (Very Strict: 0.38 - គ្មានការច្រឡំមុខ)</option>
+                                                    <option value="0.40" selected>ស្តង់ដារកម្រិតខ្ពស់ (High Accuracy: 0.40 - ណែនាំ)</option>
+                                                    <option value="0.43">ស្តង់ដារទូទៅ (Standard: 0.43)</option>
+                                                    <option value="0.46">កម្រិតធូរ (Flexible: 0.46 - សម្រាប់កាមេរ៉ាខ្សោយ)</option>
+                                                </select>
+                                            </div>
+                                            <small class="text-muted">កម្រិត 0.40 ធានាថាមុខដែលមិនទាន់ចុះឈ្មោះ ឬមនុស្សក្រៅ នឹងមិនច្រឡំជាបុគ្គលិកផ្សេងដាច់ខាត (Prevents false matches)</small>
+                                        </div>
+
                                         <div class="alert alert-info border-0 d-flex align-items-center mb-4" style="background-color: #f0f7ff; border-left: 4px solid #0d6efd !important;">
                                             <i class="bi bi-info-circle-fill text-primary fs-4 me-3"></i>
                                             <div class="small">
