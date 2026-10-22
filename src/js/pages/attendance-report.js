@@ -652,7 +652,7 @@ function updateTimesheetKpis(list) {
     const totalHours = Math.floor(totalMinutes / 60);
     const remMins = totalMinutes % 60;
 
-    pEl.innerText = uniqueEmps.size;
+    pEl.innerText = presentEmps.size;
     hEl.innerText = `${totalHours}h ${remMins > 0 ? `${remMins}m` : ''}`.trim() || '0h';
     ontimeEl.innerText = ontimeCount;
     lateEl.innerText = lateCount;

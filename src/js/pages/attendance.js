@@ -636,7 +636,6 @@ window.saveAllAttendance = async function() {
                     note: '' 
                 };
 
-                let ext = existingMap[`${emp.id}_${dateStr}`];
                 if (ext) {
                     if (ext.morning !== mVal || ext.afternoon !== aVal) {
                         batchUpdates.push({ id: ext.id, data: data });
