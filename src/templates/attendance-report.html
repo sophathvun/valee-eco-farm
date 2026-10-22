@@ -1,6 +1,215 @@
+<!-- ATTENDANCE REPORT & TIMESHEET TEMPLATE -->
 <div class="row">
+    <!-- Top Navigation Sub-Tabs Switcher -->
     <div class="col-12 mb-3 d-print-none">
-        <div class="card shadow-sm border-0 border-top border-primary border-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 p-2 bg-white rounded-3 shadow-sm border">
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-primary fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2" id="tab-btn-timesheet" onclick="switchAttReportTab('timesheet')">
+                    <i class="bi bi-clock-history fs-6"></i>
+                    <span>របាយការណ៍ម៉ោងស្កែនលម្អិត (Timesheet & Work Hours)</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2" id="tab-btn-matrix" onclick="switchAttReportTab('matrix')">
+                    <i class="bi bi-calendar-check fs-6"></i>
+                    <span>វត្តមានប្រចាំខែ (Monthly Matrix P/A/L)</span>
+                </button>
+            </div>
+            <div class="text-muted small d-none d-md-block">
+                <i class="bi bi-info-circle me-1 text-primary"></i> ពិនិត្យម៉ោងចូល ម៉ោងចេញ យឺត/មុន និងម៉ោងធ្វើការសរុប
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- SECTION 1: DETAILED TIMESHEET & WORK HOURS REPORT        -->
+    <!-- ======================================================== -->
+    <div class="col-12" id="att-tab-timesheet">
+        <!-- Filter Card -->
+        <div class="card shadow-sm border-0 border-top border-primary border-4 mb-3 d-print-none">
+            <div class="card-body py-3">
+                <!-- Preset Quick Buttons -->
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom">
+                    <span class="text-muted small fw-bold me-1"><i class="bi bi-lightning-charge-fill text-warning"></i> ជ្រើសរើសរហ័ស៖</span>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn active" id="ts-btn-today" onclick="setTimesheetPreset('today')">ថ្ងៃនេះ (Today)</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn" id="ts-btn-yesterday" onclick="setTimesheetPreset('yesterday')">ម្សិលមិញ (Yesterday)</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn" id="ts-btn-7days" onclick="setTimesheetPreset('7days')">៧ ថ្ងៃចុងក្រោយ (7 Days)</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn" id="ts-btn-this-month" onclick="setTimesheetPreset('this_month')">ខែនេះ (This Month)</button>
+                </div>
+
+                <!-- Input Controls -->
+                <div class="row g-2 align-items-end">
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <label class="form-label text-muted small fw-bold mb-1">ពីថ្ងៃទី (From Date)</label>
+                        <input type="date" class="form-control form-control-sm" id="tsFromDate" onchange="generateTimesheetReport()">
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <label class="form-label text-muted small fw-bold mb-1">ដល់ថ្ងៃទី (To Date)</label>
+                        <input type="date" class="form-control form-control-sm" id="tsToDate" onchange="generateTimesheetReport()">
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <label class="form-label text-muted small fw-bold mb-1">ផ្នែក / ដេប៉ាតឺម៉ង់</label>
+                        <select class="form-select form-select-sm" id="tsDeptFilter" onchange="generateTimesheetReport()">
+                            <option value="all">គ្រប់ផ្នែកទាំងអស់ (All)</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <label class="form-label text-muted small fw-bold mb-1">ស្ថានភាពស្កែន</label>
+                        <select class="form-select form-select-sm" id="tsStatusFilter" onchange="generateTimesheetReport()">
+                            <option value="all">គ្រប់ស្ថានភាព (All)</option>
+                            <option value="ontime">ទាន់ពេល (On-Time)</option>
+                            <option value="late">ចូលយឺត (Late In)</option>
+                            <option value="early_out">ចេញមុនម៉ោង (Early Out)</option>
+                            <option value="overtime">លើសម៉ោង (Overtime)</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-6 col-sm-6">
+                        <label class="form-label text-muted small fw-bold mb-1">ស្វែងរកបុគ្គលិក</label>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" id="tsSearchInput" placeholder="ឈ្មោះ ឬអត្តលេខ..." oninput="generateTimesheetReport()">
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6 col-sm-6 text-end">
+                        <div class="d-flex gap-1 justify-content-end">
+                            <button class="btn btn-primary btn-sm px-2 flex-grow-1" onclick="generateTimesheetReport()" title="ទាញយកទិន្នន័យឡើងវិញ">
+                                <i class="bi bi-arrow-clockwise"></i> ស្វែងរក
+                            </button>
+                            <button class="btn btn-secondary btn-sm px-2" onclick="printTimesheetReport()" title="បោះពុម្ព">
+                                <i class="bi bi-printer"></i>
+                            </button>
+                            <button class="btn btn-success btn-sm px-2" onclick="exportTimesheetCSV()" title="ទាញយកជា Excel/CSV">
+                                <i class="bi bi-file-earmark-excel"></i> Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Summary Cards (Auto-computed) -->
+        <div class="row g-2 mb-3 d-print-none" id="ts-kpi-summary-cards">
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card shadow-sm border-0 border-start border-primary border-4 p-2 bg-white h-100">
+                    <small class="text-muted" style="font-size: 0.75rem;">វត្តមានសរុប (Present)</small>
+                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                        <span class="h5 fw-bold text-primary mb-0" id="ts-stat-present">0</span>
+                        <small class="text-muted">នាក់</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card shadow-sm border-0 border-start border-info border-4 p-2 bg-white h-100">
+                    <small class="text-muted" style="font-size: 0.75rem;">ម៉ោងការងារសរុប (Hours)</small>
+                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                        <span class="h5 fw-bold text-info mb-0" id="ts-stat-hours">0h</span>
+                        <small class="text-muted">ម៉ោង</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card shadow-sm border-0 border-start border-success border-4 p-2 bg-white h-100">
+                    <small class="text-muted" style="font-size: 0.75rem;">ចូលទាន់ពេល (On-Time)</small>
+                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                        <span class="h5 fw-bold text-success mb-0" id="ts-stat-ontime">0</span>
+                        <small class="text-success"><i class="bi bi-check-circle-fill"></i></small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card shadow-sm border-0 border-start border-warning border-4 p-2 bg-white h-100">
+                    <small class="text-muted" style="font-size: 0.75rem;">ចូលយឺត (Late In)</small>
+                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                        <span class="h5 fw-bold text-warning mb-0" id="ts-stat-late">0</span>
+                        <small class="text-warning fw-semibold" id="ts-stat-late-mins">0m</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card shadow-sm border-0 border-start border-danger border-4 p-2 bg-white h-100">
+                    <small class="text-muted" style="font-size: 0.75rem;">ចេញមុនម៉ោង (Early Out)</small>
+                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                        <span class="h5 fw-bold text-danger mb-0" id="ts-stat-early-out">0</span>
+                        <small class="text-danger fw-semibold" id="ts-stat-early-mins">0m</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 col-xl-2">
+                <div class="card shadow-sm border-0 border-start border-secondary border-4 p-2 bg-white h-100">
+                    <small class="text-muted" style="font-size: 0.75rem;">ចេញលើសម៉ោង (Overtime)</small>
+                    <div class="d-flex align-items-baseline justify-content-between mt-1">
+                        <span class="h5 fw-bold text-dark mb-0" id="ts-stat-overtime">0</span>
+                        <small class="text-primary fw-semibold" id="ts-stat-ot-mins">0m</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timesheet Printable Report Container -->
+        <div class="col-12 print-template" id="print-area-timesheet-report">
+            <div class="card shadow-sm border-0 print-no-border">
+                <!-- Header with Brand Logo & Title -->
+                <div class="card-header bg-white border-bottom text-center py-3 position-relative" style="min-height: 80px;">
+                    <img id="brand-logo-timesheet" src="" alt="Report Logo" style="max-height: 75px; max-width: 180px; object-fit: contain; position: absolute; left: 20px; top: 8px; display: none;">
+                    <h4 class="mb-1 text-dark" style="font-family: 'Khmer OS Muol Light', cursive; font-size: 1.15rem;">
+                        របាយការណ៍ម៉ោងស្កែន និងវត្តមានលម្អិត
+                    </h4>
+                    <div class="small text-muted" style="font-size: 0.82rem;">EMPLOYEE SCAN TIMESHEET & WORK HOURS REPORT</div>
+                    <p class="mb-0 text-muted small mt-1" id="tsDateRangeSubtitle"></p>
+                </div>
+
+                <!-- Data Table -->
+                <div class="card-body p-0">
+                    <div class="table-responsive" id="ts-table-container">
+                        <table class="table table-hover table-bordered align-middle text-center mb-0 ts-table print-table">
+                            <thead class="table-darkgreen">
+                                <tr>
+                                    <th style="width: 38px;">ល.រ</th>
+                                    <th style="width: 95px;">កាលបរិច្ឆេទ</th>
+                                    <th class="text-start" style="min-width: 170px;">បុគ្គលិក (Employee)</th>
+                                    <th style="min-width: 120px;">ផ្នែក / តួនាទី</th>
+                                    <th style="min-width: 140px;">ម៉ោងចូល (Check-In)</th>
+                                    <th style="min-width: 140px;">ម៉ោងចេញ (Check-Out)</th>
+                                    <th style="min-width: 130px;">ម៉ោងធ្វើការ (Hours)</th>
+                                    <th style="min-width: 135px;">វេនការងារ (Shift)</th>
+                                    <th style="min-width: 120px;">កំណត់ចំណាំ / GPS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tsTableBody">
+                                <tr>
+                                    <td colspan="9" class="text-center py-4 text-muted">
+                                        <div class="spinner-border spinner-border-sm text-primary me-2"></div> កំពុងទាញយកទិន្នន័យ...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Print Signatures Section -->
+                    <div class="d-none d-print-block mt-4 pt-3 px-4 border-top">
+                        <div class="row text-center" style="font-size: 0.85rem;">
+                            <div class="col-4">
+                                <p class="mb-5 fw-bold text-dark">អ្នករៀបចំរបាយការណ៍<br><small class="text-muted">(Prepared By)</small></p>
+                                <p class="text-muted">..........................................</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="mb-5 fw-bold text-dark">ប្រធានផ្នែក / ត្រួតពិនិត្យ<br><small class="text-muted">(Checked By)</small></p>
+                                <p class="text-muted">..........................................</p>
+                            </div>
+                            <div class="col-4">
+                                <p class="mb-5 fw-bold text-dark">នាយកប្រតិបត្តិ / អនុម័ត<br><small class="text-muted">(Approved By)</small></p>
+                                <p class="text-muted">..........................................</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- SECTION 2: MONTHLY MATRIX P/A/L REPORT (ORIGINAL)        -->
+    <!-- ======================================================== -->
+    <div class="col-12" id="att-tab-matrix" style="display: none;">
+        <div class="card shadow-sm border-0 border-top border-success border-4 mb-3 d-print-none">
             <div class="card-body py-3">
                 <div class="row g-2 align-items-end">
                     <div class="col-md-3">
@@ -22,34 +231,30 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-12 print-template" id="print-area-att-report">
-        <div class="card shadow-sm border-0 print-no-border">
-            <div class="card-header bg-white border-bottom text-center py-3 position-relative" style="min-height: 80px;">
-                <img id="brand-logo-report-att" src="" alt="Report Logo" style="max-height: 75px; max-width: 180px; object-fit: contain; position: absolute; left: 20px; top: 8px; display: none;">
-                <h4 class="mb-1 text-dark" style="font-family: 'Khmer OS Muol Light', cursive; font-size: 1.15rem;">របាយការណ៍វត្តមានបុគ្គលិកលម្អិត</h4>
-                <p class="mb-0 text-muted small" id="repAttDateText"></p>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive" id="rep-attendance-table-container">
-                    <div id="report-tables-wrapper">
-                        <table class="table table-hover table-bordered align-middle text-center mb-0 att-table print-table">
-                            <thead class="table-darkgreen" id="repAttHead">
-                                <tr>
-                                    <th class="py-4 text-muted">សូមជ្រើសរើសកាលបរិច្ឆេទ រួចចុចប៊ូតុងស្វែងរក</th>
-                                </tr>
-                            </thead>
-                            <tbody id="repAttList">
-                            </tbody>
-                        </table>
+        <div class="col-12 print-template" id="print-area-att-report">
+            <div class="card shadow-sm border-0 print-no-border">
+                <div class="card-header bg-white border-bottom text-center py-3 position-relative" style="min-height: 80px;">
+                    <img id="brand-logo-report-att" src="" alt="Report Logo" style="max-height: 75px; max-width: 180px; object-fit: contain; position: absolute; left: 20px; top: 8px; display: none;">
+                    <h4 class="mb-1 text-dark" style="font-family: 'Khmer OS Muol Light', cursive; font-size: 1.15rem;">របាយការណ៍វត្តមានបុគ្គលិកលម្អិត</h4>
+                    <p class="mb-0 text-muted small" id="repAttDateText"></p>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" id="rep-attendance-table-container">
+                        <div id="report-tables-wrapper">
+                            <table class="table table-hover table-bordered align-middle text-center mb-0 att-table print-table">
+                                <thead class="table-darkgreen" id="repAttHead">
+                                    <tr>
+                                        <th class="py-4 text-muted">សូមជ្រើសរើសកាលបរិច្ឆេទ រួចចុចប៊ូតុងស្វែងរក</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="repAttList">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
-
-

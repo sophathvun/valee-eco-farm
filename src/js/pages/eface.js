@@ -722,28 +722,77 @@ async function handleEfaceMatch(emp, detection) {
     const min = now.getMinutes();
     const currentMinFromMidnight = hour * 60 + min;
 
-    let shift = 'morning';
-    let shiftKh = 'វេនព្រឹក (Morning)';
-    let shiftTargetTime = shifts.morningIn || '07:00';
+    const [mInH, mInM] = (shifts.morningIn || '07:00').split(':').map(Number);
+    const [mOutH, mOutM] = (shifts.morningOut || '11:00').split(':').map(Number);
+    const [aInH, aInM] = (shifts.afternoonIn || '13:00').split(':').map(Number);
+    const [aOutH, aOutM] = (shifts.afternoonOut || '17:00').split(':').map(Number);
 
-    if (hour >= 12) {
-        shift = 'afternoon';
-        shiftKh = 'វេនរសៀល (Afternoon)';
-        shiftTargetTime = shifts.afternoonIn || '13:00';
-    }
+    const mInMin = mInH * 60 + mInM;
+    const mOutMin = mOutH * 60 + mOutM;
+    const aInMin = aInH * 60 + aInM;
+    const aOutMin = aOutH * 60 + aOutM;
 
-    const [tHour, tMin] = shiftTargetTime.split(':').map(n => parseInt(n, 10));
-    const targetMinFromMidnight = tHour * 60 + tMin;
-
-    // Grace period of 5 minutes
+    // Intelligent Check-In vs Check-Out window detection
+    let scanMode = 'morning_in';
+    let shiftKh = 'វេនព្រឹក: ស្កែនចូល (Morning In)';
     let isLate = false;
     let lateMins = 0;
-    if (currentMinFromMidnight > (targetMinFromMidnight + 5)) {
-        isLate = true;
-        lateMins = currentMinFromMidnight - targetMinFromMidnight;
+    let statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+    let isCheckOut = false;
+
+    if (currentMinFromMidnight < Math.round((mInMin + mOutMin) / 2)) {
+        // Morning Check-In (e.g. before ~09:00)
+        scanMode = 'morning_in';
+        shiftKh = 'វេនព្រឹក: ស្កែនចូល (Morning In)';
+        if (currentMinFromMidnight > mInMin + 5) {
+            isLate = true;
+            lateMins = currentMinFromMidnight - mInMin;
+            statusTextCustom = `យឺត (${lateMins} នាទី)`;
+        } else if (currentMinFromMidnight < mInMin) {
+            statusTextCustom = `មុនម៉ោង (${mInMin - currentMinFromMidnight} នាទី)`;
+        } else {
+            statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+        }
+    } else if (currentMinFromMidnight < 12 * 60) {
+        // Morning Check-Out (Lunch break: ~09:00 - 12:00)
+        scanMode = 'morning_out';
+        shiftKh = 'វេនព្រឹក: ស្កែនចេញ (Morning Out)';
+        isCheckOut = true;
+        if (currentMinFromMidnight < mOutMin - 5) {
+            lateMins = mOutMin - currentMinFromMidnight;
+            statusTextCustom = `ចេញមុនម៉ោង (${lateMins} នាទី)`;
+        } else {
+            statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+        }
+    } else if (currentMinFromMidnight < Math.round((aInMin + aOutMin) / 2)) {
+        // Afternoon Check-In (~12:00 - 15:00)
+        scanMode = 'afternoon_in';
+        shiftKh = 'វេនរសៀល: ស្កែនចូល (Afternoon In)';
+        if (currentMinFromMidnight > aInMin + 5) {
+            isLate = true;
+            lateMins = currentMinFromMidnight - aInMin;
+            statusTextCustom = `យឺត (${lateMins} នាទី)`;
+        } else {
+            statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+        }
+    } else {
+        // Afternoon Check-Out (Departure: >= 15:00)
+        scanMode = 'afternoon_out';
+        shiftKh = 'វេនរសៀល: ស្កែនចេញ (Afternoon Out)';
+        isCheckOut = true;
+        if (currentMinFromMidnight < aOutMin - 5) {
+            lateMins = aOutMin - currentMinFromMidnight;
+            statusTextCustom = `ចេញមុនម៉ោង (${lateMins} នាទី)`;
+        } else if (currentMinFromMidnight <= aOutMin + 15) {
+            statusTextCustom = 'ទាន់ពេល (0 នាទី)';
+        } else {
+            lateMins = currentMinFromMidnight - aOutMin;
+            statusTextCustom = `លើសម៉ោង (${lateMins} នាទី)`;
+        }
     }
 
     const attStatus = isLate ? 'L' : 'P';
+    let totalHoursWorkedStr = '';
 
     // Save/Update in db.attendance
     try {
@@ -752,15 +801,38 @@ async function handleEfaceMatch(emp, detection) {
 
         if (existing) {
             const updateData = {};
-            if (shift === 'morning') {
+            if (scanMode === 'morning_in') {
                 updateData.morning = attStatus;
                 updateData.scanTimeMorning = timeStr;
-            } else {
+                updateData.checkInTime = timeStr;
+            } else if (scanMode === 'morning_out') {
+                updateData.scanTimeMorningOut = timeStr;
+            } else if (scanMode === 'afternoon_in') {
                 updateData.afternoon = attStatus;
                 updateData.scanTimeAfternoon = timeStr;
+                if (!existing.checkInTime) updateData.checkInTime = timeStr;
+            } else if (scanMode === 'afternoon_out') {
+                updateData.scanTimeAfternoonOut = timeStr;
+                updateData.checkOutTime = timeStr;
             }
+
+            // Calculate total hours worked if check-in exists
+            const inT = existing.checkInTime || updateData.checkInTime || existing.scanTimeMorning;
+            const outT = updateData.checkOutTime || existing.checkOutTime || (isCheckOut ? timeStr : '');
+            if (inT && outT && inT !== outT) {
+                const [ih, im] = inT.split(':').map(Number);
+                const [oh, om] = outT.split(':').map(Number);
+                let span = (oh * 60 + om) - (ih * 60 + im);
+                if (ih < 12 && oh > 13) span = Math.max(0, span - 120); // deduct 2h lunch break
+                const netHrs = Math.max(0, span) / 60;
+                updateData.totalHoursWorked = +netHrs.toFixed(2);
+                const h = Math.floor(span / 60);
+                const m = span % 60;
+                totalHoursWorkedStr = `${h} ម៉ោង ${m > 0 ? `${m} នាទី` : ''}`.trim();
+            }
+
             if (isLate) {
-                updateData.note = (existing.note ? existing.note + '; ' : '') + `Late ${lateMins}m (${shift})`;
+                updateData.note = (existing.note ? existing.note + '; ' : '') + `Late ${lateMins}m (${scanMode})`;
             }
             await db.attendance.update(existing.id, updateData);
         } else {
@@ -768,11 +840,15 @@ async function handleEfaceMatch(emp, detection) {
                 date: dateStr,
                 empId: emp.id,
                 empName: emp.name,
-                morning: shift === 'morning' ? attStatus : '',
-                afternoon: shift === 'afternoon' ? attStatus : '',
-                scanTimeMorning: shift === 'morning' ? timeStr : '',
-                scanTimeAfternoon: shift === 'afternoon' ? timeStr : '',
-                note: isLate ? `Late ${lateMins}m (${shift})` : 'On-Time'
+                morning: (scanMode === 'morning_in' || scanMode === 'morning_out') ? attStatus : '',
+                afternoon: (scanMode === 'afternoon_in' || scanMode === 'afternoon_out') ? attStatus : '',
+                scanTimeMorning: scanMode === 'morning_in' ? timeStr : '',
+                scanTimeMorningOut: scanMode === 'morning_out' ? timeStr : '',
+                scanTimeAfternoon: scanMode === 'afternoon_in' ? timeStr : '',
+                scanTimeAfternoonOut: scanMode === 'afternoon_out' ? timeStr : '',
+                checkInTime: (scanMode === 'morning_in' || scanMode === 'afternoon_in') ? timeStr : '',
+                checkOutTime: (scanMode === 'morning_out' || scanMode === 'afternoon_out') ? timeStr : '',
+                note: isLate ? `Late ${lateMins}m (${scanMode})` : 'On-Time'
             };
             await db.attendance.add(newRecord);
         }
@@ -798,10 +874,10 @@ async function handleEfaceMatch(emp, detection) {
     }
 
     // Dispatch Telegram Alert
-    dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate, lateMins, snapshotBlob);
+    dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate, lateMins, snapshotBlob, statusTextCustom, totalHoursWorkedStr);
 
     // Show Result Card
-    displayEfaceResultCard(emp, timeStr, shiftKh, isLate, lateMins);
+    displayEfaceResultCard(emp, timeStr, shiftKh, isLate, lateMins, statusTextCustom);
 
     // Refresh Recent Scans List & Stats
     loadEfaceRecentScans();
@@ -885,7 +961,7 @@ async function getEmployeeProfilePhotoBlob(emp) {
 }
 
 // ====== TELEGRAM DISPATCHER ======
-async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate, lateMins, snapshotBlob) {
+async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate, lateMins, snapshotBlob, statusTextCustom, totalHoursWorkedStr) {
     try {
         let tSettings = {};
         if (typeof db !== 'undefined' && db.telegramSettings) {
@@ -905,7 +981,12 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
             return;
         }
 
-        const statusText = isLate ? `យឺត (${lateMins} នាទី)` : 'ទាន់ពេល (0 នាទី)';
+        const scanHeader = (shiftKh && shiftKh.includes('ចេញ')) ? 'ស្កែនចេញ' : 'ស្កែនចូល';
+        const finalStatus = statusTextCustom || (isLate ? `យឺត (${lateMins} នាទី)` : 'ទាន់ពេល (0 នាទី)');
+        let hoursLine = '';
+        if (totalHoursWorkedStr) {
+            hoursLine = `\n▫️ <b>ម៉ោងធ្វើការថ្ងៃនេះ:</b> ${totalHoursWorkedStr}`;
+        }
         let gpsInfo = '';
         if (window._efaceGpsSettings && window._efaceGpsSettings.enabled && window._efaceCurrentGpsDistance !== null) {
             gpsInfo = `\n▫️ <b>ទីតាំង GPS:</b> ក្នុងបរិវេណ (${window._efaceCurrentGpsDistance}m / កាំ: ${window._efaceGpsSettings.radiusMeters || 200}m)`;
@@ -937,7 +1018,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
 
         // Pure Khmer Labels
         const caption =
-`📸 <b>វត្តមាន E-FACE: ស្កែនចូល</b>
+`📸 <b>វត្តមាន E-FACE: ${scanHeader}</b>
 ━━━━━━━━━━━━━━━━━
 ▫️ <b>ឈ្មោះ:</b> ${empNameSafe}${empLatinSafe}
 ▫️ <b>អត្តលេខ:</b> ${empCodeSafe}
@@ -945,7 +1026,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
 ▫️ <b>តួនាទី:</b> ${posSafe}
 ▫️ <b>ម៉ោង:</b> ${timeStr} (${shiftKh.split(' ')[0]})
 ▫️ <b>កាលបរិច្ឆេទ:</b> ${dateFormatted}
-▫️ <b>ស្ថានភាព:</b> ${statusText}${gpsInfo}`;
+▫️ <b>ស្ថានភាព:</b> ${finalStatus}${hoursLine}${gpsInfo}`;
 
         // Prioritize official employee profile photo from employee info (ព័ត៌មានបុគ្គលិក)
         let photoToSend = await getEmployeeProfilePhotoBlob(emp);
@@ -1004,7 +1085,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
 }
 
 // ====== DISPLAY RESULT CARD ======
-function displayEfaceResultCard(emp, timeStr, shiftKh, isLate, lateMins) {
+function displayEfaceResultCard(emp, timeStr, shiftKh, isLate, lateMins, statusTextCustom) {
     const card = document.getElementById('eface-result-card');
     if (!card) return;
 
@@ -1030,12 +1111,16 @@ function displayEfaceResultCard(emp, timeStr, shiftKh, isLate, lateMins) {
     if (shiftEl) shiftEl.innerText = shiftKh;
 
     if (badgeEl) {
-        if (isLate) {
+        const isOut = (shiftKh && shiftKh.includes('ចេញ'));
+        const actionLabel = isOut ? 'ស្កែនចេញ' : 'ស្កែនចូល';
+        const statusDisplay = statusTextCustom || (isLate ? `យឺត (${lateMins} នាទី)` : 'ទាន់ពេល');
+
+        if (isLate || (statusDisplay && (statusDisplay.includes('ចេញមុន') || statusDisplay.includes('យឺត')))) {
             badgeEl.className = 'badge bg-warning bg-opacity-25 text-warning border border-warning px-3 py-2 rounded-pill';
-            badgeEl.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> បានបំពេញ (${timeStr}) - Late: ${lateMins}m`;
+            badgeEl.innerHTML = `<i class="bi bi-clock-history me-1"></i> បាន${actionLabel} (${timeStr}) - ${statusDisplay}`;
         } else {
             badgeEl.className = 'badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 rounded-pill';
-            badgeEl.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> បានបំពេញរួចរាល់ (${timeStr})`;
+            badgeEl.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> បាន${actionLabel}រួចរាល់ (${timeStr}) - ${statusDisplay}`;
         }
     }
 
