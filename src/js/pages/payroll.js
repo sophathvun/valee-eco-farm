@@ -771,7 +771,17 @@ window.viewPayrollDetail = async function(batchId) {
                         <td class="text-end">${baseUSDDisplay}</td>
                         <td class="text-end">${baseKHRDisplay}</td>
                         <td class="text-success fw-bold">${it.presentDays}</td>
-                        <td class="text-warning fw-bold">${it.leaveDays}</td>
+                        <td class="text-warning fw-bold" style="font-size: 0.82rem;">
+                            <div>${it.leaveDays}</div>
+                            ${(it.leaveEarned && it.leaveEarned > 0) ? `
+                                <span class="badge bg-success text-white px-1 py-0" style="font-size: 0.62rem;" title="${it.leaveEarnedNote || ''}">
+                                    +${formatPayCurrency(it.leaveEarned, cur)}
+                                </span>
+                                <div class="text-muted" style="font-size: 0.62rem;">(សល់ ${it.leaveRemaining} ថ្ងៃ)</div>
+                            ` : (it.leaveRemaining !== undefined && it.leaveTotalAccrued ? `
+                                <div class="text-muted" style="font-size: 0.62rem;">(សល់ ${it.leaveRemaining} ថ្ងៃ)</div>
+                            ` : '')}
+                        </td>
                         <td class="text-danger fw-bold">${it.absentDays}</td>
                         <td class="text-end">${periodBaseUSDDisplay}</td>
                         <td class="text-end">${periodBaseKHRDisplay}</td>
@@ -1363,9 +1373,25 @@ window.viewPayslip = async function(batchId, empId) {
                     </div>
                 </div>
                 <div class="col-4">
-                    <div class="p-2 border rounded bg-warning bg-opacity-10 border-warning">
-                        <div class="small text-warning text-dark fw-bold">ច្បាប់ (Leave)</div>
-                        <h5 class="mb-0 fw-bold text-dark">${item.leaveDays} <small class="fs-6">ថ្ងៃ</small></h5>
+                    <div class="p-2 border rounded bg-warning bg-opacity-10 border-warning h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="small text-warning text-dark fw-bold">ច្បាប់ (Monthly Leave)</div>
+                            <h5 class="mb-0 fw-bold text-dark">${item.leaveDays} <small class="fs-6">ថ្ងៃ</small></h5>
+                        </div>
+                        ${(item.leaveEarned && item.leaveEarned > 0) ? `
+                            <div class="mt-1 pt-1 border-top border-warning border-opacity-50">
+                                <span class="badge bg-success text-white px-2 py-1" style="font-size: 0.68rem;" title="${item.leaveEarnedNote || ''}">
+                                    <i class="bi bi-gift-fill me-1"></i>Leave Earned: +${formatPayCurrency(item.leaveEarned, cur)}
+                                </span>
+                                <div class="text-muted" style="font-size: 0.65rem; margin-top: 2px;">(នៅសល់ ${item.leaveRemaining || 0} ថ្ងៃ)</div>
+                            </div>
+                        ` : (item.leaveRemaining !== undefined && item.leaveTotalAccrued ? `
+                            <div class="mt-1 pt-1 border-top border-warning border-opacity-50">
+                                <span class="badge bg-light text-dark border border-secondary" style="font-size: 0.65rem;">
+                                    សល់ ${item.leaveRemaining} / ${item.leaveTotalAccrued} ថ្ងៃ
+                                </span>
+                            </div>
+                        ` : '')}
                     </div>
                 </div>
                 <div class="col-4">
@@ -2013,7 +2039,10 @@ window.printPayrollMaster = async function(batchId) {
                     <td style="text-align: right;">${baseUSD}</td>
                     <td style="text-align: right;">${baseKHR}</td>
                     <td style="font-weight: bold; color: #15803d;">${it.presentDays}</td>
-                    <td style="font-weight: bold; color: #b45309;">${it.leaveDays}</td>
+                    <td style="font-weight: bold; color: #b45309; text-align: center;">
+                        ${it.leaveDays}
+                        ${(it.leaveEarned && it.leaveEarned > 0) ? `<br><small style="color: #15803d; font-size: 6.8px; font-weight: bold;">+${formatPayCurrency(it.leaveEarned, cur)}<br>(សល់ ${it.leaveRemaining} ថ្ងៃ)</small>` : ''}
+                    </td>
                     <td style="font-weight: bold; color: #b91c1c;">${it.absentDays}</td>
                     <td style="text-align: right;">${periodUSD}</td>
                     <td style="text-align: right;">${periodKHR}</td>
