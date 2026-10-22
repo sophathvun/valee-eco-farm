@@ -824,6 +824,60 @@ function dataUrlToBlob(dataUrl) {
     }
 }
 
+// ====== HELPER: GET REGISTERED EMPLOYEE PROFILE PHOTO (CONVERTED TO JPEG BLOB) ======
+async function getEmployeeProfilePhotoBlob(emp) {
+    if (!emp) return null;
+    let photoData = emp.photo;
+    if (!photoData && typeof db !== 'undefined' && db.employees && emp.id) {
+        try {
+            const fresh = await db.employees.get(emp.id);
+            if (fresh && fresh.photo) photoData = fresh.photo;
+        } catch (e) {}
+    }
+    if (!photoData || typeof photoData !== 'string') return null;
+    photoData = photoData.trim();
+    if (!photoData || photoData.includes('default-avatar.svg')) return null;
+
+    // If it's a standard JPEG data URL, convert directly
+    if (photoData.startsWith('data:image/jpeg') || photoData.startsWith('data:image/jpg')) {
+        return dataUrlToBlob(photoData);
+    }
+
+    // For WebP, PNG, or image URLs: render to offscreen canvas and export as high-quality JPEG
+    return new Promise((resolve) => {
+        try {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    const w = img.naturalWidth || img.width || 400;
+                    const h = img.naturalHeight || img.height || 400;
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, w, h);
+                    ctx.drawImage(img, 0, 0, w, h);
+                    canvas.toBlob((blob) => {
+                        resolve(blob || dataUrlToBlob(photoData));
+                    }, 'image/jpeg', 0.92);
+                } catch (canvasErr) {
+                    console.warn('Canvas conversion notice:', canvasErr);
+                    resolve(dataUrlToBlob(photoData));
+                }
+            };
+            img.onerror = () => {
+                console.warn('Profile image load notice');
+                resolve(dataUrlToBlob(photoData));
+            };
+            img.src = photoData;
+        } catch (err) {
+            resolve(dataUrlToBlob(photoData));
+        }
+    });
+}
+
 // ====== TELEGRAM DISPATCHER ======
 async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate, lateMins, snapshotBlob) {
     try {
@@ -887,9 +941,12 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
 ▫️ <b>កាលបរិច្ឆេទ:</b> ${dateFormatted}
 ▫️ <b>ស្ថានភាព:</b> ${statusText}${gpsInfo}`;
 
-        // If no snapshot from live camera, fallback to employee's registered photo
-        if (!snapshotBlob && emp.photo) {
-            snapshotBlob = dataUrlToBlob(emp.photo);
+        // Prioritize official employee profile photo from employee info (ព័ត៌មានបុគ្គលិក)
+        let photoToSend = await getEmployeeProfilePhotoBlob(emp);
+
+        // Fallback to camera snapshot if employee doesn't have an enrolled profile photo
+        if (!photoToSend && snapshotBlob) {
+            photoToSend = snapshotBlob;
         }
 
         const sendTextFallback = () => {
@@ -911,10 +968,10 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
         };
 
         // Try sending photo first if available, otherwise fallback to text alert
-        if (snapshotBlob) {
+        if (photoToSend) {
             const formData = new FormData();
             formData.append('chat_id', chatId);
-            formData.append('photo', snapshotBlob, `attendance_${emp.id}_${Date.now()}.jpg`);
+            formData.append('photo', photoToSend, `employee_${emp.code || emp.id || 'profile'}_${Date.now()}.jpg`);
             formData.append('caption', caption);
             formData.append('parse_mode', 'HTML');
 
@@ -923,7 +980,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
                 body: formData
             }).then(r => r.json()).then(res => {
                 if (res.ok) {
-                    console.log('Telegram photo alert sent successfully');
+                    console.log('Telegram photo alert sent successfully (profile photo from employee info)');
                 } else {
                     console.warn('Telegram sendPhoto failed, retrying with text alert:', res.description);
                     sendTextFallback();
