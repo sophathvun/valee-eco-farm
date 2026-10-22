@@ -1006,8 +1006,8 @@ window.loadTelegramSettings = async function() {
 
 window.saveTelegramSettings = async function(e) {
     if (e && e.preventDefault) e.preventDefault();
-    const token = (document.getElementById('telegramBotToken')?.value || '').trim();
-    const chatId = (document.getElementById('telegramChatId')?.value || '').trim();
+    const token = (document.getElementById('telegramBotToken')?.value || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ').trim();
+    const chatId = (document.getElementById('telegramChatId')?.value || '-5344695591').trim();
     const farmName = (document.getElementById('telegramFarmName')?.value || 'VALEE ECO FARM').trim();
     const enabled = document.getElementById('telegramAlertEnabled')?.checked ?? true;
 

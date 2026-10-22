@@ -731,35 +731,74 @@ async function handleEfaceMatch(emp, detection) {
 // ====== TELEGRAM DISPATCHER ======
 async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate, lateMins, snapshotBlob) {
     try {
-        if (typeof db === 'undefined' || !db.telegramSettings) return;
-        const tSettings = (await db.telegramSettings.first()) || {};
-        const botToken = tSettings.botToken || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ';
-        const chatId = tSettings.chatId || '-5344695591';
-        if (tSettings.enabled === false || !botToken || !chatId) {
+        let tSettings = {};
+        if (typeof db !== 'undefined' && db.telegramSettings) {
+            try {
+                tSettings = (await db.telegramSettings.first()) || {};
+            } catch (e) {
+                console.warn('Could not read telegramSettings:', e);
+            }
+        }
+        
+        const botToken = (tSettings.botToken && tSettings.botToken.trim()) || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ';
+        const chatId = (tSettings.chatId && tSettings.chatId.trim()) || '-5344695591';
+        
+        // Only skip if explicitly set to false
+        if (tSettings.enabled === false) {
+            console.log('Telegram attendance alert is disabled in settings.');
             return;
         }
 
-        const farmName = tSettings.farmName || 'VALEE ECO FARM';
+        const farmName = (tSettings.farmName && tSettings.farmName.trim()) || window.efaceCampusName || 'VALEE ECO FARM';
         const statusText = isLate ? `⚠️ Late (${lateMins} mins)` : 'On-Time (0 mins)';
         let gpsInfo = '';
         if (window._efaceGpsSettings && window._efaceGpsSettings.enabled && window._efaceCurrentGpsDistance !== null) {
             gpsInfo = `\n📍 <b>GPS:</b> ក្នុងបរិវេណ (${window._efaceCurrentGpsDistance}m / កាំ: ${window._efaceGpsSettings.radiusMeters || 200}m)`;
         }
 
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        };
+
+        const empNameSafe = escapeHtml(emp.name);
+        const empLatinSafe = emp.latinName ? ` (${escapeHtml(emp.latinName)})` : '';
+        const empCodeSafe = escapeHtml(emp.code || emp.id);
+        const farmNameSafe = escapeHtml(farmName);
+        const deptSafe = escapeHtml(emp.department || 'General');
+
         const caption =
 `🟢 <b>E-FACE ATTENDANCE: CHECK-IN</b>
 ━━━━━━━━━━━━━━━━━
-👤 <b>Name:</b> ${emp.name} ${emp.latinName ? `(${emp.latinName})` : ''}
-🆔 <b>ID:</b> ${emp.code || emp.id}
-🏢 <b>Campus:</b> ${farmName}
-🏛️ <b>Department:</b> ${emp.department || 'General'}
+👤 <b>Name:</b> ${empNameSafe}${empLatinSafe}
+🆔 <b>ID:</b> ${empCodeSafe}
+🏢 <b>Campus:</b> ${farmNameSafe}
+🏛️ <b>Department:</b> ${deptSafe}
 ⏰ <b>Time:</b> ${timeStr} (${shiftKh.split(' ')[0]})
 📅 <b>Date:</b> ${dateStr}
 ✨ <b>Status:</b> ${statusText}${gpsInfo}
 
 🔗 <i>E-Face Biometric System</i>`;
 
-        // If we captured live snapshot, send sendPhoto with Multipart FormData
+        const sendTextFallback = () => {
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: caption,
+                    parse_mode: 'HTML'
+                })
+            }).then(r => r.json()).then(res => {
+                if (res.ok) {
+                    console.log('Telegram text alert sent successfully');
+                } else {
+                    console.warn('Telegram sendMessage error:', res.description);
+                }
+            }).catch(err => console.warn('Telegram network error:', err));
+        };
+
+        // Try photo first if available, with immediate fallback to text if photo fails
         if (snapshotBlob) {
             const formData = new FormData();
             formData.append('chat_id', chatId);
@@ -771,19 +810,18 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
                 method: 'POST',
                 body: formData
             }).then(r => r.json()).then(res => {
-                if (!res.ok) console.warn('Telegram sendPhoto error:', res.description);
-            }).catch(err => console.warn('Telegram network error:', err));
+                if (res.ok) {
+                    console.log('Telegram photo alert sent successfully');
+                } else {
+                    console.warn('Telegram sendPhoto failed, retrying with text alert:', res.description);
+                    sendTextFallback();
+                }
+            }).catch(err => {
+                console.warn('Telegram photo network error, falling back to text:', err);
+                sendTextFallback();
+            });
         } else {
-            // Fallback: send text alert
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: caption,
-                    parse_mode: 'HTML'
-                })
-            }).catch(() => {});
+            sendTextFallback();
         }
     } catch (e) {
         console.warn('Telegram dispatcher notice:', e);
