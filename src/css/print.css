@@ -4,9 +4,14 @@
 }
 
 @media print {
-    body {
-        background-color: #fff !important;
-        background: #fff !important;
+    html,
+    body,
+    html[data-bs-theme="dark"],
+    body[data-bs-theme="dark"],
+    [data-bs-theme="dark"] {
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+        color: #000000 !important;
         margin: 0 !important;
         padding: 0 !important;
         -webkit-print-color-adjust: exact !important;
@@ -21,6 +26,7 @@
     .mobile-bottom-nav,
     .sidebar-backdrop,
     .modal-backdrop,
+    #pwa-install-container,
     #pwa-install-btn,
     .swal2-container,
     .d-print-none,

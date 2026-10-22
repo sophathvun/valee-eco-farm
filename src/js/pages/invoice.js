@@ -45,21 +45,45 @@ function removeInvoiceRow(rowId) {
 window.parseCurrencyStr = function parseCurrencyStr(val) { if(!val) return 0; return parseFloat(val.toString().replace(/[^0-9.-]+/g, '')) || 0; }
 function calculateInvoiceTotal() {
     let subtotal = 0;
-    const cur = document.getElementById('inv-currency').value;
+    const cur = document.getElementById('inv-currency') ? document.getElementById('inv-currency').value : 'KHR';
     const rows = document.querySelectorAll('#inv-items-body tr');
     rows.forEach(row => {
-        const mass = parseFloat(row.querySelector('.item-mass').value) || 0;
-        const price = parseCurrencyStr(row.querySelector('.item-price').value);
+        const massEl = row.querySelector('.item-mass');
+        const mass = massEl ? (parseFloat(massEl.value) || 0) : 0;
+        const priceEl = row.querySelector('.item-price');
+        const price = priceEl ? parseCurrencyStr(priceEl.value) : 0;
         const totalInput = row.querySelector('.item-total');
         const rowTotal = mass * price;
-        totalInput.value = formatCurrency(rowTotal, cur);
+        if (totalInput) totalInput.value = formatCurrency(rowTotal, cur);
         subtotal += rowTotal;
     });
 
-    document.getElementById('inv-subtotal').value = formatCurrency(subtotal, cur);
-    const delivery = parseCurrencyStr(document.getElementById('inv-delivery').value);
-    document.getElementById('inv-grandtotal').value = formatCurrency(subtotal + delivery, cur);
+    const elSub = document.getElementById('inv-subtotal');
+    if (elSub) elSub.value = formatCurrency(subtotal, cur);
+    const delInput = document.getElementById('inv-delivery');
+    const delivery = delInput ? parseCurrencyStr(delInput.value) : 0;
+    const elGrand = document.getElementById('inv-grandtotal');
+    if (elGrand) elGrand.value = formatCurrency(subtotal + delivery, cur);
 }
+window.calculateInvoiceTotal = calculateInvoiceTotal;
+
+function onInvoiceCurrencyChange() {
+    const cur = document.getElementById('inv-currency') ? document.getElementById('inv-currency').value : 'KHR';
+    document.querySelectorAll('#inv-items-body tr').forEach(row => {
+        const pEl = row.querySelector('.item-price');
+        if (pEl) {
+            const rawP = parseCurrencyStr(pEl.value);
+            pEl.value = formatCurrency(rawP, cur);
+        }
+    });
+    const delEl = document.getElementById('inv-delivery');
+    if (delEl) {
+        const rawD = parseCurrencyStr(delEl.value);
+        delEl.value = formatCurrency(rawD, cur);
+    }
+    calculateInvoiceTotal();
+}
+window.onInvoiceCurrencyChange = onInvoiceCurrencyChange;
 
 async function generateInvoiceNumber() {
     const invInput = document.getElementById('inv-no');
@@ -81,12 +105,25 @@ async function generateInvoiceNumber() {
 
 function resetInvoiceForm() {
     document.getElementById('invoiceForm').reset();
-    document.getElementById('inv-date').valueAsDate = new Date();
+    const dateInput = document.getElementById('inv-date');
+    if (dateInput) {
+        dateInput.valueAsDate = new Date();
+        if (dateInput._flatpickr && typeof dateInput._flatpickr.setDate === 'function') {
+            dateInput._flatpickr.setDate(new Date(), true);
+        }
+    }
     document.getElementById('inv-items-body').innerHTML = '';
     invoiceItemCount = 0;
     editingInvoiceId = null;
     editingTxId = null;
     const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
+    
+    const titleEl = document.querySelector('#invoice-view .card-header h5');
+    if (titleEl) {
+        titleEl.setAttribute('data-i18n', 'new_invoice_title');
+        titleEl.textContent = isKm ? 'បង្កើតវិក្កយបត្រ' : 'Create Invoice';
+    }
+    
     const saveBtn = document.getElementById('btn-save-invoice');
     if (saveBtn) {
         saveBtn.setAttribute('data-i18n', 'btn_save_print_invoice');
@@ -140,7 +177,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             });
         });
 
-        let savedInv = { invNo, date, customer, phone, address, items, subtotal, delivery, grandTotal, currency, method };
+        let savedInv = { invNo, date, customer, phone, address, items, subtotal, delivery, grandTotal, currency, method, category };
 
         if (editingInvoiceId) {
             if (editingTxId) {
@@ -203,7 +240,14 @@ function printElement(elId, orientation = 'portrait') {
         style.id = 'dynamic-print-orientation';
         document.head.appendChild(style);
     }
-    style.innerHTML = `@media print { @page { size: A4 ${orientation}; margin: 5mm 10mm 6mm 10mm; } }`;
+    style.innerHTML = `@media print { 
+        @page { size: A4 ${orientation}; margin: 5mm 10mm 6mm 10mm; } 
+        html, body, html[data-bs-theme="dark"], body[data-bs-theme="dark"] { 
+            background: #ffffff !important; 
+            background-color: #ffffff !important; 
+            color: #000000 !important; 
+        } 
+    }`;
 
     document.querySelectorAll('.print-container').forEach(el => el.classList.remove('print-template'));
     target.classList.add('print-template');
@@ -290,7 +334,7 @@ function ensureInvoicePrintTemplate() {
                                 </tr>
                             </table>
                             <div style="text-align: center; margin-left: 20px;">
-                                <img src="assets/images/VALEEYQR.png" alt="QR Code" style="width: 110px; height: 110px; border-radius: 10px;">
+                                <img src="assets/images/VALEEYQR.png" alt="QR Code" style="width: 95px; height: 95px; border-radius: 10px;">
                             </div>
                         </div>
                     </td>
@@ -308,7 +352,7 @@ function ensureInvoicePrintTemplate() {
             </tfoot>
         </table>
 
-        <div class="invoice-footer" style="margin-top: 40px;">
+        <div class="invoice-footer" style="margin-top: 65px;">
             <div class="invoice-footer-box"><p>ប្រគល់ទំនិញដោយ<br>Goods handover by</p><div class="invoice-footer-line"></div></div>
             <div class="invoice-footer-box"><p>ពិនិត្យ និងអនុម័តដោយ<br>Checked and Approved by</p><div class="invoice-footer-line"></div></div>
             <div class="invoice-footer-box"><p>ទទួលទំនិញដោយ<br>Received by</p><div class="invoice-footer-line"></div></div>
@@ -436,9 +480,9 @@ async function loadInvoices() {
                 <td>${methodBadge}</td>
                 <td class="fw-bold text-success text-end">${formatCurrency(inv.grandTotal, cur)}</td>
                 <td class="text-end">
-                    <button class="btn btn-sm btn-info text-white me-1" onclick="reprintInvoice(${inv.id})">${printText}</button>
-                    <button class="btn btn-sm btn-warning btn-edit me-1" onclick="editInvoice(${inv.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button>
-                    <button class="btn btn-sm btn-danger btn-delete" onclick="deleteInvoice(${inv.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button>
+                    <button class="btn btn-sm btn-info text-white me-1" onclick="reprintInvoice('${inv.id}')">${printText}</button>
+                    <button class="btn btn-sm btn-warning btn-edit me-1" onclick="editInvoice('${inv.id}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button>
+                    <button class="btn btn-sm btn-danger btn-delete" onclick="deleteInvoice('${inv.id}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button>
                 </td>
             </tr>
         `;
@@ -446,27 +490,74 @@ async function loadInvoices() {
 }
 
 async function reprintInvoice(id) {
-    const inv = await db.invoices.get(id);
-    if(inv) populateAndPrintInvoice(inv);
+    let inv = await db.invoices.get(id);
+    if (!inv) {
+        try {
+            const all = await db.invoices.toArray();
+            inv = all.find(i => String(i.id) === String(id) || String(i.invNo) === String(id));
+        } catch(e) {}
+    }
+    if (inv) populateAndPrintInvoice(inv);
 }
 
 async function editInvoice(id) {
-    const inv = await db.invoices.get(id);
-    if(!inv) return;
+    let inv = null;
+    try {
+        inv = await db.invoices.get(id);
+    } catch(e) {}
+    if (!inv) {
+        try {
+            const all = await db.invoices.toArray();
+            inv = all.find(i => String(i.id) === String(id) || String(i.invNo) === String(id));
+        } catch(e) {}
+    }
+    if (!inv) return;
     
-    editingInvoiceId = inv.id;
+    editingInvoiceId = inv.id || id;
     editingTxId = inv.txId || null;
 
-    document.getElementById('inv-no').value = inv.invNo;
-    document.getElementById('inv-date').value = inv.date;
-    document.getElementById('inv-customer').value = inv.customer;
-    document.getElementById('inv-phone').value = inv.phone || '';
-    document.getElementById('inv-address').value = inv.address || '';
-    document.getElementById('inv-currency').value = inv.currency || 'KHR';
-    document.getElementById('inv-method').value = inv.method || 'Cash';
+    const cur = inv.currency || 'KHR';
+    const elCur = document.getElementById('inv-currency');
+    if (elCur) elCur.value = cur;
+
+    const elNo = document.getElementById('inv-no');
+    if (elNo) elNo.value = inv.invNo || '';
+
+    const elDate = document.getElementById('inv-date');
+    if (elDate) {
+        elDate.value = inv.date || '';
+        if (elDate._flatpickr && typeof elDate._flatpickr.setDate === 'function') {
+            elDate._flatpickr.setDate(inv.date || '', true);
+        }
+    }
+
+    const elCust = document.getElementById('inv-customer');
+    if (elCust) elCust.value = inv.customer || '';
+
+    const elPhone = document.getElementById('inv-phone');
+    if (elPhone) elPhone.value = inv.phone || '';
+
+    const elAddr = document.getElementById('inv-address');
+    if (elAddr) elAddr.value = inv.address || '';
+
+    const elMethod = document.getElementById('inv-method');
+    if (elMethod) elMethod.value = inv.method || 'Cash';
+
+    // Populate category if present or from linked transaction
+    const elCat = document.getElementById('inv-income-category');
+    if (elCat) {
+        if (inv.category) {
+            elCat.value = inv.category;
+        } else if (inv.txId) {
+            try {
+                const tx = await db.transactions.get(inv.txId);
+                if (tx && tx.category) elCat.value = tx.category;
+            } catch(e) {}
+        }
+    }
     
     const tbody = document.getElementById('inv-items-body');
-    tbody.innerHTML = '';
+    if (tbody) tbody.innerHTML = '';
     invoiceItemCount = 0;
     
     let unitOptionsHtml = '<option value="">--</option>';
@@ -480,38 +571,47 @@ async function editInvoice(id) {
     const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
     const descPlaceholder = isKm ? 'បរិយាយ...' : 'Description...';
 
-    inv.items.forEach(item => {
-        invoiceItemCount++;
-        const tr = document.createElement('tr');
-        tr.id = `inv-row-${invoiceItemCount}`;
-        
-        let customUnitOptions = unitOptionsHtml;
-        if (item.unit) {
-            customUnitOptions = customUnitOptions.replace(`value="${item.unit}"`, `value="${item.unit}" selected`);
-        }
+    if (Array.isArray(inv.items) && inv.items.length > 0) {
+        inv.items.forEach(item => {
+            invoiceItemCount++;
+            const tr = document.createElement('tr');
+            tr.id = `inv-row-${invoiceItemCount}`;
+            
+            let customUnitOptions = unitOptionsHtml;
+            if (item.unit) {
+                customUnitOptions = customUnitOptions.replace(`value="${item.unit}"`, `value="${item.unit}" selected`);
+            }
 
-        tr.innerHTML = `
-            <td><input type="text" class="form-control item-id" placeholder="ID" value="${item.id || ''}"></td>
-            <td><input type="text" class="form-control item-desc" placeholder="${descPlaceholder}" data-i18n-placeholder="desc_placeholder" required value="${item.desc}"></td>
-            <td style="min-width: 150px;">
-                <div class="input-group">
-                    <input type="number" class="form-control item-mass" min="1" step="0.01" oninput="calculateInvoiceTotal()" value="${item.mass}">
-                    <select class="form-select item-unit" style="max-width: 80px;">${customUnitOptions}</select>
-                </div>
-            </td>
-            <td><input type="text" inputmode="decimal" class="form-control item-price" onfocus="this.value = parseCurrencyStr(this.value) || ''" onblur="this.value = formatCurrency(parseCurrencyStr(this.value), document.getElementById('inv-currency').value)" min="0" step="0.01" oninput="calculateInvoiceTotal()" value="${item.price}"></td>
-            <td><input type="text" class="form-control item-total fw-bold" readonly value="${item.total}"></td>
-            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></td>
-        `;
-        tbody.appendChild(tr);
-    });
-    
-    document.getElementById('inv-subtotal').value = inv.subtotal;
-    document.getElementById('inv-delivery').value = inv.delivery || 0;
-    document.getElementById('inv-grandtotal').value = inv.grandTotal;
+            const rawPrice = parseCurrencyStr(item.price);
+            const rawTotal = (parseFloat(item.mass) || 0) * rawPrice;
+
+            tr.innerHTML = `
+                <td><input type="text" class="form-control item-id" placeholder="ID" value="${item.id || ''}"></td>
+                <td><input type="text" class="form-control item-desc" placeholder="${descPlaceholder}" data-i18n-placeholder="desc_placeholder" required value="${item.desc || ''}"></td>
+                <td style="min-width: 150px;">
+                    <div class="input-group">
+                        <input type="number" class="form-control item-mass" min="0.01" step="0.01" oninput="calculateInvoiceTotal()" value="${item.mass}">
+                        <select class="form-select item-unit" style="max-width: 80px;">${customUnitOptions}</select>
+                    </div>
+                </td>
+                <td><input type="text" inputmode="decimal" class="form-control item-price" onfocus="this.value = parseCurrencyStr(this.value) || ''" onblur="this.value = formatCurrency(parseCurrencyStr(this.value), document.getElementById('inv-currency').value)" min="0" step="0.01" oninput="calculateInvoiceTotal()" value="${formatCurrency(rawPrice, cur)}"></td>
+                <td><input type="text" class="form-control item-total fw-bold" readonly value="${formatCurrency(rawTotal, cur)}"></td>
+                <td><button type="button" class="btn btn-danger btn-sm" onclick="removeInvoiceRow(${invoiceItemCount})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    const elDel = document.getElementById('inv-delivery');
+    if (elDel) elDel.value = formatCurrency(parseCurrencyStr(inv.delivery) || 0, cur);
     
     calculateInvoiceTotal();
-    document.querySelectorAll('.item-price, #inv-delivery').forEach(el => el.value = formatCurrency(parseCurrencyStr(el.value), inv.currency || 'KHR'));
+
+    const titleEl = document.querySelector('#invoice-view .card-header h5');
+    if (titleEl) {
+        titleEl.setAttribute('data-i18n', 'edit_invoice_title');
+        titleEl.textContent = isKm ? 'កែប្រែវិក្កយបត្រ' : 'Edit Invoice';
+    }
     
     const saveBtn = document.getElementById('btn-save-invoice');
     if (saveBtn) {

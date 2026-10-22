@@ -190,6 +190,7 @@
             // Invoices Specific
             new_invoice_title: "បង្កើតវិក្កយបត្រ",
             create_invoice_title: "បង្កើតវិក្កយបត្រ",
+            edit_invoice_title: "កែប្រែវិក្កយបត្រ",
             invoice_auto_income_note: "ពេលព្រីនវិក្កយបត្រ វានឹងកត់ត្រាចូលជាចំណូលដោយស្វ័យប្រវត្តិ!",
             invoice_no_field: "លេខវិក្កយបត្រ",
             date_field: "កាលបរិច្ឆេទ",
@@ -453,6 +454,7 @@
             // Invoices Specific
             new_invoice_title: "Create Invoice",
             create_invoice_title: "Create Invoice",
+            edit_invoice_title: "Edit Invoice",
             invoice_auto_income_note: "When printing invoice, it will be automatically recorded as income!",
             invoice_no_field: "Invoice No.",
             date_field: "Date",
@@ -697,6 +699,7 @@
 
             // Clean Khmer mappings (Will ensure en -> km maps to clean Khmer without brackets)
             "បង្កើតវិក្កយបត្រ": "Create Invoice",
+            "កែប្រែវិក្កយបត្រ": "Edit Invoice",
             "លេខវិក្កយបត្រ": "Invoice No.",
             "កាលបរិច្ឆេទ": "Date",
             "អតិថិជន": "Customer Name",

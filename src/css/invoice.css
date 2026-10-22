@@ -77,14 +77,14 @@
     display: flex;
     justify-content: space-between;
     text-align: center;
-    margin-top: 40px;
+    margin-top: 65px;
     clear: both;
 }
 .invoice-footer-box {
     width: 30%;
 }
 .invoice-footer-line {
-    margin-top: 60px;
+    margin-top: 75px;
     border-top: 1px dashed var(--bs-border-color, #94a3b8);
     width: 80%;
     margin-left: auto;
@@ -93,12 +93,23 @@
 
 /* Dedicated Print Styles for Invoices */
 @media print {
+    html,
+    body,
+    html[data-bs-theme="dark"],
+    body[data-bs-theme="dark"],
+    [data-bs-theme="dark"] {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+    }
+
     body:not(.printing-report) #print-area-invoice.print-template {
         display: block !important;
         position: absolute;
         left: 0;
         top: 0;
         width: 100%;
+        min-height: 100% !important;
         visibility: visible !important;
         background: #ffffff !important;
         color: #000000 !important;
@@ -135,7 +146,12 @@
         print-color-adjust: exact !important;
     }
 
+    #print-area-invoice .invoice-footer {
+        margin-top: 65px !important;
+    }
+
     #print-area-invoice .invoice-footer-line {
+        margin-top: 75px !important;
         border-top: 1px solid #000000 !important;
     }
 }

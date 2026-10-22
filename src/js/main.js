@@ -75,32 +75,51 @@ async function initializeApp() {
     
     // Initialize Flatpickr for all date inputs
     if (typeof flatpickr !== 'undefined') {
-        const originalValueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-        Object.defineProperty(HTMLInputElement.prototype, 'value', {
-            set: function(val) {
-                if (this._isSettingValue) {
-                    originalValueSetter.call(this, val);
-                    return;
-                }
-                this._isSettingValue = true;
-                originalValueSetter.call(this, val);
-                if (this._flatpickr) this._flatpickr.setDate(val, false);
-                this._isSettingValue = false;
-            }
-        });
-        const originalValueAsDateSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'valueAsDate').set;
-        Object.defineProperty(HTMLInputElement.prototype, 'valueAsDate', {
-            set: function(val) {
-                if (this._isSettingValueAsDate) {
-                    originalValueAsDateSetter.call(this, val);
-                    return;
-                }
-                this._isSettingValueAsDate = true;
-                originalValueAsDateSetter.call(this, val);
-                if (this._flatpickr) this._flatpickr.setDate(val, false);
-                this._isSettingValueAsDate = false;
-            }
-        });
+        const originalValueDesc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+        if (originalValueDesc && originalValueDesc.set) {
+            Object.defineProperty(HTMLInputElement.prototype, 'value', {
+                get: function() {
+                    return originalValueDesc.get ? originalValueDesc.get.call(this) : this.getAttribute('value');
+                },
+                set: function(val) {
+                    if (this._isSettingValue) {
+                        originalValueDesc.set.call(this, val);
+                        return;
+                    }
+                    this._isSettingValue = true;
+                    originalValueDesc.set.call(this, val);
+                    if (this._flatpickr && typeof this._flatpickr.setDate === 'function') {
+                        this._flatpickr.setDate(val, false);
+                    }
+                    this._isSettingValue = false;
+                },
+                configurable: true,
+                enumerable: true
+            });
+        }
+
+        const originalValueAsDateDesc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'valueAsDate');
+        if (originalValueAsDateDesc && originalValueAsDateDesc.set) {
+            Object.defineProperty(HTMLInputElement.prototype, 'valueAsDate', {
+                get: function() {
+                    return originalValueAsDateDesc.get ? originalValueAsDateDesc.get.call(this) : null;
+                },
+                set: function(val) {
+                    if (this._isSettingValueAsDate) {
+                        originalValueAsDateDesc.set.call(this, val);
+                        return;
+                    }
+                    this._isSettingValueAsDate = true;
+                    originalValueAsDateDesc.set.call(this, val);
+                    if (this._flatpickr && typeof this._flatpickr.setDate === 'function') {
+                        this._flatpickr.setDate(val, false);
+                    }
+                    this._isSettingValueAsDate = false;
+                },
+                configurable: true,
+                enumerable: true
+            });
+        }
 
         flatpickr('input[type="date"]', {
             dateFormat: 'Y-m-d',
