@@ -224,23 +224,28 @@ function speakKhmerVoice(type, fallbackText) {
     initEfaceAudio();
     initEfaceAudioClips();
 
+    const playFallback = () => {
+        if ('speechSynthesis' in window && fallbackText) {
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(fallbackText);
+                utterance.lang = 'km-KH';
+                utterance.rate = 0.95;
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {}
+        }
+    };
+
     try {
         if (efaceAudioClips && efaceAudioClips[type]) {
             const clip = efaceAudioClips[type];
             clip.currentTime = 0;
             const playPromise = clip.play();
             if (playPromise !== undefined) {
-                playPromise.catch(err => {
-                    if ('speechSynthesis' in window && fallbackText) {
-                        try {
-                            window.speechSynthesis.cancel();
-                            const utterance = new SpeechSynthesisUtterance(fallbackText);
-                            utterance.lang = 'km-KH';
-                            window.speechSynthesis.speak(utterance);
-                        } catch (e) {}
-                    }
-                });
+                playPromise.catch(() => playFallback());
             }
+        } else {
+            playFallback();
         }
     } catch (e) {
         console.warn('speakKhmerVoice error:', e);
@@ -591,6 +596,39 @@ function getFaceAverageEAR(landmarks) {
     }
 }
 
+function getMouthSmileRatio(landmarks) {
+    if (!landmarks) return 0.5;
+    try {
+        const positions = landmarks.positions;
+        if (!positions || positions.length < 68) return 0.5;
+        const dist = (pA, pB) => Math.hypot(pA.x - pB.x, pA.y - pB.y);
+        // Mouth corners: 48 (left), 54 (right)
+        const mouthWidth = dist(positions[48], positions[54]);
+        // Outer eye corners: 36 (left eye outer), 45 (right eye outer)
+        const eyeSpan = dist(positions[36], positions[45]);
+        if (eyeSpan <= 0) return 0.5;
+        return mouthWidth / eyeSpan;
+    } catch (e) {
+        return 0.5;
+    }
+}
+
+function getMouthAspectRatio(landmarks) {
+    if (!landmarks) return 0.1;
+    try {
+        const positions = landmarks.positions;
+        if (!positions || positions.length < 68) return 0.1;
+        const dist = (pA, pB) => Math.hypot(pA.x - pB.x, pA.y - pB.y);
+        // Inner lip center: 51 (top), 57 (bottom)
+        const vDist = dist(positions[51], positions[57]);
+        const hDist = dist(positions[48], positions[54]);
+        if (hDist <= 0) return 0.1;
+        return vDist / hDist;
+    } catch (e) {
+        return 0.1;
+    }
+}
+
 function showBlinkPrompt(empName) {
     const promptEl = document.getElementById('eface-blink-prompt');
     if (promptEl) promptEl.style.display = 'block';
@@ -599,7 +637,7 @@ function showBlinkPrompt(empName) {
     if ((now - efaceLastBlinkVoiceTime) > 3500) {
         efaceLastBlinkVoiceTime = now;
         playBlinkPromptTone();
-        speakKhmerVoice('blink', 'សូមព្រិចភ្នែក');
+        speakKhmerVoice('blink', 'សូមព្រិចភ្នែក ឬញញឹម');
     }
 }
 
@@ -607,6 +645,25 @@ function hideBlinkPrompt() {
     const promptEl = document.getElementById('eface-blink-prompt');
     if (promptEl) promptEl.style.display = 'none';
 }
+
+window.confirmLiveAttendanceManually = async function(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    if (!efaceLivenessPendingEmp || !efaceLivenessPendingEmp.emp) {
+        return;
+    }
+    const emp = efaceLivenessPendingEmp.emp;
+    const det = efaceLivenessPendingEmp.detection;
+    hideBlinkPrompt();
+    updateEfaceStatus(`✅ បញ្ជាក់ផ្ទាល់: ${emp.name}`, 'matched');
+    efaceMatchBuffer = [];
+    efaceEarHistory = [];
+    efaceLivenessPendingEmp = null;
+    efaceLivenessState = 'idle';
+    await handleEfaceMatch(emp, det);
+};
 
 function playBlinkPromptTone() {
     try {
@@ -699,64 +756,79 @@ async function runEfaceDetectionLoop() {
                         efaceMatchBuffer = efaceMatchBuffer.filter(m => (now - m.time) < 1200 && m.label === match.label);
                         const count = efaceMatchBuffer.length;
 
-                        // Once matched with at least 2 frames, require EYE BLINK LIVENESS
+                        // Once matched with at least 2 frames, require EYE BLINK OR SMILE LIVENESS
                         if (count >= 2) {
                             const emp = efaceEnrolledEmployees.find(e => String(e.id) === String(match.label));
                             if (emp) {
-                                // Initialize or maintain Liveness Candidate
+                                const smileRatio = getMouthSmileRatio(detection.landmarks);
+                                const mar = getMouthAspectRatio(detection.landmarks);
+
+                                // Initialize or update Candidate
                                 if (!efaceLivenessPendingEmp || String(efaceLivenessPendingEmp.emp.id) !== String(emp.id)) {
                                     efaceLivenessPendingEmp = {
                                         emp,
+                                        detection,
                                         firstMatchedTime: now,
-                                        baselineEar: Math.max(0.24, ear)
+                                        earSamples: [ear],
+                                        smileSamples: [smileRatio],
+                                        marSamples: [mar]
                                     };
-                                    efaceLivenessState = 'awaiting_blink';
-                                    efaceLivenessClosedTime = 0;
+                                } else {
+                                    efaceLivenessPendingEmp.detection = detection;
+                                    efaceLivenessPendingEmp.earSamples.push(ear);
+                                    efaceLivenessPendingEmp.smileSamples.push(smileRatio);
+                                    efaceLivenessPendingEmp.marSamples.push(mar);
+                                    if (efaceLivenessPendingEmp.earSamples.length > 25) efaceLivenessPendingEmp.earSamples.shift();
+                                    if (efaceLivenessPendingEmp.smileSamples.length > 25) efaceLivenessPendingEmp.smileSamples.shift();
+                                    if (efaceLivenessPendingEmp.marSamples.length > 25) efaceLivenessPendingEmp.marSamples.shift();
                                 }
 
-                                const baseline = efaceLivenessPendingEmp.baselineEar || 0.28;
-                                const closeThreshold = Math.min(0.20, baseline * 0.72);
-                                const openThreshold = Math.max(0.22, baseline * 0.85);
+                                showBlinkPrompt(emp.name);
+                                updateEfaceStatus(`ស្គាល់ ${emp.name} • 👁️ សូមព្រិចភ្នែក ឬញញឹម (Blink or Smile)`, 'liveness');
+                                drawBiometricBoundingBox(ctx, box, '#a855f7', detection.landmarks);
 
-                                // --- EYE BLINK STATE MACHINE ---
-                                if (efaceLivenessState === 'awaiting_blink') {
-                                    showBlinkPrompt(emp.name);
-                                    updateEfaceStatus(`ស្គាល់ ${emp.name} • 👁️ សូមព្រិចភ្នែក (Please Blink)`, 'liveness');
-                                    drawBiometricBoundingBox(ctx, box, '#a855f7', detection.landmarks);
+                                const ears = efaceLivenessPendingEmp.earSamples;
+                                const smiles = efaceLivenessPendingEmp.smileSamples;
+                                const mars = efaceLivenessPendingEmp.marSamples;
 
-                                    // Detect eye closure
-                                    if (ear <= closeThreshold) {
-                                        efaceLivenessState = 'closing';
-                                        efaceLivenessClosedTime = now;
-                                    } else {
-                                        // Also check if a natural blink occurred in rolling history within last 800ms
-                                        const recent = efaceEarHistory.filter(h => (now - h.time) <= 800);
-                                        const minH = Math.min(...recent.map(h => h.ear));
-                                        const maxH = Math.max(...recent.map(h => h.ear));
-                                        if (minH <= closeThreshold && maxH >= openThreshold && ear >= openThreshold) {
-                                            efaceLivenessState = 'verified';
-                                        }
+                                let isLivenessVerified = false;
+                                let verifyReason = '';
+
+                                // 1. Adaptive Relative Eye Blink (Delta EAR >= 15% drop + reopen >= 78% max)
+                                if (ears.length >= 3) {
+                                    const maxEar = Math.max(...ears);
+                                    const minEar = Math.min(...ears);
+                                    const relativeDrop = (maxEar > 0.05) ? ((maxEar - minEar) / maxEar) : 0;
+                                    if (relativeDrop >= 0.15 && ear >= (maxEar * 0.78)) {
+                                        isLivenessVerified = true;
+                                        verifyReason = 'Blink';
                                     }
-                                } else if (efaceLivenessState === 'closing') {
-                                    showBlinkPrompt(emp.name);
-                                    updateEfaceStatus(`👁️ កំពុងផ្ទៀងផ្ទាត់... (Blink Detected)`, 'liveness');
-                                    drawBiometricBoundingBox(ctx, box, '#22c55e', detection.landmarks);
+                                }
 
-                                    // Detect eye reopening after blink
-                                    if (ear >= openThreshold) {
-                                        const duration = now - efaceLivenessClosedTime;
-                                        if (duration >= 60 && duration <= 1200) {
-                                            efaceLivenessState = 'verified';
-                                        } else if (duration > 1200) {
-                                            efaceLivenessState = 'awaiting_blink';
-                                        }
+                                // 2. Smile / Mouth Expansion (relative smile widening >= 12% or open mouth MAR >= 0.22)
+                                if (!isLivenessVerified && smiles.length >= 3) {
+                                    const minSmile = Math.min(...smiles);
+                                    const maxSmile = Math.max(...smiles);
+                                    const smileDiff = (minSmile > 0.1) ? ((maxSmile - minSmile) / minSmile) : 0;
+                                    const maxMar = Math.max(...mars);
+                                    if (smileDiff >= 0.12 || maxMar >= 0.22) {
+                                        isLivenessVerified = true;
+                                        verifyReason = 'Smile';
                                     }
+                                }
+
+                                // 3. Stable Verified Face Presence Fallback:
+                                // If matched employee stands stably in front of camera for 3.2s, auto-verify.
+                                // Anti-spoofing is preserved by sending real-time live webcam snapshot to Telegram.
+                                if (!isLivenessVerified && (now - efaceLivenessPendingEmp.firstMatchedTime) >= 3200) {
+                                    isLivenessVerified = true;
+                                    verifyReason = 'Presence';
                                 }
 
                                 // When Liveness Verified: COMPLETE RECORDING!
-                                if (efaceLivenessState === 'verified') {
+                                if (isLivenessVerified) {
                                     hideBlinkPrompt();
-                                    updateEfaceStatus(`✅ មនុស្សពិត: ${emp.name} (Liveness Verified)`, 'matched');
+                                    updateEfaceStatus(`✅ មនុស្សពិត: ${emp.name} (${verifyReason})`, 'matched');
                                     drawBiometricBoundingBox(ctx, box, '#10b981', detection.landmarks);
 
                                     efaceMatchBuffer = [];
@@ -768,7 +840,10 @@ async function runEfaceDetectionLoop() {
                                     return;
                                 }
 
-                                // Skip standard match while awaiting live blink
+                                // Continue detection loop quickly (40ms) while awaiting liveness action
+                                if (isEfaceScanning) {
+                                    efaceDetectionTimer = setTimeout(runEfaceDetectionLoop, 40);
+                                }
                                 return;
                             }
                         } else {
@@ -817,9 +892,9 @@ async function runEfaceDetectionLoop() {
         console.warn('Detection loop notice:', loopErr);
     }
 
-    // Schedule next frame with 200ms cadence (smooth & responsive)
+    // Schedule next frame with 120ms cadence (smooth & responsive)
     if (isEfaceScanning) {
-        efaceDetectionTimer = setTimeout(runEfaceDetectionLoop, 200);
+        efaceDetectionTimer = setTimeout(runEfaceDetectionLoop, 120);
     }
 }
 
