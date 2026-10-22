@@ -769,10 +769,10 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
             return;
         }
 
-        const statusText = isLate ? `Late (${lateMins} mins)` : 'On-Time (0 mins)';
+        const statusText = isLate ? `យឺត (${lateMins} នាទី)` : 'ទាន់ពេល (0 នាទី)';
         let gpsInfo = '';
         if (window._efaceGpsSettings && window._efaceGpsSettings.enabled && window._efaceCurrentGpsDistance !== null) {
-            gpsInfo = `\n▫️ <b>GPS:</b> ក្នុងបរិវេណ (${window._efaceCurrentGpsDistance}m / កាំ: ${window._efaceGpsSettings.radiusMeters || 200}m)`;
+            gpsInfo = `\n▫️ <b>ទីតាំង GPS:</b> ក្នុងបរិវេណ (${window._efaceCurrentGpsDistance}m / កាំ: ${window._efaceGpsSettings.radiusMeters || 200}m)`;
         }
 
         const escapeHtml = (str) => {
@@ -783,8 +783,8 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
         const empNameSafe = escapeHtml(emp.name);
         const empLatinSafe = emp.latinName ? ` (${escapeHtml(emp.latinName)})` : '';
         const empCodeSafe = escapeHtml(emp.code || emp.id);
-        const deptSafe = escapeHtml(emp.department || 'General');
-        const posSafe = escapeHtml(emp.position || 'Staff');
+        const deptSafe = escapeHtml(emp.department || 'ទូទៅ');
+        const posSafe = escapeHtml(emp.position || 'បុគ្គលិក');
 
         // Format Date as DD-Mon-YYYY (e.g. 22-Oct-2026)
         let dateFormatted = dateStr;
@@ -799,17 +799,17 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
             }
         } catch (e) {}
 
-        // Compact sleek icons & removed footer line
+        // Pure Khmer Labels
         const caption =
-`📸 <b>E-FACE ATTENDANCE: CHECK-IN</b>
+`📸 <b>វត្តមាន E-FACE: ស្កែនចូល</b>
 ━━━━━━━━━━━━━━━━━
-▫️ <b>Name:</b> ${empNameSafe}${empLatinSafe}
-▫️ <b>ID:</b> ${empCodeSafe}
-▫️ <b>Department:</b> ${deptSafe}
-▫️ <b>Position:</b> ${posSafe}
-▫️ <b>Time:</b> ${timeStr} (${shiftKh.split(' ')[0]})
-▫️ <b>Date:</b> ${dateFormatted}
-▫️ <b>Status:</b> ${statusText}${gpsInfo}`;
+▫️ <b>ឈ្មោះ:</b> ${empNameSafe}${empLatinSafe}
+▫️ <b>អត្តលេខ:</b> ${empCodeSafe}
+▫️ <b>នាយកដ្ឋាន:</b> ${deptSafe}
+▫️ <b>តួនាទី:</b> ${posSafe}
+▫️ <b>ម៉ោង:</b> ${timeStr} (${shiftKh.split(' ')[0]})
+▫️ <b>កាលបរិច្ឆេទ:</b> ${dateFormatted}
+▫️ <b>ស្ថានភាព:</b> ${statusText}${gpsInfo}`;
 
         // If no snapshot from live camera, fallback to employee's registered photo
         if (!snapshotBlob && emp.photo) {
