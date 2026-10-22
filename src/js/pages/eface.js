@@ -801,7 +801,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
 
         // Compact sleek icons & removed footer line
         const caption =
-`🟢 <b>E-FACE ATTENDANCE: CHECK-IN</b>
+`📸 <b>E-FACE ATTENDANCE: CHECK-IN</b>
 ━━━━━━━━━━━━━━━━━
 ▫️ <b>Name:</b> ${empNameSafe}${empLatinSafe}
 ▫️ <b>ID:</b> ${empCodeSafe}
