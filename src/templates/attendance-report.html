@@ -59,6 +59,7 @@
                             <option value="late">ចូលយឺត (Late In)</option>
                             <option value="early_out">ចេញមុនម៉ោង (Early Out)</option>
                             <option value="overtime">លើសម៉ោង (Overtime)</option>
+                            <option value="absent">អវត្តមាន (Absent / មិនបានស្កែន)</option>
                         </select>
                     </div>
                     <div class="col-lg-2 col-md-6 col-sm-6">
@@ -70,8 +71,11 @@
                     </div>
                     <div class="col-lg-2 col-md-6 col-sm-6 text-end">
                         <div class="d-flex gap-1 justify-content-end">
-                            <button class="btn btn-primary btn-sm px-2 flex-grow-1" onclick="generateTimesheetReport()" title="ទាញយកទិន្នន័យឡើងវិញ">
-                                <i class="bi bi-arrow-clockwise"></i> ស្វែងរក
+                            <button class="btn btn-outline-primary btn-sm px-2" onclick="openAddScanRecordModal()" title="បន្ថែមទិន្នន័យស្កែន">
+                                <i class="bi bi-plus-circle"></i> បន្ថែមស្កែន
+                            </button>
+                            <button class="btn btn-primary btn-sm px-2" onclick="generateTimesheetReport()" title="ទាញយកទិន្នន័យឡើងវិញ">
+                                <i class="bi bi-arrow-clockwise"></i>
                             </button>
                             <button class="btn btn-secondary btn-sm px-2" onclick="printTimesheetReport()" title="បោះពុម្ព">
                                 <i class="bi bi-printer"></i>
@@ -171,11 +175,12 @@
                                     <th style="min-width: 130px;">ម៉ោងធ្វើការ (Hours)</th>
                                     <th style="min-width: 135px;">វេនការងារ (Shift)</th>
                                     <th style="min-width: 120px;">កំណត់ចំណាំ / GPS</th>
+                                    <th style="width: 85px;" class="col-actions">សកម្មភាព</th>
                                 </tr>
                             </thead>
                             <tbody id="tsTableBody">
                                 <tr>
-                                    <td colspan="9" class="text-center py-4 text-muted">
+                                    <td colspan="10" class="text-center py-4 text-muted">
                                         <div class="spinner-border spinner-border-sm text-primary me-2"></div> កំពុងទាញយកទិន្នន័យ...
                                     </td>
                                 </tr>
@@ -253,6 +258,106 @@
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Edit / Add Scan Attendance Record -->
+<div class="modal fade" id="editScanRecordModal" tabindex="-1" aria-labelledby="scanModalTitle" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-light py-2">
+                <h5 class="modal-title fw-bold text-dark fs-6" id="scanModalTitle">
+                    <i class="bi bi-pencil-square text-primary me-1"></i> កែប្រែទិន្នន័យស្កែនវត្តមាន
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <form id="editScanRecordForm" onsubmit="event.preventDefault(); saveScanRecordModal();">
+                    <input type="hidden" id="scanRecordId">
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-7">
+                            <label class="form-label small fw-bold text-dark mb-1">បុគ្គលិក (Employee) <span class="text-danger">*</span></label>
+                            <select id="scanEmpSelect" class="form-select form-select-sm" required>
+                                <option value="">-- កំពុងទាញយក... --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small fw-bold text-dark mb-1">កាលបរិច្ឆេទ (Date) <span class="text-danger">*</span></label>
+                            <input type="date" id="scanDateInput" class="form-control form-control-sm" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark mb-1">ម៉ោងស្កែនចូល (Check-In)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="bi bi-box-arrow-in-right text-success"></i></span>
+                                <input type="time" step="1" id="scanCheckInInput" class="form-control" onchange="autoCalcModalHours()">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark mb-1">ម៉ោងស្កែនចេញ (Check-Out)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="bi bi-box-arrow-right text-danger"></i></span>
+                                <input type="time" step="1" id="scanCheckOutInput" class="form-control" onchange="autoCalcModalHours()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark mb-1">វត្តមានវេនព្រឹក (Morning Shift)</label>
+                            <select id="scanMorningStatus" class="form-select form-select-sm">
+                                <option value="P">P (វត្តមាន / Present)</option>
+                                <option value="A">A (អវត្តមាន / Absent)</option>
+                                <option value="L">L (ច្បាប់ / Leave)</option>
+                                <option value="">-- គ្មាន --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark mb-1">វត្តមានវេនរសៀល (Afternoon Shift)</label>
+                            <select id="scanAfternoonStatus" class="form-select form-select-sm">
+                                <option value="P">P (វត្តមាន / Present)</option>
+                                <option value="A">A (អវត្តមាន / Absent)</option>
+                                <option value="L">L (ច្បាប់ / Leave)</option>
+                                <option value="">-- គ្មាន --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark mb-1">ម៉ោងការងារសរុប (Work Hours)</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" step="0.1" min="0" max="24" id="scanHoursInput" class="form-control" placeholder="ឧ. 8.0">
+                                <span class="input-group-text">ម៉ោង</span>
+                                <button type="button" class="btn btn-outline-secondary" onclick="autoCalcModalHours()" title="គណនាម៉ោងស្វ័យប្រវត្តិ">គណនា</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-dark mb-1">ទីតាំង / ចម្ងាយ GPS (Distance)</label>
+                            <input type="text" id="scanGpsInput" class="form-control form-control-sm" placeholder="ឧ. 15m (On-Site)">
+                        </div>
+                    </div>
+
+                    <div class="mb-1">
+                        <label class="form-label small fw-bold text-dark mb-1">កំណត់ចំណាំ (Note / Reason)</label>
+                        <input type="text" id="scanNoteInput" class="form-control form-control-sm" placeholder="ឧ. យឺតដោយសារបញ្ហាធ្វើដំណើរ / មកបំពេញការងារបន្ថែម">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer py-2 bg-light d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-danger btn-sm" id="btnDeleteScanRecord" onclick="deleteCurrentScanRecord()">
+                    <i class="bi bi-trash"></i> លុបកំណត់ត្រានេះ
+                </button>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">បោះបង់</button>
+                    <button type="button" class="btn btn-primary btn-sm px-3" onclick="saveScanRecordModal()">
+                        <i class="bi bi-save me-1"></i> រក្សាទុក
+                    </button>
                 </div>
             </div>
         </div>

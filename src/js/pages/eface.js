@@ -802,7 +802,7 @@ async function handleEfaceMatch(emp, detection) {
         }
     }
 
-    const attStatus = isLate ? 'L' : 'P';
+    const attStatus = 'P';
     let totalHoursWorkedStr = '';
 
     // Save/Update in db.attendance
@@ -813,18 +813,20 @@ async function handleEfaceMatch(emp, detection) {
         if (existing) {
             const updateData = {};
             if (scanMode === 'morning_in') {
-                updateData.morning = attStatus;
+                updateData.morning = 'P';
                 updateData.scanTimeMorning = timeStr;
                 updateData.checkInTime = timeStr;
             } else if (scanMode === 'morning_out') {
                 updateData.scanTimeMorningOut = timeStr;
+                if (!existing.morning || existing.morning === 'A') updateData.morning = 'P';
             } else if (scanMode === 'afternoon_in') {
-                updateData.afternoon = attStatus;
+                updateData.afternoon = 'P';
                 updateData.scanTimeAfternoon = timeStr;
                 if (!existing.checkInTime) updateData.checkInTime = timeStr;
             } else if (scanMode === 'afternoon_out') {
                 updateData.scanTimeAfternoonOut = timeStr;
                 updateData.checkOutTime = timeStr;
+                if (!existing.afternoon || existing.afternoon === 'A') updateData.afternoon = 'P';
             }
 
             // Calculate total hours worked if check-in exists
@@ -851,8 +853,8 @@ async function handleEfaceMatch(emp, detection) {
                 date: dateStr,
                 empId: emp.id,
                 empName: emp.name,
-                morning: (scanMode === 'morning_in' || scanMode === 'morning_out') ? attStatus : '',
-                afternoon: (scanMode === 'afternoon_in' || scanMode === 'afternoon_out') ? attStatus : '',
+                morning: (scanMode === 'morning_in' || scanMode === 'morning_out') ? 'P' : '',
+                afternoon: (scanMode === 'afternoon_in' || scanMode === 'afternoon_out') ? 'P' : '',
                 scanTimeMorning: scanMode === 'morning_in' ? timeStr : '',
                 scanTimeMorningOut: scanMode === 'morning_out' ? timeStr : '',
                 scanTimeAfternoon: scanMode === 'afternoon_in' ? timeStr : '',

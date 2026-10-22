@@ -38,6 +38,26 @@ window.loadAttendance = async function() {
     });
     
     let allRecords = await db.attendance.toArray();
+
+    // Auto-migrate legacy scan records where status was accidentally saved as 'L' instead of 'P'
+    try {
+        const legacyRecords = allRecords.filter(r => 
+            (r.morning === 'L' && (r.scanTimeMorning || r.checkInTime)) || 
+            (r.afternoon === 'L' && (r.scanTimeAfternoon || r.scanTimeAfternoonOut || r.checkOutTime))
+        );
+        for (const lr of legacyRecords) {
+            const patch = {};
+            if (lr.morning === 'L' && (lr.scanTimeMorning || lr.checkInTime)) patch.morning = 'P';
+            if (lr.afternoon === 'L' && (lr.scanTimeAfternoon || lr.scanTimeAfternoonOut || lr.checkOutTime)) patch.afternoon = 'P';
+            if (Object.keys(patch).length > 0) {
+                await db.attendance.update(lr.id, patch);
+                Object.assign(lr, patch);
+            }
+        }
+    } catch (migErr) {
+        console.warn('Attendance scan migration error:', migErr);
+    }
+
     let records = allRecords.filter(r => r.date && r.date.startsWith(monthVal));
 
     currentAttendanceData = {};
@@ -104,6 +124,9 @@ function renderAttendanceTable(employees) {
             </td>`;
             
         let totalP = 0, totalA = 0, totalL = 0;
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const currentHour = today.getHours();
 
         for (let d = 1; d <= currentDaysInMonth; d++) {
             const isEven = (d % 2 === 0);
@@ -113,6 +136,24 @@ function renderAttendanceTable(employees) {
             
             let mVal = (rec && rec.morning) ? rec.morning : '';
             let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
+
+            // If staff has not scanned for past shifts, record/display as 'A' (Absent)
+            if (dateStr < todayStr) {
+                if (!mVal) mVal = 'A';
+                if (!aVal) aVal = 'A';
+            } else if (dateStr === todayStr) {
+                if (currentHour >= 12 && !mVal) mVal = 'A';
+                if (currentHour >= 18 && !aVal) aVal = 'A';
+            }
+
+            // Sync back to currentAttendanceData for proper recalculation and save
+            if (!currentAttendanceData[emp.id]) currentAttendanceData[emp.id] = {};
+            if (!currentAttendanceData[emp.id][dateStr]) {
+                currentAttendanceData[emp.id][dateStr] = { morning: mVal, afternoon: aVal };
+            } else {
+                currentAttendanceData[emp.id][dateStr].morning = mVal;
+                currentAttendanceData[emp.id][dateStr].afternoon = aVal;
+            }
             
             // Tally totals
             if (mVal === 'P') totalP += 0.5;
@@ -143,7 +184,18 @@ function renderAttendanceTable(employees) {
 }
 
 window.toggleAtt = function(empId, dateStr, shift, el) {
-    const states = ['P', 'A', 'L', '']; // cycle: Empty -> P -> A -> L -> Empty
+    if (typeof canEditAttendance === 'function' && !canEditAttendance()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'គ្មានសិទ្ធិ',
+            text: 'អ្នកមិនមានសិទ្ធិកែប្រែវត្តមានបុគ្គលិកទេ! សូមទាក់ទង Admin។',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#059669'
+        });
+        return;
+    }
+
+    const states = ['P', 'A', 'L', '']; // cycle: P -> A -> L -> Empty
     let currentState = el.innerText.trim();
     let nextIdx = (states.indexOf(currentState) + 1) % states.length;
     let nextState = states[nextIdx];
@@ -165,12 +217,24 @@ window.toggleAtt = function(empId, dateStr, shift, el) {
 
 function recalcTotals(empId) {
     let totalP = 0, totalA = 0, totalL = 0;
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const currentHour = today.getHours();
+
     for (let d = 1; d <= currentDaysInMonth; d++) {
         const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         const rec = currentAttendanceData[empId] ? currentAttendanceData[empId][dateStr] : null;
         
         let mVal = (rec && rec.morning) ? rec.morning : '';
         let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
+
+        if (dateStr < todayStr) {
+            if (!mVal) mVal = 'A';
+            if (!aVal) aVal = 'A';
+        } else if (dateStr === todayStr) {
+            if (currentHour >= 12 && !mVal) mVal = 'A';
+            if (currentHour >= 18 && !aVal) aVal = 'A';
+        }
         
         if (mVal === 'P') totalP += 0.5;
         if (mVal === 'A') totalA += 0.5;
@@ -190,6 +254,17 @@ function recalcTotals(empId) {
 }
 
 window.openApplyAllPModal = async function(preselectedDay) {
+    if (typeof canEditAttendance === 'function' && !canEditAttendance()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'គ្មានសិទ្ធិ',
+            text: 'អ្នកមិនមានសិទ្ធិកែប្រែវត្តមានបុគ្គលិកទេ! សូមទាក់ទង Admin។',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#059669'
+        });
+        return;
+    }
+
     let employees = await db.employees.toArray();
     if (!employees || employees.length === 0) {
         Swal.fire('មិនមានបុគ្គលិក', 'សូមបញ្ចូលព័ត៌មានបុគ្គលិកជាមុនសិន!', 'warning');
@@ -281,6 +356,17 @@ function applyPToAll(day, shift, employees) {
 }
 
 window.saveAllAttendance = async function() {
+    if (typeof canEditAttendance === 'function' && !canEditAttendance()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'គ្មានសិទ្ធិ',
+            text: 'អ្នកមិនមានសិទ្ធិកែប្រែ ឬរក្សាទុកវត្តមានទេ! សូមទាក់ទង Admin។',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#059669'
+        });
+        return;
+    }
+
     const monthVal = document.getElementById('attendanceMonth').value;
     if (!monthVal) {
         Swal.fire('បម្រាម', 'សូមជ្រើសរើសខែ!', 'warning');

@@ -238,10 +238,75 @@ window.generateTimesheetReport = async function() {
 
         // 3. Fetch Attendance records in range
         const allAtt = await db.attendance.toArray();
-        const records = allAtt.filter(r => r.date && r.date >= from && r.date <= to);
 
-        if (records.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted"><i class="bi bi-inbox fs-4 d-block mb-1"></i>មិនមានទិន្នន័យស្កែនក្នុងចន្លោះកាលបរិច្ឆេទនេះទេ!</td></tr>';
+        // Auto-migrate legacy scan records where status was mistakenly recorded as 'L' instead of 'P'
+        try {
+            const legacyRecords = allAtt.filter(r => 
+                (r.morning === 'L' && (r.scanTimeMorning || r.checkInTime)) || 
+                (r.afternoon === 'L' && (r.scanTimeAfternoon || r.scanTimeAfternoonOut || r.checkOutTime))
+            );
+            for (const lr of legacyRecords) {
+                const patch = {};
+                if (lr.morning === 'L' && (lr.scanTimeMorning || lr.checkInTime)) patch.morning = 'P';
+                if (lr.afternoon === 'L' && (lr.scanTimeAfternoon || lr.scanTimeAfternoonOut || lr.checkOutTime)) patch.afternoon = 'P';
+                if (Object.keys(patch).length > 0) {
+                    await db.attendance.update(lr.id, patch);
+                    Object.assign(lr, patch);
+                }
+            }
+        } catch (migErr) {
+            console.warn('Attendance scan migration error in timesheet:', migErr);
+        }
+
+        const existingRecords = allAtt.filter(r => r.date && r.date >= from && r.date <= to);
+        const existingMap = new Map();
+        existingRecords.forEach(r => existingMap.set(`${r.empId}_${r.date}`, r));
+
+        const todayObj = new Date();
+        const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
+        const currentHour = todayObj.getHours();
+
+        const combinedRecords = [...existingRecords];
+
+        // Synthesize unscanned staff records for past dates/shifts (Default to 'A' Absent)
+        let curD = new Date(from);
+        const endD = new Date(to);
+        while (curD <= endD) {
+            const dStr = curD.toISOString().split('T')[0];
+            if (dStr <= todayStr) {
+                const isMorningPast = (dStr < todayStr) || (dStr === todayStr && currentHour >= 12);
+                const isAfternoonPast = (dStr < todayStr) || (dStr === todayStr && currentHour >= 18);
+
+                if (isMorningPast || isAfternoonPast) {
+                    employees.forEach(emp => {
+                        const key = `${emp.id}_${dStr}`;
+                        if (!existingMap.has(key)) {
+                            combinedRecords.push({
+                                id: `unscanned_${emp.id}_${dStr}`,
+                                date: dStr,
+                                empId: emp.id,
+                                empName: emp.name,
+                                morning: isMorningPast ? 'A' : '',
+                                afternoon: isAfternoonPast ? 'A' : '',
+                                scanTimeMorning: '',
+                                scanTimeMorningOut: '',
+                                scanTimeAfternoon: '',
+                                scanTimeAfternoonOut: '',
+                                checkInTime: '',
+                                checkOutTime: '',
+                                totalHoursWorked: 0,
+                                note: 'អវត្តមាន (មិនបានស្កែន)',
+                                isSynthetic: true
+                            });
+                        }
+                    });
+                }
+            }
+            curD.setDate(curD.getDate() + 1);
+        }
+
+        if (combinedRecords.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted"><i class="bi bi-inbox fs-4 d-block mb-1"></i>មិនមានទិន្នន័យស្កែនក្នុងចន្លោះកាលបរិច្ឆេទនេះទេ!</td></tr>';
             updateTimesheetKpis([], shifts);
             return;
         }
@@ -249,7 +314,7 @@ window.generateTimesheetReport = async function() {
         // 4. Process each attendance record
         const processedList = [];
 
-        records.forEach(r => {
+        combinedRecords.forEach(r => {
             const emp = empMap[r.empId] || { name: r.empName || 'បុគ្គលិក', code: `EMP-${r.empId}`, photo: '', department: 'ទូទៅ', position: 'បុគ្គលិក' };
 
             // Department filter
@@ -313,8 +378,14 @@ window.generateTimesheetReport = async function() {
                     inBadgeClass = 'bg-warning bg-opacity-25 text-warning border border-warning';
                 }
             } else {
-                inStatusText = 'មិនបានស្កែនចូល';
-                inBadgeClass = 'bg-secondary bg-opacity-25 text-muted';
+                if (r.morning === 'A' || r.isSynthetic) {
+                    inStatus = 'absent';
+                    inStatusText = 'អវត្តមាន (A)';
+                    inBadgeClass = 'bg-danger bg-opacity-15 text-danger border border-danger';
+                } else {
+                    inStatusText = 'មិនបានស្កែនចូល';
+                    inBadgeClass = 'bg-secondary bg-opacity-25 text-muted';
+                }
             }
 
             // --- Analyze Check-Out Status ---
@@ -346,11 +417,15 @@ window.generateTimesheetReport = async function() {
                     outBadgeClass = 'bg-primary bg-opacity-15 text-primary border border-primary';
                 }
             } else {
-                const isToday = (r.date === new Date().toISOString().split('T')[0]);
+                const isToday = (r.date === todayStr);
                 if (isToday && checkIn) {
                     outStatus = 'working';
                     outStatusText = 'កំពុងបំពេញការងារ';
                     outBadgeClass = 'bg-info bg-opacity-15 text-info border border-info';
+                } else if (r.afternoon === 'A' || r.isSynthetic) {
+                    outStatus = 'absent';
+                    outStatusText = 'អវត្តមាន (A)';
+                    outBadgeClass = 'bg-danger bg-opacity-15 text-danger border border-danger';
                 } else {
                     outStatus = 'no_checkout';
                     outStatusText = 'មិនបានស្កែនចេញ';
@@ -399,6 +474,7 @@ window.generateTimesheetReport = async function() {
             if (statusFilter === 'late' && inStatus !== 'late') return;
             if (statusFilter === 'early_out' && outStatus !== 'early_out') return;
             if (statusFilter === 'overtime' && outStatus !== 'overtime') return;
+            if (statusFilter === 'absent' && inStatus !== 'absent' && outStatus !== 'absent') return;
 
             processedList.push({
                 record: r,
@@ -430,8 +506,11 @@ window.generateTimesheetReport = async function() {
         // 6. Update Summary KPI Cards
         updateTimesheetKpis(processedList, shifts);
 
+        const canEdit = typeof canEditAttendance === 'function' ? canEditAttendance() : true;
+        const canDel = typeof canDeleteAttendance === 'function' ? canDeleteAttendance() : true;
+
         if (processedList.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted"><i class="bi bi-filter fs-4 d-block mb-1"></i>មិនមានទិន្នន័យត្រូវនឹងតម្រងស្វែងរកនេះទេ!</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted"><i class="bi bi-filter fs-4 d-block mb-1"></i>មិនមានទិន្នន័យត្រូវនឹងតម្រងស្វែងរកនេះទេ!</td></tr>';
             return;
         }
 
@@ -446,6 +525,26 @@ window.generateTimesheetReport = async function() {
             let progressBarColor = 'bg-success';
             if (percentOf8h < 50) progressBarColor = 'bg-danger';
             else if (percentOf8h < 90) progressBarColor = 'bg-warning';
+
+            const editBtn = canEdit ? `
+                <button class="btn btn-outline-primary btn-sm py-0 px-2" onclick="openEditAttendanceModal('${r.id}')" title="កែប្រែទិន្នន័យ">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+            ` : '';
+            const delBtn = (canDel && !r.isSynthetic) ? `
+                <button class="btn btn-outline-danger btn-sm py-0 px-2" onclick="deleteAttendanceRecord('${r.id}')" title="លុបទិន្នន័យ">
+                    <i class="bi bi-trash"></i>
+                </button>
+            ` : '';
+
+            const actionCell = (canEdit || canDel) ? `
+                <td class="col-actions text-center">
+                    <div class="d-flex justify-content-center gap-1">
+                        ${editBtn}
+                        ${delBtn}
+                    </div>
+                </td>
+            ` : '<td class="col-actions text-center text-muted small">-</td>';
 
             html += `
             <tr>
@@ -488,6 +587,7 @@ window.generateTimesheetReport = async function() {
                     <div>${r.note || 'វត្តមានប្រចាំថ្ងៃ'}</div>
                     ${r.gpsDistance ? `<div class="text-info"><i class="bi bi-geo-alt"></i> ${r.gpsDistance}m</div>` : ''}
                 </td>
+                ${actionCell}
             </tr>`;
         });
 
@@ -495,7 +595,7 @@ window.generateTimesheetReport = async function() {
 
     } catch (err) {
         console.error('Error generating timesheet report:', err);
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-danger">កំហុសក្នុងការទាញយកទិន្នន័យ៖ ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-danger">កំហុសក្នុងការទាញយកទិន្នន័យ៖ ${err.message}</td></tr>`;
     }
 };
 
@@ -512,7 +612,7 @@ function updateTimesheetKpis(list) {
 
     if (!pEl) return;
 
-    const uniqueEmps = new Set(list.map(i => i.emp.id || i.record.empId));
+    const presentEmps = new Set(list.filter(i => i.checkIn || i.record.morning === 'P' || i.record.afternoon === 'P').map(i => i.emp.id || i.record.empId));
     let totalMinutes = 0;
     let ontimeCount = 0;
     let lateCount = 0;
@@ -778,10 +878,22 @@ window.generateAttendanceReport = async function() {
                     seqNo++;
                         
                     let totalP = 0, totalA = 0, totalL = 0;
+                    const todayObj = new Date();
+                    const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
+                    const currentHour = todayObj.getHours();
+
                     for (let d of daysArray) {
-                        const rec = agg[emp.id][d];
+                        const rec = agg[emp.id] ? agg[emp.id][d] : null;
                         let m = (rec && rec.morning) ? rec.morning : '';
                         let a = (rec && rec.afternoon) ? rec.afternoon : '';
+
+                        if (d < todayStr) {
+                            if (!m) m = 'A';
+                            if (!a) a = 'A';
+                        } else if (d === todayStr) {
+                            if (currentHour >= 12 && !m) m = 'A';
+                            if (currentHour >= 18 && !a) a = 'A';
+                        }
                         
                         if (m === 'P') totalP += 0.5;
                         if (m === 'A') totalA += 0.5;
@@ -794,10 +906,18 @@ window.generateAttendanceReport = async function() {
                     chunk.forEach((dateStr, dIdx) => {
                         const isEven = (dIdx % 2 === 1);
                         const dayClass = isEven ? 'day-even-col' : 'day-odd-col';
-                        const rec = agg[emp.id][dateStr];
+                        const rec = agg[emp.id] ? agg[emp.id][dateStr] : null;
                         
                         let mVal = (rec && rec.morning) ? rec.morning : '';
                         let aVal = (rec && rec.afternoon) ? rec.afternoon : '';
+
+                        if (dateStr < todayStr) {
+                            if (!mVal) mVal = 'A';
+                            if (!aVal) aVal = 'A';
+                        } else if (dateStr === todayStr) {
+                            if (currentHour >= 12 && !mVal) mVal = 'A';
+                            if (currentHour >= 18 && !aVal) aVal = 'A';
+                        }
                         
                         let mClass = mVal ? mVal : 'none';
                         let aClass = aVal ? aVal : 'none';
@@ -870,3 +990,340 @@ setTimeout(() => {
         loadAttendanceReportLogo();
     }
 }, 150);
+
+// ====== SCAN RECORD MODAL HANDLERS (ADD / EDIT / DELETE) ======
+
+window.loadEmployeesForScanModal = async function() {
+    const select = document.getElementById('scanEmpSelect');
+    if (!select) return;
+    try {
+        const emps = await db.employees.toArray();
+        emps.sort((a, b) => {
+            const deptA = (a.department || '').trim();
+            const deptB = (b.department || '').trim();
+            const deptCompare = deptA.localeCompare(deptB, 'km');
+            if (deptCompare !== 0) return deptCompare;
+            return (a.name || '').localeCompare(b.name || '', 'km');
+        });
+        select.innerHTML = '<option value="">-- ជ្រើសរើសបុគ្គលិក --</option>' +
+            emps.map(e => `<option value="${e.id}">${e.name} ${e.latinName ? `(${e.latinName})` : ''} - ផ្នែក៖ ${e.department || 'ទូទៅ'}</option>`).join('');
+    } catch (e) {
+        console.error('Error loading employees for modal:', e);
+    }
+};
+
+window.autoCalcModalHours = function() {
+    const inVal = document.getElementById('scanCheckInInput')?.value;
+    const outVal = document.getElementById('scanCheckOutInput')?.value;
+    if (!inVal || !outVal) return;
+    const [ih, im] = inVal.split(':').map(Number);
+    const [oh, om] = outVal.split(':').map(Number);
+    let span = (oh * 60 + om) - (ih * 60 + im);
+    if (span <= 0) return;
+    // Deduct 2h lunch if spanned across noon
+    if (ih < 12 && oh > 13) span = Math.max(0, span - 120);
+    const hrs = +(span / 60).toFixed(2);
+    const hInput = document.getElementById('scanHoursInput');
+    if (hInput && (!hInput.value || parseFloat(hInput.value) === 0)) {
+        hInput.value = hrs;
+    }
+
+    const mStatus = document.getElementById('scanMorningStatus');
+    const aStatus = document.getElementById('scanAfternoonStatus');
+    if (mStatus && (!mStatus.value || mStatus.value === 'A') && ih < 12) {
+        mStatus.value = 'P';
+    }
+    if (aStatus && (!aStatus.value || aStatus.value === 'A') && oh >= 13) {
+        aStatus.value = 'P';
+    }
+};
+
+window.openAddScanRecordModal = async function() {
+    if (typeof canAddAttendance === 'function' && !canAddAttendance()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'គ្មានសិទ្ធិ',
+            text: 'អ្នកមិនមានសិទ្ធិបន្ថែមទិន្នន័យស្កែនវត្តមានទេ!',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#059669'
+        });
+        return;
+    }
+
+    await loadEmployeesForScanModal();
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const idEl = document.getElementById('scanRecordId');
+    if (idEl) idEl.value = '';
+    const titleEl = document.getElementById('scanModalTitle');
+    if (titleEl) titleEl.innerHTML = '<i class="bi bi-plus-circle text-primary me-1"></i> បន្ថែមទិន្នន័យស្កែនវត្តមាន (Add Scan Record)';
+    
+    const empSelect = document.getElementById('scanEmpSelect');
+    if (empSelect) {
+        empSelect.value = '';
+        empSelect.disabled = false;
+    }
+    
+    const dateInput = document.getElementById('scanDateInput');
+    if (dateInput) dateInput.value = todayStr;
+    const inInput = document.getElementById('scanCheckInInput');
+    if (inInput) inInput.value = '07:30';
+    const outInput = document.getElementById('scanCheckOutInput');
+    if (outInput) outInput.value = '17:00';
+    const mSelect = document.getElementById('scanMorningStatus');
+    if (mSelect) mSelect.value = 'P';
+    const aSelect = document.getElementById('scanAfternoonStatus');
+    if (aSelect) aSelect.value = 'P';
+    const hInput = document.getElementById('scanHoursInput');
+    if (hInput) hInput.value = '8.0';
+    const gInput = document.getElementById('scanGpsInput');
+    if (gInput) gInput.value = 'On-Site';
+    const nInput = document.getElementById('scanNoteInput');
+    if (nInput) nInput.value = 'បញ្ចូលដោយដៃ (Manual Entry)';
+
+    const delBtn = document.getElementById('btnDeleteScanRecord');
+    if (delBtn) delBtn.style.display = 'none';
+
+    const modalEl = document.getElementById('editScanRecordModal');
+    if (modalEl) {
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+};
+
+window.openEditAttendanceModal = async function(recordId) {
+    if (typeof canEditAttendance === 'function' && !canEditAttendance()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'គ្មានសិទ្ធិ',
+            text: 'អ្នកមិនមានសិទ្ធិកែប្រែទិន្នន័យស្កែនវត្តមានទេ!',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#059669'
+        });
+        return;
+    }
+
+    await loadEmployeesForScanModal();
+
+    let rec = null;
+    let isSynthetic = false;
+
+    if (String(recordId).startsWith('unscanned_')) {
+        // Form: unscanned_empId_YYYY-MM-DD
+        const parts = String(recordId).split('_');
+        const empId = parts[1];
+        const dateStr = parts[2];
+        const emp = await db.employees.get(Number(empId)) || await db.employees.get(empId);
+        rec = {
+            id: recordId,
+            empId: empId,
+            empName: emp ? emp.name : '',
+            date: dateStr,
+            checkInTime: '',
+            checkOutTime: '',
+            morning: 'A',
+            afternoon: 'A',
+            totalHoursWorked: 0,
+            note: 'អវត្តមាន (មិនបានស្កែន)'
+        };
+        isSynthetic = true;
+    } else {
+        rec = await db.attendance.get(Number(recordId));
+        if (!rec) {
+            Swal.fire('មិនមានទិន្នន័យ', 'រកមិនឃើញទិន្នន័យកំណត់ត្រានេះទេ!', 'error');
+            return;
+        }
+    }
+
+    const idEl = document.getElementById('scanRecordId');
+    if (idEl) idEl.value = rec.id || '';
+    const titleEl = document.getElementById('scanModalTitle');
+    if (titleEl) titleEl.innerHTML = '<i class="bi bi-pencil-square text-primary me-1"></i> កែប្រែទិន្នន័យស្កែនវត្តមាន (Edit Scan Record)';
+    
+    const empSelect = document.getElementById('scanEmpSelect');
+    if (empSelect) {
+        empSelect.value = rec.empId || '';
+        empSelect.disabled = false;
+    }
+    
+    const dateInput = document.getElementById('scanDateInput');
+    if (dateInput) dateInput.value = rec.date || '';
+    const inInput = document.getElementById('scanCheckInInput');
+    if (inInput) inInput.value = rec.checkInTime || rec.scanTimeMorning || '';
+    const outInput = document.getElementById('scanCheckOutInput');
+    if (outInput) outInput.value = rec.checkOutTime || rec.scanTimeAfternoonOut || '';
+    const mSelect = document.getElementById('scanMorningStatus');
+    if (mSelect) mSelect.value = rec.morning || (rec.checkInTime ? 'P' : 'A');
+    const aSelect = document.getElementById('scanAfternoonStatus');
+    if (aSelect) aSelect.value = rec.afternoon || (rec.checkOutTime ? 'P' : 'A');
+    const hInput = document.getElementById('scanHoursInput');
+    if (hInput) hInput.value = rec.totalHoursWorked || '';
+    const gInput = document.getElementById('scanGpsInput');
+    if (gInput) gInput.value = rec.gpsDistance ? `${rec.gpsDistance}m` : '';
+    const nInput = document.getElementById('scanNoteInput');
+    if (nInput) nInput.value = rec.note || '';
+
+    const delBtn = document.getElementById('btnDeleteScanRecord');
+    if (delBtn) {
+        const canDel = typeof canDeleteAttendance === 'function' ? canDeleteAttendance() : true;
+        delBtn.style.display = (!isSynthetic && canDel) ? 'block' : 'none';
+    }
+
+    const modalEl = document.getElementById('editScanRecordModal');
+    if (modalEl) {
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+};
+
+window.saveScanRecordModal = async function() {
+    if (typeof canEditAttendance === 'function' && !canEditAttendance()) {
+        Swal.fire('គ្មានសិទ្ធិ', 'អ្នកមិនមានសិទ្ធិកែប្រែទិន្នន័យវត្តមានទេ!', 'warning');
+        return;
+    }
+
+    const recId = document.getElementById('scanRecordId').value;
+    const empId = document.getElementById('scanEmpSelect').value;
+    const dateStr = document.getElementById('scanDateInput').value;
+
+    if (!empId) {
+        Swal.fire('បម្រាម', 'សូមជ្រើសរើសបុគ្គលិក!', 'warning');
+        return;
+    }
+    if (!dateStr) {
+        Swal.fire('បម្រាម', 'សូមជ្រើសរើសកាលបរិច្ឆេទ!', 'warning');
+        return;
+    }
+
+    const checkIn = document.getElementById('scanCheckInInput').value.trim();
+    const checkOut = document.getElementById('scanCheckOutInput').value.trim();
+    const morning = document.getElementById('scanMorningStatus').value;
+    const afternoon = document.getElementById('scanAfternoonStatus').value;
+    let hours = parseFloat(document.getElementById('scanHoursInput').value) || 0;
+    const gpsDistance = document.getElementById('scanGpsInput').value.trim();
+    const note = document.getElementById('scanNoteInput').value.trim();
+
+    // Auto-compute hours if 0 but in & out exist
+    if (hours === 0 && checkIn && checkOut) {
+        const [ih, im] = checkIn.split(':').map(Number);
+        const [oh, om] = checkOut.split(':').map(Number);
+        let span = (oh * 60 + om) - (ih * 60 + im);
+        if (span > 0) {
+            if (ih < 12 && oh > 13) span = Math.max(0, span - 120);
+            hours = +(span / 60).toFixed(2);
+        }
+    }
+
+    try {
+        const emp = await db.employees.get(Number(empId)) || await db.employees.get(empId);
+        const data = {
+            date: dateStr,
+            empId: Number(empId) || empId,
+            empName: emp ? emp.name : '',
+            checkInTime: checkIn,
+            checkOutTime: checkOut,
+            scanTimeMorning: (checkIn && checkIn < '12:00') ? checkIn : '',
+            scanTimeMorningOut: '',
+            scanTimeAfternoon: (checkIn && checkIn >= '12:00') ? checkIn : '',
+            scanTimeAfternoonOut: checkOut,
+            morning: morning,
+            afternoon: afternoon,
+            totalHoursWorked: hours,
+            note: note,
+            gpsDistance: gpsDistance
+        };
+
+        if (recId && !String(recId).startsWith('unscanned_')) {
+            await db.attendance.update(Number(recId), data);
+        } else {
+            // Check if record already exists for (empId, date)
+            const allAtt = await db.attendance.toArray();
+            const existing = allAtt.find(r => r.date === dateStr && String(r.empId) === String(empId));
+            if (existing) {
+                await db.attendance.update(existing.id, data);
+            } else {
+                await db.attendance.add(data);
+            }
+        }
+
+        const modalEl = document.getElementById('editScanRecordModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+
+        Swal.fire({
+            icon: 'success',
+            title: 'ជោគជ័យ!',
+            text: 'បានរក្សាទុកទិន្នន័យស្កែនវត្តមានរួចរាល់។',
+            timer: 1500,
+            showConfirmButton: false
+        });
+
+        generateTimesheetReport();
+        if (typeof loadAttendance === 'function' && document.getElementById('attendanceMonth')) {
+            loadAttendance();
+        }
+    } catch (err) {
+        console.error('Error saving scan record:', err);
+        Swal.fire('បរាជ័យ', err.message || 'មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យស្កែន', 'error');
+    }
+};
+
+window.deleteAttendanceRecord = async function(recordId) {
+    if (typeof canDeleteAttendance === 'function' && !canDeleteAttendance()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'គ្មានសិទ្ធិ',
+            text: 'អ្នកមិនមានសិទ្ធិលុបទិន្នន័យស្កែនវត្តមានទេ!',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#059669'
+        });
+        return;
+    }
+
+    if (!recordId || String(recordId).startsWith('unscanned_')) {
+        Swal.fire('ព័ត៌មាន', 'កំណត់ត្រានេះមិនទាន់មានក្នុងមូលដ្ឋានទិន្នន័យទេ (អវត្តមានស្វ័យប្រវត្តិ)', 'info');
+        return;
+    }
+
+    const { isConfirmed } = await Swal.fire({
+        title: 'តើអ្នកពិតជាចង់លុបទិន្នន័យស្កែននេះមែនទេ?',
+        text: 'ទិន្នន័យដែលបានលុប មិនអាចត្រឡប់មកវិញបានឡើយ!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="bi bi-trash"></i> បាទ/ចាស លុប',
+        cancelButtonText: 'បោះបង់'
+    });
+
+    if (isConfirmed) {
+        try {
+            await db.attendance.delete(Number(recordId));
+            
+            const modalEl = document.getElementById('editScanRecordModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'លុបជោគជ័យ!',
+                text: 'ទិន្នន័យស្កែនត្រូវបានលុបចេញពីប្រព័ន្ធ។',
+                timer: 1500,
+                showConfirmButton: false
+            });
+
+            generateTimesheetReport();
+            if (typeof loadAttendance === 'function' && document.getElementById('attendanceMonth')) {
+                loadAttendance();
+            }
+        } catch (err) {
+            console.error('Error deleting scan record:', err);
+            Swal.fire('បរាជ័យ', err.message || 'មានបញ្ហាក្នុងការលុបទិន្នន័យ', 'error');
+        }
+    }
+};
+
+window.deleteCurrentScanRecord = function() {
+    const id = document.getElementById('scanRecordId')?.value;
+    if (id) deleteAttendanceRecord(id);
+};

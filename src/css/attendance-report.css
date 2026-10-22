@@ -256,4 +256,8 @@
         font-size: 8px !important;
         padding: 1px 4px !important;
     }
+
+    body.printing-timesheet .col-actions {
+        display: none !important;
+    }
 }

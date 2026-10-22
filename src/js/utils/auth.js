@@ -43,7 +43,7 @@ async function ensureDefaultAdmin() {
                 await db.users.add({
                     username: 'admin',
                     password: '123456',
-                    permissions: ['dashboard', 'invoice_add', 'invoice_list', 'income', 'expense', 'reports', 'settings', 'employee_manage', 'perm_add', 'perm_edit', 'perm_delete']
+                    permissions: ['dashboard', 'invoice_add', 'invoice_list', 'income', 'expense', 'reports', 'settings', 'employee_manage', 'perm_add', 'perm_edit', 'perm_delete', 'attendance', 'attendance_add', 'attendance_edit', 'attendance_delete']
                 });
             }
         }
@@ -217,6 +217,27 @@ function hasPermission(perm) {
     return Boolean(currentUser.permissions && currentUser.permissions.includes(perm));
 }
 
+window.canEditAttendance = function() {
+    if (!currentUser) return false;
+    if ((currentUser.username || '').toLowerCase() === 'admin') return true;
+    const perms = currentUser.permissions || [];
+    return perms.includes('attendance_edit') || perms.includes('attendance') || perms.includes('employee_manage');
+};
+
+window.canDeleteAttendance = function() {
+    if (!currentUser) return false;
+    if ((currentUser.username || '').toLowerCase() === 'admin') return true;
+    const perms = currentUser.permissions || [];
+    return perms.includes('attendance_delete') || perms.includes('attendance') || perms.includes('employee_manage');
+};
+
+window.canAddAttendance = function() {
+    if (!currentUser) return false;
+    if ((currentUser.username || '').toLowerCase() === 'admin') return true;
+    const perms = currentUser.permissions || [];
+    return perms.includes('attendance_add') || perms.includes('attendance') || perms.includes('employee_manage');
+};
+
 // Override applyPermissions to hide elements
 window.applyPermissions = function() {
     if (!currentUser) return;
@@ -237,6 +258,7 @@ window.applyPermissions = function() {
         'expense_add', 'expense_edit', 'expense_delete',
         'invoice_add', 'invoice_list_edit', 'invoice_list_delete',
         'employee_add', 'employee_edit', 'employee_delete',
+        'attendance_add', 'attendance_edit', 'attendance_delete',
         'settings_categories_add', 'settings_categories_delete',
         'settings_preparers_add', 'settings_preparers_delete',
         'settings_farm_info_edit', 'settings_users_add', 'settings_users_edit', 'settings_users_delete',
