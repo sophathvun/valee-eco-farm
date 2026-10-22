@@ -1,4 +1,33 @@
 <!-- E-FACE BIOMETRIC ATTENDANCE SCANNER TEMPLATE -->
+<script>
+    // Global Safe Stubs to prevent ReferenceError if clicked before eface.js is loaded
+    window.toggleEfaceScanning = window.toggleEfaceScanning || function() {
+        if (typeof window.startEfaceScanning === 'function') {
+            if (window.isEfaceScanning) {
+                if (typeof window.stopEfaceScanning === 'function') window.stopEfaceScanning();
+            } else {
+                window.startEfaceScanning();
+            }
+        } else {
+            console.warn('E-Face scanner is initializing, please wait...');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'info',
+                    text: 'កំពុងរៀបចំប្រព័ន្ធស្កែនផ្ទៃមុខ សូមរង់ចាំមួយភ្លែត...',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        }
+    };
+    window.openEfaceManualModal = window.openEfaceManualModal || function() {};
+    window.toggleEfaceCameraFacing = window.toggleEfaceCameraFacing || function() {};
+    window.toggleEfaceSound = window.toggleEfaceSound || function() {};
+    window.toggleEfaceKioskMode = window.toggleEfaceKioskMode || function() {};
+    window.recheckEfaceGps = window.recheckEfaceGps || function() {};
+    window.loadEfaceRecentScans = window.loadEfaceRecentScans || function() {};
+    window.submitEfaceManualCheckIn = window.submitEfaceManualCheckIn || function() {};
+</script>
 <div class="container-fluid p-0">
     <!-- Header Card -->
     <div class="eface-header-card d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -23,13 +52,13 @@
                 <i class="bi bi-geo-alt-fill text-info" id="eface-gps-badge-icon"></i>
                 <span id="eface-gps-badge-text">GPS Checking...</span>
             </span>
-            <button type="button" class="btn btn-sm btn-dark border border-secondary text-light px-3 py-2 rounded-3" id="btn-eface-flip" onclick="toggleEfaceCameraFacing()" title="ប្ដូរកាមេរ៉ា (Flip Front/Back Camera)">
+            <button type="button" class="btn btn-sm btn-dark border border-secondary text-light px-3 py-2 rounded-3" id="btn-eface-flip" onclick="window.toggleEfaceCameraFacing && window.toggleEfaceCameraFacing()" title="ប្ដូរកាមេរ៉ា (Flip Front/Back Camera)">
                 <i class="bi bi-camera-reverse fs-6"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-dark border border-secondary text-light px-3 py-2 rounded-3" id="btn-eface-sound" onclick="toggleEfaceSound()" title="បិទ/បើកសម្លេង (Toggle Audio Chime)">
+            <button type="button" class="btn btn-sm btn-dark border border-secondary text-light px-3 py-2 rounded-3" id="btn-eface-sound" onclick="window.toggleEfaceSound && window.toggleEfaceSound()" title="បិទ/បើកសម្លេង (Toggle Audio Chime)">
                 <i class="bi bi-volume-up fs-6" id="eface-sound-icon"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-info px-3 py-2 rounded-3" id="btn-eface-kiosk" onclick="toggleEfaceKioskMode()" title="ពេញអេក្រង់ (Fullscreen / Kiosk Mode)">
+            <button type="button" class="btn btn-sm btn-outline-info px-3 py-2 rounded-3" id="btn-eface-kiosk" onclick="window.toggleEfaceKioskMode && window.toggleEfaceKioskMode()" title="ពេញអេក្រង់ (Fullscreen / Kiosk Mode)">
                 <i class="bi bi-arrows-fullscreen fs-6"></i> <span class="d-none d-sm-inline ms-1">Kiosk</span>
             </button>
         </div>
@@ -149,7 +178,7 @@
                             <strong class="text-info" id="eface-gps-radius-text">-- m</strong>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-outline-light border-secondary px-4 py-2 rounded-pill fw-bold" id="btn-recheck-gps" onclick="recheckEfaceGps(true)">
+                    <button type="button" class="btn btn-outline-light border-secondary px-4 py-2 rounded-pill fw-bold" id="btn-recheck-gps" onclick="window.recheckEfaceGps && window.recheckEfaceGps(true)">
                         <i class="bi bi-arrow-clockwise me-1"></i> ពិនិត្យទីតាំងឡើងវិញ (Re-check)
                     </button>
                 </div>
@@ -159,11 +188,11 @@
 
         <!-- Main Controls Under Scanner -->
         <div class="eface-controls">
-            <button type="button" class="btn-eface-primary" id="btn-eface-toggle" onclick="toggleEfaceScanning()">
+            <button type="button" class="btn-eface-primary" id="btn-eface-toggle" onclick="window.toggleEfaceScanning && window.toggleEfaceScanning()">
                 <i class="bi bi-play-circle-fill fs-5" id="eface-toggle-icon"></i>
                 <span id="eface-toggle-text">ចាប់ផ្តើមស្កេន (Start)</span>
             </button>
-            <button type="button" class="btn-eface-secondary" id="btn-eface-manual" onclick="openEfaceManualModal()">
+            <button type="button" class="btn-eface-secondary" id="btn-eface-manual" onclick="window.openEfaceManualModal && window.openEfaceManualModal()">
                 <i class="bi bi-person-badge fs-5"></i>
                 <span>ស្កែនដោយដៃ</span>
             </button>
@@ -184,7 +213,7 @@
         <div class="eface-recent-section">
             <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom border-secondary border-opacity-25">
                 <span class="small fw-bold text-light"><i class="bi bi-clock-history me-1 text-info"></i> បុគ្គលិកទើបស្កែនថ្មីៗ (Recent Scans)</span>
-                <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-info small" onclick="loadEfaceRecentScans()">Refresh</button>
+                <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none text-info small" onclick="window.loadEfaceRecentScans && window.loadEfaceRecentScans()">Refresh</button>
             </div>
             <div id="eface-recent-list">
                 <div class="text-center py-3 text-muted small">មិនទាន់មានការស្កែននៅថ្ងៃនេះនៅឡើយទេ</div>
@@ -224,7 +253,7 @@
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">បោះបង់</button>
-                <button type="button" class="btn btn-success px-4" onclick="submitEfaceManualCheckIn()">
+                <button type="button" class="btn btn-success px-4" onclick="window.submitEfaceManualCheckIn && window.submitEfaceManualCheckIn()">
                     <i class="bi bi-check-lg me-1"></i> កត់ត្រាវត្តមាន
                 </button>
             </div>

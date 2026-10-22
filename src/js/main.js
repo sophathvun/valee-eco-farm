@@ -53,24 +53,27 @@ async function initializeApp() {
         'src/js/utils/utils.js',
         'src/js/utils/print-util.js',
         'src/js/utils/auth.js',
+        'src/js/pages/eface.js',
         'src/js/pages/settings.js',
         'src/js/pages/invoice.js',
         'src/js/pages/transactions.js',
         'src/js/pages/dashboard.js',
         'src/js/pages/reports.js',
         'src/js/pages/employee.js',
-        'src/js/pages/eface.js',
         'src/js/pages/attendance.js',
         'src/js/pages/attendance-report.js',
         'src/js/pages/payroll.js'
     ];
 
     for (let src of scriptsToLoad) {
-        await new Promise((resolve, reject) => {
+        await new Promise((resolve) => {
             const script = document.createElement('script');
             script.src = `${src}?v=${new Date().getTime()}`;
             script.onload = resolve;
-            script.onerror = reject;
+            script.onerror = (err) => {
+                console.warn(`Notice loading script ${src}:`, err);
+                resolve();
+            };
             document.body.appendChild(script);
         });
     }

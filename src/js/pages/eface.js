@@ -368,15 +368,16 @@ window.buildEfaceMatcher = async function() {
 };
 
 // ====== CAMERA & SCANNING CONTROL ======
-window.toggleEfaceScanning = function() {
-    if (isEfaceScanning) {
+function toggleEfaceScanning() {
+    if (isEfaceScanning || window.isEfaceScanning) {
         stopEfaceScanning();
     } else {
         startEfaceScanning();
     }
-};
+}
+window.toggleEfaceScanning = toggleEfaceScanning;
 
-window.startEfaceScanning = async function() {
+async function startEfaceScanning() {
     initEfaceAudio();
 
     if (!isEfaceModelLoaded) {
@@ -419,6 +420,7 @@ window.startEfaceScanning = async function() {
         });
 
         isEfaceScanning = true;
+        window.isEfaceScanning = true;
         efaceMatchBuffer = [];
         updateToggleButton(true);
         updateEfaceStatus('កំពុងរង់ចាំការចាប់ផ្ទៃមុខ...', 'ready');
@@ -436,6 +438,7 @@ window.startEfaceScanning = async function() {
     } catch (err) {
         console.error('Camera access error:', err);
         isEfaceScanning = false;
+        window.isEfaceScanning = false;
         updateToggleButton(false);
         let errorMsg = 'មិនអាចបើកកាមេរ៉ាបានទេ!';
         if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
@@ -451,10 +454,12 @@ window.startEfaceScanning = async function() {
             confirmButtonText: 'យល់ព្រម'
         });
     }
-};
+}
+window.startEfaceScanning = startEfaceScanning;
 
-window.stopEfaceScanning = function() {
+function stopEfaceScanning() {
     isEfaceScanning = false;
+    window.isEfaceScanning = false;
     efaceMatchBuffer = [];
     if (efaceDetectionTimer) {
         clearTimeout(efaceDetectionTimer);
@@ -475,7 +480,8 @@ window.stopEfaceScanning = function() {
     if (guide) guide.classList.remove('active');
     updateToggleButton(false);
     updateEfaceStatus('ការស្កែនត្រូវបានផ្អាក', 'paused');
-};
+}
+window.stopEfaceScanning = stopEfaceScanning;
 
 function updateToggleButton(active) {
     const btn = document.getElementById('btn-eface-toggle');
