@@ -27,6 +27,13 @@ let efaceLastPromptVoiceTime = 0;
 let efaceLastGpsVoiceTime = 0;
 let efaceUnrecognizedFrameCount = 0;
 
+// ====== ANTI-SPOOFING & EYE BLINK LIVENESS DETECTION STATE ======
+let efaceEarHistory = []; // Rolling buffer of { ear, time } for EAR analysis
+let efaceLivenessPendingEmp = null; // Currently matched employee candidate awaiting liveness blink
+let efaceLivenessState = 'idle'; // 'idle' | 'awaiting_blink' | 'closing' | 'verified'
+let efaceLivenessClosedTime = 0;
+let efaceLastBlinkVoiceTime = 0;
+
 const EFACE_MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
 
 // ====== INITIALIZATION ======
@@ -433,6 +440,10 @@ async function startEfaceScanning() {
         isEfaceScanning = true;
         window.isEfaceScanning = true;
         efaceMatchBuffer = [];
+        hideBlinkPrompt();
+        efaceLivenessPendingEmp = null;
+        efaceLivenessState = 'idle';
+        efaceEarHistory = [];
         updateToggleButton(true);
         updateEfaceStatus('កំពុងរង់ចាំការចាប់ផ្ទៃមុខ...', 'ready');
 
@@ -472,6 +483,10 @@ function stopEfaceScanning() {
     isEfaceScanning = false;
     window.isEfaceScanning = false;
     efaceMatchBuffer = [];
+    hideBlinkPrompt();
+    efaceLivenessPendingEmp = null;
+    efaceLivenessState = 'idle';
+    efaceEarHistory = [];
     if (efaceDetectionTimer) {
         clearTimeout(efaceDetectionTimer);
         efaceDetectionTimer = null;
@@ -525,6 +540,9 @@ function updateEfaceStatus(message, state) {
         if (state === 'matched') {
             dotEl.style.backgroundColor = 'var(--eface-neon-green)';
             dotEl.style.boxShadow = '0 0 12px var(--eface-neon-green)';
+        } else if (state === 'liveness') {
+            dotEl.style.backgroundColor = '#a855f7';
+            dotEl.style.boxShadow = '0 0 14px #a855f7';
         } else if (state === 'error' || state === 'paused') {
             dotEl.style.backgroundColor = 'var(--eface-neon-red)';
             dotEl.style.boxShadow = '0 0 12px var(--eface-neon-red)';
@@ -541,13 +559,75 @@ function updateEfaceStatus(message, state) {
     }
 
     if (viewportWrap) {
-        viewportWrap.classList.remove('state-matched', 'state-warning');
+        viewportWrap.classList.remove('state-matched', 'state-warning', 'state-liveness');
         if (state === 'matched') viewportWrap.classList.add('state-matched');
         if (state === 'warning') viewportWrap.classList.add('state-warning');
+        if (state === 'liveness') viewportWrap.classList.add('state-liveness');
     }
 }
 
-// ====== CONTINUOUS DETECTION LOOP WITH MULTI-FRAME CONFIRMATION ======
+// ====== ANTI-SPOOFING & EYE BLINK LIVENESS DETECTION HELPERS ======
+function calculateEyeAspectRatio(eye) {
+    if (!eye || eye.length < 6) return 0.3;
+    const dist = (pA, pB) => Math.hypot(pA.x - pB.x, pA.y - pB.y);
+    const dV1 = dist(eye[1], eye[5]);
+    const dV2 = dist(eye[2], eye[4]);
+    const dH = dist(eye[0], eye[3]);
+    if (dH <= 0) return 0.3;
+    return (dV1 + dV2) / (2.0 * dH);
+}
+
+function getFaceAverageEAR(landmarks) {
+    if (!landmarks) return 0.3;
+    try {
+        const leftEye = landmarks.getLeftEye();
+        const rightEye = landmarks.getRightEye();
+        if (!leftEye || !rightEye || leftEye.length < 6 || rightEye.length < 6) return 0.3;
+        const lEAR = calculateEyeAspectRatio(leftEye);
+        const rEAR = calculateEyeAspectRatio(rightEye);
+        return (lEAR + rEAR) / 2.0;
+    } catch (e) {
+        return 0.3;
+    }
+}
+
+function showBlinkPrompt(empName) {
+    const promptEl = document.getElementById('eface-blink-prompt');
+    if (promptEl) promptEl.style.display = 'block';
+
+    const now = Date.now();
+    if ((now - efaceLastBlinkVoiceTime) > 3500) {
+        efaceLastBlinkVoiceTime = now;
+        playBlinkPromptTone();
+        speakKhmerVoice('blink', 'សូមព្រិចភ្នែក');
+    }
+}
+
+function hideBlinkPrompt() {
+    const promptEl = document.getElementById('eface-blink-prompt');
+    if (promptEl) promptEl.style.display = 'none';
+}
+
+function playBlinkPromptTone() {
+    try {
+        initEfaceAudio();
+        if (!efaceAudioCtx) return;
+        const now = efaceAudioCtx.currentTime;
+        const osc = efaceAudioCtx.createOscillator();
+        const gain = efaceAudioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(659.25, now); // E5
+        osc.frequency.exponentialRampToValueAtTime(880.00, now + 0.15); // A5
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(gain);
+        gain.connect(efaceAudioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.35);
+    } catch (e) {}
+}
+
+// ====== CONTINUOUS DETECTION LOOP WITH LIVENESS BLINK VERIFICATION ======
 async function runEfaceDetectionLoop() {
     if (!isEfaceScanning || !efaceVideo || efaceVideo.paused || efaceVideo.ended) {
         return;
@@ -560,6 +640,9 @@ async function runEfaceDetectionLoop() {
         const guide = document.getElementById('eface-guide');
         if (guide) guide.classList.remove('active');
         efaceMatchBuffer = [];
+        hideBlinkPrompt();
+        efaceLivenessPendingEmp = null;
+        efaceLivenessState = 'idle';
         if (isEfaceScanning) {
             efaceDetectionTimer = setTimeout(runEfaceDetectionLoop, 1000);
         }
@@ -588,12 +671,21 @@ async function runEfaceDetectionLoop() {
                 if (guide) guide.classList.add('active');
 
                 const box = detection.detection.box;
-                drawBiometricBoundingBox(ctx, box);
+                const ear = getFaceAverageEAR(detection.landmarks);
+                const now = Date.now();
+
+                // Maintain rolling EAR history (last 1500ms)
+                efaceEarHistory.push({ ear, time: now });
+                efaceEarHistory = efaceEarHistory.filter(h => (now - h.time) <= 1500);
 
                 // Check Face Size: Face must be sufficiently close to camera (at least 100x100px)
                 if (box.width < 100 || box.height < 100) {
                     efaceMatchBuffer = [];
+                    hideBlinkPrompt();
+                    efaceLivenessPendingEmp = null;
+                    efaceLivenessState = 'idle';
                     updateEfaceStatus('សូមខិតចូលជិតកាមេរ៉ាបន្តិច (Please move closer)', 'warning');
+                    drawBiometricBoundingBox(ctx, box, '#f59e0b');
                 } else if (efaceMatcher && detection.descriptor) {
                     const threshold = window._efaceCurrentThreshold || 0.40;
                     const match = efaceMatcher.findBestMatch(detection.descriptor);
@@ -601,46 +693,121 @@ async function runEfaceDetectionLoop() {
 
                     // Strictly check threshold <= 0.40
                     if (match.label !== 'unknown' && distance <= threshold) {
-                        const now = Date.now();
                         efaceMatchBuffer.push({ label: match.label, distance: distance, time: now });
 
                         // Filter to keep only recent frames within 1200ms matching this same employee
                         efaceMatchBuffer = efaceMatchBuffer.filter(m => (now - m.time) < 1200 && m.label === match.label);
                         const count = efaceMatchBuffer.length;
 
-                        // Require at least 3 matching frames of the SAME employee
-                        if (count >= 3) {
+                        // Once matched with at least 2 frames, require EYE BLINK LIVENESS
+                        if (count >= 2) {
                             const emp = efaceEnrolledEmployees.find(e => String(e.id) === String(match.label));
-                            efaceMatchBuffer = [];
                             if (emp) {
-                                await handleEfaceMatch(emp, detection);
+                                // Initialize or maintain Liveness Candidate
+                                if (!efaceLivenessPendingEmp || String(efaceLivenessPendingEmp.emp.id) !== String(emp.id)) {
+                                    efaceLivenessPendingEmp = {
+                                        emp,
+                                        firstMatchedTime: now,
+                                        baselineEar: Math.max(0.24, ear)
+                                    };
+                                    efaceLivenessState = 'awaiting_blink';
+                                    efaceLivenessClosedTime = 0;
+                                }
+
+                                const baseline = efaceLivenessPendingEmp.baselineEar || 0.28;
+                                const closeThreshold = Math.min(0.20, baseline * 0.72);
+                                const openThreshold = Math.max(0.22, baseline * 0.85);
+
+                                // --- EYE BLINK STATE MACHINE ---
+                                if (efaceLivenessState === 'awaiting_blink') {
+                                    showBlinkPrompt(emp.name);
+                                    updateEfaceStatus(`ស្គាល់ ${emp.name} • 👁️ សូមព្រិចភ្នែក (Please Blink)`, 'liveness');
+                                    drawBiometricBoundingBox(ctx, box, '#a855f7', detection.landmarks);
+
+                                    // Detect eye closure
+                                    if (ear <= closeThreshold) {
+                                        efaceLivenessState = 'closing';
+                                        efaceLivenessClosedTime = now;
+                                    } else {
+                                        // Also check if a natural blink occurred in rolling history within last 800ms
+                                        const recent = efaceEarHistory.filter(h => (now - h.time) <= 800);
+                                        const minH = Math.min(...recent.map(h => h.ear));
+                                        const maxH = Math.max(...recent.map(h => h.ear));
+                                        if (minH <= closeThreshold && maxH >= openThreshold && ear >= openThreshold) {
+                                            efaceLivenessState = 'verified';
+                                        }
+                                    }
+                                } else if (efaceLivenessState === 'closing') {
+                                    showBlinkPrompt(emp.name);
+                                    updateEfaceStatus(`👁️ កំពុងផ្ទៀងផ្ទាត់... (Blink Detected)`, 'liveness');
+                                    drawBiometricBoundingBox(ctx, box, '#22c55e', detection.landmarks);
+
+                                    // Detect eye reopening after blink
+                                    if (ear >= openThreshold) {
+                                        const duration = now - efaceLivenessClosedTime;
+                                        if (duration >= 60 && duration <= 1200) {
+                                            efaceLivenessState = 'verified';
+                                        } else if (duration > 1200) {
+                                            efaceLivenessState = 'awaiting_blink';
+                                        }
+                                    }
+                                }
+
+                                // When Liveness Verified: COMPLETE RECORDING!
+                                if (efaceLivenessState === 'verified') {
+                                    hideBlinkPrompt();
+                                    updateEfaceStatus(`✅ មនុស្សពិត: ${emp.name} (Liveness Verified)`, 'matched');
+                                    drawBiometricBoundingBox(ctx, box, '#10b981', detection.landmarks);
+
+                                    efaceMatchBuffer = [];
+                                    efaceEarHistory = [];
+                                    efaceLivenessPendingEmp = null;
+                                    efaceLivenessState = 'idle';
+
+                                    await handleEfaceMatch(emp, detection);
+                                    return;
+                                }
+
+                                // Skip standard match while awaiting live blink
+                                return;
                             }
                         } else {
                             const similarity = Math.round(Math.max(0, (1 - distance / 0.55)) * 100);
-                            updateEfaceStatus(`កំពុងផ្ទៀងផ្ទាត់... (${count}/3) [ស្រដៀង ${similarity}%]`, 'loading');
+                            updateEfaceStatus(`កំពុងផ្ទៀងផ្ទាត់... (${count}/2) [ស្រដៀង ${similarity}%]`, 'loading');
+                            drawBiometricBoundingBox(ctx, box, '#00f2fe');
                         }
                     } else {
                         // Reset buffer when face does not match any registered employee
+                        hideBlinkPrompt();
+                        efaceLivenessPendingEmp = null;
+                        efaceLivenessState = 'idle';
                         efaceMatchBuffer = [];
                         const distStr = distance ? distance.toFixed(2) : '--';
                         updateEfaceStatus(`មិនស្គាល់អត្តសញ្ញាណ (Unregistered Face: ${distStr})`, 'warning');
+                        drawBiometricBoundingBox(ctx, box, '#f59e0b');
 
                         efaceUnrecognizedFrameCount++;
                         if (efaceUnrecognizedFrameCount >= 5) {
                             efaceUnrecognizedFrameCount = 0;
-                            const now = Date.now();
-                            if ((now - efaceLastFailedVoiceTime) > 7000) {
-                                efaceLastFailedVoiceTime = now;
+                            const nowFailed = Date.now();
+                            if ((nowFailed - efaceLastFailedVoiceTime) > 7000) {
+                                efaceLastFailedVoiceTime = nowFailed;
                                 playEfaceNoticeSound();
                                 speakKhmerVoice('failed', 'មិនស្គាល់អត្តសញ្ញាណទេ សូមព្យាយាមម្តងទៀត');
                             }
                         }
                     }
                 } else {
+                    hideBlinkPrompt();
+                    efaceLivenessPendingEmp = null;
+                    efaceLivenessState = 'idle';
                     efaceMatchBuffer = [];
                     updateEfaceStatus('មិនទាន់មានទិន្នន័យផ្ទៃមុខបុគ្គលិកក្នុងប្រព័ន្ធ', 'warning');
                 }
             } else {
+                hideBlinkPrompt();
+                efaceLivenessPendingEmp = null;
+                efaceLivenessState = 'idle';
                 efaceMatchBuffer = [];
                 if (guide) guide.classList.remove('active');
                 updateEfaceStatus('កំពុងស្វែងរកផ្ទៃមុខ...', 'ready');
@@ -656,8 +823,8 @@ async function runEfaceDetectionLoop() {
     }
 }
 
-// Draw stylish high-tech brackets around detected face
-function drawBiometricBoundingBox(ctx, box) {
+// Draw stylish high-tech brackets & eye reticles around detected face
+function drawBiometricBoundingBox(ctx, box, strokeColor = '#00f2fe', landmarks = null) {
     const x = box.x;
     const y = box.y;
     const w = box.width;
@@ -666,9 +833,9 @@ function drawBiometricBoundingBox(ctx, box) {
     const corner = Math.min(25, w * 0.2);
 
     ctx.save();
-    ctx.strokeStyle = '#00f2fe';
+    ctx.strokeStyle = strokeColor;
     ctx.lineWidth = 3.5;
-    ctx.shadowColor = '#00f2fe';
+    ctx.shadowColor = strokeColor;
     ctx.shadowBlur = 12;
 
     // Top-Left
@@ -702,6 +869,51 @@ function drawBiometricBoundingBox(ctx, box) {
     ctx.quadraticCurveTo(x + w, y + h, x + w, y + h - r);
     ctx.lineTo(x + w, y + h - corner);
     ctx.stroke();
+
+    // Eye Tracking HUD Reticles
+    if (landmarks) {
+        try {
+            const leftEye = landmarks.getLeftEye();
+            const rightEye = landmarks.getRightEye();
+            if (leftEye && rightEye && leftEye.length >= 6 && rightEye.length >= 6) {
+                const getCenter = (pts) => ({
+                    x: pts.reduce((s, p) => s + p.x, 0) / pts.length,
+                    y: pts.reduce((s, p) => s + p.y, 0) / pts.length
+                });
+                const lCenter = getCenter(leftEye);
+                const rCenter = getCenter(rightEye);
+                const eyeRadius = Math.max(10, w * 0.055);
+
+                ctx.lineWidth = 2.2;
+                ctx.strokeStyle = strokeColor;
+                ctx.shadowBlur = 8;
+
+                // Left Eye Tracker
+                ctx.beginPath();
+                ctx.arc(lCenter.x, lCenter.y, eyeRadius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(lCenter.x - eyeRadius - 3, lCenter.y);
+                ctx.lineTo(lCenter.x + eyeRadius + 3, lCenter.y);
+                ctx.moveTo(lCenter.x, lCenter.y - eyeRadius - 3);
+                ctx.lineTo(lCenter.x, lCenter.y + eyeRadius + 3);
+                ctx.stroke();
+
+                // Right Eye Tracker
+                ctx.beginPath();
+                ctx.arc(rCenter.x, rCenter.y, eyeRadius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(rCenter.x - eyeRadius - 3, rCenter.y);
+                ctx.lineTo(rCenter.x + eyeRadius + 3, rCenter.y);
+                ctx.moveTo(rCenter.x, rCenter.y - eyeRadius - 3);
+                ctx.lineTo(rCenter.x, rCenter.y + eyeRadius + 3);
+                ctx.stroke();
+            }
+        } catch (e) {}
+    }
 
     ctx.restore();
 }
@@ -1039,14 +1251,16 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
 ▫️ <b>តួនាទី:</b> ${posSafe}
 ▫️ <b>ម៉ោង:</b> ${timeStr} (${shiftKh.split(' ')[0]})
 ▫️ <b>កាលបរិច្ឆេទ:</b> ${dateFormatted}
-▫️ <b>ស្ថានភាព:</b> ${finalStatus}${hoursLine}${gpsInfo}`;
+▫️ <b>ស្ថានភាព:</b> ${finalStatus}${hoursLine}${gpsInfo}
+▫️ <b>ផ្ទៀងផ្ទាត់:</b> មនុស្សពិត (Blink Liveness: Verified ✅)
+▫️ <b>កាមេរ៉ា:</b> រូបថតជាក់ស្តែងផ្ទាល់ពីកាមេរ៉ា (Live Camera Snapshot)`;
 
-        // Prioritize official employee profile photo from employee info (ព័ត៌មានបុគ្គលិក)
-        let photoToSend = await getEmployeeProfilePhotoBlob(emp);
+        // ALWAYS send real-time live camera snapshot of person standing at camera (anti-spoofing)
+        let photoToSend = snapshotBlob;
 
-        // Fallback to camera snapshot if employee doesn't have an enrolled profile photo
-        if (!photoToSend && snapshotBlob) {
-            photoToSend = snapshotBlob;
+        // Fallback to employee profile photo only if camera snapshot capture failed
+        if (!photoToSend) {
+            photoToSend = await getEmployeeProfilePhotoBlob(emp);
         }
 
         const sendTextFallback = () => {
@@ -1071,7 +1285,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
         if (photoToSend) {
             const formData = new FormData();
             formData.append('chat_id', chatId);
-            formData.append('photo', photoToSend, `employee_${emp.code || emp.id || 'profile'}_${Date.now()}.jpg`);
+            formData.append('photo', photoToSend, `live_scan_${emp.code || emp.id || 'camera'}_${Date.now()}.jpg`);
             formData.append('caption', caption);
             formData.append('parse_mode', 'HTML');
 
@@ -1080,7 +1294,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
                 body: formData
             }).then(r => r.json()).then(res => {
                 if (res.ok) {
-                    console.log('Telegram photo alert sent successfully (profile photo from employee info)');
+                    console.log('Telegram photo alert sent successfully (live camera snapshot of person)');
                 } else {
                     console.warn('Telegram sendPhoto failed, retrying with text alert:', res.description);
                     sendTextFallback();
