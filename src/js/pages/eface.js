@@ -97,6 +97,12 @@ async function getEfaceWorkShifts() {
 
 async function loadEfaceBranding() {
     try {
+        if (typeof db !== 'undefined' && db.telegramSettings) {
+            const t = await db.telegramSettings.first();
+            if (t && t.farmName) window.efaceCampusName = t.farmName;
+        }
+    } catch(e){}
+    try {
         const logoEl = document.getElementById('eface-logo');
         if (logoEl && typeof db !== 'undefined' && db.brandSettings) {
             const brand = await db.brandSettings.first();
@@ -773,7 +779,7 @@ function displayEfaceResultCard(emp, timeStr, shiftKh, isLate, lateMins) {
     if (nameEl) nameEl.innerText = emp.latinName ? emp.latinName.toUpperCase() : emp.name;
     if (subnameEl) subnameEl.innerText = emp.latinName ? emp.name : '';
     if (idEl) idEl.innerText = emp.code || `EMP-${emp.id}`;
-    if (campusEl) campusEl.innerText = 'VALEE ECO FARM';
+    if (campusEl) campusEl.innerText = window.efaceCampusName || 'VALEE ECO FARM';
     if (deptEl) deptEl.innerText = emp.department || 'Operations';
     if (posEl) posEl.innerText = emp.position || 'Staff';
     if (shiftEl) shiftEl.innerText = shiftKh;
