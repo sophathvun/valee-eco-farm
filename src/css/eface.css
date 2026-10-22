@@ -613,3 +613,95 @@ body.eface-kiosk-mode #eface-view {
     background: rgba(239, 68, 68, 0.15) !important;
     color: #ef4444 !important;
 }
+
+/* ===================================================
+   PUBLIC / DIRECT SCANNER MODE (NO LOGIN REQUIRED)
+   =================================================== */
+html.public-eface-mode,
+body.public-eface-mode {
+    background-color: #060913 !important;
+    overflow-x: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.public-eface-mode #login-view {
+    display: none !important;
+}
+
+body.public-eface-mode #main-wrapper {
+    display: flex !important;
+    width: 100vw !important;
+    min-height: 100vh !important;
+    background-color: #060913 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.public-eface-mode .sidebar,
+body.public-eface-mode .sidebar-backdrop,
+body.public-eface-mode .mobile-bottom-nav,
+body.public-eface-mode .top-navbar,
+body.public-eface-mode #btn-eface-manual {
+    display: none !important;
+}
+
+body.public-eface-mode .main-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+body.public-eface-mode #main-content-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+body.public-eface-mode .view-section:not(#eface-view) {
+    display: none !important;
+}
+
+body.public-eface-mode #eface-view {
+    display: block !important;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+@media (max-width: 576px) {
+    body.public-eface-mode #eface-view {
+        padding: 0.5rem;
+    }
+}
+
+body.public-eface-mode .admin-login-btn-public {
+    display: inline-flex !important;
+}
+
+/* Printable QR Poster Styles */
+@media print {
+    body.printing-qr-poster * {
+        visibility: hidden !important;
+    }
+    body.printing-qr-poster #eface-print-poster,
+    body.printing-qr-poster #eface-print-poster * {
+        visibility: visible !important;
+    }
+    body.printing-qr-poster #eface-print-poster {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 20px !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        z-index: 999999 !important;
+    }
+}

@@ -150,6 +150,8 @@
             login_system_access: "System Access",
             login_system_desc: "Contact your administrator if you need to create a new user account.",
             login_contact_btn: "Contact Admin",
+            login_employee_scan_hint: "សម្រាប់បុគ្គលិកស្កែនវត្តមាន (For Attendance Scan)",
+            login_employee_scan_btn: "📸 ស្កែនវត្តមាន E-Face (Face Scan)",
 
             // Dashboard
             monthly_income: "ចំណូលប្រចាំខែ",
@@ -436,6 +438,8 @@
             login_system_access: "System Access",
             login_system_desc: "Contact your administrator if you need to create a new user account.",
             login_contact_btn: "Contact Admin",
+            login_employee_scan_hint: "For Staff Attendance Scan",
+            login_employee_scan_btn: "📸 Scan E-Face Attendance",
 
             // Dashboard
             monthly_income: "Monthly Income",

@@ -43,6 +43,17 @@ window.initEface = async function() {
     // Populate stats and recent scans for today
     loadEfaceRecentScans();
 
+    // Toggle Admin Login button vs Manual Button based on currentUser
+    const adminLoginBtn = document.getElementById('btn-public-admin-login');
+    const manualBtn = document.getElementById('btn-eface-manual');
+    if (typeof currentUser === 'undefined' || !currentUser) {
+        if (adminLoginBtn) adminLoginBtn.style.display = 'inline-flex';
+        if (manualBtn) manualBtn.style.display = 'none';
+    } else {
+        if (adminLoginBtn) adminLoginBtn.style.display = 'none';
+        if (manualBtn) manualBtn.style.display = 'inline-flex';
+    }
+
     // Pre-populate manual modal employee select
     populateEfaceManualModal();
 
@@ -1245,6 +1256,16 @@ window.openEfaceManualModal = async function() {
 };
 
 window.submitEfaceManualCheckIn = async function() {
+    if (typeof currentUser === 'undefined' || !currentUser) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'គ្មានសិទ្ធិ (Permission Denied)',
+            text: 'ការកត់ត្រាវត្តមានដោយដៃត្រូវបានអនុញ្ញាតសម្រាប់តែ Admin / អ្នកគ្រប់គ្រងប៉ុណ្ណោះ។ សូមប្រើប្រាស់ការស្កែនមុខ (Face Scan)។',
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#059669'
+        });
+        return;
+    }
     if (window._efaceGpsLocked) {
         Swal.fire({
             icon: 'error',
@@ -1559,3 +1580,138 @@ window.recheckEfaceGps = async function(force = true) {
         });
     }
 };
+
+// ====== SHARE LINK & PRINT QR POSTER ======
+function getEfacePublicDirectUrl() {
+    const origin = window.location.origin;
+    let path = window.location.pathname;
+    if (!path.endsWith('/') && !path.endsWith('.html')) {
+        path = path + '/';
+    }
+    return `${origin}${path}#eface`;
+}
+
+window.openEfaceShareModal = function() {
+    const cleanUrl = getEfacePublicDirectUrl();
+
+    const input = document.getElementById('eface-share-url-input');
+    if (input) input.value = cleanUrl;
+
+    const radiusEl = document.getElementById('eface-share-radius-text');
+    if (radiusEl && window._efaceGpsSettings) {
+        radiusEl.innerText = `${window._efaceGpsSettings.radiusMeters || 200} ម៉ែត្រ`;
+    }
+
+    // Render QR Code in modal
+    const qrContainer = document.getElementById('eface-share-qr-canvas');
+    if (qrContainer) {
+        qrContainer.innerHTML = '';
+        if (typeof QRCode !== 'undefined') {
+            try {
+                new QRCode(qrContainer, {
+                    text: cleanUrl,
+                    width: 200,
+                    height: 200,
+                    colorDark: '#0b0f19',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+            } catch (e) {
+                qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cleanUrl)}" alt="QR Code" style="width:200px;height:200px;border-radius:10px;">`;
+            }
+        } else {
+            qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cleanUrl)}" alt="QR Code" style="width:200px;height:200px;border-radius:10px;">`;
+        }
+    }
+
+    const modalEl = document.getElementById('efaceShareModal');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+};
+
+window.copyEfaceShareUrl = function() {
+    const input = document.getElementById('eface-share-url-input');
+    const url = (input && input.value) || getEfacePublicDirectUrl();
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'បានចម្លងជោគជ័យ!',
+                    text: 'Link ស្កែនមុខ E-Face ត្រូវបានចម្លងទៅកាន់ Clipboard រួចរាល់។ អ្នកអាចផ្ញើតាម Telegram ឬ Messenger ឱ្យបុគ្គលិកបានភ្លាមៗ។',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            } else {
+                alert('បានចម្លង Link រួចរាល់!');
+            }
+        }).catch(() => {
+            if (input) {
+                input.select();
+                document.execCommand('copy');
+            }
+            alert('បានចម្លង Link រួចរាល់!');
+        });
+    } else {
+        if (input) {
+            input.select();
+            document.execCommand('copy');
+        }
+        alert('បានចម្លង Link រួចរាល់!');
+    }
+};
+
+window.printEfaceQrPoster = function() {
+    const cleanUrl = getEfacePublicDirectUrl();
+
+    // Render QR Code in print poster template
+    const posterQr = document.getElementById('eface-poster-qr');
+    if (posterQr) {
+        posterQr.innerHTML = '';
+        if (typeof QRCode !== 'undefined') {
+            try {
+                new QRCode(posterQr, {
+                    text: cleanUrl,
+                    width: 250,
+                    height: 250,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } catch (e) {
+                posterQr.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(cleanUrl)}" alt="QR Code" style="width:250px;height:250px;">`;
+            }
+        } else {
+            posterQr.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(cleanUrl)}" alt="QR Code" style="width:250px;height:250px;">`;
+        }
+    }
+
+    // Set logo if cached
+    const posterLogo = document.getElementById('eface-poster-logo');
+    if (posterLogo && localStorage.getItem('cachedSidebarLogo')) {
+        posterLogo.src = localStorage.getItem('cachedSidebarLogo');
+    }
+
+    // Hide bootstrap modal before printing to avoid backdrop visual issues
+    const modalEl = document.getElementById('efaceShareModal');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+    }
+
+    document.body.classList.add('printing-qr-poster');
+
+    setTimeout(() => {
+        window.print();
+        setTimeout(() => {
+            document.body.classList.remove('printing-qr-poster');
+        }, 800);
+    }, 400);
+};
+
+window.addEventListener('afterprint', () => {
+    document.body.classList.remove('printing-qr-poster');
+});

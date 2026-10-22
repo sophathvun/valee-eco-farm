@@ -54,7 +54,12 @@ async function ensureDefaultAdmin() {
 
 async function checkLogin() {
     const sessionUser = localStorage.getItem('currentUser');
+    const hash = (window.location.hash || '').toLowerCase();
+    const isEfaceRoute = hash.startsWith('#eface') || hash.startsWith('#scan');
+
     if (sessionUser) {
+        document.body.classList.remove('public-eface-mode');
+        document.documentElement.classList.remove('public-eface-mode');
         try {
             currentUser = JSON.parse(sessionUser);
             const loginView = document.getElementById('login-view');
@@ -83,7 +88,20 @@ async function checkLogin() {
 
         setTimeout(ensureDefaultAdmin, 200);
         return true;
+    } else if (isEfaceRoute) {
+        // Public Attendance Scanner Mode
+        document.body.classList.add('public-eface-mode');
+        document.documentElement.classList.add('public-eface-mode');
+        const loginView = document.getElementById('login-view');
+        const mainWrapper = document.getElementById('main-wrapper');
+        if (loginView) loginView.style.display = 'none';
+        if (mainWrapper) mainWrapper.style.display = 'flex';
+
+        showTab('eface');
+        return true;
     } else {
+        document.body.classList.remove('public-eface-mode');
+        document.documentElement.classList.remove('public-eface-mode');
         const loginView = document.getElementById('login-view');
         const mainWrapper = document.getElementById('main-wrapper');
         if (loginView) loginView.style.display = 'flex';
@@ -92,6 +110,33 @@ async function checkLogin() {
         return false;
     }
 }
+
+window.openPublicEfaceScanner = function() {
+    window.location.hash = '#eface';
+    document.body.classList.add('public-eface-mode');
+    document.documentElement.classList.add('public-eface-mode');
+    const loginView = document.getElementById('login-view');
+    const mainWrapper = document.getElementById('main-wrapper');
+    if (loginView) loginView.style.display = 'none';
+    if (mainWrapper) mainWrapper.style.display = 'flex';
+    if (typeof showTab === 'function') showTab('eface');
+    if (typeof initEface === 'function') initEface();
+};
+
+window.exitPublicEfaceToLogin = function() {
+    if (typeof stopEfaceScanning === 'function') stopEfaceScanning();
+    document.body.classList.remove('public-eface-mode');
+    document.documentElement.classList.remove('public-eface-mode');
+    try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+    } catch(e) {
+        window.location.hash = '';
+    }
+    const loginView = document.getElementById('login-view');
+    const mainWrapper = document.getElementById('main-wrapper');
+    if (loginView) loginView.style.display = 'flex';
+    if (mainWrapper) mainWrapper.style.display = 'none';
+};
 
 // Removed checkLogin() call because it is correctly called at the bottom of reports.js!
 
@@ -119,6 +164,8 @@ window.loginUser = async function() {
 
             localStorage.setItem('currentUser', JSON.stringify(user));
             currentUser = user;
+            document.body.classList.remove('public-eface-mode');
+            document.documentElement.classList.remove('public-eface-mode');
             document.getElementById('loginForm').reset();
             document.getElementById('login-view').style.display = 'none';
             document.getElementById('main-wrapper').style.display = 'flex';
@@ -353,6 +400,21 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
 };
 
 window.showTab = function(tabId, subId = null) {
+    if (!currentUser && tabId !== 'eface') {
+        const loginView = document.getElementById('login-view');
+        const mainWrapper = document.getElementById('main-wrapper');
+        if (loginView) loginView.style.display = 'flex';
+        if (mainWrapper) mainWrapper.style.display = 'none';
+        document.body.classList.remove('public-eface-mode');
+        document.documentElement.classList.remove('public-eface-mode');
+        return;
+    }
+
+    if (!currentUser && tabId === 'eface') {
+        document.body.classList.add('public-eface-mode');
+        document.documentElement.classList.add('public-eface-mode');
+    }
+
     try {
         localStorage.setItem('activeTab', tabId);
         if (subId) {

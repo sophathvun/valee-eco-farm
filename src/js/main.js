@@ -186,19 +186,25 @@ async function initializeApp() {
     if (typeof checkLogin === 'function') {
         checkLogin().then((isLoggedIn) => {
             if (isLoggedIn) {
-                if (typeof loadCategories === 'function') loadCategories();
-                if (typeof loadUnits === 'function') loadUnits();
-                if (typeof loadPreparers === 'function') loadPreparers();
-                if (typeof loadUsersAndRoles === 'function') loadUsersAndRoles();
-                if (typeof addInvoiceRow === 'function') addInvoiceRow();
-                if (typeof generateInvoiceNumber === 'function') generateInvoiceNumber();
-                if (typeof loadInvoices === 'function') loadInvoices();
-                if (typeof loadData === 'function') loadData();
-                if (typeof loadEmployees === 'function') loadEmployees();
-                if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
-                if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
-                if (typeof initPayroll === 'function') initPayroll();
-                if (typeof applyTranslations === 'function') applyTranslations();
+                if (currentUser) {
+                    if (typeof loadCategories === 'function') loadCategories();
+                    if (typeof loadUnits === 'function') loadUnits();
+                    if (typeof loadPreparers === 'function') loadPreparers();
+                    if (typeof loadUsersAndRoles === 'function') loadUsersAndRoles();
+                    if (typeof addInvoiceRow === 'function') addInvoiceRow();
+                    if (typeof generateInvoiceNumber === 'function') generateInvoiceNumber();
+                    if (typeof loadInvoices === 'function') loadInvoices();
+                    if (typeof loadData === 'function') loadData();
+                    if (typeof loadEmployees === 'function') loadEmployees();
+                    if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
+                    if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
+                    if (typeof initPayroll === 'function') initPayroll();
+                    if (typeof applyTranslations === 'function') applyTranslations();
+                } else {
+                    // Public E-Face Biometric Scan Mode
+                    if (typeof initEface === 'function') initEface();
+                    if (typeof applyTranslations === 'function') applyTranslations();
+                }
             }
         }).catch(err => {
             console.error('Initialization error:', err);
