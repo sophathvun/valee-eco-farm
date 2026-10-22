@@ -69,6 +69,8 @@ window.openAddEmployeeModal = async function() {
     document.getElementById('emp-type').value = 'Full-Time';
     document.getElementById('emp-wage-type').value = 'Monthly';
     if (document.getElementById('emp-currency')) document.getElementById('emp-currency').value = 'USD';
+    const startDateEl = document.getElementById('emp-start-date');
+    if (startDateEl) startDateEl.value = '';
     
     const preview = document.getElementById('emp-photo-preview');
     const badge = document.getElementById('emp-eface-status-badge');
@@ -152,6 +154,9 @@ window.editEmployee = async function(id) {
         
         const typeEl = document.getElementById('emp-type');
         if (typeEl) typeEl.value = emp.type || 'Full-Time';
+
+        const startDateEl = document.getElementById('emp-start-date');
+        if (startDateEl) startDateEl.value = emp.startDate || '';
         
         const wageTypeEl = document.getElementById('emp-wage-type');
         if (wageTypeEl) wageTypeEl.value = emp.wageType || 'Monthly';
@@ -282,6 +287,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
             department: department || '',
             position: position || '',
             type: type || 'Full-Time',
+            startDate: (document.getElementById('emp-start-date') ? document.getElementById('emp-start-date').value : '') || '',
             wageType: wageType || 'Monthly',
             currency: currency || 'USD',
             salary: isNaN(salary) ? 0 : salary,

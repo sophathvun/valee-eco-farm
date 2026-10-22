@@ -418,6 +418,47 @@ window.handleGeneratePayroll = async function(e) {
                 grossSalary = periodBaseSalary;
             }
 
+            // Year-End December Period 2: Encashed Remaining Leave (Leave Earned)
+            const isYearEndPeriod2 = (month === 12 && period === 2);
+            let leaveTotalAccrued = 0;
+            let leaveTotalUsed = 0;
+            let leaveRemaining = 0;
+            let leaveEarned = 0;
+            let leaveEarnedNote = '';
+
+            if (isYearEndPeriod2) {
+                let startMonth = 1;
+                let startYear = year;
+                if (emp.startDate) {
+                    const parts = emp.startDate.split('-');
+                    if (parts.length >= 2) {
+                        startYear = parseInt(parts[0], 10);
+                        startMonth = parseInt(parts[1], 10);
+                    }
+                }
+                if (startYear < year) {
+                    leaveTotalAccrued = 12 * 2; // 24 days
+                } else if (startYear === year) {
+                    leaveTotalAccrued = (12 - startMonth + 1) * 2;
+                } else {
+                    leaveTotalAccrued = 0;
+                }
+
+                const empIdStr = String(emp.id);
+                allAtt.forEach(r => {
+                    if (String(r.empId) === empIdStr && r.date && r.date.startsWith(`${year}-`)) {
+                        if (r.morning === 'L') leaveTotalUsed += 0.5;
+                        if (r.afternoon === 'L') leaveTotalUsed += 0.5;
+                    }
+                });
+
+                leaveRemaining = Math.max(0, +(leaveTotalAccrued - leaveTotalUsed).toFixed(1));
+                if (leaveRemaining > 0) {
+                    leaveEarned = +(leaveRemaining * dailyRate).toFixed(2);
+                    leaveEarnedNote = `Leave សរុប ${leaveTotalAccrued} ថ្ងៃ, ប្រើ ${leaveTotalUsed} ថ្ងៃ, នៅសល់ ${leaveRemaining} ថ្ងៃ`;
+                }
+            }
+
             // Restore preserved adjustments or default to 0
             const prevAdj = existingAdjMap[emp.id] || {};
             const allowance = parseFloat(prevAdj.allowance) || 0;
@@ -425,7 +466,7 @@ window.handleGeneratePayroll = async function(e) {
             const otherDeduction = parseFloat(prevAdj.otherDeduction) || 0;
             const deductionNote = prevAdj.deductionNote || '';
 
-            const netSalary = Math.max(0, grossSalary - absenceDeduction + allowance - otherDeduction);
+            const netSalary = Math.max(0, grossSalary - absenceDeduction + allowance + leaveEarned - otherDeduction);
 
             items.push({
                 empId: emp.id,
@@ -446,6 +487,11 @@ window.handleGeneratePayroll = async function(e) {
                 absentDays: absentDays,
                 workedDays: workedDays,
                 absenceDeduction: absenceDeduction,
+                leaveTotalAccrued: leaveTotalAccrued,
+                leaveTotalUsed: leaveTotalUsed,
+                leaveRemaining: leaveRemaining,
+                leaveEarned: leaveEarned,
+                leaveEarnedNote: leaveEarnedNote,
                 allowance: allowance,
                 allowanceNote: allowanceNote,
                 otherDeduction: otherDeduction,
@@ -566,7 +612,7 @@ window.viewPayrollDetail = async function(batchId) {
             const b = isPartTime ? (dRate * 30) : (parseFloat(it.baseSalary) || 0);
             const pb = parseFloat(it.periodBaseSalary) || 0;
             const ad = parseFloat(it.absenceDeduction) || 0;
-            const al = parseFloat(it.allowance) || 0;
+            const al = (parseFloat(it.allowance) || 0) + (parseFloat(it.leaveEarned) || 0);
             const od = parseFloat(it.otherDeduction) || 0;
             const net = parseFloat(it.netSalary) || 0;
 
@@ -686,13 +732,14 @@ window.viewPayrollDetail = async function(batchId) {
                     else deductKHRDisplay = `<span class="text-danger fw-bold">-${formatPayCurrency(ad, 'KHR')}</span>`;
                 }
 
-                // Allowance display
+                // Allowance & Leave Earned display
                 let allowanceUSDDisplay = '<span class="text-muted">-</span>';
                 let allowanceKHRDisplay = '<span class="text-muted">-</span>';
+                const leaveEarnedHtml = (it.leaveEarned && it.leaveEarned > 0) ? `<br><span class="badge bg-success bg-opacity-10 text-success border border-success" style="font-size:0.65rem;" title="${it.leaveEarnedNote || ''}">+Leave Earned: ${formatPayCurrency(it.leaveEarned, cur)} (${it.leaveRemaining} ថ្ងៃ)</span>` : '';
                 const allowNoteHtml = it.allowanceNote ? `<br><small class="text-muted" title="${it.allowanceNote}">(${it.allowanceNote})</small>` : '';
                 if (al > 0) {
-                    if (cur === 'USD') allowanceUSDDisplay = `<span class="text-info fw-bold">+${formatPayCurrency(al, 'USD')}</span>${allowNoteHtml}`;
-                    else allowanceKHRDisplay = `<span class="text-info fw-bold">+${formatPayCurrency(al, 'KHR')}</span>${allowNoteHtml}`;
+                    if (cur === 'USD') allowanceUSDDisplay = `<span class="text-info fw-bold">+${formatPayCurrency(al, 'USD')}</span>${allowNoteHtml}${leaveEarnedHtml}`;
+                    else allowanceKHRDisplay = `<span class="text-info fw-bold">+${formatPayCurrency(al, 'KHR')}</span>${allowNoteHtml}${leaveEarnedHtml}`;
                 }
 
                 // Other Deduction display
@@ -1058,7 +1105,8 @@ window.calculateItemNetPreview = function() {
 
     let baseGross = item.grossSalary || item.periodBaseSalary || 0;
     let absenceDeduct = item.absenceDeduction || 0;
-    let net = Math.max(0, baseGross - absenceDeduct + allowance - otherDeduction);
+    let leaveEarned = item.leaveEarned || 0;
+    let net = Math.max(0, baseGross - absenceDeduct + allowance + leaveEarned - otherDeduction);
 
     const prevEl = document.getElementById('adj-net-preview');
     if (prevEl) prevEl.textContent = formatPayCurrency(net, item.currency);
@@ -1083,7 +1131,8 @@ window.handleSaveItemAdjustment = async function(e) {
 
     let baseGross = item.grossSalary || item.periodBaseSalary || 0;
     let absenceDeduct = item.absenceDeduction || 0;
-    item.netSalary = Math.max(0, baseGross - absenceDeduct + allowance - otherDeduction);
+    let leaveEarned = item.leaveEarned || 0;
+    item.netSalary = Math.max(0, baseGross - absenceDeduct + allowance + leaveEarned - otherDeduction);
 
     try {
         await db.payroll.update(currentBatch.id, currentBatch);
@@ -1345,6 +1394,15 @@ window.viewPayslip = async function(batchId, empId) {
                                 </td>
                                 <td class="text-end fw-semibold">${formatPayCurrency(item.periodBaseSalary, cur)}</td>
                             </tr>
+                            ${(item.leaveEarned && item.leaveEarned > 0) ? `
+                            <tr class="table-success bg-opacity-10">
+                                <td>
+                                    <strong class="text-success">ប្រាក់ឈ្នួលច្បាប់នៅសល់ (Leave Earned)</strong>
+                                    <div class="text-muted" style="font-size: 0.70rem;">${item.leaveEarnedNote || `Leave សរុប ${item.leaveTotalAccrued || 0} ថ្ងៃ, ប្រើ ${item.leaveTotalUsed || 0} ថ្ងៃ, នៅសល់ ${item.leaveRemaining || 0} ថ្ងៃ`} (${item.leaveRemaining || 0} ថ្ងៃ × ${formatPayCurrency(item.dailyRate, cur)})</div>
+                                </td>
+                                <td class="text-end text-success fw-bold">+${formatPayCurrency(item.leaveEarned, cur)}</td>
+                            </tr>
+                            ` : ''}
                             <tr>
                                 <td>
                                     ប្រាក់បន្ថែម / Bonus
@@ -1354,7 +1412,7 @@ window.viewPayslip = async function(batchId, empId) {
                             </tr>
                             <tr class="table-light fw-bold">
                                 <td>សរុបប្រាក់ចំណូល</td>
-                                <td class="text-end text-primary">${formatPayCurrency(item.periodBaseSalary + (item.allowance || 0), cur)}</td>
+                                <td class="text-end text-primary">${formatPayCurrency(item.periodBaseSalary + (item.allowance || 0) + (item.leaveEarned || 0), cur)}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1886,7 +1944,7 @@ window.printPayrollMaster = async function(batchId) {
             const b = isPartTime ? (dRate * 30) : (parseFloat(it.baseSalary) || 0);
             const pb = parseFloat(it.periodBaseSalary) || 0;
             const ad = parseFloat(it.absenceDeduction) || 0;
-            const al = parseFloat(it.allowance) || 0;
+            const al = (parseFloat(it.allowance) || 0) + (parseFloat(it.leaveEarned) || 0);
             const od = parseFloat(it.otherDeduction) || 0;
             const net = parseFloat(it.netSalary) || 0;
 
@@ -1928,8 +1986,9 @@ window.printPayrollMaster = async function(batchId) {
             let allowUSD = '<span style="color: #94a3b8;">-</span>';
             let allowKHR = '<span style="color: #94a3b8;">-</span>';
             if (al > 0) {
-                if (cur === 'USD') allowUSD = `+${formatPayCurrency(al, 'USD')}`;
-                else allowKHR = `+${formatPayCurrency(al, 'KHR')}`;
+                const leaveEarnedNote = (it.leaveEarned && it.leaveEarned > 0) ? `<br><small style="color: #15803d; font-size: 6.8px;">(Leave: +${formatPayCurrency(it.leaveEarned, cur)})</small>` : '';
+                if (cur === 'USD') allowUSD = `+${formatPayCurrency(al, 'USD')}${leaveEarnedNote}`;
+                else allowKHR = `+${formatPayCurrency(al, 'KHR')}${leaveEarnedNote}`;
             }
 
             let otherUSD = '<span style="color: #94a3b8;">-</span>';
@@ -2167,7 +2226,7 @@ window.exportPayrollExcel = async function(batchId) {
         const b = isPartTime ? (dRate * 30) : (parseFloat(it.baseSalary) || 0);
         const pb = parseFloat(it.periodBaseSalary) || 0;
         const ad = parseFloat(it.absenceDeduction) || 0;
-        const al = parseFloat(it.allowance) || 0;
+        const al = (parseFloat(it.allowance) || 0) + (parseFloat(it.leaveEarned) || 0);
         const od = parseFloat(it.otherDeduction) || 0;
         const net = parseFloat(it.netSalary) || 0;
 
@@ -2249,7 +2308,7 @@ window.exportPayrollExcel = async function(batchId) {
             absKHR !== "" ? absKHR : "",
             allowUSD !== "" ? allowUSD : "",
             allowKHR !== "" ? allowKHR : "",
-            `"${(it.allowanceNote || '').replace(/"/g, '""')}"`,
+            `"${([it.allowanceNote, it.leaveEarnedNote].filter(Boolean).join('; ')).replace(/"/g, '""')}"`,
             otherUSD !== "" ? otherUSD : "",
             otherKHR !== "" ? otherKHR : "",
             `"${(it.deductionNote || '').replace(/"/g, '""')}"`,

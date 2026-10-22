@@ -3,6 +3,84 @@ let currentAttendanceData = {}; // Format: { empId: { "2026-09-01": { morning: "
 let currentDaysInMonth = 30;
 let currentYear = 2026;
 let currentMonth = 9;
+let allAttendanceRecordsCached = [];
+let attendanceEmployeesCached = [];
+
+// Calculate Monthly Leave (L) balance (accrued, used, remaining) for an employee up to a specific year and month
+function getEmployeeLeaveBalance(emp, year, month, inMemoryCurrentMonthData = null) {
+    if (!emp) return { accrued: 0, used: 0, remaining: 0 };
+    
+    // 1. Accrued calculation (2 days per active month in calendar year: Jan to Dec)
+    let startMonth = 1;
+    let startYear = year;
+    if (emp.startDate) {
+        const parts = emp.startDate.split('-');
+        if (parts.length >= 2) {
+            startYear = parseInt(parts[0], 10);
+            startMonth = parseInt(parts[1], 10);
+        }
+    }
+
+    let accrued = 0;
+    if (startYear < year) {
+        // Joined before current year: gets 2 days per month from Jan to 'month'
+        accrued = month * 2;
+    } else if (startYear === year) {
+        if (month >= startMonth) {
+            accrued = (month - startMonth + 1) * 2;
+        } else {
+            accrued = 0;
+        }
+    } else {
+        // startYear > year (future join date)
+        accrued = 0;
+    }
+
+    // 2. Used calculation
+    // A. Past months in the same year (month 1 to month - 1) from all attendance records
+    let used = 0;
+    const allRecords = allAttendanceRecordsCached || window._allAttendanceRecords || [];
+    const empIdStr = String(emp.id);
+
+    allRecords.forEach(r => {
+        if (String(r.empId) === empIdStr && r.date && r.date.startsWith(`${year}-`)) {
+            const parts = r.date.split('-');
+            const rMonth = parseInt(parts[1], 10);
+            if (rMonth < month) {
+                if (r.morning === 'L') used += 0.5;
+                if (r.afternoon === 'L') used += 0.5;
+            }
+        }
+    });
+
+    // B. Current month usage: use in-memory data (currentAttendanceData) if provided, otherwise check allRecords
+    if (inMemoryCurrentMonthData && inMemoryCurrentMonthData[emp.id]) {
+        const monthRecs = inMemoryCurrentMonthData[emp.id];
+        for (let d = 1; d <= 31; d++) {
+            const dStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const rec = monthRecs[dStr];
+            if (rec) {
+                if (rec.morning === 'L') used += 0.5;
+                if (rec.afternoon === 'L') used += 0.5;
+            }
+        }
+    } else {
+        allRecords.forEach(r => {
+            if (String(r.empId) === empIdStr && r.date && r.date.startsWith(`${year}-${String(month).padStart(2, '0')}`)) {
+                if (r.morning === 'L') used += 0.5;
+                if (r.afternoon === 'L') used += 0.5;
+            }
+        });
+    }
+
+    const remaining = Math.max(0, +(accrued - used).toFixed(1));
+    return {
+        accrued: +accrued.toFixed(1),
+        used: +used.toFixed(1),
+        remaining: remaining
+    };
+}
+window.getEmployeeLeaveBalance = getEmployeeLeaveBalance;
 
 window.initAttendance = function() {
     const dateInput = document.getElementById('attendanceMonth');
@@ -68,6 +146,11 @@ window.loadAttendance = async function() {
         currentAttendanceData[r.empId][r.date] = r;
     });
 
+    attendanceEmployeesCached = employees;
+    window._attendanceEmployees = employees;
+    allAttendanceRecordsCached = allRecords;
+    window._allAttendanceRecords = allRecords;
+
     renderAttendanceTable(employees);
 };
 
@@ -94,7 +177,7 @@ function renderAttendanceTable(employees) {
     tr1 += `<th colspan="3" class="col-total col-total-header">សរុប (Total)</th></tr>`;
     tr2 += `<th class="col-total col-total-p text-success"><small>P</small></th>
             <th class="col-total col-total-a text-danger"><small>A</small></th>
-            <th class="col-total col-total-l text-warning"><small>L</small></th></tr>`;
+            <th class="col-total col-total-l text-warning" title="ច្បាប់សម្រាកប្រចាំខែ (Monthly Leave)"><small>L</small></th></tr>`;
             
     thead.innerHTML = tr1 + tr2;
     tbody.innerHTML = '';
@@ -174,9 +257,12 @@ function renderAttendanceTable(employees) {
                      <td class="col-shift ${dayClass} border-end day-border-right"><div class="att-cell att-${aClass}" ${aClick}>${aVal}</div></td>`;
         }
 
+        const bal = getEmployeeLeaveBalance(emp, currentYear, currentMonth, currentAttendanceData);
         html += `<td class="col-total col-total-p text-success fw-bold" id="tot-p-${emp.id}">${totalP}</td>
                  <td class="col-total col-total-a text-danger fw-bold" id="tot-a-${emp.id}">${totalA}</td>
-                 <td class="col-total col-total-l text-warning fw-bold" id="tot-l-${emp.id}">${totalL}</td>`;
+                 <td class="col-total col-total-l text-warning fw-bold" id="tot-l-${emp.id}" title="Monthly Leave: បានប្រើ ${bal.used}/${bal.accrued} ថ្ងៃ (នៅសល់ ${bal.remaining} ថ្ងៃ)">
+                     <span class="text-nowrap" style="font-size: 0.78rem;">L: ${bal.used}/${bal.accrued}</span>
+                 </td>`;
 
         tr.innerHTML = html;
         tbody.appendChild(tr);
@@ -200,6 +286,46 @@ window.toggleAtt = function(empId, dateStr, shift, el) {
     let nextIdx = (states.indexOf(currentState) + 1) % states.length;
     let nextState = states[nextIdx];
     
+    // Check Leave quota restriction when attempting to set 'L' (Monthly Leave)
+    if (nextState === 'L') {
+        const emp = (window._attendanceEmployees || []).find(e => String(e.id) === String(empId));
+        const bal = getEmployeeLeaveBalance(emp, currentYear, currentMonth, currentAttendanceData);
+        if (bal.remaining < 0.5) {
+            Swal.fire({
+                icon: 'warning',
+                title: '⚠️ អស់កូតាច្បាប់សម្រាក (Monthly Leave Exceeded)',
+                html: `
+                    <div class="text-start" style="font-size: 0.92rem;">
+                        <div class="mb-2 pb-2 border-bottom">
+                            <strong>បុគ្គលិក:</strong> <span class="text-success fw-bold">${emp ? emp.name : empId}</span>
+                            ${emp && emp.latinName ? `<small class="text-muted">(${emp.latinName})</small>` : ''}
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>កូតាទទួលបានសរុប (ត្រឹមខែ ${currentMonth}/${currentYear})៖</span>
+                            <span class="badge bg-primary text-white fs-6 px-2 py-1">${bal.accrued} ថ្ងៃ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>កូតាបានប្រើប្រាស់រួច៖</span>
+                            <span class="badge bg-warning text-dark fs-6 px-2 py-1">${bal.used} ថ្ងៃ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>កូតានៅសល់ជាក់ស្តែង៖</span>
+                            <span class="badge bg-danger text-white fs-6 px-2 py-1">${bal.remaining} ថ្ងៃ</span>
+                        </div>
+                        <div class="alert alert-danger py-2 px-3 mt-3 mb-0 small">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            <strong>មិនអនុញ្ញាត៖</strong> បុគ្គលិកនេះបានប្រើប្រាស់ Monthly Leave អស់កូតាកំណត់ហើយ! មិនអាចបញ្ចូល <strong>L</strong> បានទៀតទេ។ អនុញ្ញាតបានតែវត្តមាន <strong>P (មកធ្វើការ)</strong> ឬ <strong>A (អវត្តមាន/កាត់ប្រាក់)</strong> តែប៉ុណ្ណោះ។
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: 'យល់ព្រម',
+                confirmButtonColor: '#059669'
+            });
+            // Skip 'L' -> cycle directly to empty ''
+            nextState = '';
+        }
+    }
+
     // Update UI
     el.innerText = nextState;
     el.className = `att-cell att-${nextState ? nextState : 'none'}`;
@@ -250,7 +376,12 @@ function recalcTotals(empId) {
     const lEl = document.getElementById(`tot-l-${empId}`);
     if (pEl) pEl.innerText = totalP;
     if (aEl) aEl.innerText = totalA;
-    if (lEl) lEl.innerText = totalL;
+    if (lEl) {
+        const emp = (window._attendanceEmployees || []).find(e => String(e.id) === String(empId));
+        const bal = getEmployeeLeaveBalance(emp, currentYear, currentMonth, currentAttendanceData);
+        lEl.setAttribute('title', `Monthly Leave: បានប្រើ ${bal.used}/${bal.accrued} ថ្ងៃ (នៅសល់ ${bal.remaining} ថ្ងៃ)`);
+        lEl.innerHTML = `<span class="text-nowrap" style="font-size: 0.78rem;">L: ${bal.used}/${bal.accrued}</span>`;
+    }
 }
 
 window.openApplyAllPModal = async function(preselectedDay) {
@@ -343,6 +474,11 @@ function applyPToAll(day, shift, employees) {
         }
     });
 
+    attendanceEmployeesCached = employees;
+    window._attendanceEmployees = employees;
+    allAttendanceRecordsCached = allRecords;
+    window._allAttendanceRecords = allRecords;
+
     renderAttendanceTable(employees);
 
     Swal.fire({
@@ -429,6 +565,9 @@ window.saveAllAttendance = async function() {
         for (let update of batchUpdates) {
             await db.attendance.update(update.id, update.data);
         }
+
+        allAttendanceRecordsCached = await db.attendance.toArray();
+        window._allAttendanceRecords = allAttendanceRecordsCached;
 
         Swal.fire({icon: 'success', text: 'រក្សាទុកវត្តមានប្រចាំខែជោគជ័យ!', timer: 1500, showConfirmButton: false});
     } catch (error) {

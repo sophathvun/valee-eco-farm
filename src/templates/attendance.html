@@ -2,7 +2,12 @@
     <div class="col-12 h-100">
         <div class="card shadow-sm border-0 border-top border-primary border-4 h-100 d-flex flex-column att-main-card">
             <div class="card-header bg-body d-flex justify-content-between align-items-center flex-wrap gap-2 py-2">
-                <h5 class="mb-0 text-primary fw-bold" style="font-size: 1.05rem;">📅 គ្រប់គ្រងវត្តមានប្រចាំខែ (Monthly Attendance)</h5>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <h5 class="mb-0 text-primary fw-bold" style="font-size: 1.05rem;">📅 គ្រប់គ្រងវត្តមានប្រចាំខែ (Monthly Attendance)</h5>
+                    <span class="badge bg-warning bg-opacity-25 text-dark border border-warning px-2 py-1" style="font-size: 0.72rem; font-weight: 500;">
+                        <i class="bi bi-calendar2-check me-1"></i>L: Monthly Leave (២ ថ្ងៃ/ខែ)
+                    </span>
+                </div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <input type="month" class="form-control form-control-sm" id="attendanceMonth" onchange="loadAttendance()" style="width: auto;">
                     <button class="btn btn-sm btn-primary" onclick="loadAttendance()" title="ស្វែងរក"><i class="bi bi-search"></i></button>

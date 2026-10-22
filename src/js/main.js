@@ -23,7 +23,7 @@ async function initializeApp() {
     const isEfaceRoute = hash.startsWith('#eface') || hash.startsWith('#scan');
     const hashTab = location.hash ? location.hash.replace('#', '').split('?')[0].split('/')[0] : null;
     const targetRoute = isEfaceRoute ? 'eface' : (hashTab || (localStorage.getItem('currentUser') ? (localStorage.getItem('activeTab') || 'dashboard') : 'dashboard'));
-    const appVersion = '1792683000000';
+    const appVersion = '1792689000000';
     
     // 1. Fetch and inject all HTML templates in PARALLEL using Promise.all for instant speed
     const templatePromises = viewsToLoad.map(async (view) => {
