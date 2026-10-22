@@ -12696,4 +12696,14 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
     color: #cbd5e1 !important;
 }
 
+html[lang="en"] #list-inc-cash-subtotal::before, 
+html[lang="en"] #list-exp-cash-subtotal::before { 
+    content: "Cash Subtotal" !important; 
+}
+html[lang="en"] #list-inc-bank-subtotal::before, 
+html[lang="en"] #list-exp-bank-subtotal::before { 
+    content: "Bank Subtotal" !important; 
+}
+
+
 

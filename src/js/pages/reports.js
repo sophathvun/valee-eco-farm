@@ -827,8 +827,9 @@ window.editTransaction = async function(id, type) {
             return;
         }
         
-        if (tx.note && tx.note.includes('\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a')) {
-            Swal.fire({icon: 'info', text: '\u1794\u17d2\u179a\u178f\u17b7\u1794\u178f\u17d2\u178f\u17b7\u1780\u17b6\u179a\u1793\u17c1\u17c7\u1794\u1784\u17d2\u1780\u17be\u178f\u1796\u17b8\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a\u17d4 \u179f\u17bc\u1798\u1791\u17c5\u1780\u17c2\u1794\u17d2\u179a\u17c2\u1780\u17d2\u1793\u17bb\u1784\u1795\u17d2\u1791\u17b6\u17c6\u1784\u1794\u1789\u17d2\u1787\u17b8\u179c\u17b7\u1780\u17d0\u1799\u1794\u17d0\u178f\u17d2\u179a\u179c\u17b7\u1789!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+        if (tx.note && (tx.note.includes('វិក្កយបត្រ') || tx.note.includes('Invoice'))) {
+            const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
+            Swal.fire({icon: 'info', text: isKm ? 'ប្រតិបត្តិការនេះបង្កើតពីវិក្កយបត្រ។ សូមទៅកែប្រែក្នុងផ្ទាំងបញ្ជីវិក្កយបត្រវិញ!' : 'This transaction was generated from an invoice. Please edit it in the Invoice List!', confirmButtonText: isKm ? 'យល់ព្រម' : 'OK'});
             return;
         }
         if (type === 'income') {

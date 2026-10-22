@@ -1,3 +1,25 @@
+function formatTxCategory(cat) {
+    if (!cat) return "";
+    if (window.i18n && typeof window.i18n.t === 'function') {
+        return window.i18n.t(cat, cat);
+    }
+    return cat;
+}
+
+function formatTxNote(note) {
+    if (!note) return "";
+    const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
+    if (!isKm) {
+        return note
+            .replace(/វិក្កយបត្រ\s*N°\s*:/g, 'Invoice N°:')
+            .replace(/ភ្ញៀវ\s*:/g, 'Customer:');
+    } else {
+        return note
+            .replace(/Invoice\s*N°\s*:/g, 'វិក្កយបត្រ N°:')
+            .replace(/Customer\s*:/g, 'ភ្ញៀវ:');
+    }
+}
+
 // ====== DASHBOARD & LIST DATA ======
 async function loadData() {
     let allTx = await db.transactions.toArray();
@@ -51,9 +73,9 @@ async function loadData() {
             tr.innerHTML = `
                 <td>${formatEngDate(tx.date)}</td>
                 <td><span class="badge ${tx.type === 'income' ? 'bg-success' : 'bg-danger'}">${tx.type === 'income' ? (typeof t === 'function' ? t('income', 'ចំណូល') : 'ចំណូល') : (typeof t === 'function' ? t('expense', 'ចំណាយ') : 'ចំណាយ')}</span></td>
-                <td>${tx.category} <span class="badge bg-secondary ms-1" style="font-size: 0.7rem;">${tx.paymentMethod === "Bank" ? (typeof t === 'function' ? t('bank', 'Bank') : 'Bank') : (typeof t === 'function' ? t('cash', 'Cash') : 'Cash')}</span></td>
+                <td>${formatTxCategory(tx.category)} <span class="badge bg-secondary ms-1" style="font-size: 0.7rem;">${tx.paymentMethod === "Bank" ? (typeof t === 'function' ? t('bank', 'Bank') : 'Bank') : (typeof t === 'function' ? t('cash', 'Cash') : 'Cash')}</span></td>
                 <td class="${tx.type === 'income' ? 'text-success' : 'text-danger'}">${formatCurrency(tx.amount, cur)}</td>
-                <td class="d-none d-md-table-cell">${tx.note || ""}</td>
+                <td class="d-none d-md-table-cell">${formatTxNote(tx.note)}</td>
             `;
             tbody.appendChild(tr);
         }
@@ -78,7 +100,7 @@ async function loadData() {
                         if (cur === "USD") { cu = formatCurrency(tx.amount, "USD"); incCashUsd += tx.amount; }
                         else { ck = formatCurrency(tx.amount, "KHR"); incCashKhr += tx.amount; }
                     }
-                    tr.innerHTML = `<td>${formatEngDate(tx.date)}</td><td>${tx.category}</td><td class="text-success text-center">${ck}</td><td class="text-success text-center">${cu}</td><td class="text-success text-center">${bk}</td><td class="text-success text-center">${bu}</td><td class="d-none d-md-table-cell">${tx.note || ""}</td><td class="text-end">${hasPermission('income') ? `<div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-warning btn-edit" onclick="editTransaction(${tx.id}, 'income')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></div>` : ''}</td>`;
+                    tr.innerHTML = `<td>${formatEngDate(tx.date)}</td><td>${formatTxCategory(tx.category)}</td><td class="text-success text-center">${ck}</td><td class="text-success text-center">${cu}</td><td class="text-success text-center">${bk}</td><td class="text-success text-center">${bu}</td><td class="d-none d-md-table-cell">${formatTxNote(tx.note)}</td><td class="text-end">${hasPermission('income') ? `<div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-warning btn-edit" onclick="editTransaction(${tx.id}, 'income')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></div>` : ''}</td>`;
                     incBody.appendChild(tr);
                 }
             }
@@ -104,7 +126,7 @@ async function loadData() {
                         if (cur === "USD") { cu = formatCurrency(tx.amount, "USD"); expCashUsd += tx.amount; }
                         else { ck = formatCurrency(tx.amount, "KHR"); expCashKhr += tx.amount; }
                     }
-                    tr.innerHTML = `<td>${formatEngDate(tx.date)}</td><td>${tx.category}</td><td class="text-danger text-center">${ck}</td><td class="text-danger text-center">${cu}</td><td class="text-danger text-center">${bk}</td><td class="text-danger text-center">${bu}</td><td class="d-none d-md-table-cell">${tx.note || ""}</td><td class="text-end">${hasPermission('expense') ? `<div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-warning btn-edit" onclick="editTransaction(${tx.id}, 'expense')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></div>` : ''}</td>`;
+                    tr.innerHTML = `<td>${formatEngDate(tx.date)}</td><td>${formatTxCategory(tx.category)}</td><td class="text-danger text-center">${ck}</td><td class="text-danger text-center">${cu}</td><td class="text-danger text-center">${bk}</td><td class="text-danger text-center">${bu}</td><td class="d-none d-md-table-cell">${formatTxNote(tx.note)}</td><td class="text-end">${hasPermission('expense') ? `<div class="d-flex justify-content-end gap-1"><button class="btn btn-sm btn-warning btn-edit" onclick="editTransaction(${tx.id}, 'expense')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button><button class="btn btn-sm btn-danger btn-delete" onclick="deleteTransaction(${tx.id})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button></div>` : ''}</td>`;
                     expBody.appendChild(tr);
                 }
             }
@@ -191,7 +213,9 @@ async function loadData() {
         document.getElementById('list-inc-bank-subtotal').textContent = formatCurrency(incBankTotalUsd, 'USD') + ' = ' + formatCurrency(incBankTotalUsd * listRate, 'KHR');
     if(document.getElementById('list-inc-grand-total'))
         document.getElementById('list-inc-grand-total').textContent = formatCurrency(incGrandTotalUsd, 'USD') + ' = ' + formatCurrency(incGrandTotalUsd * listRate, 'KHR');
-    if(document.getElementById('list-inc-rate-note')) document.getElementById('list-inc-rate-note').textContent = `* អត្រាប្តូរប្រាក់៖ $1 = ៛${formatCurrency(listRate, 'KHR').replace('៛','')}`;
+    const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
+    const ratePrefix = isKm ? '* អត្រាប្តូរប្រាក់៖' : '* Exchange Rate:';
+    if(document.getElementById('list-inc-rate-note')) document.getElementById('list-inc-rate-note').textContent = `${ratePrefix} $1 = ៛${formatCurrency(listRate, 'KHR').replace('៛','')}`;
 
     // ---- Expense column totals ----
     if(document.getElementById('list-exp-cash-khr')) document.getElementById('list-exp-cash-khr').textContent = formatCurrency(expCashKhr, 'KHR');
@@ -209,7 +233,7 @@ async function loadData() {
         document.getElementById('list-exp-bank-subtotal').textContent = formatCurrency(expBankTotalUsd, 'USD') + ' = ' + formatCurrency(expBankTotalUsd * listRate, 'KHR');
     if(document.getElementById('list-exp-grand-total'))
         document.getElementById('list-exp-grand-total').textContent = formatCurrency(expGrandTotalUsd, 'USD') + ' = ' + formatCurrency(expGrandTotalUsd * listRate, 'KHR');
-    if(document.getElementById('list-exp-rate-note')) document.getElementById('list-exp-rate-note').textContent = `* អត្រាប្តូរប្រាក់៖ $1 = ៛${formatCurrency(listRate, 'KHR').replace('៛','')}`;
+    if(document.getElementById('list-exp-rate-note')) document.getElementById('list-exp-rate-note').textContent = `${ratePrefix} $1 = ៛${formatCurrency(listRate, 'KHR').replace('៛','')}`;
 
     const rateDisplays = document.querySelectorAll('.rate-display');
     rateDisplays.forEach(el => el.textContent = (window.sysExchangeRate || 4100).toLocaleString('en-US'));

@@ -1,4 +1,4 @@
-﻿// ====== TRANSACTIONS ======
+// ====== TRANSACTIONS ======
 if(document.getElementById('inc-exchange-rate')) document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
 if(document.getElementById('exp-exchange-rate')) document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
 document.getElementById('incomeForm').addEventListener('submit', async (e) => {
@@ -18,7 +18,8 @@ document.getElementById('incomeForm').addEventListener('submit', async (e) => {
 if(document.getElementById('inc-converted-amount')) document.getElementById('inc-converted-amount').textContent = '';
 document.getElementById('inc-note').value = '';
 document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
-    Swal.fire({icon: 'info', text: 'រក្សាទុកចំណូលបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+    const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
+    Swal.fire({icon: 'info', text: isKm ? 'រក្សាទុកចំណូលបានជោគជ័យ!' : 'Income saved successfully!', confirmButtonText: isKm ? 'យល់ព្រម' : 'OK'});
     const incModalEl = document.getElementById('incomeModal');
     if (incModalEl) { const m = bootstrap.Modal.getInstance(incModalEl); if(m) m.hide(); }
     loadData();
@@ -43,7 +44,8 @@ document.getElementById('expenseForm').addEventListener('submit', async (e) => {
 if(document.getElementById('exp-converted-amount')) document.getElementById('exp-converted-amount').textContent = '';
 document.getElementById('exp-note').value = '';
 document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
-    Swal.fire({icon: 'info', text: 'រក្សាទុកចំណាយបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798'});
+    const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
+    Swal.fire({icon: 'info', text: isKm ? 'រក្សាទុកចំណាយបានជោគជ័យ!' : 'Expense saved successfully!', confirmButtonText: isKm ? 'យល់ព្រម' : 'OK'});
     const expModalEl = document.getElementById('expenseModal');
     if (expModalEl) { const m = bootstrap.Modal.getInstance(expModalEl); if(m) m.hide(); }
     loadData();
@@ -52,11 +54,12 @@ document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4
 });
 
 async function deleteTransaction(id) {
-    const res = await Swal.fire({title: '\u1794\u1789\u17d2\u1787\u17b6\u1780\u17cb', text: 'តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', cancelButtonText: '\u1794\u17c4\u17c7\u1794\u1784\u17cb'});
+    const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
+    const res = await Swal.fire({title: isKm ? 'បញ្ជាក់' : 'Confirmation', text: isKm ? 'តើអ្នកពិតជាចង់លុបទិន្នន័យនេះមែនទេ?' : 'Are you sure you want to delete this record?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: isKm ? 'យល់ព្រម' : 'Yes, delete', cancelButtonText: isKm ? 'បោះបង់' : 'Cancel'});
     if (res.isConfirmed) {
         try {
             await db.transactions.delete(id);
-            Swal.fire({icon: 'success', text: 'លុបទិន្នន័យបានជោគជ័យ!', confirmButtonText: '\u1799\u179b\u17cb\u1796\u17d2\u179a\u1798', timer: 1500});
+            Swal.fire({icon: 'success', text: isKm ? 'លុបទិន្នន័យបានជោគជ័យ!' : 'Record deleted successfully!', confirmButtonText: isKm ? 'យល់ព្រម' : 'OK', timer: 1500});
             loadData();
         } catch(err) { Swal.fire('បញ្ហា', err.message, 'error'); }
     }
@@ -122,8 +125,9 @@ window.openIncomeModal = function() {
     if(form) form.reset();
     document.getElementById('inc-exchange-rate').value = window.sysExchangeRate || 4100;
     if(document.getElementById('inc-converted-amount')) document.getElementById('inc-converted-amount').textContent = '';
+    const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
     const btn = document.querySelector('#incomeForm button[type="submit"]');
-    if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17bc\u179b'; // រក្សាទុកចំណូល
+    if (btn) { btn.setAttribute('data-i18n', 'btn_save_income'); btn.innerHTML = isKm ? 'រក្សាទុកចំណូល' : 'Save Income'; }
     
     // Default date to today
     const tzoffset = (new Date()).getTimezoneOffset() * 60000;
@@ -142,8 +146,9 @@ window.openExpenseModal = function() {
     if(form) form.reset();
     document.getElementById('exp-exchange-rate').value = window.sysExchangeRate || 4100;
     if(document.getElementById('exp-converted-amount')) document.getElementById('exp-converted-amount').textContent = '';
+    const isKm = (window.i18n && window.i18n.currentLang === 'km') || (!window.i18n && (localStorage.getItem('sys_lang') || 'km') === 'km');
     const btn = document.querySelector('#expenseForm button[type="submit"]');
-    if (btn) btn.innerHTML = '\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780\u1785\u17c6\u178e\u17b6\u1799'; // រក្សាទុកចំណាយ
+    if (btn) { btn.setAttribute('data-i18n', 'btn_save_expense'); btn.innerHTML = isKm ? 'រក្សាទុកចំណាយ' : 'Save Expense'; }
 
     // Default date to today
     const tzoffset = (new Date()).getTimezoneOffset() * 60000;

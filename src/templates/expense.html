@@ -9,14 +9,14 @@
     <div class="col-md-12">
         <div class="card shadow-sm border-0 border-top border-danger border-4">
             <div class="card-header bg-body d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 text-danger fw-bold">ប្រវត្តិបញ្ចូលចំណាយ</h5>
+                <h5 class="mb-0 text-danger fw-bold" data-i18n="expense_records">ប្រវត្តិបញ្ចូលចំណាយ</h5>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-danger fw-bold write-only" onclick="window.openExpenseModal()">+ បញ្ចូលចំណាយ</button>
+                    <button class="btn btn-sm btn-danger fw-bold write-only" onclick="window.openExpenseModal()" data-i18n="btn_add_expense">+ បញ្ចូលចំណាយ</button>
                     <div class="custom-dropdown">
-                        <button class="btn btn-sm btn-outline-danger fw-bold dropbtn" onclick="this.parentElement.classList.toggle('show')">ព្រីន របាយការណ៍</button>
+                        <button class="btn btn-sm btn-outline-danger fw-bold dropbtn" onclick="this.parentElement.classList.toggle('show')" data-i18n="print_report">ព្រីន របាយការណ៍</button>
                         <div class="custom-dropdown-content">
-                            <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printListReport('expense');">ព្រីន របាយការណ៍ចំណាយ</a>
-                            <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'ទាញយកជា PDF', text: 'សូមជ្រើសយក \'Save as PDF\' នៅកន្លែងជម្រើស Print ដើម្បីរក្សាទុក។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#dc3545'}).then((result) => { if(result.isConfirmed) printListReport('expense'); });">ទាញយករបាយការណ៍ជា PDF</a>
+                            <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); printListReport('expense');" data-i18n="print_expense_report">ព្រីន របាយការណ៍ចំណាយ</a>
+                            <a href="#" onclick="event.preventDefault(); this.parentElement.parentElement.classList.remove('show'); Swal.fire({title: 'ទាញយកជា PDF', text: 'សូមជ្រើសយក \'Save as PDF\' នៅកន្លែងជម្រើស Print ដើម្បីរក្សាទុក។', icon: 'info', confirmButtonText: 'យល់ព្រម', confirmButtonColor: '#dc3545'}).then((result) => { if(result.isConfirmed) printListReport('expense'); });" data-i18n="download_report_pdf">ទាញយករបាយការណ៍ជា PDF</a>
                         </div>
                     </div>
                     <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#expenseFilterCollapse" aria-expanded="false">
@@ -28,15 +28,15 @@
             <div class="card-body bg-body-tertiary pb-2 pt-2 border-bottom">
                 <div class="row align-items-end">
                     <div class="col-md-4">
-                        <label class="form-label" style="font-size: 13px;">ចាប់ពីថ្ងៃទី (From)</label>
+                        <label class="form-label" style="font-size: 13px;" data-i18n="from_date_label">ចាប់ពីថ្ងៃទី (From)</label>
                         <input type="date" class="form-control form-control-sm" id="filter-exp-from" onchange="loadData()">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label" style="font-size: 13px;">ដល់ថ្ងៃទី (To)</label>
+                        <label class="form-label" style="font-size: 13px;" data-i18n="to_date_label">ដល់ថ្ងៃទី (To)</label>
                         <input type="date" class="form-control form-control-sm" id="filter-exp-to" onchange="loadData()">
                     </div>
                     <div class="col-md-4">
-                        <button class="btn btn-sm btn-secondary w-100 mb-1" onclick="clearExpFilter()">សំអាត</button>
+                        <button class="btn btn-sm btn-secondary w-100 mb-1" onclick="clearExpFilter()" data-i18n="clear">សំអាត</button>
                     </div>
                 </div>
             </div>
@@ -48,15 +48,15 @@
 
                             <tr>
 
-                                <th rowspan="2" class="align-middle">កាលបរិច្ឆេទ</th>
+                                <th rowspan="2" class="align-middle" data-i18n="date">កាលបរិច្ឆេទ</th>
 
-                                <th rowspan="2" class="align-middle">ប្រភេទ</th>
+                                <th rowspan="2" class="align-middle" data-i18n="category">ប្រភេទ</th>
 
-                                <th colspan="2" class="text-center border-bottom-0 th-cash-khr">សាច់ប្រាក់</th>
+                                <th colspan="2" class="text-center border-bottom-0 th-cash-khr" data-i18n="cash">សាច់ប្រាក់</th>
 
-                                <th colspan="2" class="text-center border-bottom-0 th-bank-khr">ធនាគារ</th>
+                                <th colspan="2" class="text-center border-bottom-0 th-bank-khr" data-i18n="bank">ធនាគារ</th>
 
-                                <th rowspan="2" class="align-middle">កំណត់សម្គាល់</th>
+                                <th rowspan="2" class="align-middle" data-i18n="description">កំណត់សម្គាល់</th>
 
                                 <th rowspan="2" class="align-middle" style="width: 80px;"></th>
 
@@ -78,7 +78,7 @@
                         <tbody id="recentExpenseList"></tbody>
                         <tfoot class="fw-bold border-top" style="position: sticky; bottom: 0; z-index: 1; font-size: 15px;">
                             <tr class="table-light">
-                                <td colspan="2" class="text-end">សរុប</td>
+                                <td colspan="2" class="text-end" data-i18n="total">សរុប</td>
                                 <td id="list-exp-cash-khr" class="text-danger text-center">៛0</td>
                                 <td id="list-exp-cash-usd" class="text-danger text-center">$0.00</td>
                                 <td id="list-exp-bank-khr" class="text-danger text-center">៛0</td>
@@ -86,13 +86,13 @@
                                 <td class="d-none d-md-table-cell"></td><td></td>
                             </tr>
                             <tr style="background-color:#f8d7da;">
-                                <td colspan="2" class="text-end text-danger">សរុបសាច់ប្រាក់</td>
+                                <td colspan="2" class="text-end text-danger" data-i18n="cash_subtotal">សរុបសាច់ប្រាក់</td>
                                 <td colspan="2" id="list-exp-cash-subtotal" class="text-danger text-center">$0.00 = ៛0</td>
                                 <td colspan="2" id="list-exp-bank-subtotal" class="text-danger text-center">$0.00 = ៛0</td>
                                 <td class="d-none d-md-table-cell"></td><td></td>
                             </tr>
                             <tr style="background-color:#f5c6cb;">
-                                <td colspan="2" class="text-end text-danger fw-bolder">សរុបរួម</td>
+                                <td colspan="2" class="text-end text-danger fw-bolder" data-i18n="grand_total">សរុបរួម</td>
                                 <td colspan="4" id="list-exp-grand-total" class="text-danger text-center fw-bolder">$0.00 = ៛0</td>
                                 <td class="d-none d-md-table-cell"></td><td></td>
                             </tr>
@@ -116,7 +116,7 @@
   <div class="modal-dialog modal-lg modal-fullscreen-md-down">
     <div class="modal-content border-0 border-top border-danger border-4 shadow">
       <div class="modal-header">
-        <h5 class="modal-title text-danger fw-bold" id="expenseModalLabel">បញ្ចូលទិន្នន័យចំណាយផ្ទាល់</h5>
+        <h5 class="modal-title text-danger fw-bold" id="expenseModalLabel" data-i18n="enter_direct_expense">បញ្ចូលទិន្នន័យចំណាយផ្ទាល់</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -124,7 +124,7 @@
           
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label">រូបិយប័ណ្ណ</label>
+                            <label class="form-label" data-i18n="currency">រូបិយប័ណ្ណ</label>
                             <select class="form-select" id="exp-currency" required>
                                 <option value="KHR">ប្រាក់រៀល (៛)</option>
                                 <option value="USD">ដុល្លារអាមេរិក ($)</option>
@@ -132,7 +132,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <label class="form-label mb-0">ចំនួនទឹកប្រាក់</label>
+                                                <label class="form-label mb-0" data-i18n="amount">ចំនួនទឹកប្រាក់</label>
                                                 <small class="text-primary fw-bold" id="exp-converted-amount"></small>
                                             </div>
                                             <input type="number" class="form-control" id="exp-amount" required min="0" step="0.01">
@@ -140,20 +140,20 @@
                     </div>
                     <div class="row mb-3">
                                           <div class="col-md-6">
-                                              <label class="form-label">កាលបរិច្ឆេទ</label>
+                                              <label class="form-label" data-i18n="date">កាលបរិច្ឆេទ</label>
                                               <input type="date" class="form-control" id="exp-date" required>
                                           </div>
                                           <div class="col-md-6">
-                                              <label class="form-label">វិធីទូទាត់ (Payment)</label>
+                                              <label class="form-label" data-i18n="payment_method">វិធីទូទាត់ (Payment)</label>
                                               <select class="form-select" id="exp-method" required>
-                                                  <option value="Cash">សាច់ប្រាក់ (Cash)</option>
-                                                  <option value="Bank">ធនាគារ (Bank)</option>
+                                                  <option value="Cash" data-i18n="cash_method">សាច់ប្រាក់ (Cash)</option>
+                                                  <option value="Bank" data-i18n="bank_method">ធនាគារ (Bank)</option>
                                               </select>
                                           </div>
                                       </div>
                     <div class="row mb-3">
         <div class="col-md-6">
-            <label class="form-label">អត្រាប្តូរប្រាក់ (Exchange Rate)</label>
+            <label class="form-label" data-i18n="exchange_rate_label">អត្រាប្តូរប្រាក់ (Exchange Rate)</label>
             <div class="input-group">
                 <span class="input-group-text">1$ =</span>
                 <input type="number" class="form-control" id="exp-exchange-rate" step="1" required>
@@ -161,15 +161,15 @@
             </div>
         </div>
         <div class="col-md-6">
-            <label class="form-label">ប្រភេទទិន្នន័យ</label>
+            <label class="form-label" data-i18n="category">ប្រភេទទិន្នន័យ</label>
             <select class="form-select" id="exp-category" required></select>
         </div>
     </div>
                     <div class="mb-4">
-                        <label class="form-label">កំណត់សម្គាល់</label>
-                        <input type="text" class="form-control" id="exp-note" placeholder="ឧ. ទិញចំណី ៥បាវ">
+                        <label class="form-label" data-i18n="description">កំណត់សម្គាល់</label>
+                        <input type="text" class="form-control" id="exp-note" placeholder="ឧ. ទិញចំណី ៥បាវ" data-i18n-placeholder="note_expense_placeholder">
                     </div>
-                    <button type="submit" class="btn btn-danger w-100 py-2 fs-5">រក្សាទុកចំណាយ</button>
+                    <button type="submit" class="btn btn-danger w-100 py-2 fs-5" data-i18n="btn_save_expense">រក្សាទុកចំណាយ</button>
                 
           </form>
       </div>
