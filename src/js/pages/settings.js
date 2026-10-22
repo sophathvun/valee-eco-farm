@@ -1062,8 +1062,10 @@ window.testTelegramConnection = async function() {
     try {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-GB');
-        const dateStr = now.toISOString().split('T')[0];
-        const text = '🔔 <b>E-FACE ATTENDANCE: TEST ALERT</b>\n━━━━━━━━━━━━━━━━━\n▫️ <b>Time:</b> ' + timeStr + '\n▫️ <b>Date:</b> ' + dateStr + '\n▫️ <b>Status:</b> Telegram Bot Connection Successful!';
+        const day = String(now.getDate()).padStart(2, '0');
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const dateFormatted = day + '-' + months[now.getMonth()] + '-' + now.getFullYear();
+        const text = '🔔 <b>E-FACE ATTENDANCE: TEST ALERT</b>\n━━━━━━━━━━━━━━━━━\n▫️ <b>Time:</b> ' + timeStr + '\n▫️ <b>Date:</b> ' + dateFormatted + '\n▫️ <b>Status:</b> Telegram Bot Connection Successful!';
         
         const res = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
             method: 'POST',

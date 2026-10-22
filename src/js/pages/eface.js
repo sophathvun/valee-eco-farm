@@ -786,6 +786,19 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
         const deptSafe = escapeHtml(emp.department || 'General');
         const posSafe = escapeHtml(emp.position || 'Staff');
 
+        // Format Date as DD-Mon-YYYY (e.g. 22-Oct-2026)
+        let dateFormatted = dateStr;
+        try {
+            const dateObj = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00');
+            if (!isNaN(dateObj.getTime())) {
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const month = months[dateObj.getMonth()];
+                const year = dateObj.getFullYear();
+                dateFormatted = `${day}-${month}-${year}`;
+            }
+        } catch (e) {}
+
         // Compact sleek icons & removed footer line
         const caption =
 `🟢 <b>E-FACE ATTENDANCE: CHECK-IN</b>
@@ -795,7 +808,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
 ▫️ <b>Department:</b> ${deptSafe}
 ▫️ <b>Position:</b> ${posSafe}
 ▫️ <b>Time:</b> ${timeStr} (${shiftKh.split(' ')[0]})
-▫️ <b>Date:</b> ${dateStr}
+▫️ <b>Date:</b> ${dateFormatted}
 ▫️ <b>Status:</b> ${statusText}${gpsInfo}`;
 
         // If no snapshot from live camera, fallback to employee's registered photo
