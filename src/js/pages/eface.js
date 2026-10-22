@@ -874,7 +874,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
 ━━━━━━━━━━━━━━━━━
 ▫️ <b>ឈ្មោះ:</b> ${empNameSafe}${empLatinSafe}
 ▫️ <b>អត្តលេខ:</b> ${empCodeSafe}
-▫️ <b>នាយកដ្ឋាន:</b> ${deptSafe}
+▫️ <b>ផ្នែក:</b> ${deptSafe}
 ▫️ <b>តួនាទី:</b> ${posSafe}
 ▫️ <b>ម៉ោង:</b> ${timeStr} (${shiftKh.split(' ')[0]})
 ▫️ <b>កាលបរិច្ឆេទ:</b> ${dateFormatted}
