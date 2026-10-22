@@ -183,3 +183,112 @@ window.compressQrImage = function(file, maxDimension = 600, quality = 0.9) {
         reader.readAsDataURL(file);
     });
 };
+
+// ====== AUTOMATIC CLEANUP & DEDUPLICATION FOR PAYROLL EXPENSES ======
+let isCleaningPayrollDuplicates = false;
+window.autoCleanDuplicatePayrollExpense = async function() {
+    if (isCleaningPayrollDuplicates) return;
+    if (typeof db === 'undefined' || !db.transactions) return;
+
+    isCleaningPayrollDuplicates = true;
+    try {
+        const allTx = await db.transactions.toArray();
+        if (!allTx || allTx.length === 0) return;
+
+        const isPayrollExpense = (t) => {
+            if (!t || t.type !== 'expense') return false;
+            const cat = (t.category || '').toLowerCase();
+            const note = (t.note || '').toLowerCase();
+            return cat.includes('ប្រាក់បៀវត្សរ៍') || cat.includes('payroll') ||
+                   note.includes('បើកប្រាក់បៀវត្សរ៍') || note.includes('ប្រាក់បៀវត្សរ៍') ||
+                   note.includes('pay-');
+        };
+
+        const payrollExpenses = allTx.filter(isPayrollExpense);
+        if (payrollExpenses.length === 0) return;
+
+        // 1. SPECIFIC TARGET: Deduplicate Oct 1-15 2026 payroll expenses where duplicate occurred on 2026-10-22
+        const isOctPeriod1 = (t) => {
+            const note = t.note || '';
+            return (note.includes('តុលា') || note.includes('10')) &&
+                   (note.includes('លើកទី 1') || note.includes('លើកទី ១') || note.includes('01 ដល់ 15') || note.includes('1 ដល់ 15') || note.includes('០១ ដល់ ១៥'));
+        };
+
+        const octPeriod1Tx = payrollExpenses.filter(isOctPeriod1);
+        if (octPeriod1Tx.length > 1) {
+            const has19 = octPeriod1Tx.some(t => t.date === '2026-10-19');
+            const dup22List = octPeriod1Tx.filter(t => t.date === '2026-10-22');
+
+            if (has19 && dup22List.length > 0) {
+                for (const dTx of dup22List) {
+                    console.log('AutoClean: Deleting duplicate payroll expense on 2026-10-22:', dTx.id, dTx.note);
+                    await db.transactions.delete(dTx.id);
+                }
+            }
+        }
+
+        // 2. GENERAL SAFEGUARD: Deduplicate any payroll transactions that share the same batch or identical note
+        const freshTx = await db.transactions.toArray();
+        const freshPayrollTx = freshTx.filter(isPayrollExpense);
+
+        const groups = {};
+        for (const t of freshPayrollTx) {
+            const normNote = (t.note || '').trim().replace(/\s+/g, ' ');
+            const key = t.payrollBatchId ? `batch_${t.payrollBatchId}` : `note_${normNote}`;
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(t);
+        }
+
+        for (const key in groups) {
+            const list = groups[key];
+            if (list.length > 1) {
+                // Keep the earliest one (by date, then by id)
+                list.sort((a, b) => (a.date || '').localeCompare(b.date || '') || String(a.id || '').localeCompare(String(b.id || '')));
+                const original = list[0];
+                const duplicates = list.slice(1);
+                for (const dup of duplicates) {
+                    console.log('AutoClean: Deleting general duplicate payroll expense:', dup.id, dup.note);
+                    await db.transactions.delete(dup.id);
+                }
+            }
+        }
+
+        // 3. AUTO-LINK PAYROLL BATCHES IN db.payroll WITH THEIR EXPENSE TRANSACTIONS
+        if (db.payroll) {
+            const batches = await db.payroll.toArray();
+            const currentTx = await db.transactions.toArray();
+            for (const batch of batches) {
+                if (batch.status === 'Paid') {
+                    let matchedTx = currentTx.find(t => t.type === 'expense' && t.payrollBatchId === batch.id);
+                    if (!matchedTx) {
+                        matchedTx = currentTx.find(t => 
+                            isPayrollExpense(t) && t.note && (t.note.includes(batch.title) || (batch.code && t.note.includes(batch.code)))
+                        );
+                    }
+                    if (matchedTx) {
+                        let needBatchUpdate = false;
+                        const batchUpdates = {};
+                        if (batch.expenseTransactionId !== matchedTx.id) {
+                            batchUpdates.expenseTransactionId = matchedTx.id;
+                            needBatchUpdate = true;
+                        }
+                        if (!batch.isExpenseRecorded) {
+                            batchUpdates.isExpenseRecorded = true;
+                            needBatchUpdate = true;
+                        }
+                        if (needBatchUpdate) {
+                            await db.payroll.update(batch.id, batchUpdates);
+                        }
+                        if (matchedTx.payrollBatchId !== batch.id) {
+                            await db.transactions.update(matchedTx.id, { payrollBatchId: batch.id });
+                        }
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.warn('AutoCleanDuplicatePayrollExpense notice:', err);
+    } finally {
+        isCleaningPayrollDuplicates = false;
+    }
+};

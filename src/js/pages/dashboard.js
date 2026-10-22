@@ -22,6 +22,13 @@ function formatTxNote(note) {
 
 // ====== DASHBOARD & LIST DATA ======
 async function loadData() {
+    if (typeof window.autoCleanDuplicatePayrollExpense === 'function') {
+        try {
+            await window.autoCleanDuplicatePayrollExpense();
+        } catch (e) {
+            console.warn('loadData autoCleanDuplicatePayrollExpense error:', e);
+        }
+    }
     let allTx = await db.transactions.toArray();
     allTx.sort((a, b) => {
         let dateA = a.date || '';

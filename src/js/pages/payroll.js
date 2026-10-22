@@ -71,6 +71,15 @@ window.loadPayrollBatches = async function() {
             db.payroll = new FirebaseStore('payroll');
         }
 
+        // Clean any duplicates before loading
+        if (typeof window.autoCleanDuplicatePayrollExpense === 'function') {
+            try {
+                await window.autoCleanDuplicatePayrollExpense();
+            } catch (e) {
+                console.warn('loadPayrollBatches autoCleanDuplicatePayrollExpense error:', e);
+            }
+        }
+
         const allBatches = await db.payroll.toArray();
         currentPayrollBatches = allBatches || [];
 
@@ -155,7 +164,12 @@ window.loadPayrollBatches = async function() {
         filtered.forEach((b, idx) => {
             let statusBadge = '<span class="badge bg-secondary">Draft</span>';
             if (b.status === 'Approved') statusBadge = '<span class="badge bg-info text-dark">Approved</span>';
-            if (b.status === 'Paid') statusBadge = '<span class="badge bg-success">Paid</span>';
+            if (b.status === 'Paid') {
+                statusBadge = '<span class="badge bg-success">Paid</span>';
+                if (b.isExpenseRecorded || b.expenseTransactionId) {
+                    statusBadge += '<div class="mt-1"><span class="badge bg-success-subtle text-success border border-success" style="font-size: 0.68rem;"><i class="bi bi-journal-check me-1"></i>Expense រួច</span></div>';
+                }
+            }
 
             // Calculate batch totals
             let batchGrossUSD = 0;
@@ -521,6 +535,8 @@ window.handleGeneratePayroll = async function(e) {
             startDate: startDate,
             endDate: endDate,
             status: existing ? existing.status : 'Draft',
+            expenseTransactionId: existing ? (existing.expenseTransactionId || null) : null,
+            isExpenseRecorded: existing ? Boolean(existing.isExpenseRecorded) : false,
             note: note,
             createdAt: existing ? existing.createdAt : new Date().toISOString(),
             createdBy: currentUser ? (currentUser.fullname || currentUser.username) : 'Admin',
@@ -529,6 +545,31 @@ window.handleGeneratePayroll = async function(e) {
 
         if (existingId) {
             await db.payroll.update(existingId, batchData);
+
+            // If existing batch was already Paid and has linked expense transaction, sync updated amount
+            if (existing && existing.status === 'Paid' && (existing.expenseTransactionId || batchData.expenseTransactionId)) {
+                try {
+                    let totalNetUSD = 0;
+                    items.forEach(it => {
+                        const n = parseFloat(it.netSalary) || 0;
+                        if (it.currency === 'KHR') {
+                            totalNetUSD += (n / (window.sysExchangeRate || 4100));
+                        } else {
+                            totalNetUSD += n;
+                        }
+                    });
+                    totalNetUSD = parseFloat(totalNetUSD.toFixed(2));
+                    const txId = existing.expenseTransactionId || batchData.expenseTransactionId;
+                    if (txId && db.transactions) {
+                        await db.transactions.update(txId, {
+                            amount: totalNetUSD,
+                            payrollBatchId: existingId
+                        });
+                    }
+                } catch (e) {
+                    console.warn("Could not sync updated amount to existing expense transaction:", e);
+                }
+            }
         } else {
             await db.payroll.add(batchData);
         }
@@ -595,6 +636,22 @@ window.viewPayrollDetail = async function(batchId) {
             } else {
                 statusBadge.className = 'badge bg-secondary';
                 statusBadge.textContent = 'Draft (សេចក្តីព្រាង)';
+            }
+        }
+
+        // Expense Recorded badge
+        const expBadge = document.getElementById('detail-batch-expense-badge');
+        if (expBadge) {
+            if (batch.isExpenseRecorded || batch.expenseTransactionId) {
+                expBadge.style.display = 'inline-block';
+                expBadge.className = 'badge bg-success-subtle text-success border border-success';
+                expBadge.innerHTML = '<i class="bi bi-journal-check me-1"></i> បានកត់ត្រាចូលចំណាយរួច';
+            } else if (batch.status === 'Paid') {
+                expBadge.style.display = 'inline-block';
+                expBadge.className = 'badge bg-warning-subtle text-warning border border-warning';
+                expBadge.innerHTML = '<i class="bi bi-clock me-1"></i> មិនទាន់កត់ត្រាចូលចំណាយ';
+            } else {
+                expBadge.style.display = 'none';
             }
         }
 
@@ -1186,61 +1243,179 @@ window.setBatchStatus = async function(newStatus) {
     if (!currentBatch) return;
 
     try {
-        currentBatch.status = newStatus;
-        await db.payroll.update(currentBatch.id, { status: newStatus });
+        if (!db.transactions) db.transactions = new FirebaseStore('transactions');
 
-        // If marked as Paid, offer to record expense transaction
+        // Check for existing linked transaction in db.transactions
+        const allTx = await db.transactions.toArray();
+        let existingTx = null;
+
+        if (currentBatch.expenseTransactionId) {
+            existingTx = allTx.find(t => t.id === currentBatch.expenseTransactionId);
+        }
+        if (!existingTx) {
+            existingTx = allTx.find(t => t.type === 'expense' && t.payrollBatchId === currentBatch.id);
+        }
+        if (!existingTx) {
+            existingTx = allTx.find(t => 
+                t.type === 'expense' && 
+                (
+                    (t.category && t.category.includes('ប្រាក់បៀវត្សរ៍')) || 
+                    (t.note && t.note.includes('បើកប្រាក់បៀវត្សរ៍'))
+                ) && 
+                t.note && (t.note.includes(currentBatch.title) || (currentBatch.code && t.note.includes(currentBatch.code)))
+            );
+        }
+
+        let totalNetUSD = 0;
+        currentBatch.items.forEach(it => {
+            const n = parseFloat(it.netSalary) || 0;
+            if (it.currency === 'KHR') {
+                totalNetUSD += (n / (window.sysExchangeRate || 4100));
+            } else {
+                totalNetUSD += n;
+            }
+        });
+        totalNetUSD = parseFloat(totalNetUSD.toFixed(2));
+
         if (newStatus === 'Paid') {
-            let totalNetUSD = 0;
-            currentBatch.items.forEach(it => {
-                const n = parseFloat(it.netSalary) || 0;
-                if (it.currency === 'KHR') {
-                    totalNetUSD += (n / (window.sysExchangeRate || 4100));
-                } else {
-                    totalNetUSD += n;
-                }
-            });
+            currentBatch.status = 'Paid';
 
-            const askExpense = await Swal.fire({
-                title: 'ទូទាត់ប្រាក់ខែបានជោគជ័យ!',
-                html: `ប្រព័ន្ធបានកំណត់ស្ថានភាពទៅជា <b>Paid</b>។<br><br>តើអ្នកចង់កត់ត្រាការទូទាត់ប្រាក់បៀវត្សរ៍សរុប <b>${formatPayCurrency(totalNetUSD, 'USD')}</b> នេះចូលជា <b>ចំណាយ (Expense)</b> ក្នុងប្រព័ន្ធដោយស្វ័យប្រវត្តិដែរឬទេ?`,
-                icon: 'success',
-                showCancelButton: true,
-                confirmButtonText: 'បាទ/ចាស កត់ត្រាជាចំណាយ',
-                cancelButtonText: 'មិនបាច់ទេ',
-                confirmButtonColor: '#198754'
-            });
-
-            if (askExpense.isConfirmed) {
-                if (!db.transactions) db.transactions = new FirebaseStore('transactions');
-                const expDate = new Date().toISOString().split('T')[0];
-                await db.transactions.add({
-                    type: 'expense',
-                    amount: parseFloat(totalNetUSD.toFixed(2)),
-                    currency: 'USD',
-                    paymentMethod: 'Bank Transfer',
-                    exchangeRate: window.sysExchangeRate || 4100,
-                    date: expDate,
-                    category: 'ប្រាក់បៀវត្សរ៍ (Payroll)',
-                    note: `បើកប្រាក់បៀវត្សរ៍បុគ្គលិក ${currentBatch.title}`
+            if (existingTx) {
+                // Transaction ALREADY exists! Do not create duplicate!
+                currentBatch.expenseTransactionId = existingTx.id;
+                currentBatch.isExpenseRecorded = true;
+                await db.payroll.update(currentBatch.id, { 
+                    status: 'Paid', 
+                    expenseTransactionId: existingTx.id, 
+                    isExpenseRecorded: true 
                 });
 
+                // Check if amount has changed
+                if (Math.abs(parseFloat(existingTx.amount || 0) - totalNetUSD) > 0.01) {
+                    await db.transactions.update(existingTx.id, {
+                        amount: totalNetUSD,
+                        payrollBatchId: currentBatch.id
+                    });
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'ទូទាត់ប្រាក់ខែជោគជ័យ!',
+                        html: `ស្ថានភាពត្រូវបានប្តូរទៅជា <b>Paid</b>។<br><br>ប្រព័ន្ធបានរកឃើញប្រតិបត្តិការចំណាយដែលមានស្រាប់ (កាលបរិច្ឆេទ <b>${existingTx.date}</b>) ហើយបាន <b>Update ចំនួនទឹកប្រាក់ទៅជា ${formatPayCurrency(totalNetUSD, 'USD')}</b> ដោយស្វ័យប្រវត្តិ។<br><br><span class="text-success fw-bold">✓ គ្មានការកត់ត្រាជាន់គ្នា (No Duplicate) ឡើយ!</span>`,
+                        confirmButtonText: 'យល់ព្រម',
+                        confirmButtonColor: '#198754'
+                    });
+                } else {
+                    await db.transactions.update(existingTx.id, { payrollBatchId: currentBatch.id });
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'ទូទាត់ប្រាក់ខែជោគជ័យ!',
+                        html: `ស្ថានភាពត្រូវបានប្តូរទៅជា <b>Paid</b>។<br><br>ប្រតិបត្តិការចំណាយសម្រាប់តារាងនេះ <b>ត្រូវបានកត់ត្រារួចរាល់ហើយ</b> ក្នុងប្រព័ន្ធចំណាយ (Expense) កាលពីថ្ងៃទី <b>${existingTx.date}</b>។<br><br><span class="text-success fw-bold">✓ ប្រព័ន្ធមិនបង្កើតចំណាយជាន់គ្នា (Prevent Duplicate) ឡើយ។</span>`,
+                        confirmButtonText: 'យល់ព្រម',
+                        confirmButtonColor: '#198754'
+                    });
+                }
+            } else {
+                // No existing transaction, offer to record expense
+                const askExpense = await Swal.fire({
+                    title: 'ទូទាត់ប្រាក់ខែបានជោគជ័យ!',
+                    html: `ប្រព័ន្ធបានកំណត់ស្ថានភាពទៅជា <b>Paid</b>។<br><br>តើអ្នកចង់កត់ត្រាការទូទាត់ប្រាក់បៀវត្សរ៍សរុប <b>${formatPayCurrency(totalNetUSD, 'USD')}</b> នេះចូលជា <b>ចំណាយ (Expense)</b> ក្នុងប្រព័ន្ធដោយស្វ័យប្រវត្តិដែរឬទេ?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'បាទ/ចាស កត់ត្រាជាចំណាយ',
+                    cancelButtonText: 'មិនបាច់ទេ',
+                    confirmButtonColor: '#198754',
+                    cancelButtonColor: '#6c757d'
+                });
+
+                if (askExpense.isConfirmed) {
+                    const expDate = new Date().toISOString().split('T')[0];
+                    const newTxId = await db.transactions.add({
+                        type: 'expense',
+                        amount: totalNetUSD,
+                        currency: 'USD',
+                        paymentMethod: 'Bank Transfer',
+                        exchangeRate: window.sysExchangeRate || 4100,
+                        date: expDate,
+                        category: 'ប្រាក់បៀវត្សរ៍ (Payroll)',
+                        note: `បើកប្រាក់បៀវត្សរ៍បុគ្គលិក ${currentBatch.title}`,
+                        payrollBatchId: currentBatch.id
+                    });
+
+                    currentBatch.expenseTransactionId = newTxId;
+                    currentBatch.isExpenseRecorded = true;
+                    await db.payroll.update(currentBatch.id, {
+                        status: 'Paid',
+                        expenseTransactionId: newTxId,
+                        isExpenseRecorded: true
+                    });
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'បានកត់ត្រាចូលចំណាយ!',
+                        text: 'ទិន្នន័យចំណាយត្រូវបានបញ្ចូលក្នុងប្រព័ន្ធចំណាយដោយជោគជ័យ។',
+                        timer: 1800,
+                        showConfirmButton: false
+                    });
+                } else {
+                    await db.payroll.update(currentBatch.id, { status: 'Paid' });
+                }
+            }
+        } else {
+            // newStatus is 'Draft' or 'Approved'
+            if (existingTx) {
+                const revertAsk = await Swal.fire({
+                    title: 'ប្តូរស្ថានភាពទៅជា ' + newStatus,
+                    html: `តារាងនេះធ្លាប់បានកត់ត្រាចូលចំណាយ (Expense) ចំនួន <b>${formatPayCurrency(existingTx.amount, 'USD')}</b>។<br><br>តើអ្នកចង់ <b>លុបប្រតិបត្តិការចំណាយនេះចេញពីបញ្ជីចំណាយវិញ</b> ដែរឬទេ ដើម្បីកុំឱ្យខុសទិន្នន័យគណនេយ្យ?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    showDenyButton: true,
+                    confirmButtonText: 'បាទ/ចាស លុបចំណាយចេញវិញ',
+                    denyButtonText: 'រក្សាទុកចំណាយដដែល',
+                    cancelButtonText: 'បោះបង់ការប្តូរស្ថានភាព',
+                    confirmButtonColor: '#dc3545',
+                    denyButtonColor: '#6c757d'
+                });
+
+                if (revertAsk.isDismissed) return;
+
+                if (revertAsk.isConfirmed) {
+                    await db.transactions.delete(existingTx.id);
+                    currentBatch.status = newStatus;
+                    currentBatch.expenseTransactionId = null;
+                    currentBatch.isExpenseRecorded = false;
+                    await db.payroll.update(currentBatch.id, {
+                        status: newStatus,
+                        expenseTransactionId: null,
+                        isExpenseRecorded: false
+                    });
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'បានប្តូរស្ថានភាព!',
+                        text: `ស្ថានភាពត្រូវបានប្តូរទៅជា ${newStatus} និងបានលុបប្រតិបត្តិការចំណាយចេញវិញរួចរាល់។`,
+                        timer: 1800,
+                        showConfirmButton: false
+                    });
+                } else if (revertAsk.isDenied) {
+                    currentBatch.status = newStatus;
+                    await db.payroll.update(currentBatch.id, { status: newStatus });
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'បានប្តូរស្ថានភាព!',
+                        text: `ស្ថានភាពត្រូវបានប្តូរទៅជា ${newStatus} (រក្សាទុកកំណត់ត្រាចំណាយដដែល)`,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            } else {
+                currentBatch.status = newStatus;
+                await db.payroll.update(currentBatch.id, { status: newStatus });
                 Swal.fire({
-                    icon: 'success',
-                    title: 'បានកត់ត្រាចូលចំណាយ!',
-                    text: 'ទិន្នន័យចំណាយត្រូវបានបញ្ចូលក្នុងប្រព័ន្ធចំណាយដោយជោគជ័យ។',
-                    timer: 1800,
+                    icon: 'info',
+                    title: 'បានប្តូរស្ថានភាព!',
+                    text: `ស្ថានភាពត្រូវបានប្តូរទៅជា ${newStatus}`,
+                    timer: 1300,
                     showConfirmButton: false
                 });
             }
-        } else {
-            Swal.fire({
-                icon: 'info',
-                title: 'បានប្តូរស្ថានភាព!',
-                text: `ស្ថានភាពត្រូវបានប្តូរទៅជា ${newStatus}`,
-                timer: 1300,
-                showConfirmButton: false
-            });
         }
 
         await viewPayrollDetail(currentBatch.id);
@@ -1256,24 +1431,53 @@ window.deletePayrollBatch = async function(batchId) {
     if (!batchId && currentBatch) batchId = currentBatch.id;
     if (!batchId) return;
 
-    const res = await Swal.fire({
-        title: 'បញ្ជាក់ការលុប!',
-        text: 'តើអ្នកពិតជាចង់លុបតារាងបើកប្រាក់ខែនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានឡើយ!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'បាទ/ចាស លុបចេញ',
-        cancelButtonText: 'បោះបង់'
-    });
+    try {
+        const batch = (currentBatch && currentBatch.id === batchId) ? currentBatch : await db.payroll.get(batchId);
+        if (!batch) return;
 
-    if (res.isConfirmed) {
-        try {
+        // Check if there is a linked expense transaction
+        if (!db.transactions) db.transactions = new FirebaseStore('transactions');
+        const allTx = await db.transactions.toArray();
+        let linkedTx = null;
+        if (batch.expenseTransactionId) linkedTx = allTx.find(t => t.id === batch.expenseTransactionId);
+        if (!linkedTx) linkedTx = allTx.find(t => t.type === 'expense' && t.payrollBatchId === batch.id);
+        if (!linkedTx) {
+            linkedTx = allTx.find(t => 
+                t.type === 'expense' && 
+                (
+                    (t.category && t.category.includes('ប្រាក់បៀវត្សរ៍')) || 
+                    (t.note && t.note.includes('បើកប្រាក់បៀវត្សរ៍'))
+                ) && 
+                t.note && (t.note.includes(batch.title) || (batch.code && t.note.includes(batch.code)))
+            );
+        }
+
+        let confirmHtml = 'តើអ្នកពិតជាចង់លុបតារាងបើកប្រាក់ខែនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានឡើយ!';
+        if (linkedTx) {
+            confirmHtml += `<br><br><div class="alert alert-warning text-start mb-0 small"><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> តារាងនេះមានកត់ត្រាចំណាយ (Expense) ចំនួន <b>${formatPayCurrency(linkedTx.amount, 'USD')}</b> កាលពីថ្ងៃទី <b>${linkedTx.date}</b>។<br>ប្រព័ន្ធនឹងលុបចំណាយនេះចេញពីបញ្ជីចំណាយដោយស្វ័យប្រវត្តិដើម្បីកុំឱ្យលើសការចំណាយ!</div>`;
+        }
+
+        const res = await Swal.fire({
+            title: 'បញ្ជាក់ការលុប!',
+            html: confirmHtml,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'បាទ/ចាស លុបចេញ',
+            cancelButtonText: 'បោះបង់'
+        });
+
+        if (res.isConfirmed) {
+            if (linkedTx) {
+                await db.transactions.delete(linkedTx.id);
+            }
             await db.payroll.delete(batchId);
             Swal.fire({
                 icon: 'success',
                 title: 'លុបបានជោគជ័យ!',
-                timer: 1400,
+                text: linkedTx ? 'បានលុបតារាងប្រាក់ខែ និងប្រតិបត្តិការចំណាយដែលពាក់ព័ន្ធរួចរាល់' : 'បានលុបតារាងប្រាក់ខែរួចរាល់',
+                timer: 1600,
                 showConfirmButton: false
             });
             if (currentBatch && currentBatch.id === batchId) {
@@ -1281,10 +1485,10 @@ window.deletePayrollBatch = async function(batchId) {
             } else {
                 await loadPayrollBatches();
             }
-        } catch (err) {
-            console.error("Error deleting batch:", err);
-            Swal.fire('បញ្ហា', err.message, 'error');
         }
+    } catch (err) {
+        console.error("Error deleting batch:", err);
+        Swal.fire('បញ្ហា', err.message, 'error');
     }
 };
 
