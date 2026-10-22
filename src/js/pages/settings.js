@@ -1063,7 +1063,7 @@ window.testTelegramConnection = async function() {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-GB');
         const dateStr = now.toISOString().split('T')[0];
-        const text = '🔔 <b>E-FACE ATTENDANCE: TEST ALERT</b>\n━━━━━━━━━━━━━━━━━\n⏰ <b>Time:</b> ' + timeStr + '\n📅 <b>Date:</b> ' + dateStr + '\n✨ <b>Status:</b> ✅ Telegram Bot Connection Successful!';
+        const text = '🔔 <b>E-FACE ATTENDANCE: TEST ALERT</b>\n━━━━━━━━━━━━━━━━━\n▫️ <b>Time:</b> ' + timeStr + '\n▫️ <b>Date:</b> ' + dateStr + '\n▫️ <b>Status:</b> Telegram Bot Connection Successful!';
         
         const res = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
             method: 'POST',

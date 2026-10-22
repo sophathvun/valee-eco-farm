@@ -769,10 +769,10 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
             return;
         }
 
-        const statusText = isLate ? `⚠️ Late (${lateMins} mins)` : 'On-Time (0 mins)';
+        const statusText = isLate ? `Late (${lateMins} mins)` : 'On-Time (0 mins)';
         let gpsInfo = '';
         if (window._efaceGpsSettings && window._efaceGpsSettings.enabled && window._efaceCurrentGpsDistance !== null) {
-            gpsInfo = `\n📍 <b>GPS:</b> ក្នុងបរិវេណ (${window._efaceCurrentGpsDistance}m / កាំ: ${window._efaceGpsSettings.radiusMeters || 200}m)`;
+            gpsInfo = `\n▫️ <b>GPS:</b> ក្នុងបរិវេណ (${window._efaceCurrentGpsDistance}m / កាំ: ${window._efaceGpsSettings.radiusMeters || 200}m)`;
         }
 
         const escapeHtml = (str) => {
@@ -786,19 +786,17 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
         const deptSafe = escapeHtml(emp.department || 'General');
         const posSafe = escapeHtml(emp.position || 'Staff');
 
-        // New Caption: Campus removed, Position added under Department
+        // Compact sleek icons & removed footer line
         const caption =
 `🟢 <b>E-FACE ATTENDANCE: CHECK-IN</b>
 ━━━━━━━━━━━━━━━━━
-👤 <b>Name:</b> ${empNameSafe}${empLatinSafe}
-🆔 <b>ID:</b> ${empCodeSafe}
-🏛️ <b>Department:</b> ${deptSafe}
-💼 <b>Position:</b> ${posSafe}
-⏰ <b>Time:</b> ${timeStr} (${shiftKh.split(' ')[0]})
-📅 <b>Date:</b> ${dateStr}
-✨ <b>Status:</b> ${statusText}${gpsInfo}
-
-🔗 <i>E-Face Biometric System</i>`;
+▫️ <b>Name:</b> ${empNameSafe}${empLatinSafe}
+▫️ <b>ID:</b> ${empCodeSafe}
+▫️ <b>Department:</b> ${deptSafe}
+▫️ <b>Position:</b> ${posSafe}
+▫️ <b>Time:</b> ${timeStr} (${shiftKh.split(' ')[0]})
+▫️ <b>Date:</b> ${dateStr}
+▫️ <b>Status:</b> ${statusText}${gpsInfo}`;
 
         // If no snapshot from live camera, fallback to employee's registered photo
         if (!snapshotBlob && emp.photo) {
