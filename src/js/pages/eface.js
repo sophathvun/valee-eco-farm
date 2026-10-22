@@ -728,6 +728,26 @@ async function handleEfaceMatch(emp, detection) {
     loadEfaceRecentScans();
 }
 
+// ====== HELPER: CONVERT BASE64 DATA URL TO BLOB ======
+function dataUrlToBlob(dataUrl) {
+    if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.includes(',')) return null;
+    try {
+        const parts = dataUrl.split(',');
+        const mimeMatch = parts[0].match(/:(.*?);/);
+        const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+        const bstr = atob(parts[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    } catch (e) {
+        console.warn('dataUrlToBlob error:', e);
+        return null;
+    }
+}
+
 // ====== TELEGRAM DISPATCHER ======
 async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate, lateMins, snapshotBlob) {
     try {
@@ -749,7 +769,6 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
             return;
         }
 
-        const farmName = (tSettings.farmName && tSettings.farmName.trim()) || window.efaceCampusName || 'VALEE ECO FARM';
         const statusText = isLate ? `⚠️ Late (${lateMins} mins)` : 'On-Time (0 mins)';
         let gpsInfo = '';
         if (window._efaceGpsSettings && window._efaceGpsSettings.enabled && window._efaceCurrentGpsDistance !== null) {
@@ -764,21 +783,27 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
         const empNameSafe = escapeHtml(emp.name);
         const empLatinSafe = emp.latinName ? ` (${escapeHtml(emp.latinName)})` : '';
         const empCodeSafe = escapeHtml(emp.code || emp.id);
-        const farmNameSafe = escapeHtml(farmName);
         const deptSafe = escapeHtml(emp.department || 'General');
+        const posSafe = escapeHtml(emp.position || 'Staff');
 
+        // New Caption: Campus removed, Position added under Department
         const caption =
 `🟢 <b>E-FACE ATTENDANCE: CHECK-IN</b>
 ━━━━━━━━━━━━━━━━━
 👤 <b>Name:</b> ${empNameSafe}${empLatinSafe}
 🆔 <b>ID:</b> ${empCodeSafe}
-🏢 <b>Campus:</b> ${farmNameSafe}
 🏛️ <b>Department:</b> ${deptSafe}
+💼 <b>Position:</b> ${posSafe}
 ⏰ <b>Time:</b> ${timeStr} (${shiftKh.split(' ')[0]})
 📅 <b>Date:</b> ${dateStr}
 ✨ <b>Status:</b> ${statusText}${gpsInfo}
 
 🔗 <i>E-Face Biometric System</i>`;
+
+        // If no snapshot from live camera, fallback to employee's registered photo
+        if (!snapshotBlob && emp.photo) {
+            snapshotBlob = dataUrlToBlob(emp.photo);
+        }
 
         const sendTextFallback = () => {
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -798,7 +823,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
             }).catch(err => console.warn('Telegram network error:', err));
         };
 
-        // Try photo first if available, with immediate fallback to text if photo fails
+        // Try sending photo first if available, otherwise fallback to text alert
         if (snapshotBlob) {
             const formData = new FormData();
             formData.append('chat_id', chatId);
@@ -1053,7 +1078,8 @@ window.submitEfaceManualCheckIn = async function() {
         loadEfaceRecentScans();
 
         // Dispatch Telegram
-        dispatchEfaceTelegramAlert(emp, shift === 'morning' ? 'វេនព្រឹក' : 'វេនរសៀល', timeStr, dateStr, false, 0, null);
+        const manualBlob = emp.photo ? dataUrlToBlob(emp.photo) : null;
+        dispatchEfaceTelegramAlert(emp, shift === 'morning' ? 'វេនព្រឹក' : 'វេនរសៀល', timeStr, dateStr, false, 0, manualBlob);
 
         Swal.fire({
             icon: 'success',
