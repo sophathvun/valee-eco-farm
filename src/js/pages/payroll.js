@@ -224,9 +224,15 @@ window.loadPayrollBatches = async function() {
                             <button class="btn btn-outline-success btn-sm" onclick="exportPayrollExcel(${b.id})" title="Export Excel">
                                 <i class="bi bi-file-earmark-excel"></i>
                             </button>
-                            <button class="btn btn-outline-danger btn-sm" onclick="deletePayrollBatch(${b.id})" title="លុប">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                            ${(b.status === 'Paid' || b.isExpenseRecorded) ? `
+                                <button class="btn btn-outline-secondary btn-sm opacity-50" onclick="deletePayrollBatch(${b.id})" title="មិនអនុញ្ញាតឱ្យលុបទេ (បានទូទាត់រួច)">
+                                    <i class="bi bi-lock-fill"></i>
+                                </button>
+                            ` : `
+                                <button class="btn btn-outline-danger btn-sm" onclick="deletePayrollBatch(${b.id})" title="លុប">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `}
                         </div>
                     </td>
                 </tr>
@@ -318,6 +324,27 @@ window.handleGeneratePayroll = async function(e) {
         let existingId = null;
 
         if (existing) {
+            // Block recalculation if already Paid or recorded as expense
+            if (existing.status === 'Paid' || existing.isExpenseRecorded || existing.expenseTransactionId) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'មិនអាចគណនាឡើងវិញបានទេ!',
+                    html: `<div class="text-start">
+                        <p class="mb-2">តារាងបើកប្រាក់បៀវត្សរ៍ <b>${existing.title || code}</b> ត្រូវបានទូទាត់ និងកត់ត្រាចូលជាចំណាយ (Expense) រួចរាល់ហើយ។</p>
+                        <div class="alert alert-warning mb-0 small">
+                            <strong><i class="bi bi-shield-lock-fill me-1"></i> មូលហេតុ៖</strong> តារាងនេះត្រូវបានបិទបញ្ចប់ការទូទាត់រួចរាល់ ដូច្នេះមិនអាចគណនាឡើងវិញ (Re-calculate) បានទៀតទេ ដើម្បីការពារទិន្នន័យប្រាក់បៀវត្សរ៍ដែលបានទូទាត់ជាក់ស្តែង!
+                        </div>
+                    </div>`,
+                    confirmButtonText: 'យល់ព្រម',
+                    confirmButtonColor: '#0d6efd'
+                });
+                if (subBtn) {
+                    subBtn.disabled = false;
+                    subBtn.innerHTML = '<i class="bi bi-magic me-1"></i> ស្រង់វត្តមាន និងគណនាប្រាក់ខែភ្លាមៗ';
+                }
+                return;
+            }
+
             const confirmRes = await Swal.fire({
                 title: 'តារាងមានរួចហើយ!',
                 text: `តារាងបើកប្រាក់ខែ ${existing.title || code} មានរួចហើយ។ តើអ្នកចង់គណនាឡើងវិញ (Re-calculate) ឬទេ?`,
@@ -652,6 +679,42 @@ window.viewPayrollDetail = async function(batchId) {
                 expBadge.innerHTML = '<i class="bi bi-clock me-1"></i> មិនទាន់កត់ត្រាចូលចំណាយ';
             } else {
                 expBadge.style.display = 'none';
+            }
+        }
+
+        // Action buttons locking for Paid batches
+        const isBatchPaid = (batch.status === 'Paid' || batch.isExpenseRecorded || batch.expenseTransactionId);
+        const statusBtn = document.getElementById('btn-payroll-change-status');
+        const deleteBtn = document.getElementById('btn-payroll-delete-batch');
+        const resyncBtn = document.getElementById('btn-payroll-resync-att');
+
+        if (isBatchPaid) {
+            if (statusBtn) {
+                statusBtn.classList.remove('btn-success');
+                statusBtn.classList.add('btn-secondary');
+                statusBtn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Paid (បានទូទាត់ - ជាប់សោរ)';
+            }
+            if (deleteBtn) {
+                deleteBtn.classList.add('opacity-50');
+                deleteBtn.title = 'មិនអាចលុបបានទេ (បានកត់ត្រាចំណាយរួច)';
+            }
+            if (resyncBtn) {
+                resyncBtn.classList.add('opacity-50');
+                resyncBtn.title = 'មិនអាច Sync ឡើងវិញបានទេ (បានកត់ត្រាចំណាយរួច)';
+            }
+        } else {
+            if (statusBtn) {
+                statusBtn.classList.remove('btn-secondary');
+                statusBtn.classList.add('btn-success');
+                statusBtn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> ប្តូរស្ថានភាព';
+            }
+            if (deleteBtn) {
+                deleteBtn.classList.remove('opacity-50');
+                deleteBtn.title = 'លុបតារាងនេះ';
+            }
+            if (resyncBtn) {
+                resyncBtn.classList.remove('opacity-50');
+                resyncBtn.title = 'ទាញយកវត្តមាន P, A, L ពីប្រព័ន្ធវត្តមានមកគណនាឡើងវិញ';
             }
         }
 
@@ -1066,6 +1129,23 @@ document.addEventListener('fullscreenchange', () => {
 window.resyncBatchAttendance = async function() {
     if (!currentBatch) return;
 
+    // RULE: If status is Paid / Expense recorded, forbid resyncing!
+    if (currentBatch.status === 'Paid' || currentBatch.isExpenseRecorded || currentBatch.expenseTransactionId) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'មិនអាច Sync វត្តមានឡើងវិញបានទេ!',
+            html: `<div class="text-start">
+                <p class="mb-2">តារាងបើកប្រាក់បៀវត្សរ៍នេះ <b>ត្រូវបានទូទាត់ និងកត់ត្រាចូលជាចំណាយ (Expense) រួចរាល់ហើយ</b>។</p>
+                <div class="alert alert-warning mb-0 small">
+                    <strong><i class="bi bi-shield-lock-fill me-1"></i> មូលហេតុ៖</strong> ការទូទាត់ត្រូវបានបិទបញ្ចប់ ដូច្នេះមិនអនុញ្ញាតឱ្យផ្លាស់ប្តូរទិន្នន័យវត្តមាន ឬគណនាឡើងវិញក្នុងតារាងនេះទៀតឡើយ!
+                </div>
+            </div>`,
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#0d6efd'
+        });
+        return;
+    }
+
     const confirmRes = await Swal.fire({
         title: 'Sync វត្តមានឡើងវិញ?',
         text: 'តើអ្នកចង់ស្រង់ទិន្នន័យវត្តមាន (P, A, L) ពីប្រព័ន្ធវត្តមានមកគណនាឡើងវិញមែនទេ? (ប្រាក់បន្ថែម និងប្រាក់កាត់ដោយដៃ នឹងត្រូវបានរក្សាទុកដដែល)',
@@ -1151,6 +1231,24 @@ window.resyncBatchAttendance = async function() {
 // ====== 6. EDIT ITEM ADJUSTMENTS ======
 window.openEditItemModal = function(empId) {
     if (!currentBatch) return;
+
+    // RULE: If status is Paid / Expense recorded, forbid adjustments!
+    if (currentBatch.status === 'Paid' || currentBatch.isExpenseRecorded || currentBatch.expenseTransactionId) {
+        Swal.fire({
+            icon: 'info',
+            title: 'មិនអាចកែប្រែបានទេ!',
+            html: `<div class="text-start">
+                <p class="mb-2">តារាងបើកប្រាក់បៀវត្សរ៍នេះ <b>ត្រូវបានទូទាត់ និងកត់ត្រាចូលជាចំណាយ (Expense) រួចរាល់ហើយ</b>។</p>
+                <div class="alert alert-info mb-0 small">
+                    <strong><i class="bi bi-shield-lock-fill me-1"></i> មូលហេតុ៖</strong> ប្រាក់បៀវត្សរ៍ត្រូវបានបិទបញ្ចប់ការទូទាត់រួចរាល់ ដូច្នេះមិនអាចកែសម្រួលប្រាក់បន្ថែម ឬប្រាក់កាត់បានទៀតឡើយ។
+                </div>
+            </div>`,
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#0d6efd'
+        });
+        return;
+    }
+
     const item = currentBatch.items.find(it => it.empId === empId);
     if (!item) return;
 
@@ -1242,180 +1340,101 @@ window.handleSaveItemAdjustment = async function(e) {
 window.setBatchStatus = async function(newStatus) {
     if (!currentBatch) return;
 
+    // RULE: If status has already been changed to Paid / recorded as expense, forbid changing status!
+    if (currentBatch.status === 'Paid' || currentBatch.isExpenseRecorded || currentBatch.expenseTransactionId) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'មិនអាចប្តូរស្ថានភាពបានទេ!',
+            html: `<div class="text-start">
+                <p class="mb-2">តារាងបើកប្រាក់បៀវត្សរ៍នេះ <b>ត្រូវបានទូទាត់ និងកត់ត្រាចូលជាចំណាយ (Expense) រួចរាល់ហើយ</b>។</p>
+                <div class="alert alert-warning mb-0 small">
+                    <strong><i class="bi bi-shield-lock-fill me-1"></i> មូលហេតុ៖</strong> ប្រព័ន្ធការពារមិនអនុញ្ញាតឱ្យប្តូរស្ថានភាពតារាងដែលបានកត់ត្រាចូលចំណាយរួចឡើយ ដើម្បីធានាសុចរិតភាព និងភាពត្រឹមត្រូវនៃទិន្នន័យគណនេយ្យហិរញ្ញវត្ថុ ព្រមទាំងការពារកុំឱ្យមានការកត់ត្រាចំណាយខុស ឬជាន់គ្នា!
+                </div>
+            </div>`,
+            confirmButtonText: 'យល់ព្រម',
+            confirmButtonColor: '#0d6efd'
+        });
+        return;
+    }
+
     try {
         if (!db.transactions) db.transactions = new FirebaseStore('transactions');
 
-        // Check for existing linked transaction in db.transactions
-        const allTx = await db.transactions.toArray();
-        let existingTx = null;
-
-        if (currentBatch.expenseTransactionId) {
-            existingTx = allTx.find(t => t.id === currentBatch.expenseTransactionId);
-        }
-        if (!existingTx) {
-            existingTx = allTx.find(t => t.type === 'expense' && t.payrollBatchId === currentBatch.id);
-        }
-        if (!existingTx) {
-            existingTx = allTx.find(t => 
-                t.type === 'expense' && 
-                (
-                    (t.category && t.category.includes('ប្រាក់បៀវត្សរ៍')) || 
-                    (t.note && t.note.includes('បើកប្រាក់បៀវត្សរ៍'))
-                ) && 
-                t.note && (t.note.includes(currentBatch.title) || (currentBatch.code && t.note.includes(currentBatch.code)))
-            );
-        }
-
-        let totalNetUSD = 0;
-        currentBatch.items.forEach(it => {
-            const n = parseFloat(it.netSalary) || 0;
-            if (it.currency === 'KHR') {
-                totalNetUSD += (n / (window.sysExchangeRate || 4100));
-            } else {
-                totalNetUSD += n;
-            }
-        });
-        totalNetUSD = parseFloat(totalNetUSD.toFixed(2));
-
         if (newStatus === 'Paid') {
-            currentBatch.status = 'Paid';
+            let totalNetUSD = 0;
+            currentBatch.items.forEach(it => {
+                const n = parseFloat(it.netSalary) || 0;
+                if (it.currency === 'KHR') {
+                    totalNetUSD += (n / (window.sysExchangeRate || 4100));
+                } else {
+                    totalNetUSD += n;
+                }
+            });
+            totalNetUSD = parseFloat(totalNetUSD.toFixed(2));
 
-            if (existingTx) {
-                // Transaction ALREADY exists! Do not create duplicate!
-                currentBatch.expenseTransactionId = existingTx.id;
+            const askExpense = await Swal.fire({
+                title: 'ទូទាត់ប្រាក់ខែបានជោគជ័យ!',
+                html: `ប្រព័ន្ធបានកំណត់ស្ថានភាពទៅជា <b>Paid</b>។<br><br>តើអ្នកចង់កត់ត្រាការទូទាត់ប្រាក់បៀវត្សរ៍សរុប <b>${formatPayCurrency(totalNetUSD, 'USD')}</b> នេះចូលជា <b>ចំណាយ (Expense)</b> ក្នុងប្រព័ន្ធដោយស្វ័យប្រវត្តិដែរឬទេ?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'បាទ/ចាស កត់ត្រាជាចំណាយ',
+                cancelButtonText: 'មិនបាច់ទេ',
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d'
+            });
+
+            if (askExpense.isConfirmed) {
+                const expDate = new Date().toISOString().split('T')[0];
+                const newTxId = await db.transactions.add({
+                    type: 'expense',
+                    amount: totalNetUSD,
+                    currency: 'USD',
+                    paymentMethod: 'Bank Transfer',
+                    exchangeRate: window.sysExchangeRate || 4100,
+                    date: expDate,
+                    category: 'ប្រាក់បៀវត្សរ៍ (Payroll)',
+                    note: `បើកប្រាក់បៀវត្សរ៍បុគ្គលិក ${currentBatch.title}`,
+                    payrollBatchId: currentBatch.id
+                });
+
+                currentBatch.status = 'Paid';
+                currentBatch.expenseTransactionId = newTxId;
                 currentBatch.isExpenseRecorded = true;
-                await db.payroll.update(currentBatch.id, { 
-                    status: 'Paid', 
-                    expenseTransactionId: existingTx.id, 
-                    isExpenseRecorded: true 
+                await db.payroll.update(currentBatch.id, {
+                    status: 'Paid',
+                    expenseTransactionId: newTxId,
+                    isExpenseRecorded: true
                 });
 
-                // Check if amount has changed
-                if (Math.abs(parseFloat(existingTx.amount || 0) - totalNetUSD) > 0.01) {
-                    await db.transactions.update(existingTx.id, {
-                        amount: totalNetUSD,
-                        payrollBatchId: currentBatch.id
-                    });
-                    await Swal.fire({
-                        icon: 'success',
-                        title: 'ទូទាត់ប្រាក់ខែជោគជ័យ!',
-                        html: `ស្ថានភាពត្រូវបានប្តូរទៅជា <b>Paid</b>។<br><br>ប្រព័ន្ធបានរកឃើញប្រតិបត្តិការចំណាយដែលមានស្រាប់ (កាលបរិច្ឆេទ <b>${existingTx.date}</b>) ហើយបាន <b>Update ចំនួនទឹកប្រាក់ទៅជា ${formatPayCurrency(totalNetUSD, 'USD')}</b> ដោយស្វ័យប្រវត្តិ។<br><br><span class="text-success fw-bold">✓ គ្មានការកត់ត្រាជាន់គ្នា (No Duplicate) ឡើយ!</span>`,
-                        confirmButtonText: 'យល់ព្រម',
-                        confirmButtonColor: '#198754'
-                    });
-                } else {
-                    await db.transactions.update(existingTx.id, { payrollBatchId: currentBatch.id });
-                    await Swal.fire({
-                        icon: 'success',
-                        title: 'ទូទាត់ប្រាក់ខែជោគជ័យ!',
-                        html: `ស្ថានភាពត្រូវបានប្តូរទៅជា <b>Paid</b>។<br><br>ប្រតិបត្តិការចំណាយសម្រាប់តារាងនេះ <b>ត្រូវបានកត់ត្រារួចរាល់ហើយ</b> ក្នុងប្រព័ន្ធចំណាយ (Expense) កាលពីថ្ងៃទី <b>${existingTx.date}</b>។<br><br><span class="text-success fw-bold">✓ ប្រព័ន្ធមិនបង្កើតចំណាយជាន់គ្នា (Prevent Duplicate) ឡើយ។</span>`,
-                        confirmButtonText: 'យល់ព្រម',
-                        confirmButtonColor: '#198754'
-                    });
-                }
+                Swal.fire({
+                    icon: 'success',
+                    title: 'បានកត់ត្រាចូលចំណាយ!',
+                    text: 'ទិន្នន័យចំណាយត្រូវបានបញ្ចូលក្នុងប្រព័ន្ធចំណាយដោយជោគជ័យ។',
+                    timer: 1800,
+                    showConfirmButton: false
+                });
             } else {
-                // No existing transaction, offer to record expense
-                const askExpense = await Swal.fire({
-                    title: 'ទូទាត់ប្រាក់ខែបានជោគជ័យ!',
-                    html: `ប្រព័ន្ធបានកំណត់ស្ថានភាពទៅជា <b>Paid</b>។<br><br>តើអ្នកចង់កត់ត្រាការទូទាត់ប្រាក់បៀវត្សរ៍សរុប <b>${formatPayCurrency(totalNetUSD, 'USD')}</b> នេះចូលជា <b>ចំណាយ (Expense)</b> ក្នុងប្រព័ន្ធដោយស្វ័យប្រវត្តិដែរឬទេ?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'បាទ/ចាស កត់ត្រាជាចំណាយ',
-                    cancelButtonText: 'មិនបាច់ទេ',
-                    confirmButtonColor: '#198754',
-                    cancelButtonColor: '#6c757d'
-                });
-
-                if (askExpense.isConfirmed) {
-                    const expDate = new Date().toISOString().split('T')[0];
-                    const newTxId = await db.transactions.add({
-                        type: 'expense',
-                        amount: totalNetUSD,
-                        currency: 'USD',
-                        paymentMethod: 'Bank Transfer',
-                        exchangeRate: window.sysExchangeRate || 4100,
-                        date: expDate,
-                        category: 'ប្រាក់បៀវត្សរ៍ (Payroll)',
-                        note: `បើកប្រាក់បៀវត្សរ៍បុគ្គលិក ${currentBatch.title}`,
-                        payrollBatchId: currentBatch.id
-                    });
-
-                    currentBatch.expenseTransactionId = newTxId;
-                    currentBatch.isExpenseRecorded = true;
-                    await db.payroll.update(currentBatch.id, {
-                        status: 'Paid',
-                        expenseTransactionId: newTxId,
-                        isExpenseRecorded: true
-                    });
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'បានកត់ត្រាចូលចំណាយ!',
-                        text: 'ទិន្នន័យចំណាយត្រូវបានបញ្ចូលក្នុងប្រព័ន្ធចំណាយដោយជោគជ័យ។',
-                        timer: 1800,
-                        showConfirmButton: false
-                    });
-                } else {
-                    await db.payroll.update(currentBatch.id, { status: 'Paid' });
-                }
-            }
-        } else {
-            // newStatus is 'Draft' or 'Approved'
-            if (existingTx) {
-                const revertAsk = await Swal.fire({
-                    title: 'ប្តូរស្ថានភាពទៅជា ' + newStatus,
-                    html: `តារាងនេះធ្លាប់បានកត់ត្រាចូលចំណាយ (Expense) ចំនួន <b>${formatPayCurrency(existingTx.amount, 'USD')}</b>។<br><br>តើអ្នកចង់ <b>លុបប្រតិបត្តិការចំណាយនេះចេញពីបញ្ជីចំណាយវិញ</b> ដែរឬទេ ដើម្បីកុំឱ្យខុសទិន្នន័យគណនេយ្យ?`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    showDenyButton: true,
-                    confirmButtonText: 'បាទ/ចាស លុបចំណាយចេញវិញ',
-                    denyButtonText: 'រក្សាទុកចំណាយដដែល',
-                    cancelButtonText: 'បោះបង់ការប្តូរស្ថានភាព',
-                    confirmButtonColor: '#dc3545',
-                    denyButtonColor: '#6c757d'
-                });
-
-                if (revertAsk.isDismissed) return;
-
-                if (revertAsk.isConfirmed) {
-                    await db.transactions.delete(existingTx.id);
-                    currentBatch.status = newStatus;
-                    currentBatch.expenseTransactionId = null;
-                    currentBatch.isExpenseRecorded = false;
-                    await db.payroll.update(currentBatch.id, {
-                        status: newStatus,
-                        expenseTransactionId: null,
-                        isExpenseRecorded: false
-                    });
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'បានប្តូរស្ថានភាព!',
-                        text: `ស្ថានភាពត្រូវបានប្តូរទៅជា ${newStatus} និងបានលុបប្រតិបត្តិការចំណាយចេញវិញរួចរាល់។`,
-                        timer: 1800,
-                        showConfirmButton: false
-                    });
-                } else if (revertAsk.isDenied) {
-                    currentBatch.status = newStatus;
-                    await db.payroll.update(currentBatch.id, { status: newStatus });
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'បានប្តូរស្ថានភាព!',
-                        text: `ស្ថានភាពត្រូវបានប្តូរទៅជា ${newStatus} (រក្សាទុកកំណត់ត្រាចំណាយដដែល)`,
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                }
-            } else {
-                currentBatch.status = newStatus;
-                await db.payroll.update(currentBatch.id, { status: newStatus });
+                currentBatch.status = 'Paid';
+                await db.payroll.update(currentBatch.id, { status: 'Paid' });
                 Swal.fire({
                     icon: 'info',
                     title: 'បានប្តូរស្ថានភាព!',
-                    text: `ស្ថានភាពត្រូវបានប្តូរទៅជា ${newStatus}`,
+                    text: 'ស្ថានភាពត្រូវបានប្តូរទៅជា Paid',
                     timer: 1300,
                     showConfirmButton: false
                 });
             }
+        } else {
+            // Changing between Draft and Approved
+            currentBatch.status = newStatus;
+            await db.payroll.update(currentBatch.id, { status: newStatus });
+            Swal.fire({
+                icon: 'info',
+                title: 'បានប្តូរស្ថានភាព!',
+                text: `ស្ថានភាពត្រូវបានប្តូរទៅជា ${newStatus}`,
+                timer: 1300,
+                showConfirmButton: false
+            });
         }
 
         await viewPayrollDetail(currentBatch.id);
@@ -1435,31 +1454,26 @@ window.deletePayrollBatch = async function(batchId) {
         const batch = (currentBatch && currentBatch.id === batchId) ? currentBatch : await db.payroll.get(batchId);
         if (!batch) return;
 
-        // Check if there is a linked expense transaction
-        if (!db.transactions) db.transactions = new FirebaseStore('transactions');
-        const allTx = await db.transactions.toArray();
-        let linkedTx = null;
-        if (batch.expenseTransactionId) linkedTx = allTx.find(t => t.id === batch.expenseTransactionId);
-        if (!linkedTx) linkedTx = allTx.find(t => t.type === 'expense' && t.payrollBatchId === batch.id);
-        if (!linkedTx) {
-            linkedTx = allTx.find(t => 
-                t.type === 'expense' && 
-                (
-                    (t.category && t.category.includes('ប្រាក់បៀវត្សរ៍')) || 
-                    (t.note && t.note.includes('បើកប្រាក់បៀវត្សរ៍'))
-                ) && 
-                t.note && (t.note.includes(batch.title) || (batch.code && t.note.includes(batch.code)))
-            );
-        }
-
-        let confirmHtml = 'តើអ្នកពិតជាចង់លុបតារាងបើកប្រាក់ខែនេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានឡើយ!';
-        if (linkedTx) {
-            confirmHtml += `<br><br><div class="alert alert-warning text-start mb-0 small"><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> តារាងនេះមានកត់ត្រាចំណាយ (Expense) ចំនួន <b>${formatPayCurrency(linkedTx.amount, 'USD')}</b> កាលពីថ្ងៃទី <b>${linkedTx.date}</b>។<br>ប្រព័ន្ធនឹងលុបចំណាយនេះចេញពីបញ្ជីចំណាយដោយស្វ័យប្រវត្តិដើម្បីកុំឱ្យលើសការចំណាយ!</div>`;
+        // RULE: If status has been changed to Paid / recorded as expense, forbid deleting!
+        if (batch.status === 'Paid' || batch.isExpenseRecorded || batch.expenseTransactionId) {
+            Swal.fire({
+                icon: 'error',
+                title: 'មិនអនុញ្ញាតឱ្យលុបទេ!',
+                html: `<div class="text-start">
+                    <p class="mb-2">តារាងបើកប្រាក់បៀវត្សរ៍ <b>${batch.title || batch.code}</b> ត្រូវបានទូទាត់ និងកត់ត្រាចូលជាចំណាយ (Expense) រួចរាល់ហើយ។</p>
+                    <div class="alert alert-danger mb-0 small">
+                        <strong><i class="bi bi-shield-lock-fill me-1"></i> មូលហេតុ៖</strong> ប្រព័ន្ធការពារដាច់ខាតមិនឱ្យលុបតារាងប្រាក់បៀវត្សរ៍ដែលបានកត់ត្រាចូលចំណាយរួចឡើយ ដើម្បីការពារសុចរិតភាពទិន្នន័យ ជៀសវាងការបាត់បង់ប្រវត្តិបើកប្រាក់ខែ និងកុំឱ្យខុសតួលេខចំណាយជាក់ស្តែងរបស់កសិដ្ឋាន!
+                    </div>
+                </div>`,
+                confirmButtonText: 'យល់ព្រម',
+                confirmButtonColor: '#dc3545'
+            });
+            return;
         }
 
         const res = await Swal.fire({
             title: 'បញ្ជាក់ការលុប!',
-            html: confirmHtml,
+            text: `តើអ្នកពិតជាចង់លុបតារាងបើកប្រាក់ខែ ${batch.title || batch.code} នេះមែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានឡើយ!`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#dc3545',
@@ -1469,15 +1483,11 @@ window.deletePayrollBatch = async function(batchId) {
         });
 
         if (res.isConfirmed) {
-            if (linkedTx) {
-                await db.transactions.delete(linkedTx.id);
-            }
             await db.payroll.delete(batchId);
             Swal.fire({
                 icon: 'success',
                 title: 'លុបបានជោគជ័យ!',
-                text: linkedTx ? 'បានលុបតារាងប្រាក់ខែ និងប្រតិបត្តិការចំណាយដែលពាក់ព័ន្ធរួចរាល់' : 'បានលុបតារាងប្រាក់ខែរួចរាល់',
-                timer: 1600,
+                timer: 1400,
                 showConfirmButton: false
             });
             if (currentBatch && currentBatch.id === batchId) {

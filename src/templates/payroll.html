@@ -162,7 +162,7 @@
                         </div>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
-                        <button class="btn btn-outline-primary btn-sm" onclick="resyncBatchAttendance()" title="ទាញយកវត្តមាន P, A, L ពីប្រព័ន្ធវត្តមានមកគណនាឡើងវិញ">
+                        <button class="btn btn-outline-primary btn-sm" id="btn-payroll-resync-att" onclick="resyncBatchAttendance()" title="ទាញយកវត្តមាន P, A, L ពីប្រព័ន្ធវត្តមានមកគណនាឡើងវិញ">
                             <i class="bi bi-arrow-repeat me-1"></i> Sync វត្តមានឡើងវិញ
                         </button>
                         <button class="btn btn-outline-success btn-sm" onclick="exportPayrollExcel()">
@@ -175,7 +175,7 @@
                             <i class="bi bi-arrows-fullscreen me-1"></i> <span>ពេញអេក្រង់</span>
                         </button>
                         <div class="dropdown">
-                            <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <button class="btn btn-success btn-sm dropdown-toggle" id="btn-payroll-change-status" type="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-check2-circle me-1"></i> ប្តូរស្ថានភាព
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm">
@@ -185,7 +185,7 @@
                                 <li><a class="dropdown-item py-2 text-success fw-bold" href="javascript:void(0)" onclick="setBatchStatus('Paid')"><i class="bi bi-credit-card me-2"></i>ទូទាត់រួច (Paid)</a></li>
                             </ul>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm" onclick="deletePayrollBatch()" title="លុបតារាងនេះ">
+                        <button class="btn btn-outline-danger btn-sm" id="btn-payroll-delete-batch" onclick="deletePayrollBatch()" title="លុបតារាងនេះ">
                             <i class="bi bi-trash me-1"></i> លុប
                         </button>
                     </div>
