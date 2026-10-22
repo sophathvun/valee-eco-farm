@@ -159,7 +159,7 @@ window.switchSettingsTab = function(tabId) {
         loadShifts();
     }
     if (tabId === 'telegram') {
-        loadTelegramSettings();
+        if (typeof loadTelegramSettings === 'function') loadTelegramSettings();
     }
 }
 
@@ -978,6 +978,118 @@ window.saveBranding = async function() {
 }
 
 
+// ====== TELEGRAM SETTINGS ======
+window.loadTelegramSettings = async function() {
+    try {
+        const settings = (typeof db !== 'undefined' && db.telegramSettings) 
+            ? (await db.telegramSettings.first() || {}) 
+            : {};
+        
+        const tokenEl = document.getElementById('telegramBotToken');
+        const chatEl = document.getElementById('telegramChatId');
+        const farmEl = document.getElementById('telegramFarmName');
+        const enableEl = document.getElementById('telegramAlertEnabled');
 
+        if (tokenEl) tokenEl.value = settings.botToken || '';
+        if (chatEl) chatEl.value = settings.chatId || '';
+        if (farmEl) farmEl.value = settings.farmName || 'VALEE ECO FARM';
+        if (enableEl) enableEl.checked = settings.enabled !== false;
+    } catch (e) {
+        console.error('Error loading telegram settings:', e);
+    }
+};
 
+window.saveTelegramSettings = async function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const token = (document.getElementById('telegramBotToken')?.value || '').trim();
+    const chatId = (document.getElementById('telegramChatId')?.value || '').trim();
+    const farmName = (document.getElementById('telegramFarmName')?.value || 'VALEE ECO FARM').trim();
+    const enabled = document.getElementById('telegramAlertEnabled')?.checked ?? true;
 
+    try {
+        const existing = await db.telegramSettings.first();
+        const data = {
+            botToken: token,
+            chatId: chatId,
+            farmName: farmName,
+            enabled: enabled,
+            updatedAt: new Date().toISOString()
+        };
+        if (existing) {
+            await db.telegramSettings.update(existing.id, data);
+        } else {
+            await db.telegramSettings.add(data);
+        }
+        Swal.fire({
+            icon: 'success',
+            title: 'ជោគជ័យ',
+            text: 'បានរក្សាទុកការកំណត់ Telegram Bot រួចរាល់!',
+            timer: 1800,
+            showConfirmButton: false
+        });
+    } catch (err) {
+        Swal.fire({
+            icon: 'error',
+            title: 'បរាជ័យ',
+            text: 'មិនអាចរក្សាទុកបានទេ: ' + (err.message || err)
+        });
+    }
+};
+
+window.testTelegramConnection = async function() {
+    const token = (document.getElementById('telegramBotToken')?.value || '').trim();
+    const chatId = (document.getElementById('telegramChatId')?.value || '').trim();
+    const farmName = (document.getElementById('telegramFarmName')?.value || 'VALEE ECO FARM').trim();
+
+    if (!token || !chatId) {
+        Swal.fire('ខ្វះទិន្នន័យ', 'សូមបញ្ចូល Bot Token និង Chat ID ជាមុនសិន!', 'warning');
+        return;
+    }
+
+    const btn = document.getElementById('btnTestTelegram');
+    const oldHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> កំពុងផ្ញើសារ...';
+        btn.disabled = true;
+    }
+
+    try {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-GB');
+        const dateStr = now.toISOString().split('T')[0];
+        const text = '🔔 <b>E-FACE ATTENDANCE: TEST ALERT</b>\n━━━━━━━━━━━━━━━━━\n🏢 <b>Location:</b> ' + farmName + '\n⏰ <b>Time:</b> ' + timeStr + '\n📅 <b>Date:</b> ' + dateStr + '\n✨ <b>Status:</b> ✅ Telegram Bot Connection Successful!';
+        
+        const res = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: text,
+                parse_mode: 'HTML'
+            })
+        });
+        const resJson = await res.json();
+        if (resJson.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'ការតភ្ជាប់ជោគជ័យ!',
+                text: 'សារតេស្តត្រូវបានផ្ញើទៅកាន់ Telegram Group ដោយជោគជ័យ។',
+                confirmButtonColor: '#198754'
+            });
+        } else {
+            throw new Error(resJson.description || 'បរាជ័យក្នុងការផ្ញើសារ');
+        }
+    } catch (err) {
+        Swal.fire({
+            icon: 'error',
+            title: 'ការតភ្ជាប់បរាជ័យ',
+            text: 'មិនអាចផ្ញើសារបានទេ: ' + (err.message || err) + '\nសូមពិនិត្យ Bot Token, Chat ID ឬប្រាកដថាបាន Invite Bot ចូលក្នុង Group។',
+            confirmButtonColor: '#dc3545'
+        });
+    } finally {
+        if (btn) {
+            btn.innerHTML = oldHtml;
+            btn.disabled = false;
+        }
+    }
+};
