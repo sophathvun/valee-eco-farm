@@ -21,6 +21,11 @@ window._efaceCurrentGpsDistance = null;
 window._efaceGpsSettings = null;
 let efaceGpsCheckTimer = null;
 let efaceLastGpsCheckTime = 0;
+let efaceAudioClips = null;
+let efaceLastFailedVoiceTime = 0;
+let efaceLastPromptVoiceTime = 0;
+let efaceLastGpsVoiceTime = 0;
+let efaceUnrecognizedFrameCount = 0;
 
 const EFACE_MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
 
@@ -175,6 +180,48 @@ function playEfaceSuccessChime() {
         osc2.stop(now + 0.6);
     } catch (e) {
         console.warn('Audio chime error:', e);
+    }
+}
+
+function initEfaceAudioClips() {
+    if (!efaceAudioClips && typeof Audio !== 'undefined') {
+        efaceAudioClips = {
+            prompt: new Audio('assets/audio/prompt_scan.mp3'),
+            success: new Audio('assets/audio/scan_success.mp3'),
+            failed: new Audio('assets/audio/scan_failed.mp3'),
+            gpsLocked: new Audio('assets/audio/gps_locked.mp3')
+        };
+        Object.values(efaceAudioClips).forEach(clip => {
+            clip.preload = 'auto';
+        });
+    }
+}
+
+function speakKhmerVoice(type, fallbackText) {
+    if (!efaceSoundEnabled) return;
+    initEfaceAudio();
+    initEfaceAudioClips();
+
+    try {
+        if (efaceAudioClips && efaceAudioClips[type]) {
+            const clip = efaceAudioClips[type];
+            clip.currentTime = 0;
+            const playPromise = clip.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    if ('speechSynthesis' in window && fallbackText) {
+                        try {
+                            window.speechSynthesis.cancel();
+                            const utterance = new SpeechSynthesisUtterance(fallbackText);
+                            utterance.lang = 'km-KH';
+                            window.speechSynthesis.speak(utterance);
+                        } catch (e) {}
+                    }
+                });
+            }
+        }
+    } catch (e) {
+        console.warn('speakKhmerVoice error:', e);
     }
 }
 
@@ -374,6 +421,14 @@ window.startEfaceScanning = async function() {
 
         // Start continuous face detection loop
         runEfaceDetectionLoop();
+
+        // Prompt voice: "សូមដាក់ផ្ទៃមុខចំពីមុខកាមេរ៉ា"
+        setTimeout(() => {
+            if (isEfaceScanning && !window._efaceGpsLocked) {
+                speakKhmerVoice('prompt', 'សូមដាក់ផ្ទៃមុខចំពីមុខកាមេរ៉ា');
+                efaceLastPromptVoiceTime = Date.now();
+            }
+        }, 1000);
     } catch (err) {
         console.error('Camera access error:', err);
         isEfaceScanning = false;
@@ -548,6 +603,17 @@ async function runEfaceDetectionLoop() {
                         efaceMatchBuffer = [];
                         const distStr = distance ? distance.toFixed(2) : '--';
                         updateEfaceStatus(`មិនស្គាល់អត្តសញ្ញាណ (Unregistered Face: ${distStr})`, 'warning');
+
+                        efaceUnrecognizedFrameCount++;
+                        if (efaceUnrecognizedFrameCount >= 5) {
+                            efaceUnrecognizedFrameCount = 0;
+                            const now = Date.now();
+                            if ((now - efaceLastFailedVoiceTime) > 7000) {
+                                efaceLastFailedVoiceTime = now;
+                                playEfaceNoticeSound();
+                                speakKhmerVoice('failed', 'មិនស្គាល់អត្តសញ្ញាណទេ សូមព្យាយាមម្តងទៀត');
+                            }
+                        }
                     }
                 } else {
                     efaceMatchBuffer = [];
@@ -633,6 +699,9 @@ async function handleEfaceMatch(emp, detection) {
 
     // Visual & Sound Feedback
     playEfaceSuccessChime();
+    setTimeout(() => {
+        speakKhmerVoice('success', 'ស្កែនជោគជ័យ សូមអរគុណ');
+    }, 250);
     updateEfaceStatus(`ស្គាល់អត្តសញ្ញាណ: ${emp.name}`, 'matched');
 
     const shifts = await getEfaceWorkShifts();
@@ -1267,6 +1336,11 @@ window.checkEfaceGpsGeofence = async function(force = false) {
                         // Out of Range -> Blocked
                         window._efaceGpsLocked = true;
                         if (overlay) overlay.style.display = 'flex';
+                        const nowGps = Date.now();
+                        if ((nowGps - efaceLastGpsVoiceTime) > 15000) {
+                            efaceLastGpsVoiceTime = nowGps;
+                            speakKhmerVoice('gpsLocked', 'អ្នកនៅក្រៅបរិវេណកសិដ្ឋាន មិនអាចស្កែនបានទេ');
+                        }
                         if (lockTitle) lockTitle.innerText = '⛔ នៅក្រៅបរិវេណកសិដ្ឋាន';
                         if (lockDesc) {
                             lockDesc.innerHTML = `លោកអ្នកកំពុងស្ថិតនៅចម្ងាយ <strong class="text-danger">${distStr}</strong> ពីកសិដ្ឋាន (លើសកាំអនុញ្ញាត ${allowedRadius}m)។ ប្រព័ន្ធមិនអនុញ្ញាតឱ្យស្កែនវត្តមាននៅក្រៅកសិដ្ឋានដាច់ខាត។`;
