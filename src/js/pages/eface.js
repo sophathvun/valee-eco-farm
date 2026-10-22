@@ -698,8 +698,10 @@ async function handleEfaceMatch(emp, detection) {
 async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate, lateMins, snapshotBlob) {
     try {
         if (typeof db === 'undefined' || !db.telegramSettings) return;
-        const tSettings = await db.telegramSettings.first();
-        if (!tSettings || !tSettings.enabled || !tSettings.botToken || !tSettings.chatId) {
+        const tSettings = (await db.telegramSettings.first()) || {};
+        const botToken = botToken || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ';
+        const chatId = chatId || '-5344695591';
+        if (tSettings.enabled === false || !botToken || !chatId) {
             return;
         }
 
@@ -722,12 +724,12 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
         // If we captured live snapshot, send sendPhoto with Multipart FormData
         if (snapshotBlob) {
             const formData = new FormData();
-            formData.append('chat_id', tSettings.chatId);
+            formData.append('chat_id', chatId);
             formData.append('photo', snapshotBlob, `attendance_${emp.id}_${Date.now()}.jpg`);
             formData.append('caption', caption);
             formData.append('parse_mode', 'HTML');
 
-            fetch(`https://api.telegram.org/bot${tSettings.botToken}/sendPhoto`, {
+            fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
                 method: 'POST',
                 body: formData
             }).then(r => r.json()).then(res => {
@@ -735,11 +737,11 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
             }).catch(err => console.warn('Telegram network error:', err));
         } else {
             // Fallback: send text alert
-            fetch(`https://api.telegram.org/bot${tSettings.botToken}/sendMessage`, {
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    chat_id: tSettings.chatId,
+                    chat_id: chatId,
                     text: caption,
                     parse_mode: 'HTML'
                 })

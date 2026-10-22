@@ -990,8 +990,8 @@ window.loadTelegramSettings = async function() {
         const farmEl = document.getElementById('telegramFarmName');
         const enableEl = document.getElementById('telegramAlertEnabled');
 
-        if (tokenEl) tokenEl.value = settings.botToken || '';
-        if (chatEl) chatEl.value = settings.chatId || '';
+        if (tokenEl) tokenEl.value = settings.botToken || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ';
+        if (chatEl) chatEl.value = settings.chatId || '-5344695591';
         if (farmEl) farmEl.value = settings.farmName || 'VALEE ECO FARM';
         if (enableEl) enableEl.checked = settings.enabled !== false;
         const threshEl = document.getElementById('telegramFaceThreshold');
