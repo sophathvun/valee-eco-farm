@@ -19,26 +19,36 @@ const viewsToLoad = [
 async function initializeApp() {
     applyBranding();
     const container = document.getElementById('main-content-container');
+    const hash = (window.location.hash || '').toLowerCase();
+    const isEfaceRoute = hash.startsWith('#eface') || hash.startsWith('#scan');
+    const hashTab = location.hash ? location.hash.replace('#', '').split('?')[0].split('/')[0] : null;
+    const targetRoute = isEfaceRoute ? 'eface' : (hashTab || (localStorage.getItem('currentUser') ? (localStorage.getItem('activeTab') || 'dashboard') : 'dashboard'));
+    const appVersion = '1792655500000';
     
-    // 1. Fetch and inject all HTML templates
-    for (let view of viewsToLoad) {
+    // 1. Fetch and inject all HTML templates in PARALLEL using Promise.all for instant speed
+    const templatePromises = viewsToLoad.map(async (view) => {
         try {
-            const response = await fetch(`src/templates/${view}.html?v=${new Date().getTime()}`);
+            const response = await fetch(`src/templates/${view}.html?v=${appVersion}`);
             if (response.ok) {
                 const html = await response.text();
-                // Create the view wrapper
-                const div = document.createElement('div');
-                div.id = `${view}-view`;
-                div.className = 'view-section';
-                if (view === 'dashboard') div.classList.add('active'); // Default view
-                div.innerHTML = html;
-                container.appendChild(div);
-            } else {
-                console.error(`Failed to load template: ${view}.html`);
+                return { view, html };
             }
         } catch (error) {
             console.error(`Error loading template ${view}.html:`, error);
         }
+        return { view, html: '' };
+    });
+
+    const loadedTemplates = await Promise.all(templatePromises);
+    for (let { view, html } of loadedTemplates) {
+        if (!html) continue;
+        const div = document.createElement('div');
+        div.id = `${view}-view`;
+        div.className = 'view-section';
+        // ONLY activate the requested view! If targetRoute is eface, dashboard-view is NOT active!
+        if (view === targetRoute) div.classList.add('active');
+        div.innerHTML = html;
+        container.appendChild(div);
     }
 
     // Apply translations to all newly injected HTML views
@@ -46,14 +56,17 @@ async function initializeApp() {
         applyTranslations(container);
     }
 
-    // 2. Load the main application logic sequentially AFTER all HTML is injected
-    const scriptsToLoad = [
+    // 2. Load application logic scripts
+    const coreScripts = [
         'src/js/config/firebase-config.js',
         'src/js/services/db.js',
         'src/js/utils/utils.js',
         'src/js/utils/print-util.js',
         'src/js/utils/auth.js',
-        'src/js/pages/eface.js',
+        'src/js/pages/eface.js'
+    ];
+
+    const adminScripts = [
         'src/js/pages/settings.js',
         'src/js/pages/invoice.js',
         'src/js/pages/transactions.js',
@@ -65,17 +78,37 @@ async function initializeApp() {
         'src/js/pages/payroll.js'
     ];
 
-    for (let src of scriptsToLoad) {
-        await new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = `${src}?v=${new Date().getTime()}`;
-            script.onload = resolve;
-            script.onerror = (err) => {
-                console.warn(`Notice loading script ${src}:`, err);
-                resolve();
-            };
-            document.body.appendChild(script);
-        });
+    async function loadScriptList(list) {
+        for (let src of list) {
+            await new Promise((resolve) => {
+                const script = document.createElement('script');
+                script.src = `${src}?v=${appVersion}`;
+                script.onload = resolve;
+                script.onerror = (err) => {
+                    console.warn(`Notice loading script ${src}:`, err);
+                    resolve();
+                };
+                document.body.appendChild(script);
+            });
+        }
+    }
+
+    if (isEfaceRoute) {
+        // FAST-TRACK: Load only core E-Face scripts first so scanner starts in < 1 second!
+        await loadScriptList(coreScripts);
+        if (typeof checkLogin === 'function') {
+            await checkLogin();
+        }
+        if (typeof initEface === 'function') initEface();
+        if (typeof applyTranslations === 'function') applyTranslations();
+
+        // Load other admin scripts silently in the background without blocking the camera
+        setTimeout(() => {
+            loadScriptList(adminScripts);
+        }, 1500);
+    } else {
+        // Normal load for full system
+        await loadScriptList([...coreScripts, ...adminScripts]);
     }
     
     // Initialize Flatpickr for all date inputs
@@ -182,29 +215,23 @@ async function initializeApp() {
         });
     }
 
-    // 3. Central Application Initialization & Session Restoration
-    if (typeof checkLogin === 'function') {
+    // 3. Central Application Initialization for Non-Eface routes
+    if (!isEfaceRoute && typeof checkLogin === 'function') {
         checkLogin().then((isLoggedIn) => {
-            if (isLoggedIn) {
-                if (currentUser) {
-                    if (typeof loadCategories === 'function') loadCategories();
-                    if (typeof loadUnits === 'function') loadUnits();
-                    if (typeof loadPreparers === 'function') loadPreparers();
-                    if (typeof loadUsersAndRoles === 'function') loadUsersAndRoles();
-                    if (typeof addInvoiceRow === 'function') addInvoiceRow();
-                    if (typeof generateInvoiceNumber === 'function') generateInvoiceNumber();
-                    if (typeof loadInvoices === 'function') loadInvoices();
-                    if (typeof loadData === 'function') loadData();
-                    if (typeof loadEmployees === 'function') loadEmployees();
-                    if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
-                    if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
-                    if (typeof initPayroll === 'function') initPayroll();
-                    if (typeof applyTranslations === 'function') applyTranslations();
-                } else {
-                    // Public E-Face Biometric Scan Mode
-                    if (typeof initEface === 'function') initEface();
-                    if (typeof applyTranslations === 'function') applyTranslations();
-                }
+            if (isLoggedIn && currentUser) {
+                if (typeof loadCategories === 'function') loadCategories();
+                if (typeof loadUnits === 'function') loadUnits();
+                if (typeof loadPreparers === 'function') loadPreparers();
+                if (typeof loadUsersAndRoles === 'function') loadUsersAndRoles();
+                if (typeof addInvoiceRow === 'function') addInvoiceRow();
+                if (typeof generateInvoiceNumber === 'function') generateInvoiceNumber();
+                if (typeof loadInvoices === 'function') loadInvoices();
+                if (typeof loadData === 'function') loadData();
+                if (typeof loadEmployees === 'function') loadEmployees();
+                if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
+                if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
+                if (typeof initPayroll === 'function') initPayroll();
+                if (typeof applyTranslations === 'function') applyTranslations();
             }
         }).catch(err => {
             console.error('Initialization error:', err);

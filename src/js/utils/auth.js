@@ -71,13 +71,18 @@ async function checkLogin() {
             applyPermissions();
             if (typeof loadSystemSettings === 'function') loadSystemSettings();
 
-            // Restore active page from pending click, localStorage or URL hash
+            // Restore active page: URL Hash ALWAYS has the highest priority over stored tabs!
             const pending = window._pendingTab;
             window._pendingTab = null;
-            const savedTab = (pending && pending.tabId) || localStorage.getItem('activeTab') || (location.hash ? location.hash.replace('#', '').split('/')[0] : 'dashboard');
-            const savedSub = (pending && pending.subId) || localStorage.getItem('activeSubTab') || (location.hash && location.hash.includes('/') ? location.hash.split('/')[1] : null);
-            if (hasPermission(savedTab)) {
-                showTab(savedTab, savedSub);
+            const hashClean = location.hash ? location.hash.replace('#', '').split('?')[0] : '';
+            const hashTab = hashClean ? hashClean.split('/')[0] : null;
+            const hashSub = hashClean && hashClean.includes('/') ? hashClean.split('/')[1] : null;
+
+            const targetTab = hashTab || (pending && pending.tabId) || localStorage.getItem('activeTab') || 'dashboard';
+            const targetSub = hashSub || (pending && pending.subId) || localStorage.getItem('activeSubTab') || null;
+
+            if (hasPermission(targetTab) || targetTab === 'eface') {
+                showTab(targetTab, targetSub);
             } else {
                 const fallbackTab = ['dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'reports', 'employee', 'eface', 'attendance', 'payroll', 'settings'].find(t => hasPermission(t)) || 'dashboard';
                 showTab(fallbackTab);
