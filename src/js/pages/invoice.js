@@ -104,12 +104,20 @@ async function generateInvoiceNumber() {
 }
 
 function resetInvoiceForm() {
+    const wasEditing = !!editingInvoiceId;
     document.getElementById('invoiceForm').reset();
     const dateInput = document.getElementById('inv-date');
     if (dateInput) {
-        dateInput.valueAsDate = new Date();
+        const today = new Date();
+        const y = today.getFullYear();
+        const m = String(today.getMonth() + 1).padStart(2, '0');
+        const d = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${y}-${m}-${d}`;
+        dateInput.value = todayStr;
         if (dateInput._flatpickr && typeof dateInput._flatpickr.setDate === 'function') {
-            dateInput._flatpickr.setDate(new Date(), true);
+            try {
+                dateInput._flatpickr.setDate(today, true);
+            } catch(e) {}
         }
     }
     document.getElementById('inv-items-body').innerHTML = '';
@@ -131,6 +139,10 @@ function resetInvoiceForm() {
     }
     addInvoiceRow();
     generateInvoiceNumber();
+
+    if (wasEditing && typeof showTab === 'function') {
+        showTab('invoice-list');
+    }
 }
 
 document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
@@ -204,7 +216,7 @@ document.getElementById('invoiceForm').addEventListener('submit', async (e) => {
             });
         }
 
-        populateAndPrintInvoice(savedInv);
+        await populateAndPrintInvoice(savedInv);
         resetInvoiceForm();
         loadInvoices();
         loadData();

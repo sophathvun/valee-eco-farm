@@ -83,15 +83,24 @@ async function initializeApp() {
                 },
                 set: function(val) {
                     if (this._isSettingValue) {
-                        originalValueDesc.set.call(this, val);
+                        try {
+                            if (originalValueDesc.set) originalValueDesc.set.call(this, val);
+                        } catch(e) {}
                         return;
                     }
                     this._isSettingValue = true;
-                    originalValueDesc.set.call(this, val);
-                    if (this._flatpickr && typeof this._flatpickr.setDate === 'function') {
-                        this._flatpickr.setDate(val, false);
+                    try {
+                        if (originalValueDesc.set) originalValueDesc.set.call(this, val);
+                        if (this._flatpickr && typeof this._flatpickr.setDate === 'function') {
+                            try {
+                                this._flatpickr.setDate(val, false);
+                            } catch(e) {}
+                        }
+                    } catch(e) {
+                        // ignore sync errors
+                    } finally {
+                        this._isSettingValue = false;
                     }
-                    this._isSettingValue = false;
                 },
                 configurable: true,
                 enumerable: true
@@ -102,19 +111,58 @@ async function initializeApp() {
         if (originalValueAsDateDesc && originalValueAsDateDesc.set) {
             Object.defineProperty(HTMLInputElement.prototype, 'valueAsDate', {
                 get: function() {
-                    return originalValueAsDateDesc.get ? originalValueAsDateDesc.get.call(this) : null;
+                    try {
+                        return originalValueAsDateDesc.get ? originalValueAsDateDesc.get.call(this) : null;
+                    } catch(e) {
+                        if (this.value) {
+                            const d = new Date(this.value);
+                            return isNaN(d.getTime()) ? null : d;
+                        }
+                        return null;
+                    }
                 },
                 set: function(val) {
                     if (this._isSettingValueAsDate) {
-                        originalValueAsDateDesc.set.call(this, val);
+                        try {
+                            if (originalValueAsDateDesc.set) originalValueAsDateDesc.set.call(this, val);
+                        } catch(e) {}
                         return;
                     }
                     this._isSettingValueAsDate = true;
-                    originalValueAsDateDesc.set.call(this, val);
-                    if (this._flatpickr && typeof this._flatpickr.setDate === 'function') {
-                        this._flatpickr.setDate(val, false);
+                    try {
+                        let nativeSuccess = false;
+                        try {
+                            if (originalValueAsDateDesc.set) {
+                                originalValueAsDateDesc.set.call(this, val);
+                                nativeSuccess = true;
+                            }
+                        } catch(e) {
+                            // Suppress "This input element does not support Date values" when Flatpickr changes type to hidden
+                        }
+
+                        if (!nativeSuccess) {
+                            if (val instanceof Date && !isNaN(val.getTime())) {
+                                const y = val.getFullYear();
+                                const m = String(val.getMonth() + 1).padStart(2, '0');
+                                const d = String(val.getDate()).padStart(2, '0');
+                                this.value = `${y}-${m}-${d}`;
+                            } else if (typeof val === 'string') {
+                                this.value = val;
+                            } else if (val === null || val === undefined) {
+                                this.value = '';
+                            }
+                        }
+
+                        if (this._flatpickr && typeof this._flatpickr.setDate === 'function') {
+                            try {
+                                this._flatpickr.setDate(val, false);
+                            } catch(e) {}
+                        }
+                    } catch(e) {
+                        // ignore sync errors
+                    } finally {
+                        this._isSettingValueAsDate = false;
                     }
-                    this._isSettingValueAsDate = false;
                 },
                 configurable: true,
                 enumerable: true
