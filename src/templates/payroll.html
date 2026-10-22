@@ -304,27 +304,28 @@
                 <form id="generatePayrollForm" onsubmit="handleGeneratePayroll(event)">
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-dark">ជ្រើសរើសខែ និងឆ្នាំ (Month / Year)</label>
-                        <input type="month" class="form-control" id="genPayMonth" required>
+                        <input type="month" class="form-control" id="genPayMonth" onchange="checkPayrollPeriodAvailability()" required>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-dark">ជ្រើសរើសលើកបើកប្រាក់ខែ (Payroll Period)</label>
                         <div class="d-flex gap-2">
-                            <div class="form-check p-3 border rounded flex-fill cursor-pointer period-select-card active" onclick="selectPeriodOption(1)">
+                            <div class="form-check p-3 border rounded flex-fill cursor-pointer period-select-card active" id="cardPeriod1" onclick="selectPeriodOption(1)">
                                 <input class="form-check-input" type="radio" name="genPayPeriod" id="genPeriod1" value="1" checked>
                                 <label class="form-check-label fw-bold text-dark d-block" for="genPeriod1">
-                                    លើកទី ១ (Period 1)
+                                    លើកទី ១ (Period 1) <span id="badgePeriod1"></span>
                                 </label>
                                 <small class="text-muted">ថ្ងៃទី ០១ ដល់ ១៥</small>
                             </div>
-                            <div class="form-check p-3 border rounded flex-fill cursor-pointer period-select-card" onclick="selectPeriodOption(2)">
+                            <div class="form-check p-3 border rounded flex-fill cursor-pointer period-select-card" id="cardPeriod2" onclick="selectPeriodOption(2)">
                                 <input class="form-check-input" type="radio" name="genPayPeriod" id="genPeriod2" value="2">
                                 <label class="form-check-label fw-bold text-dark d-block" for="genPeriod2">
-                                    លើកទី ២ (Period 2)
+                                    លើកទី ២ (Period 2) <span id="badgePeriod2"></span>
                                 </label>
                                 <small class="text-muted">ថ្ងៃទី ១៦ ដល់ ដាច់ខែ</small>
                             </div>
                         </div>
+                        <div id="genPeriodAlert" class="mt-2" style="display: none;"></div>
                     </div>
 
                     <div class="alert alert-info py-2 px-3 small mb-3">

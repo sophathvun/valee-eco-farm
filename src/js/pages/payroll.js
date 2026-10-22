@@ -248,7 +248,7 @@ window.loadPayrollBatches = async function() {
 };
 
 // ====== 3. GENERATE PAYROLL MODAL & LOGIC ======
-window.openGeneratePayrollModal = function() {
+window.openGeneratePayrollModal = async function() {
     const modalEl = document.getElementById('generatePayrollModal');
     if (!modalEl) return;
 
@@ -260,13 +260,8 @@ window.openGeneratePayrollModal = function() {
         genMonth.value = `${yyyy}-${mm}`;
     }
 
-    // Default to Period 1 or Period 2 based on current day
-    const day = new Date().getDate();
-    if (day > 15) {
-        selectPeriodOption(2);
-    } else {
-        selectPeriodOption(1);
-    }
+    // Check availability for selected month & periods
+    await checkPayrollPeriodAvailability();
 
     const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
     modal.show();
@@ -275,15 +270,123 @@ window.openGeneratePayrollModal = function() {
 window.selectPeriodOption = function(periodNum) {
     const r1 = document.getElementById('genPeriod1');
     const r2 = document.getElementById('genPeriod2');
-    if (r1 && r2) {
-        if (periodNum === 1) {
-            r1.checked = true;
-            r1.closest('.period-select-card').classList.add('active');
-            r2.closest('.period-select-card').classList.remove('active');
+    const c1 = document.getElementById('cardPeriod1') || (r1 ? r1.closest('.period-select-card') : null);
+    const c2 = document.getElementById('cardPeriod2') || (r2 ? r2.closest('.period-select-card') : null);
+
+    if (periodNum === 1) {
+        if (r1 && r1.disabled) return;
+        if (r1) r1.checked = true;
+        if (c1) c1.classList.add('active');
+        if (c2) c2.classList.remove('active');
+    } else {
+        if (r2 && r2.disabled) return;
+        if (r2) r2.checked = true;
+        if (c2) c2.classList.add('active');
+        if (c1) c1.classList.remove('active');
+    }
+};
+
+window.checkPayrollPeriodAvailability = async function() {
+    const monthInput = document.getElementById('genPayMonth');
+    if (!monthInput || !monthInput.value) return;
+
+    const [yyyyStr, mmStr] = monthInput.value.split('-');
+    const year = parseInt(yyyyStr, 10);
+    const month = parseInt(mmStr, 10);
+
+    const r1 = document.getElementById('genPeriod1');
+    const r2 = document.getElementById('genPeriod2');
+    const c1 = document.getElementById('cardPeriod1') || (r1 ? r1.closest('.period-select-card') : null);
+    const c2 = document.getElementById('cardPeriod2') || (r2 ? r2.closest('.period-select-card') : null);
+    const b1 = document.getElementById('badgePeriod1');
+    const b2 = document.getElementById('badgePeriod2');
+    const alertBox = document.getElementById('genPeriodAlert');
+    const submitBtn = document.getElementById('btnSubmitGeneratePay');
+
+    if (!db.payroll) db.payroll = new FirebaseStore('payroll');
+    const allBatches = await db.payroll.toArray();
+    const existingP1 = allBatches.find(b => b.year === year && b.month === month && b.period === 1);
+    const existingP2 = allBatches.find(b => b.year === year && b.month === month && b.period === 2);
+
+    // Period 1 state (Day 1 to 15)
+    if (existingP1) {
+        if (r1) r1.disabled = true;
+        if (c1) {
+            c1.classList.add('bg-light');
+            c1.style.opacity = '0.65';
+            c1.style.cursor = 'not-allowed';
+        }
+        if (b1) {
+            b1.innerHTML = '<span class="badge bg-danger-subtle text-danger border border-danger ms-1" style="font-size:0.7rem;"><i class="bi bi-lock-fill"></i> បានបង្កើតរួច</span>';
+        }
+    } else {
+        if (r1) r1.disabled = false;
+        if (c1) {
+            c1.classList.remove('bg-light');
+            c1.style.opacity = '1';
+            c1.style.cursor = 'pointer';
+        }
+        if (b1) b1.innerHTML = '';
+    }
+
+    // Period 2 state (Day 16 to end of month)
+    if (existingP2) {
+        if (r2) r2.disabled = true;
+        if (c2) {
+            c2.classList.add('bg-light');
+            c2.style.opacity = '0.65';
+            c2.style.cursor = 'not-allowed';
+        }
+        if (b2) {
+            b2.innerHTML = '<span class="badge bg-danger-subtle text-danger border border-danger ms-1" style="font-size:0.7rem;"><i class="bi bi-lock-fill"></i> បានបង្កើតរួច</span>';
+        }
+    } else {
+        if (r2) r2.disabled = false;
+        if (c2) {
+            c2.classList.remove('bg-light');
+            c2.style.opacity = '1';
+            c2.style.cursor = 'pointer';
+        }
+        if (b2) b2.innerHTML = '';
+    }
+
+    // Auto-select valid period
+    if (existingP1 && !existingP2) {
+        selectPeriodOption(2);
+    } else if (!existingP1 && existingP2) {
+        selectPeriodOption(1);
+    } else if (!existingP1 && !existingP2) {
+        const day = new Date().getDate();
+        selectPeriodOption(day > 15 ? 2 : 1);
+    }
+
+    // Alert banner
+    if (alertBox) {
+        if (existingP1 && existingP2) {
+            alertBox.style.display = 'block';
+            alertBox.className = 'alert alert-danger py-2 px-3 small mb-0';
+            alertBox.innerHTML = `<i class="bi bi-shield-slash-fill me-1"></i> ខែ${getKhmerMonthName(month)} ឆ្នាំ${year} នេះបានបង្កើតទាំងវគ្គទី ១ (១-១៥) និងវគ្គទី ២ (១៦-ដាច់ខែ) រួចរាល់ហើយ មិនអាចបង្កើតស្ទួនបានទេ។`;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.classList.remove('btn-primary');
+                submitBtn.classList.add('btn-secondary');
+            }
+        } else if (existingP1) {
+            alertBox.style.display = 'block';
+            alertBox.className = 'alert alert-warning py-2 px-3 small mb-0';
+            alertBox.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-1"></i> វគ្គទី ១ (ថ្ងៃទី ០១ ដល់ ១៥) បានបង្កើតរួចហើយ មិនអនុញ្ញាតឱ្យបង្កើតស្ទួនឡើយ (ប្រព័ន្ធបានជ្រើសរើសវគ្គទី ២ ដោយស្វ័យប្រវត្តិ)។`;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('btn-secondary');
+                submitBtn.classList.add('btn-primary');
+            }
         } else {
-            r2.checked = true;
-            r2.closest('.period-select-card').classList.add('active');
-            r1.closest('.period-select-card').classList.remove('active');
+            alertBox.style.display = 'none';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('btn-secondary');
+                submitBtn.classList.add('btn-primary');
+            }
         }
     }
 };
@@ -318,50 +421,42 @@ window.handleGeneratePayroll = async function(e) {
     }
 
     try {
-        // Check if batch already exists
+        // Check if batch already exists for this month and period
         const allBatches = await db.payroll.toArray();
         const existing = allBatches.find(b => b.year === year && b.month === month && b.period === period);
-        let existingId = null;
 
         if (existing) {
-            // Block recalculation if already Paid or recorded as expense
-            if (existing.status === 'Paid' || existing.isExpenseRecorded || existing.expenseTransactionId) {
-                await Swal.fire({
-                    icon: 'warning',
-                    title: 'មិនអាចគណនាឡើងវិញបានទេ!',
-                    html: `<div class="text-start">
-                        <p class="mb-2">តារាងបើកប្រាក់បៀវត្សរ៍ <b>${existing.title || code}</b> ត្រូវបានទូទាត់ និងកត់ត្រាចូលជាចំណាយ (Expense) រួចរាល់ហើយ។</p>
-                        <div class="alert alert-warning mb-0 small">
-                            <strong><i class="bi bi-shield-lock-fill me-1"></i> មូលហេតុ៖</strong> តារាងនេះត្រូវបានបិទបញ្ចប់ការទូទាត់រួចរាល់ ដូច្នេះមិនអាចគណនាឡើងវិញ (Re-calculate) បានទៀតទេ ដើម្បីការពារទិន្នន័យប្រាក់បៀវត្សរ៍ដែលបានទូទាត់ជាក់ស្តែង!
-                        </div>
-                    </div>`,
-                    confirmButtonText: 'យល់ព្រម',
-                    confirmButtonColor: '#0d6efd'
-                });
-                if (subBtn) {
-                    subBtn.disabled = false;
-                    subBtn.innerHTML = '<i class="bi bi-magic me-1"></i> ស្រង់វត្តមាន និងគណនាប្រាក់ខែភ្លាមៗ';
-                }
-                return;
-            }
-
-            const confirmRes = await Swal.fire({
-                title: 'តារាងមានរួចហើយ!',
-                text: `តារាងបើកប្រាក់ខែ ${existing.title || code} មានរួចហើយ។ តើអ្នកចង់គណនាឡើងវិញ (Re-calculate) ឬទេ?`,
-                icon: 'question',
+            const periodText = (period === 1) ? 'វគ្គទី ១ (ថ្ងៃទី ០១ ដល់ ១៥)' : `វគ្គទី ២ (ថ្ងៃទី ១៦ ដល់ ${lastDayOfMonth})`;
+            await Swal.fire({
+                icon: 'error',
+                title: 'មិនអនុញ្ញាតឱ្យបង្កើតស្ទួនទេ!',
+                html: `<div class="text-start">
+                    <p class="mb-2">តារាងបើកប្រាក់បៀវត្សរ៍សម្រាប់ <b>${periodText} នៃខែ${getKhmerMonthName(month)} ឆ្នាំ${year}</b> ត្រូវបានបង្កើតរួចរាល់ហើយ (${existing.code || ''})។</p>
+                    <div class="alert alert-danger mb-0 small">
+                        <strong><i class="bi bi-shield-slash-fill me-1"></i> បម្រាម៖</strong> ក្នុងករណីបង្កើតប្រាក់ខែសម្រាប់ថ្ងៃទី ${period === 1 ? '០១ ដល់ ១៥' : '១៦ ដល់ ' + lastDayOfMonth} រួចហើយ មិនអនុញ្ញាតឱ្យបង្កើតការបើកប្រាក់ខែសម្រាប់ថ្ងៃទី ${period === 1 ? '០១ ដល់ ១៥' : '១៦ ដល់ ' + lastDayOfMonth} នៃខែដដែលបានទៀតឡើយ ដើម្បីការពារកុំឱ្យមានការបើកប្រាក់ខែជាន់គ្នា!
+                    </div>
+                </div>`,
                 showCancelButton: true,
-                confirmButtonText: 'បាទ/ចាស គណនាឡើងវិញ',
-                cancelButtonText: 'បោះបង់'
+                confirmButtonText: '<i class="bi bi-eye me-1"></i> មើលតារាងដែលមានស្រាប់',
+                cancelButtonText: 'បិទ',
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d'
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    const modalEl = document.getElementById('generatePayrollModal');
+                    if (modalEl) {
+                        const m = bootstrap.Modal.getInstance(modalEl);
+                        if (m) m.hide();
+                    }
+                    viewPayrollDetail(existing.id);
+                }
             });
 
-            if (!confirmRes.isConfirmed) {
-                if (subBtn) {
-                    subBtn.disabled = false;
-                    subBtn.innerHTML = '<i class="bi bi-magic me-1"></i> ស្រង់វត្តមាន និងគណនាប្រាក់ខែភ្លាមៗ';
-                }
-                return;
+            if (subBtn) {
+                subBtn.disabled = false;
+                subBtn.innerHTML = '<i class="bi bi-magic me-1"></i> ស្រង់វត្តមាន និងគណនាប្រាក់ខែភ្លាមៗ';
             }
-            existingId = existing.id;
+            return;
         }
 
         // Fetch Employees
