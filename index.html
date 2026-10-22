@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="src/css/attendance-report.css?v=1792674000">
     <link rel="stylesheet" href="src/css/payroll.css?v=1792674000">
     <link rel="stylesheet" href="src/css/settings.css?v=1792674000">
-    <link rel="stylesheet" href="src/css/eface.css?v=1792674000">
+    <link rel="stylesheet" href="src/css/eface.css?v=1792649493257">
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -413,6 +413,9 @@
                         </li>
                         <li class="nav-item sys-menu-item" data-perm="settings">
                             <a href="#" class="nav-link submenu-link" id="nav-settings-telegram" data-i18n="menu_settings_telegram" onclick="showTab('settings', 'telegram');">✈️ Telegram Alert</a>
+                        </li>
+                        <li class="nav-item sys-menu-item" data-perm="settings">
+                            <a href="#" class="nav-link submenu-link" id="nav-settings-gps" data-i18n="menu_settings_gps" onclick="showTab('settings', 'gps');">📍 កំណត់ទីតាំង GPS</a>
                         </li>
                       </ul>
                   </li>
@@ -872,12 +875,12 @@
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=1792674000').then(reg => {
+            navigator.serviceWorker.register('sw.js?v=1792649493257').then(reg => {
                 reg.update();
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792674000"></script>
+    <script type="module" src="src/js/main.js?v=1792649493257"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">

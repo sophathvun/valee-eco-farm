@@ -340,6 +340,7 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
         'payroll': getT('sub_payroll', 'បើកប្រាក់បៀវត្សរ៍'),
         'branding': getT('sub_branding', 'ការកំណត់យីហោ'),
         'telegram': getT('sub_telegram', 'ការកំណត់ Telegram'),
+        'gps': getT('sub_gps', 'កំណត់ទីតាំង GPS (Geofence)'),
         'eface': getT('sub_eface', 'ស្កែនវត្តមាន E-Face')
     };
 

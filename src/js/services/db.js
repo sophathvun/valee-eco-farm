@@ -142,5 +142,6 @@ const db = {
     attendance: new FirebaseStore('attendance'),
     workShifts: new FirebaseStore('workShifts'),
     payroll: new FirebaseStore('payroll'),
-    telegramSettings: new FirebaseStore('telegramSettings')
+    telegramSettings: new FirebaseStore('telegramSettings'),
+    gpsSettings: new FirebaseStore('gpsSettings')
 };

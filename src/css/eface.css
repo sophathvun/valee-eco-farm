@@ -534,3 +534,82 @@ body.eface-kiosk-mode #eface-view {
         height: 240px;
     }
 }
+
+
+/* GPS Geofence Lock Overlay */
+.eface-gps-lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(11, 15, 25, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: efaceFadeIn 0.3s ease;
+}
+
+.eface-gps-lock-box {
+    background: rgba(26, 32, 44, 0.85);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 20px;
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(239, 68, 68, 0.2);
+}
+
+.eface-gps-lock-icon-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eface-gps-lock-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(239, 68, 68, 0.5);
+    animation: efaceGpsPulse 2s infinite ease-out;
+}
+
+@keyframes efaceGpsPulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+.eface-gps-info-chip {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    text-align: left;
+}
+
+#eface-gps-badge.gps-valid {
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    background: rgba(16, 185, 129, 0.15) !important;
+    color: #10b981 !important;
+}
+
+#eface-gps-badge.gps-invalid {
+    border-color: rgba(239, 68, 68, 0.4) !important;
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #ef4444 !important;
+}

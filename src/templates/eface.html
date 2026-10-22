@@ -18,6 +18,11 @@
 
         <!-- Right: Action Buttons -->
         <div class="d-flex align-items-center gap-2">
+            <!-- GPS Geofence Status Badge -->
+            <span class="badge bg-dark bg-opacity-75 border border-secondary text-light px-2 py-2 rounded-3 d-flex align-items-center gap-1" id="eface-gps-badge" style="display: none; font-size: 0.75rem;">
+                <i class="bi bi-geo-alt-fill text-info" id="eface-gps-badge-icon"></i>
+                <span id="eface-gps-badge-text">GPS Checking...</span>
+            </span>
             <button type="button" class="btn btn-sm btn-dark border border-secondary text-light px-3 py-2 rounded-3" id="btn-eface-flip" onclick="toggleEfaceCameraFacing()" title="ប្ដូរកាមេរ៉ា (Flip Front/Back Camera)">
                 <i class="bi bi-camera-reverse fs-6"></i>
             </button>
@@ -123,6 +128,33 @@
                     </div>
                 </div>
             </div>
+            <!-- GPS GEOFENCE LOCK OVERLAY -->
+            <div class="eface-gps-lock-overlay" id="eface-gps-lock-overlay" style="display: none;">
+                <div class="eface-gps-lock-box">
+                    <div class="eface-gps-lock-icon-wrap">
+                        <i class="bi bi-geo-alt-fill text-danger fs-1" id="eface-gps-lock-icon"></i>
+                        <div class="eface-gps-lock-pulse"></div>
+                    </div>
+                    <h4 class="fw-bold text-white mt-3 mb-2" id="eface-gps-lock-title">⛔ នៅក្រៅបរិវេណកសិដ្ឋាន</h4>
+                    <p class="text-light small mb-3 opacity-75" id="eface-gps-lock-desc">
+                        លោកអ្នកកំពុងស្ថិតនៅក្រៅតំបន់ដែលបានកំណត់។ ប្រព័ន្ធអនុញ្ញាតឱ្យស្កែនវត្តមានបាន លុះត្រាតែស្ថិតនៅក្នុងបរិវេណកសិដ្ឋានប៉ុណ្ណោះ។
+                    </p>
+                    <div class="eface-gps-info-chip mb-3">
+                        <div class="d-flex justify-content-between text-muted small mb-1">
+                            <span>ចម្ងាយបច្ចុប្បន្ន (Distance):</span>
+                            <strong class="text-warning" id="eface-gps-distance-text">-- m</strong>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span>កាំអនុញ្ញាត (Allowed Radius):</span>
+                            <strong class="text-info" id="eface-gps-radius-text">-- m</strong>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-light border-secondary px-4 py-2 rounded-pill fw-bold" id="btn-recheck-gps" onclick="recheckEfaceGps(true)">
+                        <i class="bi bi-arrow-clockwise me-1"></i> ពិនិត្យទីតាំងឡើងវិញ (Re-check)
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         <!-- Main Controls Under Scanner -->

@@ -161,6 +161,9 @@ window.switchSettingsTab = function(tabId) {
     if (tabId === 'telegram') {
         if (typeof loadTelegramSettings === 'function') loadTelegramSettings();
     }
+    if (tabId === 'gps') {
+        if (typeof loadGpsSettings === 'function') loadGpsSettings();
+    }
 }
 
 // ====== SHIFT MANAGEMENT ======
@@ -1094,5 +1097,253 @@ window.testTelegramConnection = async function() {
             btn.innerHTML = oldHtml;
             btn.disabled = false;
         }
+    }
+};
+
+
+// ====== GPS GEOFENCE SETTINGS ======
+window.calculateHaversineDistance = function(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // Earth radius in meters
+    const toRad = deg => deg * (Math.PI / 180);
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c);
+};
+
+window.loadGpsSettings = async function() {
+    try {
+        const settings = (typeof db !== 'undefined' && db.gpsSettings) 
+            ? (await db.gpsSettings.first() || {}) 
+            : {};
+        
+        const enableEl = document.getElementById('gpsGeofenceEnabled');
+        const farmEl = document.getElementById('gpsFarmName');
+        const latEl = document.getElementById('gpsFarmLat');
+        const lngEl = document.getElementById('gpsFarmLng');
+        const radiusEl = document.getElementById('gpsAllowedRadius');
+
+        if (enableEl) enableEl.checked = settings.enabled === true;
+        if (farmEl) farmEl.value = settings.farmName || 'VALEE ECO FARM';
+        if (latEl && settings.latitude) latEl.value = settings.latitude;
+        if (lngEl && settings.longitude) lngEl.value = settings.longitude;
+        if (radiusEl && settings.radiusMeters) radiusEl.value = String(settings.radiusMeters);
+    } catch (e) {
+        console.error('Error loading GPS settings:', e);
+    }
+};
+
+window.fetchCurrentGpsLocation = function() {
+    if (!navigator.geolocation) {
+        Swal.fire({
+            icon: 'error',
+            title: 'មិនគាំទ្រ GPS',
+            text: 'ឧបករណ៍ ឬ Browser របស់អ្នកមិនគាំទ្រ GPS Geolocation ឡើយ!',
+            confirmButtonColor: '#dc3545'
+        });
+        return;
+    }
+
+    const btn = document.getElementById('btnGetCurrentGps');
+    const oldHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> កំពុងចាប់យកទីតាំង...';
+        btn.disabled = true;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = Math.round(position.coords.accuracy);
+
+            const latEl = document.getElementById('gpsFarmLat');
+            const lngEl = document.getElementById('gpsFarmLng');
+            if (latEl) latEl.value = lat.toFixed(6);
+            if (lngEl) lngEl.value = lng.toFixed(6);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'ចាប់យកទីតាំងជោគជ័យ!',
+                html: `<b>រយៈទទឹង (Lat):</b> ${lat.toFixed(6)}<br><b>រយៈបណ្តោយ (Lng):</b> ${lng.toFixed(6)}<br><small class="text-muted">(ភាពសុក្រិត Accuracy: ~${accuracy}m)</small>`,
+                confirmButtonColor: '#198754'
+            });
+
+            if (btn) {
+                btn.innerHTML = oldHtml;
+                btn.disabled = false;
+            }
+        },
+        (error) => {
+            let msg = 'មិនអាចទាញយកទីតាំងបានទេ!';
+            if (error.code === 1) {
+                msg = 'លោកអ្នកបានបដិសេធសិទ្ធិចូលប្រើ GPS (Permission Denied)។ សូមបើកសិទ្ធិ Location ក្នុង Browser។';
+            } else if (error.code === 2) {
+                msg = 'រកមិនឃើញសញ្ញា GPS (Position Unavailable)។ សូមប្រាកដថាបានបើក Location Service លើឧបករណ៍។';
+            } else if (error.code === 3) {
+                msg = 'ដំណើរការចាប់យកទីតាំងចំណាយពេលយូរពេក (Timeout)។ សូមព្យាយាមម្តងទៀត។';
+            }
+            Swal.fire({
+                icon: 'warning',
+                title: 'មិនអាចចាប់យកទីតាំងបាន',
+                text: msg,
+                confirmButtonColor: '#f59e0b'
+            });
+
+            if (btn) {
+                btn.innerHTML = oldHtml;
+                btn.disabled = false;
+            }
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+    );
+};
+
+window.viewGpsOnGoogleMaps = function(e) {
+    if (e) e.preventDefault();
+    const lat = document.getElementById('gpsFarmLat')?.value;
+    const lng = document.getElementById('gpsFarmLng')?.value;
+    if (!lat || !lng) {
+        Swal.fire({
+            icon: 'info',
+            title: 'ខ្វះកូអរដោណេ',
+            text: 'សូមបញ្ចូល ឬចុចចាប់យក Latitude និង Longitude ជាមុនសិន!',
+            confirmButtonColor: '#0d6efd'
+        });
+        return;
+    }
+    const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+    window.open(mapUrl, '_blank');
+};
+
+window.testMyGpsDistance = function() {
+    const latEl = document.getElementById('gpsFarmLat');
+    const lngEl = document.getElementById('gpsFarmLng');
+    const radiusEl = document.getElementById('gpsAllowedRadius');
+
+    const farmLat = parseFloat(latEl?.value);
+    const farmLng = parseFloat(lngEl?.value);
+    const allowedRadius = parseInt(radiusEl?.value || '200', 10);
+
+    if (isNaN(farmLat) || isNaN(farmLng)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'ខ្វះកូអរដោណេកសិដ្ឋាន',
+            text: 'សូមបញ្ចូលកូអរដោណេកសិដ្ឋានជាមុនសិន ដើម្បីគណនាចម្ងាយ!',
+            confirmButtonColor: '#f59e0b'
+        });
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        Swal.fire('មិនគាំទ្រ GPS', 'ឧបករណ៍នេះមិនគាំទ្រ GPS ទេ', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btnTestGpsDistance');
+    const oldHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> កំពុងវាស់...';
+        btn.disabled = true;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const myLat = pos.coords.latitude;
+            const myLng = pos.coords.longitude;
+            const distance = window.calculateHaversineDistance(myLat, myLng, farmLat, farmLng);
+            const inRange = distance <= allowedRadius;
+
+            const distDisplay = distance >= 1000 ? `${(distance / 1000).toFixed(2)} km` : `${distance} ម៉ែត្រ`;
+
+            Swal.fire({
+                icon: inRange ? 'success' : 'warning',
+                title: inRange ? 'ស្ថិតក្នុងបរិវេណកសិដ្ឋាន ✅' : 'ស្ថិតនៅក្រៅបរិវេណកសិដ្ឋាន ⚠️',
+                html: `
+                    <div class="text-start p-3 bg-light rounded-3 my-2 border">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>ចម្ងាយបច្ចុប្បន្នរបស់អ្នក:</span>
+                            <strong class="${inRange ? 'text-success' : 'text-danger'} fs-5">${distDisplay}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>កាំអនុញ្ញាត (Allowed Radius):</span>
+                            <strong>${allowedRadius} ម៉ែត្រ</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>ស្ថានភាពស្កែន E-Face:</span>
+                            <span class="badge ${inRange ? 'bg-success' : 'bg-danger'}">${inRange ? 'អនុញ្ញាតឱ្យស្កែន' : 'ចាក់សោរារាំង (Blocked)'}</span>
+                        </div>
+                    </div>
+                `,
+                confirmButtonColor: inRange ? '#198754' : '#dc3545'
+            });
+
+            if (btn) {
+                btn.innerHTML = oldHtml;
+                btn.disabled = false;
+            }
+        },
+        (err) => {
+            Swal.fire('បរាជ័យ', 'មិនអាចទទួលទីតាំងបច្ចុប្បន្នរបស់អ្នកបានទេ: ' + (err.message || ''), 'error');
+            if (btn) {
+                btn.innerHTML = oldHtml;
+                btn.disabled = false;
+            }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+};
+
+window.saveGpsSettings = async function(e) {
+    if (e) e.preventDefault();
+    const enabled = document.getElementById('gpsGeofenceEnabled')?.checked ?? false;
+    const farmName = (document.getElementById('gpsFarmName')?.value || 'VALEE ECO FARM').trim();
+    const lat = parseFloat(document.getElementById('gpsFarmLat')?.value);
+    const lng = parseFloat(document.getElementById('gpsFarmLng')?.value);
+    const radiusMeters = parseInt(document.getElementById('gpsAllowedRadius')?.value || '200', 10);
+
+    if (enabled && (isNaN(lat) || isNaN(lng))) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'ខ្វះកូអរដោណេ',
+            text: 'នៅពេលបើកដំណើរការ GPS Geofencing លោកអ្នកត្រូវតែបញ្ចូល Latitude និង Longitude ឬចុច «ចាប់យកទីតាំងបច្ចុប្បន្ន»!',
+            confirmButtonColor: '#f59e0b'
+        });
+        return;
+    }
+
+    try {
+        const existing = await db.gpsSettings.first();
+        const data = {
+            enabled: enabled,
+            farmName: farmName,
+            latitude: isNaN(lat) ? null : lat,
+            longitude: isNaN(lng) ? null : lng,
+            radiusMeters: radiusMeters,
+            updatedAt: new Date().toISOString()
+        };
+
+        if (existing && existing.id) {
+            await db.gpsSettings.update(existing.id, data);
+        } else {
+            await db.gpsSettings.add(data);
+        }
+
+        Swal.fire({
+            icon: 'success',
+            title: 'ជោគជ័យ!',
+            text: 'ការកំណត់ទីតាំង GPS Geofencing ត្រូវបានរក្សាទុកដោយជោគជ័យ!',
+            confirmButtonColor: '#198754'
+        });
+    } catch (err) {
+        Swal.fire({
+            icon: 'error',
+            title: 'បរាជ័យ',
+            text: 'មិនអាចរក្សាទុកបានទេ: ' + (err.message || err),
+            confirmButtonColor: '#dc3545'
+        });
     }
 };

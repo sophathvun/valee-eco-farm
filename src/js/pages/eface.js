@@ -16,6 +16,11 @@ let efaceLastScanned = {}; // empId -> timestamp to prevent rapid duplicate scan
 let efaceResultCardTimeout = null;
 let efaceMatchBuffer = []; // Rolling buffer of { label, distance, time } for multi-frame confirmation
 window._efaceCurrentThreshold = 0.40; // Default strict threshold (0.40 prevents false positives)
+window._efaceGpsLocked = false;
+window._efaceCurrentGpsDistance = null;
+window._efaceGpsSettings = null;
+let efaceGpsCheckTimer = null;
+let efaceLastGpsCheckTime = 0;
 
 const EFACE_MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
 
@@ -35,6 +40,15 @@ window.initEface = async function() {
 
     // Pre-populate manual modal employee select
     populateEfaceManualModal();
+
+    // Check GPS Geofencing
+    await checkEfaceGpsGeofence(false);
+    if (efaceGpsCheckTimer) clearInterval(efaceGpsCheckTimer);
+    efaceGpsCheckTimer = setInterval(() => {
+        if (isEfaceScanning && window._efaceGpsSettings && window._efaceGpsSettings.enabled) {
+            checkEfaceGpsGeofence(false);
+        }
+    }, 25000);
 
     // Load AI Models in background if not already loaded
     if (!isEfaceModelLoaded) {
@@ -462,6 +476,19 @@ async function runEfaceDetectionLoop() {
     if (!isEfaceScanning || !efaceVideo || efaceVideo.paused || efaceVideo.ended) {
         return;
     }
+    if (window._efaceGpsLocked) {
+        if (efaceCanvas) {
+            const ctx = efaceCanvas.getContext('2d');
+            ctx.clearRect(0, 0, efaceCanvas.width, efaceCanvas.height);
+        }
+        const guide = document.getElementById('eface-guide');
+        if (guide) guide.classList.remove('active');
+        efaceMatchBuffer = [];
+        if (isEfaceScanning) {
+            efaceDetectionTimer = setTimeout(runEfaceDetectionLoop, 1000);
+        }
+        return;
+    }
 
     try {
         if (efaceVideo.readyState === 4 && efaceVideo.videoWidth > 0) {
@@ -594,6 +621,7 @@ function drawBiometricBoundingBox(ctx, box) {
 
 // ====== ATTENDANCE RECORDING & TELEGRAM DISPATCH ======
 async function handleEfaceMatch(emp, detection) {
+    if (window._efaceGpsLocked) return;
     const now = new Date();
     const nowMs = now.getTime();
 
@@ -705,14 +733,18 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
     try {
         if (typeof db === 'undefined' || !db.telegramSettings) return;
         const tSettings = (await db.telegramSettings.first()) || {};
-        const botToken = botToken || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ';
-        const chatId = chatId || '-5344695591';
+        const botToken = tSettings.botToken || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ';
+        const chatId = tSettings.chatId || '-5344695591';
         if (tSettings.enabled === false || !botToken || !chatId) {
             return;
         }
 
         const farmName = tSettings.farmName || 'VALEE ECO FARM';
         const statusText = isLate ? `⚠️ Late (${lateMins} mins)` : 'On-Time (0 mins)';
+        let gpsInfo = '';
+        if (window._efaceGpsSettings && window._efaceGpsSettings.enabled && window._efaceCurrentGpsDistance !== null) {
+            gpsInfo = `\n📍 <b>GPS:</b> ក្នុងបរិវេណ (${window._efaceCurrentGpsDistance}m / កាំ: ${window._efaceGpsSettings.radiusMeters || 200}m)`;
+        }
 
         const caption =
 `🟢 <b>E-FACE ATTENDANCE: CHECK-IN</b>
@@ -723,7 +755,7 @@ async function dispatchEfaceTelegramAlert(emp, shiftKh, timeStr, dateStr, isLate
 🏛️ <b>Department:</b> ${emp.department || 'General'}
 ⏰ <b>Time:</b> ${timeStr} (${shiftKh.split(' ')[0]})
 📅 <b>Date:</b> ${dateStr}
-✨ <b>Status:</b> ${statusText}
+✨ <b>Status:</b> ${statusText}${gpsInfo}
 
 🔗 <i>E-Face Biometric System</i>`;
 
@@ -912,6 +944,15 @@ window.openEfaceManualModal = async function() {
 };
 
 window.submitEfaceManualCheckIn = async function() {
+    if (window._efaceGpsLocked) {
+        Swal.fire({
+            icon: 'error',
+            title: 'ក្រៅបរិវេណកសិដ្ឋាន (Out of Range)',
+            text: 'លោកអ្នកកំពុងស្ថិតនៅក្រៅបរិវេណកសិដ្ឋាន មិនអាចកត់ត្រាវត្តមានបានឡើយ!',
+            confirmButtonColor: '#dc3545'
+        });
+        return;
+    }
     const select = document.getElementById('eface-manual-emp-select');
     const shiftSelect = document.getElementById('eface-manual-shift-select');
     const noteInput = document.getElementById('eface-manual-note');
@@ -1055,6 +1096,159 @@ window.enrollEmployeeFaceFromForm = async function() {
             title: 'មិនអាចចុះឈ្មោះបានទេ',
             text: err.message || err,
             confirmButtonColor: '#ef4444'
+        });
+    }
+};
+
+// ====== GPS GEOFENCING VALIDATION ======
+function calculateGpsDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // Earth radius in meters
+    const toRad = deg => deg * (Math.PI / 180);
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c);
+}
+
+window.checkEfaceGpsGeofence = async function(force = false) {
+    try {
+        if (typeof db === 'undefined' || !db.gpsSettings) return true;
+        const gps = await db.gpsSettings.first();
+        window._efaceGpsSettings = gps;
+
+        const badge = document.getElementById('eface-gps-badge');
+        const badgeText = document.getElementById('eface-gps-badge-text');
+        const badgeIcon = document.getElementById('eface-gps-badge-icon');
+        const overlay = document.getElementById('eface-gps-lock-overlay');
+        const lockTitle = document.getElementById('eface-gps-lock-title');
+        const lockDesc = document.getElementById('eface-gps-lock-desc');
+        const distText = document.getElementById('eface-gps-distance-text');
+        const radiusText = document.getElementById('eface-gps-radius-text');
+
+        // If GPS is disabled in settings
+        if (!gps || !gps.enabled || !gps.latitude || !gps.longitude) {
+            window._efaceGpsLocked = false;
+            if (overlay) overlay.style.display = 'none';
+            if (badge) badge.style.display = 'none';
+            return true;
+        }
+
+        // GPS Geofence is active
+        if (badge) badge.style.display = 'inline-flex';
+        if (badgeText) badgeText.innerText = 'កំពុងពិនិត្យ GPS...';
+
+        const farmLat = parseFloat(gps.latitude);
+        const farmLng = parseFloat(gps.longitude);
+        const allowedRadius = parseInt(gps.radiusMeters || '200', 10);
+        if (radiusText) radiusText.innerText = `${allowedRadius} ម៉ែត្រ`;
+
+        // Check navigator support
+        if (!navigator.geolocation) {
+            window._efaceGpsLocked = true;
+            if (overlay) overlay.style.display = 'flex';
+            if (lockTitle) lockTitle.innerText = '⚠️ មិនគាំទ្រ GPS';
+            if (lockDesc) lockDesc.innerText = 'ឧបករណ៍ ឬកម្មវិធីរុករក (Browser) មិនគាំទ្រប្រព័ន្ធកំណត់ទីតាំង GPS ឡើយ។';
+            if (distText) distText.innerText = 'N/A';
+            if (badge) {
+                badge.className = 'badge border px-2 py-2 rounded-3 d-flex align-items-center gap-1 gps-invalid';
+                if (badgeIcon) badgeIcon.className = 'bi bi-geo-alt-fill text-danger';
+                if (badgeText) badgeText.innerText = 'GPS មិនគាំទ្រ';
+            }
+            return false;
+        }
+
+        // Cache valid for 30 seconds unless forced
+        const now = Date.now();
+        if (!force && (now - efaceLastGpsCheckTime) < 30000 && window._efaceCurrentGpsDistance !== null) {
+            return !window._efaceGpsLocked;
+        }
+
+        return new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    efaceLastGpsCheckTime = Date.now();
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    const distance = calculateGpsDistance(userLat, userLng, farmLat, farmLng);
+                    window._efaceCurrentGpsDistance = distance;
+
+                    const distStr = distance >= 1000 ? `${(distance / 1000).toFixed(2)} km` : `${distance} ម៉ែត្រ`;
+                    if (distText) distText.innerText = distStr;
+
+                    if (distance <= allowedRadius) {
+                        // In Range -> Allowed
+                        window._efaceGpsLocked = false;
+                        if (overlay) overlay.style.display = 'none';
+                        if (badge) {
+                            badge.className = 'badge border px-2 py-2 rounded-3 d-flex align-items-center gap-1 gps-valid';
+                            if (badgeIcon) badgeIcon.className = 'bi bi-geo-alt-fill text-success';
+                            if (badgeText) badgeText.innerText = `GPS: ${distance}m (ក្នុងកាំ)`;
+                        }
+                        resolve(true);
+                    } else {
+                        // Out of Range -> Blocked
+                        window._efaceGpsLocked = true;
+                        if (overlay) overlay.style.display = 'flex';
+                        if (lockTitle) lockTitle.innerText = '⛔ នៅក្រៅបរិវេណកសិដ្ឋាន';
+                        if (lockDesc) {
+                            lockDesc.innerHTML = `លោកអ្នកកំពុងស្ថិតនៅចម្ងាយ <strong class="text-danger">${distStr}</strong> ពីកសិដ្ឋាន (លើសកាំអនុញ្ញាត ${allowedRadius}m)។ ប្រព័ន្ធមិនអនុញ្ញាតឱ្យស្កែនវត្តមាននៅក្រៅកសិដ្ឋានដាច់ខាត។`;
+                        }
+                        if (badge) {
+                            badge.className = 'badge border px-2 py-2 rounded-3 d-flex align-items-center gap-1 gps-invalid';
+                            if (badgeIcon) badgeIcon.className = 'bi bi-geo-alt-fill text-danger';
+                            if (badgeText) badgeText.innerText = `GPS: ${distStr} (ក្រៅកាំ)`;
+                        }
+                        resolve(false);
+                    }
+                },
+                (error) => {
+                    window._efaceGpsLocked = true;
+                    if (overlay) overlay.style.display = 'flex';
+                    let errText = 'សូមបើក Location Service / GPS លើទូរស័ព្ទ ឬ Tablet របស់អ្នក ដើម្បីផ្ទៀងផ្ទាត់វត្តមាន។';
+                    if (error.code === 1) {
+                        errText = 'លោកអ្នកបានបដិសេធសិទ្ធិចូលប្រើ GPS (Permission Denied)។ សូមបើកសិទ្ធិ Location ក្នុង Browser Setting ដើម្បីបន្ត។';
+                    }
+                    if (lockTitle) lockTitle.innerText = '⚠️ សូមបើក GPS (Location Required)';
+                    if (lockDesc) lockDesc.innerText = errText;
+                    if (distText) distText.innerText = 'មិនអាចទាញយក';
+                    if (badge) {
+                        badge.className = 'badge border px-2 py-2 rounded-3 d-flex align-items-center gap-1 gps-invalid';
+                        if (badgeIcon) badgeIcon.className = 'bi bi-geo-alt-fill text-danger';
+                        if (badgeText) badgeText.innerText = 'GPS បិទ (Off)';
+                    }
+                    resolve(false);
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        });
+    } catch (err) {
+        console.error('Error checking GPS geofence:', err);
+        return true;
+    }
+};
+
+window.recheckEfaceGps = async function(force = true) {
+    const btn = document.getElementById('btn-recheck-gps');
+    const oldHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> កំពុងពិនិត្យ...';
+        btn.disabled = true;
+    }
+    const ok = await window.checkEfaceGpsGeofence(force);
+    if (btn) {
+        btn.innerHTML = oldHtml;
+        btn.disabled = false;
+    }
+    if (ok) {
+        Swal.fire({
+            icon: 'success',
+            title: 'ទីតាំងត្រឹមត្រូវ!',
+            text: 'អ្នកស្ថិតក្នុងបរិវេណកសិដ្ឋានហើយ។ អាចស្កែនមុខបាន!',
+            timer: 1500,
+            showConfirmButton: false
         });
     }
 };
