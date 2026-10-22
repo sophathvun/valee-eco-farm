@@ -61,10 +61,13 @@ window.initEface = async function() {
         await loadEfaceModels();
     }
 
-    // Auto-start scanning if camera available and user is on this view
-    if (isEfaceModelLoaded && !isEfaceScanning) {
-        startEfaceScanning();
-    }
+    // Ready to scan - voice prompt to click start
+    updateEfaceStatus('ចុចប៊ូតុង «ចាប់ផ្តើមស្កេន» ដើម្បីស្កែន', 'ready');
+    setTimeout(() => {
+        if (!isEfaceScanning) {
+            speakKhmerVoice('clickStart', 'សូមចុចប៊ូតុងចាប់ផ្តើមដើម្បីស្កែន');
+        }
+    }, 800);
 };
 
 // ====== CLOCK & SHIFT TIMER ======
@@ -187,6 +190,7 @@ function initEfaceAudioClips() {
     if (!efaceAudioClips && typeof Audio !== 'undefined') {
         efaceAudioClips = {
             prompt: new Audio('assets/audio/prompt_scan.mp3'),
+            clickStart: new Audio('assets/audio/prompt_click_start.mp3'),
             success: new Audio('assets/audio/scan_success.mp3'),
             failed: new Audio('assets/audio/scan_failed.mp3'),
             gpsLocked: new Audio('assets/audio/gps_locked.mp3')
@@ -795,6 +799,9 @@ async function handleEfaceMatch(emp, detection) {
 
     // Refresh Recent Scans List & Stats
     loadEfaceRecentScans();
+
+    // Auto-stop scanning after successful scan as requested
+    stopEfaceScanning();
 }
 
 // ====== HELPER: CONVERT BASE64 DATA URL TO BLOB ======
@@ -985,6 +992,9 @@ function displayEfaceResultCard(emp, timeStr, shiftKh, isLate, lateMins) {
     if (efaceResultCardTimeout) clearTimeout(efaceResultCardTimeout);
     efaceResultCardTimeout = setTimeout(() => {
         card.classList.remove('show');
+        if (!isEfaceScanning) {
+            speakKhmerVoice('clickStart', 'សូមចុចប៊ូតុងចាប់ផ្តើមដើម្បីស្កែន');
+        }
     }, 3800);
 }
 
