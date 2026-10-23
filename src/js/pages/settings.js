@@ -1116,25 +1116,74 @@ window.calculateHaversineDistance = function(lat1, lon1, lat2, lon2) {
     return Math.round(R * c);
 };
 
+window.selectGpsMode = function(enabled) {
+    const radioOn = document.getElementById('gpsModeOn');
+    const radioOff = document.getElementById('gpsModeOff');
+    const hiddenInput = document.getElementById('gpsGeofenceEnabled');
+    const cardOn = document.getElementById('gps-mode-card-on');
+    const cardOff = document.getElementById('gps-mode-card-off');
+    const coordsSection = document.getElementById('gpsCoordinatesSection');
+    const disabledNotice = document.getElementById('gpsDisabledNotice');
+    const testBtn = document.getElementById('btnTestGpsDistance');
+
+    if (enabled) {
+        if (radioOn) radioOn.checked = true;
+        if (radioOff) radioOff.checked = false;
+        if (hiddenInput) hiddenInput.value = 'true';
+        if (cardOn) {
+            cardOn.style.borderColor = '#198754';
+            cardOn.style.backgroundColor = '#f0fdf4';
+        }
+        if (cardOff) {
+            cardOff.style.borderColor = '#e2e8f0';
+            cardOff.style.backgroundColor = '#ffffff';
+        }
+        if (coordsSection) coordsSection.style.display = 'block';
+        if (disabledNotice) disabledNotice.style.display = 'none';
+        if (testBtn) testBtn.style.display = 'inline-block';
+    } else {
+        if (radioOn) radioOn.checked = false;
+        if (radioOff) radioOff.checked = true;
+        if (hiddenInput) hiddenInput.value = 'false';
+        if (cardOff) {
+            cardOff.style.borderColor = '#64748b';
+            cardOff.style.backgroundColor = '#f8fafc';
+        }
+        if (cardOn) {
+            cardOn.style.borderColor = '#e2e8f0';
+            cardOn.style.backgroundColor = '#ffffff';
+        }
+        if (coordsSection) coordsSection.style.display = 'none';
+        if (disabledNotice) disabledNotice.style.display = 'flex';
+        if (testBtn) testBtn.style.display = 'none';
+    }
+};
+
 window.loadGpsSettings = async function() {
     try {
         const settings = (typeof db !== 'undefined' && db.gpsSettings) 
             ? (await db.gpsSettings.first() || {}) 
             : {};
         
-        const enableEl = document.getElementById('gpsGeofenceEnabled');
+        const isEnabled = settings.enabled === true;
+        if (typeof window.selectGpsMode === 'function') {
+            window.selectGpsMode(isEnabled);
+        }
+
         const farmEl = document.getElementById('gpsFarmName');
         const latEl = document.getElementById('gpsFarmLat');
         const lngEl = document.getElementById('gpsFarmLng');
         const radiusEl = document.getElementById('gpsAllowedRadius');
 
-        if (enableEl) enableEl.checked = settings.enabled === true;
         if (farmEl) farmEl.value = settings.farmName || 'VALEE ECO FARM';
         if (latEl && settings.latitude) latEl.value = settings.latitude;
         if (lngEl && settings.longitude) lngEl.value = settings.longitude;
         if (radiusEl && settings.radiusMeters) radiusEl.value = String(settings.radiusMeters);
     } catch (e) {
         console.error('Error loading GPS settings:', e);
+        if (typeof window.selectGpsMode === 'function') {
+            window.selectGpsMode(false);
+        }
     }
 };
 
@@ -1301,7 +1350,8 @@ window.testMyGpsDistance = function() {
 
 window.saveGpsSettings = async function(e) {
     if (e) e.preventDefault();
-    const enabled = document.getElementById('gpsGeofenceEnabled')?.checked ?? false;
+    const hiddenVal = document.getElementById('gpsGeofenceEnabled')?.value;
+    const enabled = (hiddenVal === 'true');
     const farmName = (document.getElementById('gpsFarmName')?.value || 'VALEE ECO FARM').trim();
     const lat = parseFloat(document.getElementById('gpsFarmLat')?.value);
     const lng = parseFloat(document.getElementById('gpsFarmLng')?.value);
@@ -1311,7 +1361,7 @@ window.saveGpsSettings = async function(e) {
         Swal.fire({
             icon: 'warning',
             title: 'ខ្វះកូអរដោណេ',
-            text: 'នៅពេលបើកដំណើរការ GPS Geofencing លោកអ្នកត្រូវតែបញ្ចូល Latitude និង Longitude ឬចុច «ចាប់យកទីតាំងបច្ចុប្បន្ន»!',
+            text: 'នៅពេលបើកដំណើរការ GPS Checking លោកអ្នកត្រូវតែបញ្ចូល Latitude និង Longitude ឬចុច «ចាប់យកទីតាំងបច្ចុប្បន្ន»!',
             confirmButtonColor: '#f59e0b'
         });
         return;
@@ -1334,10 +1384,23 @@ window.saveGpsSettings = async function(e) {
             await db.gpsSettings.add(data);
         }
 
+        // Immediately sync in-memory state across open components
+        window._efaceGpsSettings = data;
+        if (!enabled) {
+            window._efaceGpsLocked = false;
+            window._efaceCurrentGpsDistance = null;
+            const overlay = document.getElementById('eface-gps-lock-overlay');
+            if (overlay) overlay.style.display = 'none';
+            const badge = document.getElementById('eface-gps-badge');
+            if (badge) badge.style.display = 'none';
+        }
+
         Swal.fire({
             icon: 'success',
             title: 'ជោគជ័យ!',
-            text: 'ការកំណត់ទីតាំង GPS Geofencing ត្រូវបានរក្សាទុកដោយជោគជ័យ!',
+            text: enabled 
+                ? 'ការកំណត់ទីតាំង GPS Checking ត្រូវបានបើកដំណើរការ!' 
+                : 'បានកំណត់ «មិនប្រើប្រាស់ GPS Checking» ដោយជោគជ័យ! បុគ្គលិកអាចស្កែនវត្តមានបានដោយសេរី គ្មានការទាមទារ GPS ឡើយ។',
             confirmButtonColor: '#198754'
         });
     } catch (err) {
@@ -1349,3 +1412,21 @@ window.saveGpsSettings = async function(e) {
         });
     }
 };
+
+// One-time self-healing migration: Ensure GPS checking is set to disabled per management request
+(async function ensureGpsCheckDisabledOnce() {
+    try {
+        if (!localStorage.getItem('gpsCheckAutoDisabled_20261023')) {
+            localStorage.setItem('gpsCheckAutoDisabled_20261023', 'true');
+            if (typeof db !== 'undefined' && db.gpsSettings) {
+                const existing = await db.gpsSettings.first();
+                if (existing && existing.id && existing.enabled) {
+                    await db.gpsSettings.update(existing.id, { enabled: false, updatedAt: new Date().toISOString() });
+                    console.log('GPS Geofence checking auto-disabled in database per user request');
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('GPS migration notice:', e);
+    }
+})();

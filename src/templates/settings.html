@@ -659,99 +659,156 @@
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <div class="card shadow-sm border-0 border-top border-success border-4">
-                                <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
+                                <div class="card-header bg-white py-3">
                                     <div class="d-flex align-items-center">
                                         <div class="rounded-circle bg-success bg-opacity-10 p-2 me-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
                                             <i class="bi bi-geo-alt-fill text-success fs-4"></i>
                                         </div>
                                         <div>
-                                            <h5 class="mb-0 fw-bold text-dark">ការកំណត់ទីតាំង GPS (GPS Geofencing)</h5>
-                                            <small class="text-muted">កំណត់បរិវេណអនុញ្ញាតឱ្យស្កែនវត្តមាន E-Face តាមទូរស័ព្ទ ឬ Tablet ក្នុងកសិដ្ឋាន</small>
+                                            <h5 class="mb-0 fw-bold text-dark">ការកំណត់ទីតាំង GPS (GPS Geofencing Settings)</h5>
+                                            <small class="text-muted">ជ្រើសរើសប្រើប្រាស់ ឬមិនប្រើប្រាស់ការផ្ទៀងផ្ទាត់ទីតាំង GPS ពេលបុគ្គលិកស្កែនវត្តមាន</small>
                                         </div>
-                                    </div>
-                                    <div class="form-check form-switch fs-5">
-                                        <input class="form-check-input" type="checkbox" id="gpsGeofenceEnabled">
                                     </div>
                                 </div>
                                 <div class="card-body p-4">
                                     <form id="gpsSettingsForm" onsubmit="saveGpsSettings(event)">
-                                        <!-- Farm Name Reference -->
-                                        <div class="mb-3">
-                                            <label class="form-label fw-bold">ឈ្មោះទីតាំង / សាខា (Campus / Location Name)</label>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-light"><i class="bi bi-building text-muted"></i></span>
-                                                <input type="text" class="form-control" id="gpsFarmName" placeholder="VALEE ECO FARM">
-                                            </div>
-                                            <small class="text-muted">ឈ្មោះកសិដ្ឋានដែលត្រូវភ្ជាប់ជាមួយទីតាំងកូអរដោណេ GPS នេះ</small>
-                                        </div>
-
-                                        <!-- GPS Coordinates Row with Get Current Location button -->
-                                        <div class="row mb-3">
-                                            <div class="col-md-6 mb-3 mb-md-0">
-                                                <label class="form-label fw-bold">រយៈទទឹង (Latitude) <span class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-compass text-muted"></i></span>
-                                                    <input type="number" step="any" class="form-control" id="gpsFarmLat" placeholder="ឧ. 11.556400" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-bold">រយៈបណ្តោយ (Longitude) <span class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text bg-light"><i class="bi bi-compass-fill text-muted"></i></span>
-                                                    <input type="number" step="any" class="form-control" id="gpsFarmLng" placeholder="ឧ. 104.928200" required>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Location Actions Bar -->
-                                        <div class="p-3 bg-light rounded-3 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-2 border">
-                                            <div>
-                                                <div class="fw-semibold text-dark small"><i class="bi bi-pin-map text-primary me-1"></i> កំណត់ទីតាំងដោយស្វ័យប្រវត្តិ</div>
-                                                <small class="text-muted">ឈរនៅកន្លែងទទួលភ្ញៀវ ឬច្រកចូល រួចចុចប៊ូតុងនេះដើម្បីចាប់យកទីតាំងផ្ទាល់</small>
-                                            </div>
-                                            <div class="d-flex gap-2">
-                                                <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-2" id="btnGetCurrentGps" onclick="fetchCurrentGpsLocation()">
-                                                    <i class="bi bi-geo-fill me-1"></i> 📍 ចាប់យកទីតាំងបច្ចុប្បន្ន
-                                                </button>
-                                                <a href="https://maps.google.com" target="_blank" class="btn btn-sm btn-outline-secondary px-3 py-2" id="btnViewGpsMap" onclick="viewGpsOnGoogleMaps(event)">
-                                                    <i class="bi bi-map me-1"></i> មើលលើ Google Maps
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <!-- Radius Selector -->
+                                        <!-- Choice Selector: Use GPS or Don't Use GPS -->
                                         <div class="mb-4">
-                                            <label class="form-label fw-bold">កាំបរិវេណអនុញ្ញាត (Allowed Geofence Radius) <span class="text-danger">*</span></label>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-light"><i class="bi bi-circle text-muted"></i></span>
-                                                <select class="form-select" id="gpsAllowedRadius">
-                                                    <option value="50">50 ម៉ែត្រ (កម្រិតតូច: បន្ទប់ទទួលភ្ញៀវ ឬមាត់ទ្វារចូល)</option>
-                                                    <option value="100">100 ម៉ែត្រ (កម្រិតមធ្យម: អគារកណ្តាល និងចំណត)</option>
-                                                    <option value="200" selected>200 ម៉ែត្រ (កម្រិតស្តង់ដារ: បរិវេណកសិដ្ឋានទូទៅ - ណែនាំ)</option>
-                                                    <option value="300">300 ម៉ែត្រ (បរិវេណទូលាយ)</option>
-                                                    <option value="500">500 ម៉ែត្រ (កសិដ្ឋានធំ / ចម្ការ)</option>
-                                                    <option value="1000">1,000 ម៉ែត្រ (1 គីឡូម៉ែត្រ)</option>
-                                                </select>
+                                            <label class="form-label fw-bold mb-2">ជម្រើសនៃការត្រួតពិនិត្យទីតាំង (GPS Checking Mode) <span class="text-danger">*</span></label>
+                                            <div class="row g-3">
+                                                <!-- Option 1: Disable GPS Checking (Recommended currently) -->
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-2 cursor-pointer h-100 transition-all gps-mode-card" id="gps-mode-card-off" onclick="selectGpsMode(false)" style="cursor: pointer; background: #f8fafc; border-color: #64748b !important;">
+                                                        <div class="form-check d-flex align-items-start gap-2">
+                                                            <input class="form-check-input mt-1" type="radio" name="gpsModeRadio" id="gpsModeOff" value="off" checked onchange="selectGpsMode(false)">
+                                                            <div class="w-100">
+                                                                <div class="d-flex align-items-center justify-content-between">
+                                                                    <label class="form-check-label fw-bold text-dark mb-0" for="gpsModeOff" style="cursor: pointer;">
+                                                                        🔴 មិនប្រើប្រាស់ GPS
+                                                                    </label>
+                                                                    <span class="badge bg-secondary">បិទ (Disabled)</span>
+                                                                </div>
+                                                                <div class="text-muted small mt-1">
+                                                                    មិនទាមទារទីតាំង GPS លើទូរស័ព្ទ/Tablet ឡើយ។ បុគ្គលិកអាចស្កែនវត្តមានចូល-ចេញបានគ្រប់ទីកន្លែងដោយរលូន គ្មានការចាក់សោអេក្រង់។
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Option 2: Enable GPS Checking -->
+                                                <div class="col-md-6">
+                                                    <div class="p-3 rounded-3 border border-2 cursor-pointer h-100 transition-all gps-mode-card" id="gps-mode-card-on" onclick="selectGpsMode(true)" style="cursor: pointer; background: #ffffff; border-color: #e2e8f0;">
+                                                        <div class="form-check d-flex align-items-start gap-2">
+                                                            <input class="form-check-input mt-1" type="radio" name="gpsModeRadio" id="gpsModeOn" value="on" onchange="selectGpsMode(true)">
+                                                            <div class="w-100">
+                                                                <div class="d-flex align-items-center justify-content-between">
+                                                                    <label class="form-check-label fw-bold text-dark mb-0" for="gpsModeOn" style="cursor: pointer;">
+                                                                        🟢 ប្រើប្រាស់ GPS Checking
+                                                                    </label>
+                                                                    <span class="badge bg-success">បើក (Enabled)</span>
+                                                                </div>
+                                                                <div class="text-muted small mt-1">
+                                                                    តម្រូវឱ្យបុគ្គលិកស្ថិតក្នុងបរិវេណកាំកសិដ្ឋាន (Geofence) ទើបអាចស្កែនវត្តមានបាន ដើម្បីទប់ស្កាត់ការស្កែនពីចម្ងាយ (Anti-Cheating)។
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <small class="text-muted">ប្រសិនបើបុគ្គលិកឈរឆ្ងាយជាងកាំនេះ ប្រព័ន្ធ E-Face នឹងចាក់សោមិនឱ្យស្កែនវត្តមានជាដាច់ខាត (Strict Block)</small>
+                                            <input type="hidden" id="gpsGeofenceEnabled" value="false">
                                         </div>
 
-                                        <!-- Information Alert -->
-                                        <div class="alert alert-success border-0 d-flex align-items-center mb-4" style="background-color: #f0fdf4; border-left: 4px solid #198754 !important;">
-                                            <i class="bi bi-shield-check text-success fs-3 me-3"></i>
+                                        <!-- Status Banner when GPS is Disabled -->
+                                        <div id="gpsDisabledNotice" class="alert alert-secondary border-0 d-flex align-items-center mb-4" style="background-color: #f1f5f9; border-left: 4px solid #64748b !important;">
+                                            <i class="bi bi-info-circle-fill text-secondary fs-3 me-3"></i>
                                             <div class="small">
-                                                <strong>ការការពារសុវត្ថិភាព (Anti-Cheating):</strong> នៅពេលបើកមុខងារនេះ បុគ្គលិកដែលនៅផ្ទះ ឬក្រៅកសិដ្ឋាន មិនអាចបើកទូរស័ព្ទស្កែនមុខបានឡើយ។ ប្រព័ន្ធក៏នឹងកត់ត្រាចម្ងាយពិតប្រាកដ និងផ្ញើចូល Telegram Alert ផងដែរ។
+                                                <strong class="text-dark">ស្ថានភាពបច្ចុប្បន្ន៖</strong> ប្រព័ន្ធត្រូវបានកំណត់ <strong>«មិនប្រើប្រាស់ GPS Checking»</strong>។ បុគ្គលិកគ្រប់រូបអាចស្កែនមុខបានភ្លាមៗ ដោយមិនទាមទារសិទ្ធិចូលប្រើទីតាំង (No Location Required) ឡើយ។
+                                            </div>
+                                        </div>
+
+                                        <!-- Configurable GPS Coordinates & Radius (Visible only when GPS is Enabled) -->
+                                        <div id="gpsCoordinatesSection" style="display: none;">
+                                            <!-- Farm Name Reference -->
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">ឈ្មោះទីតាំង / សាខា (Campus / Location Name)</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i class="bi bi-building text-muted"></i></span>
+                                                    <input type="text" class="form-control" id="gpsFarmName" placeholder="VALEE ECO FARM">
+                                                </div>
+                                                <small class="text-muted">ឈ្មោះកសិដ្ឋានដែលត្រូវភ្ជាប់ជាមួយទីតាំងកូអរដោណេ GPS នេះ</small>
+                                            </div>
+
+                                            <!-- GPS Coordinates Row with Get Current Location button -->
+                                            <div class="row mb-3">
+                                                <div class="col-md-6 mb-3 mb-md-0">
+                                                    <label class="form-label fw-bold">រយៈទទឹង (Latitude) <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-light"><i class="bi bi-compass text-muted"></i></span>
+                                                        <input type="number" step="any" class="form-control" id="gpsFarmLat" placeholder="ឧ. 11.556400">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-bold">រយៈបណ្តោយ (Longitude) <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-light"><i class="bi bi-compass-fill text-muted"></i></span>
+                                                        <input type="number" step="any" class="form-control" id="gpsFarmLng" placeholder="ឧ. 104.928200">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Location Actions Bar -->
+                                            <div class="p-3 bg-light rounded-3 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-2 border">
+                                                <div>
+                                                    <div class="fw-semibold text-dark small"><i class="bi bi-pin-map text-primary me-1"></i> កំណត់ទីតាំងដោយស្វ័យប្រវត្តិ</div>
+                                                    <small class="text-muted">ឈរនៅកន្លែងទទួលភ្ញៀវ ឬច្រកចូល រួចចុចប៊ូតុងនេះដើម្បីចាប់យកទីតាំងផ្ទាល់</small>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-success fw-bold px-3 py-2" id="btnGetCurrentGps" onclick="fetchCurrentGpsLocation()">
+                                                        <i class="bi bi-geo-fill me-1"></i> 📍 ចាប់យកទីតាំងបច្ចុប្បន្ន
+                                                    </button>
+                                                    <a href="https://maps.google.com" target="_blank" class="btn btn-sm btn-outline-secondary px-3 py-2" id="btnViewGpsMap" onclick="viewGpsOnGoogleMaps(event)">
+                                                        <i class="bi bi-map me-1"></i> មើលលើ Google Maps
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Radius Selector -->
+                                            <div class="mb-4">
+                                                <label class="form-label fw-bold">កាំបរិវេណអនុញ្ញាត (Allowed Geofence Radius) <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-light"><i class="bi bi-circle text-muted"></i></span>
+                                                    <select class="form-select" id="gpsAllowedRadius">
+                                                        <option value="50">50 ម៉ែត្រ (កម្រិតតូច: បន្ទប់ទទួលភ្ញៀវ ឬមាត់ទ្វារចូល)</option>
+                                                        <option value="100">100 ម៉ែត្រ (កម្រិតមធ្យម: អគារកណ្តាល និងចំណត)</option>
+                                                        <option value="200" selected>200 ម៉ែត្រ (កម្រិតស្តង់ដារ: បរិវេណកសិដ្ឋានទូទៅ - ណែនាំ)</option>
+                                                        <option value="300">300 ម៉ែត្រ (បរិវេណទូលាយ)</option>
+                                                        <option value="500">500 ម៉ែត្រ (កសិដ្ឋានធំ / ចម្ការ)</option>
+                                                        <option value="1000">1,000 ម៉ែត្រ (1 គីឡូម៉ែត្រ)</option>
+                                                    </select>
+                                                </div>
+                                                <small class="text-muted">ប្រសិនបើបុគ្គលិកឈរឆ្ងាយជាងកាំនេះ ប្រព័ន្ធ E-Face នឹងចាក់សោមិនឱ្យស្កែនវត្តមានជាដាច់ខាត (Strict Block)</small>
+                                            </div>
+
+                                            <!-- Information Alert -->
+                                            <div class="alert alert-success border-0 d-flex align-items-center mb-4" style="background-color: #f0fdf4; border-left: 4px solid #198754 !important;">
+                                                <i class="bi bi-shield-check text-success fs-3 me-3"></i>
+                                                <div class="small">
+                                                    <strong>ការការពារសុវត្ថិភាព (Anti-Cheating):</strong> នៅពេលបើកមុខងារនេះ បុគ្គលិកដែលនៅផ្ទះ ឬក្រៅកសិដ្ឋាន មិនអាចបើកទូរស័ព្ទស្កែនមុខបានឡើយ។
+                                                </div>
                                             </div>
                                         </div>
 
                                         <!-- Footer Actions -->
-                                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                                            <button type="button" class="btn btn-outline-primary" id="btnTestGpsDistance" onclick="testMyGpsDistance()">
+                                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                            <button type="button" class="btn btn-outline-primary" id="btnTestGpsDistance" onclick="testMyGpsDistance()" style="display: none;">
                                                 <i class="bi bi-broadcast me-1"></i> តេស្តចម្ងាយខ្ញុំបច្ចុប្បន្ន (Test Distance)
                                             </button>
-                                            <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm">
-                                                <i class="bi bi-save me-1"></i> រក្សាទុកការកំណត់ (Save)
-                                            </button>
+                                            <div class="ms-auto">
+                                                <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm">
+                                                    <i class="bi bi-save me-1"></i> រក្សាទុកការកំណត់ (Save)
+                                                </button>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>

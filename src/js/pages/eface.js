@@ -64,11 +64,12 @@ window.initEface = async function() {
     // Pre-populate manual modal employee select
     populateEfaceManualModal();
 
-    // Check GPS Geofencing
+    // Check GPS Geofencing (Bypassed if disabled)
+    window._efaceGpsLocked = false;
     await checkEfaceGpsGeofence(false);
     if (efaceGpsCheckTimer) clearInterval(efaceGpsCheckTimer);
     efaceGpsCheckTimer = setInterval(() => {
-        if (isEfaceScanning && window._efaceGpsSettings && window._efaceGpsSettings.enabled) {
+        if (isEfaceScanning && window._efaceGpsSettings && window._efaceGpsSettings.enabled === true) {
             checkEfaceGpsGeofence(false);
         }
     }, 25000);
@@ -2176,28 +2177,36 @@ function calculateGpsDistance(lat1, lon1, lat2, lon2) {
 
 window.checkEfaceGpsGeofence = async function(force = false) {
     try {
-        if (typeof db === 'undefined' || !db.gpsSettings) return true;
-        const gps = await db.gpsSettings.first();
-        window._efaceGpsSettings = gps;
-
-        const badge = document.getElementById('eface-gps-badge');
-        const badgeText = document.getElementById('eface-gps-badge-text');
-        const badgeIcon = document.getElementById('eface-gps-badge-icon');
+        window._efaceGpsLocked = false;
         const overlay = document.getElementById('eface-gps-lock-overlay');
-        const lockTitle = document.getElementById('eface-gps-lock-title');
-        const lockDesc = document.getElementById('eface-gps-lock-desc');
-        const distText = document.getElementById('eface-gps-distance-text');
-        const radiusText = document.getElementById('eface-gps-radius-text');
+        const badge = document.getElementById('eface-gps-badge');
 
-        // If GPS is disabled in settings
-        if (!gps || !gps.enabled || !gps.latitude || !gps.longitude) {
+        if (typeof db === 'undefined' || !db.gpsSettings) {
+            if (overlay) overlay.style.display = 'none';
+            if (badge) badge.style.display = 'none';
+            return true;
+        }
+
+        const gps = await db.gpsSettings.first();
+        window._efaceGpsSettings = gps || { enabled: false };
+
+        // IF GPS CHECKING IS DISABLED OR MISSING COORDINATES -> COMPLETELY BYPASS WITHOUT ANY CHECK!
+        if (!gps || gps.enabled !== true || !gps.latitude || !gps.longitude) {
             window._efaceGpsLocked = false;
+            window._efaceCurrentGpsDistance = null;
             if (overlay) overlay.style.display = 'none';
             if (badge) badge.style.display = 'none';
             return true;
         }
 
         // GPS Geofence is active
+        const badgeText = document.getElementById('eface-gps-badge-text');
+        const badgeIcon = document.getElementById('eface-gps-badge-icon');
+        const lockTitle = document.getElementById('eface-gps-lock-title');
+        const lockDesc = document.getElementById('eface-gps-lock-desc');
+        const distText = document.getElementById('eface-gps-distance-text');
+        const radiusText = document.getElementById('eface-gps-radius-text');
+
         if (badge) badge.style.display = 'inline-flex';
         if (badgeText) badgeText.innerText = 'កំពុងពិនិត្យ GPS...';
 
@@ -2336,8 +2345,16 @@ window.openEfaceShareModal = function() {
     if (input) input.value = cleanUrl;
 
     const radiusEl = document.getElementById('eface-share-radius-text');
-    if (radiusEl && window._efaceGpsSettings) {
-        radiusEl.innerText = `${window._efaceGpsSettings.radiusMeters || 200} ម៉ែត្រ`;
+    const gpsNoticeEl = document.getElementById('eface-share-gps-notice');
+    if (window._efaceGpsSettings && window._efaceGpsSettings.enabled === true) {
+        if (radiusEl) radiusEl.innerText = `${window._efaceGpsSettings.radiusMeters || 200} ម៉ែត្រ`;
+        if (gpsNoticeEl) {
+            gpsNoticeEl.innerHTML = `<i class="bi bi-geo-alt-fill text-warning me-1"></i> ប្រព័ន្ធដំណើរការជាមួយ GPS Geofencing ក្នុងកាំ <span class="text-info fw-bold">${window._efaceGpsSettings.radiusMeters || 200} ម៉ែត្រ</span> នៃកសិដ្ឋាន`;
+        }
+    } else {
+        if (gpsNoticeEl) {
+            gpsNoticeEl.innerHTML = `<i class="bi bi-check-circle-fill text-success me-1"></i> អាចស្កែនវត្តមានបានភ្លាមៗ (មិនទាមទារ GPS ឡើយ)`;
+        }
     }
 
     // Render QR Code in modal
@@ -2431,6 +2448,16 @@ window.printEfaceQrPoster = function() {
     const posterLogo = document.getElementById('eface-poster-logo');
     if (posterLogo && localStorage.getItem('cachedSidebarLogo')) {
         posterLogo.src = localStorage.getItem('cachedSidebarLogo');
+    }
+
+    // Update GPS note on poster based on enabled status
+    const posterGpsLine = document.getElementById('eface-poster-gps-line');
+    if (posterGpsLine) {
+        if (window._efaceGpsSettings && window._efaceGpsSettings.enabled === true) {
+            posterGpsLine.innerHTML = `⚠️ ប្រព័ន្ធកំណត់ទីតាំង GPS Geofence៖ ត្រូវស្ថិតក្នុងបរិវេណកសិដ្ឋានកាំ ${window._efaceGpsSettings.radiusMeters || 200} ម៉ែត្រ`;
+        } else {
+            posterGpsLine.innerHTML = `✅ អាចស្កែនវត្តមានចូល-ចេញបានភ្លាមៗដោយរលូន`;
+        }
     }
 
     // Hide bootstrap modal before printing to avoid backdrop visual issues
