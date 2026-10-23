@@ -23,7 +23,7 @@ async function initializeApp() {
     const isEfaceRoute = hash.startsWith('#eface') || hash.startsWith('#scan');
     const hashTab = location.hash ? location.hash.replace('#', '').split('?')[0].split('/')[0] : null;
     const targetRoute = isEfaceRoute ? 'eface' : (hashTab || (localStorage.getItem('currentUser') ? (localStorage.getItem('activeTab') || 'dashboard') : 'dashboard'));
-    const appVersion = '1792702000000';
+    const appVersion = '1792736000000';
     
     // 1. Fetch and inject all HTML templates in PARALLEL using Promise.all for instant speed
     const templatePromises = viewsToLoad.map(async (view) => {
@@ -83,6 +83,7 @@ async function initializeApp() {
             await new Promise((resolve) => {
                 const script = document.createElement('script');
                 script.src = `${src}?v=${appVersion}`;
+                script.async = false;
                 script.onload = resolve;
                 script.onerror = (err) => {
                     console.warn(`Notice loading script ${src}:`, err);
@@ -232,6 +233,19 @@ async function initializeApp() {
                 if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
                 if (typeof initPayroll === 'function') initPayroll();
                 if (typeof applyTranslations === 'function') applyTranslations();
+
+                // Ensure current route view is fully initialized after all scripts have loaded
+                const rawHash = (window.location.hash || '').replace('#', '').trim();
+                const activeTab = rawHash ? rawHash.split('?')[0].split('/')[0] : (localStorage.getItem('activeTab') || 'dashboard');
+                if (activeTab === 'attendance-report' && typeof initAttendanceReport === 'function') {
+                    initAttendanceReport();
+                } else if (activeTab === 'attendance' && typeof initAttendance === 'function') {
+                    initAttendance();
+                } else if (activeTab === 'payroll' && typeof initPayroll === 'function') {
+                    initPayroll();
+                } else if (typeof showTab === 'function') {
+                    showTab(activeTab);
+                }
             }
         }).catch(err => {
             console.error('Initialization error:', err);

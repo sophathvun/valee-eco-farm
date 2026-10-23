@@ -213,6 +213,108 @@
                 location.reload();
             };
         }
+
+        // Attendance Report early stubs to eliminate race conditions & uncaught ReferenceErrors
+        window._pendingAttReportTab = null;
+        window._pendingTimesheetPreset = null;
+
+        if (typeof window.switchAttReportTab !== 'function') {
+            window.switchAttReportTab = function(tabId) {
+                window._pendingAttReportTab = tabId;
+                try {
+                    const tabTimesheet = document.getElementById('att-tab-timesheet');
+                    const tabMatrix = document.getElementById('att-tab-matrix');
+                    const btnTimesheet = document.getElementById('tab-btn-timesheet');
+                    const btnMatrix = document.getElementById('tab-btn-matrix');
+                    if (tabId === 'timesheet') {
+                        if (tabTimesheet) tabTimesheet.style.display = 'block';
+                        if (tabMatrix) tabMatrix.style.display = 'none';
+                        if (btnTimesheet) btnTimesheet.className = 'btn btn-sm btn-primary fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2';
+                        if (btnMatrix) btnMatrix.className = 'btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2';
+                    } else {
+                        if (tabTimesheet) tabTimesheet.style.display = 'none';
+                        if (tabMatrix) tabMatrix.style.display = 'block';
+                        if (btnTimesheet) btnTimesheet.className = 'btn btn-sm btn-outline-primary fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2';
+                        if (btnMatrix) btnMatrix.className = 'btn btn-sm btn-success fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2';
+                    }
+                } catch(e) {}
+                if (typeof window._realSwitchAttReportTab === 'function') {
+                    window._realSwitchAttReportTab(tabId);
+                }
+            };
+        }
+
+        if (typeof window.setTimesheetPreset !== 'function') {
+            window.setTimesheetPreset = function(preset) {
+                window._pendingTimesheetPreset = preset;
+                try {
+                    document.querySelectorAll('.ts-preset-btn').forEach(b => b.classList.remove('active'));
+                    const btn = document.getElementById('ts-btn-' + String(preset).replace('_', '-'));
+                    if (btn) btn.classList.add('active');
+                } catch(e) {}
+                if (typeof window._realSetTimesheetPreset === 'function') {
+                    window._realSetTimesheetPreset(preset);
+                }
+            };
+        }
+
+        if (typeof window.generateTimesheetReport !== 'function') {
+            window.generateTimesheetReport = function() {
+                if (typeof window._realGenerateTimesheetReport === 'function') {
+                    return window._realGenerateTimesheetReport();
+                }
+            };
+        }
+
+        if (typeof window.generateAttendanceReport !== 'function') {
+            window.generateAttendanceReport = function() {
+                if (typeof window._realGenerateAttendanceReport === 'function') {
+                    return window._realGenerateAttendanceReport();
+                }
+            };
+        }
+
+        if (typeof window.printTimesheetReport !== 'function') {
+            window.printTimesheetReport = function() {
+                if (typeof window._realPrintTimesheetReport === 'function') return window._realPrintTimesheetReport();
+            };
+        }
+
+        if (typeof window.exportTimesheetCSV !== 'function') {
+            window.exportTimesheetCSV = function() {
+                if (typeof window._realExportTimesheetCSV === 'function') return window._realExportTimesheetCSV();
+            };
+        }
+
+        if (typeof window.printAttReport !== 'function') {
+            window.printAttReport = function() {
+                if (typeof window._realPrintAttReport === 'function') return window._realPrintAttReport();
+            };
+        }
+
+        if (typeof window.openAddScanRecordModal !== 'function') {
+            window.openAddScanRecordModal = function() {
+                if (typeof window._realOpenAddScanRecordModal === 'function') return window._realOpenAddScanRecordModal();
+            };
+        }
+
+        if (typeof window.saveScanRecordModal !== 'function') {
+            window.saveScanRecordModal = function() {
+                if (typeof window._realSaveScanRecordModal === 'function') return window._realSaveScanRecordModal();
+            };
+        }
+
+        if (typeof window.deleteCurrentScanRecord !== 'function') {
+            window.deleteCurrentScanRecord = function() {
+                if (typeof window._realDeleteCurrentScanRecord === 'function') return window._realDeleteCurrentScanRecord();
+            };
+        }
+
+        if (typeof window.autoCalcModalHours !== 'function') {
+            window.autoCalcModalHours = function() {
+                if (typeof window._realAutoCalcModalHours === 'function') return window._realAutoCalcModalHours();
+            };
+        }
     </script>
 </head>
 <body class="bg-light">
@@ -948,7 +1050,7 @@
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792702000000"></script>
+    <script type="module" src="src/js/main.js?v=1792736000000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">

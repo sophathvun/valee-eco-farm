@@ -4,11 +4,11 @@
     <div class="col-12 mb-3 d-print-none">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 p-2 bg-white rounded-3 shadow-sm border">
             <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-sm btn-primary fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2" id="tab-btn-timesheet" onclick="switchAttReportTab('timesheet')">
+                <button type="button" class="btn btn-sm btn-primary fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2" id="tab-btn-timesheet" onclick="window.switchAttReportTab ? window.switchAttReportTab('timesheet') : null">
                     <i class="bi bi-clock-history fs-6"></i>
                     <span>របាយការណ៍ម៉ោងស្កែនលម្អិត (Timesheet & Work Hours)</span>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2" id="tab-btn-matrix" onclick="switchAttReportTab('matrix')">
+                <button type="button" class="btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2" id="tab-btn-matrix" onclick="window.switchAttReportTab ? window.switchAttReportTab('matrix') : null">
                     <i class="bi bi-calendar-check fs-6"></i>
                     <span>វត្តមានប្រចាំខែ (Monthly Matrix P/A/L)</span>
                 </button>
@@ -29,31 +29,31 @@
                 <!-- Preset Quick Buttons -->
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom">
                     <span class="text-muted small fw-bold me-1"><i class="bi bi-lightning-charge-fill text-warning"></i> ជ្រើសរើសរហ័ស៖</span>
-                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn active" id="ts-btn-today" onclick="setTimesheetPreset('today')">ថ្ងៃនេះ (Today)</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn" id="ts-btn-yesterday" onclick="setTimesheetPreset('yesterday')">ម្សិលមិញ (Yesterday)</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn" id="ts-btn-7days" onclick="setTimesheetPreset('7days')">៧ ថ្ងៃចុងក្រោយ (7 Days)</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn" id="ts-btn-this-month" onclick="setTimesheetPreset('this_month')">ខែនេះ (This Month)</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn active" id="ts-btn-today" onclick="window.setTimesheetPreset ? window.setTimesheetPreset('today') : null">ថ្ងៃនេះ (Today)</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn" id="ts-btn-yesterday" onclick="window.setTimesheetPreset ? window.setTimesheetPreset('yesterday') : null">ម្សិលមិញ (Yesterday)</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn" id="ts-btn-7days" onclick="window.setTimesheetPreset ? window.setTimesheetPreset('7days') : null">៧ ថ្ងៃចុងក្រោយ (7 Days)</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill ts-preset-btn" id="ts-btn-this-month" onclick="window.setTimesheetPreset ? window.setTimesheetPreset('this_month') : null">ខែនេះ (This Month)</button>
                 </div>
 
                 <!-- Input Controls -->
                 <div class="row g-2 align-items-end">
                     <div class="col-lg-2 col-md-3 col-sm-6">
                         <label class="form-label text-muted small fw-bold mb-1">ពីថ្ងៃទី (From Date)</label>
-                        <input type="date" class="form-control form-control-sm" id="tsFromDate" onchange="generateTimesheetReport()">
+                        <input type="date" class="form-control form-control-sm" id="tsFromDate" onchange="window.generateTimesheetReport ? window.generateTimesheetReport() : null">
                     </div>
                     <div class="col-lg-2 col-md-3 col-sm-6">
                         <label class="form-label text-muted small fw-bold mb-1">ដល់ថ្ងៃទី (To Date)</label>
-                        <input type="date" class="form-control form-control-sm" id="tsToDate" onchange="generateTimesheetReport()">
+                        <input type="date" class="form-control form-control-sm" id="tsToDate" onchange="window.generateTimesheetReport ? window.generateTimesheetReport() : null">
                     </div>
                     <div class="col-lg-2 col-md-3 col-sm-6">
                         <label class="form-label text-muted small fw-bold mb-1">ផ្នែក / ដេប៉ាតឺម៉ង់</label>
-                        <select class="form-select form-select-sm" id="tsDeptFilter" onchange="generateTimesheetReport()">
+                        <select class="form-select form-select-sm" id="tsDeptFilter" onchange="window.generateTimesheetReport ? window.generateTimesheetReport() : null">
                             <option value="all">គ្រប់ផ្នែកទាំងអស់ (All)</option>
                         </select>
                     </div>
                     <div class="col-lg-2 col-md-3 col-sm-6">
                         <label class="form-label text-muted small fw-bold mb-1">ស្ថានភាពស្កែន</label>
-                        <select class="form-select form-select-sm" id="tsStatusFilter" onchange="generateTimesheetReport()">
+                        <select class="form-select form-select-sm" id="tsStatusFilter" onchange="window.generateTimesheetReport ? window.generateTimesheetReport() : null">
                             <option value="all">គ្រប់ស្ថានភាព (All)</option>
                             <option value="ontime">ទាន់ពេល (On-Time)</option>
                             <option value="late">ចូលយឺត (Late In)</option>
@@ -66,21 +66,21 @@
                         <label class="form-label text-muted small fw-bold mb-1">ស្វែងរកបុគ្គលិក</label>
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" id="tsSearchInput" placeholder="ឈ្មោះ ឬអត្តលេខ..." oninput="generateTimesheetReport()">
+                            <input type="text" class="form-control" id="tsSearchInput" placeholder="ឈ្មោះ ឬអត្តលេខ..." oninput="window.generateTimesheetReport ? window.generateTimesheetReport() : null">
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-6 col-sm-6 text-end">
                         <div class="d-flex gap-1 justify-content-end">
-                            <button class="btn btn-outline-primary btn-sm px-2" onclick="openAddScanRecordModal()" title="បន្ថែមទិន្នន័យស្កែន">
+                            <button class="btn btn-outline-primary btn-sm px-2" onclick="window.openAddScanRecordModal ? window.openAddScanRecordModal() : null" title="បន្ថែមទិន្នន័យស្កែន">
                                 <i class="bi bi-plus-circle"></i> បន្ថែមស្កែន
                             </button>
-                            <button class="btn btn-primary btn-sm px-2" onclick="generateTimesheetReport()" title="ទាញយកទិន្នន័យឡើងវិញ">
+                            <button class="btn btn-primary btn-sm px-2" onclick="window.generateTimesheetReport ? window.generateTimesheetReport() : null" title="ទាញយកទិន្នន័យឡើងវិញ">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
-                            <button class="btn btn-secondary btn-sm px-2" onclick="printTimesheetReport()" title="បោះពុម្ព">
+                            <button class="btn btn-secondary btn-sm px-2" onclick="window.printTimesheetReport ? window.printTimesheetReport() : null" title="បោះពុម្ព">
                                 <i class="bi bi-printer"></i>
                             </button>
-                            <button class="btn btn-success btn-sm px-2" onclick="exportTimesheetCSV()" title="ទាញយកជា Excel/CSV">
+                            <button class="btn btn-success btn-sm px-2" onclick="window.exportTimesheetCSV ? window.exportTimesheetCSV() : null" title="ទាញយកជា Excel/CSV">
                                 <i class="bi bi-file-earmark-excel"></i> Excel
                             </button>
                         </div>
@@ -226,10 +226,10 @@
                         <input type="date" class="form-control form-control-sm" id="repAttTo">
                     </div>
                     <div class="col-md-6 text-end">
-                        <button class="btn btn-primary btn-sm px-3" onclick="generateAttendanceReport()">
+                        <button class="btn btn-primary btn-sm px-3" onclick="window.generateAttendanceReport ? window.generateAttendanceReport() : null">
                             <i class="bi bi-search"></i> ស្វែងរក
                         </button>
-                        <button class="btn btn-secondary btn-sm px-3 ms-2" onclick="printAttReport()">
+                        <button class="btn btn-secondary btn-sm px-3 ms-2" onclick="window.printAttReport ? window.printAttReport() : null">
                             <i class="bi bi-printer"></i> បោះពុម្ព / PDF
                         </button>
                     </div>
@@ -275,7 +275,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-3">
-                <form id="editScanRecordForm" onsubmit="event.preventDefault(); saveScanRecordModal();">
+                <form id="editScanRecordForm" onsubmit="event.preventDefault(); if (window.saveScanRecordModal) window.saveScanRecordModal();">
                     <input type="hidden" id="scanRecordId">
                     <div class="row g-2 mb-2">
                         <div class="col-md-7">
@@ -295,14 +295,14 @@
                             <label class="form-label small fw-bold text-dark mb-1">ម៉ោងស្កែនចូល (Check-In)</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light"><i class="bi bi-box-arrow-in-right text-success"></i></span>
-                                <input type="time" step="1" id="scanCheckInInput" class="form-control" onchange="autoCalcModalHours()">
+                                <input type="time" step="1" id="scanCheckInInput" class="form-control" onchange="window.autoCalcModalHours ? window.autoCalcModalHours() : null">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-dark mb-1">ម៉ោងស្កែនចេញ (Check-Out)</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light"><i class="bi bi-box-arrow-right text-danger"></i></span>
-                                <input type="time" step="1" id="scanCheckOutInput" class="form-control" onchange="autoCalcModalHours()">
+                                <input type="time" step="1" id="scanCheckOutInput" class="form-control" onchange="window.autoCalcModalHours ? window.autoCalcModalHours() : null">
                             </div>
                         </div>
                     </div>
@@ -334,7 +334,7 @@
                             <div class="input-group input-group-sm">
                                 <input type="number" step="0.1" min="0" max="24" id="scanHoursInput" class="form-control" placeholder="ឧ. 8.0">
                                 <span class="input-group-text">ម៉ោង</span>
-                                <button type="button" class="btn btn-outline-secondary" onclick="autoCalcModalHours()" title="គណនាម៉ោងស្វ័យប្រវត្តិ">គណនា</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="window.autoCalcModalHours ? window.autoCalcModalHours() : null" title="គណនាម៉ោងស្វ័យប្រវត្តិ">គណនា</button>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -350,12 +350,12 @@
                 </form>
             </div>
             <div class="modal-footer py-2 bg-light d-flex justify-content-between">
-                <button type="button" class="btn btn-outline-danger btn-sm" id="btnDeleteScanRecord" onclick="deleteCurrentScanRecord()">
+                <button type="button" class="btn btn-outline-danger btn-sm" id="btnDeleteScanRecord" onclick="window.deleteCurrentScanRecord ? window.deleteCurrentScanRecord() : null">
                     <i class="bi bi-trash"></i> លុបកំណត់ត្រានេះ
                 </button>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">បោះបង់</button>
-                    <button type="button" class="btn btn-primary btn-sm px-3" onclick="saveScanRecordModal()">
+                    <button type="button" class="btn btn-primary btn-sm px-3" onclick="window.saveScanRecordModal ? window.saveScanRecordModal() : null">
                         <i class="bi bi-save me-1"></i> រក្សាទុក
                     </button>
                 </div>

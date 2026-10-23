@@ -61,7 +61,9 @@ window.switchAttReportTab = function(tabId) {
         if (btnMatrix) {
             btnMatrix.className = 'btn btn-sm btn-outline-success fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2';
         }
-        generateTimesheetReport();
+        if (typeof window.generateTimesheetReport === 'function') {
+            window.generateTimesheetReport();
+        }
     } else {
         if (tabTimesheet) tabTimesheet.style.display = 'none';
         if (tabMatrix) tabMatrix.style.display = 'block';
@@ -71,7 +73,9 @@ window.switchAttReportTab = function(tabId) {
         if (btnMatrix) {
             btnMatrix.className = 'btn btn-sm btn-success fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-2';
         }
-        generateAttendanceReport();
+        if (typeof window.generateAttendanceReport === 'function') {
+            window.generateAttendanceReport();
+        }
     }
 };
 
@@ -168,7 +172,9 @@ window.initAttendanceReport = function() {
     loadTimesheetDepartmentFilter();
 
     // Default to Timesheet tab
-    switchAttReportTab('timesheet');
+    if (typeof window.switchAttReportTab === 'function') {
+        window.switchAttReportTab('timesheet');
+    }
 };
 
 // ====== COMPREHENSIVE TIMESHEET REPORT LOGIC ======
@@ -1351,7 +1357,9 @@ window.deleteAttendanceRecord = async function(recordId) {
                 showConfirmButton: false
             });
 
-            generateTimesheetReport();
+            if (typeof window.generateTimesheetReport === 'function') {
+                window.generateTimesheetReport();
+            }
             if (typeof loadAttendance === 'function' && document.getElementById('attendanceMonth')) {
                 loadAttendance();
             }
@@ -1366,3 +1374,28 @@ window.deleteCurrentScanRecord = function() {
     const id = document.getElementById('scanRecordId')?.value;
     if (id) deleteAttendanceRecord(id);
 };
+
+// Register real implementations for early stubs & window exports
+window._realSwitchAttReportTab = window.switchAttReportTab;
+window._realSetTimesheetPreset = window.setTimesheetPreset;
+window._realGenerateTimesheetReport = window.generateTimesheetReport;
+window._realGenerateAttendanceReport = window.generateAttendanceReport;
+window._realPrintTimesheetReport = window.printTimesheetReport;
+window._realExportTimesheetCSV = window.exportTimesheetCSV;
+window._realPrintAttReport = window.printAttReport;
+window._realOpenAddScanRecordModal = window.openAddScanRecordModal;
+window._realSaveScanRecordModal = window.saveScanRecordModal;
+window._realDeleteCurrentScanRecord = window.deleteCurrentScanRecord;
+window._realAutoCalcModalHours = window.autoCalcModalHours;
+
+// Replay any pending tab or preset actions from early load
+if (window._pendingTimesheetPreset) {
+    const preset = window._pendingTimesheetPreset;
+    window._pendingTimesheetPreset = null;
+    window.setTimesheetPreset(preset);
+}
+if (window._pendingAttReportTab) {
+    const pTab = window._pendingAttReportTab;
+    window._pendingAttReportTab = null;
+    window.switchAttReportTab(pTab);
+}
