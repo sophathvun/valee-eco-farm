@@ -197,12 +197,14 @@ window.editEmployee = async function(id) {
         const idCardPlaceholder = document.getElementById('emp-idcard-placeholder');
         const idCardRemoveBtn = document.getElementById('btn-remove-emp-idcard');
         const idCardViewBtn = document.getElementById('btn-view-emp-idcard');
+        const idCardRecropBtn = document.getElementById('btn-recrop-emp-idcard');
         const idCardBadge = document.getElementById('emp-idcard-status-badge');
         if (emp.idCardPhoto) {
             if (idCardPreview) { idCardPreview.src = emp.idCardPhoto; idCardPreview.style.display = 'block'; }
             if (idCardPlaceholder) idCardPlaceholder.style.display = 'none';
-            if (idCardRemoveBtn) idCardRemoveBtn.style.display = 'block';
-            if (idCardViewBtn) idCardViewBtn.style.display = 'block';
+            if (idCardRemoveBtn) idCardRemoveBtn.style.display = 'inline-block';
+            if (idCardViewBtn) idCardViewBtn.style.display = 'inline-block';
+            if (idCardRecropBtn) idCardRecropBtn.style.display = 'inline-block';
             if (idCardBadge) {
                 idCardBadge.className = 'badge bg-success bg-opacity-25 text-success border border-success';
                 idCardBadge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>មានរូបកាត';
@@ -455,12 +457,23 @@ if (bankQrFileInput) {
     });
 }
 
-// ====== NATIONAL ID CARD PHOTO HELPER & DRAG-AND-DROP ======
+// ====== NATIONAL ID CARD PHOTO HELPER & DRAG-AND-DROP & CROPPER ======
+let idCardCropper = null;
+let idCardScaleX = 1;
+let currentIdCardAspect = 1.586;
+let idCardPreviewDebounceTimer = null;
+const idCardCropperModalEl = document.getElementById('idCardCropperModal');
+let idCardCropperModal = null;
+if (typeof bootstrap !== 'undefined' && idCardCropperModalEl) {
+    idCardCropperModal = new bootstrap.Modal(idCardCropperModalEl);
+}
+
 window.removeEmployeeIdCardPhoto = function() {
     const preview = document.getElementById('emp-idcard-preview');
     const placeholder = document.getElementById('emp-idcard-placeholder');
     const removeBtn = document.getElementById('btn-remove-emp-idcard');
     const viewBtn = document.getElementById('btn-view-emp-idcard');
+    const recropBtn = document.getElementById('btn-recrop-emp-idcard');
     const input = document.getElementById('emp-idcard-photo');
     const badge = document.getElementById('emp-idcard-status-badge');
 
@@ -471,6 +484,7 @@ window.removeEmployeeIdCardPhoto = function() {
     if (placeholder) placeholder.style.display = 'block';
     if (removeBtn) removeBtn.style.display = 'none';
     if (viewBtn) viewBtn.style.display = 'none';
+    if (recropBtn) recropBtn.style.display = 'none';
     if (input) input.value = '';
     if (badge) {
         badge.className = 'badge bg-light text-muted border';
@@ -551,54 +565,346 @@ window.viewEmployeeIdCardPhoto = async function(empId) {
     }
 };
 
+window.reCropCurrentFormIdCard = function() {
+    const preview = document.getElementById('emp-idcard-preview');
+    if (!preview || !preview.src || preview.style.display === 'none') {
+        Swal.fire({ icon: 'info', title: 'គ្មានរូបភាព', text: 'សូមបញ្ចូលរូបអត្តសញ្ញាណប័ណ្ណជាមុនសិន!' });
+        return;
+    }
+    openIdCardCropperWithImage(preview.src);
+};
+
+window.openIdCardCropperWithImage = function(imageSrc) {
+    const img = document.getElementById('idcard-cropper-image');
+    if (img) img.src = imageSrc;
+
+    idCardScaleX = 1;
+    currentIdCardAspect = 1.586;
+
+    // Reset controls to ID card defaults (25% sharpen, +12 contrast for clear text)
+    const sh = document.getElementById('idcard-sharpen'); if (sh) sh.value = 25;
+    const shV = document.getElementById('idcard-sharpen-val'); if (shV) shV.textContent = '25%';
+    const br = document.getElementById('idcard-brightness'); if (br) br.value = 0;
+    const brV = document.getElementById('idcard-brightness-val'); if (brV) brV.textContent = '0';
+    const ct = document.getElementById('idcard-contrast'); if (ct) ct.value = 12;
+    const ctV = document.getElementById('idcard-contrast-val'); if (ctV) ctV.textContent = '+12';
+
+    updateIdCardRatioButtons('idcard-ratio-card');
+
+    if (!idCardCropperModal && idCardCropperModalEl && typeof bootstrap !== 'undefined') {
+        idCardCropperModal = new bootstrap.Modal(idCardCropperModalEl);
+    }
+    if (idCardCropperModal) idCardCropperModal.show();
+};
+
 async function handleIdCardFileSelect(file) {
     if (!file || !file.type.startsWith('image/')) {
         Swal.fire({ icon: 'error', text: 'សូមជ្រើសរើសឯកសារជារូបភាព (JPG, PNG, WebP)!', confirmButtonText: 'យល់ព្រម' });
         return;
     }
-    try {
-        let compressed;
-        if (typeof compressQrImage === 'function') {
-            compressed = await compressQrImage(file, 1200, 0.85);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        openIdCardCropperWithImage(e.target.result);
+    };
+    reader.onerror = (err) => {
+        console.error('Error reading ID card file:', err);
+        Swal.fire({ icon: 'error', text: 'មិនអាចអានរូបភាពអត្តសញ្ញាណប័ណ្ណបានឡើយ!' });
+    };
+    reader.readAsDataURL(file);
+}
+
+function updateIdCardRatioButtons(activeId) {
+    ['idcard-ratio-card', 'idcard-ratio-free', 'idcard-ratio-portrait'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        if (id === activeId) {
+            btn.className = 'btn btn-sm btn-primary active fw-bold px-2 py-1';
         } else {
-            compressed = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
+            btn.className = 'btn btn-sm btn-outline-secondary px-2 py-1';
         }
+    });
+}
 
-        const preview = document.getElementById('emp-idcard-preview');
-        const placeholder = document.getElementById('emp-idcard-placeholder');
-        const removeBtn = document.getElementById('btn-remove-emp-idcard');
-        const viewBtn = document.getElementById('btn-view-emp-idcard');
-        const badge = document.getElementById('emp-idcard-status-badge');
+function debounceRenderIdCardCropPreview() {
+    clearTimeout(idCardPreviewDebounceTimer);
+    idCardPreviewDebounceTimer = setTimeout(renderIdCardLivePreview, 75);
+}
 
-        if (preview) {
-            preview.src = compressed;
-            preview.style.display = 'block';
-        }
-        if (placeholder) placeholder.style.display = 'none';
-        if (removeBtn) removeBtn.style.display = 'block';
-        if (viewBtn) viewBtn.style.display = 'block';
-        if (badge) {
-            badge.className = 'badge bg-success bg-opacity-25 text-success border border-success';
-            badge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>មានរូបកាត';
-        }
+function renderIdCardLivePreview() {
+    if (!idCardCropper) return;
+    const previewCanvas = document.getElementById('idcard-crop-live-preview');
+    if (!previewCanvas) return;
+    const previewCtx = previewCanvas.getContext('2d');
 
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'success',
-                title: 'បញ្ចូលរូបអត្តសញ្ញាណប័ណ្ណជោគជ័យ!',
-                timer: 1300,
-                showConfirmButton: false
-            });
-        }
-    } catch (err) {
-        console.error('Error handling ID card file:', err);
-        Swal.fire({ icon: 'error', text: 'មិនអាចអានរូបភាពអត្តសញ្ញាណប័ណ្ណបានឡើយ: ' + err.message, confirmButtonText: 'យល់ព្រម' });
+    const cropData = idCardCropper.getData();
+    const aspect = (cropData.width && cropData.height) ? (cropData.width / cropData.height) : 1.586;
+    const pWidth = 580;
+    const pHeight = Math.max(100, Math.round(580 / aspect));
+
+    const croppedCanvas = idCardCropper.getCroppedCanvas({
+        width: pWidth,
+        height: pHeight,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high'
+    });
+    if (!croppedCanvas) return;
+
+    previewCanvas.width = pWidth;
+    previewCanvas.height = pHeight;
+    previewCtx.clearRect(0, 0, pWidth, pHeight);
+    previewCtx.drawImage(croppedCanvas, 0, 0, pWidth, pHeight);
+
+    const sharpen = parseInt(document.getElementById('idcard-sharpen')?.value || '0', 10);
+    const brightness = parseInt(document.getElementById('idcard-brightness')?.value || '0', 10);
+    const contrast = parseInt(document.getElementById('idcard-contrast')?.value || '0', 10);
+
+    processCanvasEnhancements(previewCtx, pWidth, pHeight, brightness, contrast, sharpen);
+
+    const sizeBadge = document.getElementById('idcard-crop-file-size');
+    if (sizeBadge) {
+        previewCanvas.toBlob((blob) => {
+            if (blob && sizeBadge) {
+                const estKb = Math.round((blob.size / 1024) * 1.6);
+                sizeBadge.textContent = `~${estKb > 0 ? estKb : 85} KB`;
+            }
+        }, 'image/webp', 0.88);
     }
+}
+
+// Modal lifecycle events for ID Card Cropper
+if (idCardCropperModalEl) {
+    idCardCropperModalEl.addEventListener('show.bs.modal', () => {
+        idCardCropperModalEl.style.zIndex = '1070';
+        setTimeout(() => {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 1) {
+                backdrops[backdrops.length - 1].style.zIndex = '1065';
+            }
+        }, 10);
+    });
+
+    idCardCropperModalEl.addEventListener('shown.bs.modal', () => {
+        const image = document.getElementById('idcard-cropper-image');
+        if (!image) return;
+        if (idCardCropper) idCardCropper.destroy();
+
+        idCardCropper = new Cropper(image, {
+            aspectRatio: currentIdCardAspect || 1.586,
+            viewMode: 1,
+            dragMode: 'move',
+            autoCropArea: 0.92,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: true,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+            crop: debounceRenderIdCardCropPreview
+        });
+
+        setTimeout(renderIdCardLivePreview, 150);
+    });
+
+    idCardCropperModalEl.addEventListener('hidden.bs.modal', () => {
+        if (idCardCropper) {
+            idCardCropper.destroy();
+            idCardCropper = null;
+        }
+        setTimeout(() => {
+            const openModals = document.querySelectorAll('.modal.show');
+            if (openModals.length > 0) {
+                document.body.classList.add('modal-open');
+            }
+        }, 50);
+    });
+}
+
+// Rotate buttons (↺ 90° L, ↻ 90° R)
+document.getElementById('idcard-rotate-left')?.addEventListener('click', () => {
+    if (idCardCropper) {
+        idCardCropper.rotate(-90);
+        debounceRenderIdCardCropPreview();
+    }
+});
+
+document.getElementById('idcard-rotate-right')?.addEventListener('click', () => {
+    if (idCardCropper) {
+        idCardCropper.rotate(90);
+        debounceRenderIdCardCropPreview();
+    }
+});
+
+// Flip Horizontal
+document.getElementById('idcard-flip-h')?.addEventListener('click', () => {
+    if (idCardCropper) {
+        idCardScaleX = -idCardScaleX;
+        idCardCropper.scaleX(idCardScaleX);
+        debounceRenderIdCardCropPreview();
+    }
+});
+
+// Zoom in / out
+document.getElementById('idcard-zoom-in')?.addEventListener('click', () => {
+    if (idCardCropper) {
+        idCardCropper.zoom(0.1);
+        debounceRenderIdCardCropPreview();
+    }
+});
+
+document.getElementById('idcard-zoom-out')?.addEventListener('click', () => {
+    if (idCardCropper) {
+        idCardCropper.zoom(-0.1);
+        debounceRenderIdCardCropPreview();
+    }
+});
+
+// Reset
+document.getElementById('idcard-reset-all')?.addEventListener('click', () => {
+    if (idCardCropper) {
+        idCardScaleX = 1;
+        idCardCropper.reset();
+        currentIdCardAspect = 1.586;
+        idCardCropper.setAspectRatio(1.586);
+        updateIdCardRatioButtons('idcard-ratio-card');
+    }
+    const sh = document.getElementById('idcard-sharpen'); if (sh) sh.value = 25;
+    const shV = document.getElementById('idcard-sharpen-val'); if (shV) shV.textContent = '25%';
+    const br = document.getElementById('idcard-brightness'); if (br) br.value = 0;
+    const brV = document.getElementById('idcard-brightness-val'); if (brV) brV.textContent = '0';
+    const ct = document.getElementById('idcard-contrast'); if (ct) ct.value = 12;
+    const ctV = document.getElementById('idcard-contrast-val'); if (ctV) ctV.textContent = '+12';
+    debounceRenderIdCardCropPreview();
+});
+
+// Aspect ratio buttons
+document.getElementById('idcard-ratio-card')?.addEventListener('click', () => {
+    currentIdCardAspect = 1.586;
+    if (idCardCropper) idCardCropper.setAspectRatio(1.586);
+    updateIdCardRatioButtons('idcard-ratio-card');
+    debounceRenderIdCardCropPreview();
+});
+
+document.getElementById('idcard-ratio-free')?.addEventListener('click', () => {
+    currentIdCardAspect = NaN;
+    if (idCardCropper) idCardCropper.setAspectRatio(NaN);
+    updateIdCardRatioButtons('idcard-ratio-free');
+    debounceRenderIdCardCropPreview();
+});
+
+document.getElementById('idcard-ratio-portrait')?.addEventListener('click', () => {
+    currentIdCardAspect = 0.63;
+    if (idCardCropper) idCardCropper.setAspectRatio(0.63);
+    updateIdCardRatioButtons('idcard-ratio-portrait');
+    debounceRenderIdCardCropPreview();
+});
+
+// Auto-Enhance Button (✨)
+document.getElementById('btn-idcard-auto-enhance')?.addEventListener('click', () => {
+    const sh = document.getElementById('idcard-sharpen'); if (sh) sh.value = 45;
+    const shV = document.getElementById('idcard-sharpen-val'); if (shV) shV.textContent = '45%';
+    const br = document.getElementById('idcard-brightness'); if (br) br.value = 6;
+    const brV = document.getElementById('idcard-brightness-val'); if (brV) brV.textContent = '+6';
+    const ct = document.getElementById('idcard-contrast'); if (ct) ct.value = 20;
+    const ctV = document.getElementById('idcard-contrast-val'); if (ctV) ctV.textContent = '+20';
+    debounceRenderIdCardCropPreview();
+});
+
+// Sliders listener
+['idcard-sharpen', 'idcard-brightness', 'idcard-contrast'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('input', (e) => {
+            const valEl = document.getElementById(id + '-val');
+            if (valEl) {
+                const prefix = (id === 'idcard-contrast' || id === 'idcard-brightness') && parseInt(e.target.value) > 0 ? '+' : '';
+                const suffix = (id === 'idcard-sharpen') ? '%' : '';
+                valEl.textContent = prefix + e.target.value + suffix;
+            }
+            debounceRenderIdCardCropPreview();
+        });
+    }
+});
+
+// Save Button
+const btnIdCardSave = document.getElementById('idcard-crop-save-btn');
+if (btnIdCardSave) {
+    btnIdCardSave.addEventListener('click', async () => {
+        if (!idCardCropper) return;
+        const origBtnHtml = btnIdCardSave.innerHTML;
+        btnIdCardSave.disabled = true;
+        btnIdCardSave.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>កំពុងរក្សាទុក...';
+
+        try {
+            const cropData = idCardCropper.getData();
+            const aspect = (cropData.width && cropData.height) ? (cropData.width / cropData.height) : 1.586;
+            // Target high resolution: max width 1200px (so Khmer text and micro details are crisp and legible on zoom)
+            const targetWidth = Math.min(1200, Math.max(800, Math.round(cropData.width)));
+            const targetHeight = Math.max(200, Math.round(targetWidth / aspect));
+
+            const highResCanvas = idCardCropper.getCroppedCanvas({
+                width: targetWidth,
+                height: targetHeight,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+            });
+
+            if (!highResCanvas) {
+                throw new Error('មិនអាចទាញយកទិន្នន័យរូបភាពពី Cropper បានទេ');
+            }
+
+            const highResCtx = highResCanvas.getContext('2d');
+            const sharpen = parseInt(document.getElementById('idcard-sharpen')?.value || '0', 10);
+            const brightness = parseInt(document.getElementById('idcard-brightness')?.value || '0', 10);
+            const contrast = parseInt(document.getElementById('idcard-contrast')?.value || '0', 10);
+
+            processCanvasEnhancements(highResCtx, targetWidth, targetHeight, brightness, contrast, sharpen);
+
+            let finalDataUrl = highResCanvas.toDataURL('image/webp', 0.88);
+            if (!finalDataUrl || finalDataUrl.length < 100 || !finalDataUrl.startsWith('data:image/webp')) {
+                finalDataUrl = highResCanvas.toDataURL('image/jpeg', 0.88);
+            }
+
+            // Put into preview and form state
+            const preview = document.getElementById('emp-idcard-preview');
+            const placeholder = document.getElementById('emp-idcard-placeholder');
+            const removeBtn = document.getElementById('btn-remove-emp-idcard');
+            const viewBtn = document.getElementById('btn-view-emp-idcard');
+            const recropBtn = document.getElementById('btn-recrop-emp-idcard');
+            const badge = document.getElementById('emp-idcard-status-badge');
+
+            if (preview) {
+                preview.src = finalDataUrl;
+                preview.style.display = 'block';
+            }
+            if (placeholder) placeholder.style.display = 'none';
+            if (removeBtn) removeBtn.style.display = 'inline-block';
+            if (viewBtn) viewBtn.style.display = 'inline-block';
+            if (recropBtn) recropBtn.style.display = 'inline-block';
+            if (badge) {
+                badge.className = 'badge bg-success bg-opacity-25 text-success border border-success';
+                badge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>មានរូបកាត';
+            }
+
+            if (idCardCropperModal) idCardCropperModal.hide();
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'កាត់ និងកែប្រែរូបអត្តសញ្ញាណប័ណ្ណជោគជ័យ!',
+                    text: 'រូបភាពកាតត្រូវបានរក្សាទុកយ៉ាងច្បាស់ម៉ត់',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        } catch (err) {
+            console.error('Error saving cropped ID card:', err);
+            Swal.fire({ icon: 'error', text: 'បរាជ័យក្នុងការកាត់រូបកាត: ' + err.message });
+        } finally {
+            btnIdCardSave.disabled = false;
+            btnIdCardSave.innerHTML = origBtnHtml;
+        }
+    });
 }
 
 const idCardDropzone = document.getElementById('emp-idcard-dropzone');
