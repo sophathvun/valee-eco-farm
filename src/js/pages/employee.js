@@ -38,7 +38,10 @@ async function loadEmployees() {
         tr.innerHTML = `
             <td><img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="emp-avatar" onclick="viewEmployeePhoto(${emp.id})" title="ចុចដើម្បីមើលរូបធំ និងទាញយក"></td>
             <td class="fw-bold text-primary">${emp.code || 'N/A'}</td>
-            <td>${emp.nationalId || '-'}</td>
+            <td>
+                <div>${emp.nationalId || '-'}</div>
+                ${emp.idCardPhoto ? `<button type="button" class="btn btn-xs btn-outline-primary py-0 px-2 mt-1 rounded-pill" style="font-size: 0.68rem;" onclick="viewEmployeeIdCardPhoto(${emp.id})" title="ចុចដើម្បីមើលរូបអត្តសញ្ញាណប័ណ្ណធំ"><i class="bi bi-card-image me-1"></i>រូបកាត</button>` : ''}
+            </td>
             <td class="text-start">
                 <div class="text-dark emp-name-km">${emp.name}</div>
                 ${emp.latinName ? `<div class="text-muted emp-name-latin">${emp.latinName}</div>` : ''}
@@ -88,6 +91,7 @@ window.openAddEmployeeModal = async function() {
     if (document.getElementById('emp-bank-account')) document.getElementById('emp-bank-account').value = '';
     if (document.getElementById('emp-bank-account-name')) document.getElementById('emp-bank-account-name').value = '';
     if (typeof removeEmployeeBankQrInForm === 'function') removeEmployeeBankQrInForm();
+    if (typeof removeEmployeeIdCardPhoto === 'function') removeEmployeeIdCardPhoto();
 
     const modalTitle = document.querySelector('#employeeModal .modal-title');
     if (modalTitle) modalTitle.textContent = 'បញ្ចូលព័ត៌មានបុគ្គលិកថ្មី';
@@ -188,6 +192,25 @@ window.editEmployee = async function(id) {
         if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
         if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
 
+        // National ID Card photo
+        const idCardPreview = document.getElementById('emp-idcard-preview');
+        const idCardPlaceholder = document.getElementById('emp-idcard-placeholder');
+        const idCardRemoveBtn = document.getElementById('btn-remove-emp-idcard');
+        const idCardViewBtn = document.getElementById('btn-view-emp-idcard');
+        const idCardBadge = document.getElementById('emp-idcard-status-badge');
+        if (emp.idCardPhoto) {
+            if (idCardPreview) { idCardPreview.src = emp.idCardPhoto; idCardPreview.style.display = 'block'; }
+            if (idCardPlaceholder) idCardPlaceholder.style.display = 'none';
+            if (idCardRemoveBtn) idCardRemoveBtn.style.display = 'block';
+            if (idCardViewBtn) idCardViewBtn.style.display = 'block';
+            if (idCardBadge) {
+                idCardBadge.className = 'badge bg-success bg-opacity-25 text-success border border-success';
+                idCardBadge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>មានរូបកាត';
+            }
+        } else {
+            if (typeof removeEmployeeIdCardPhoto === 'function') removeEmployeeIdCardPhoto();
+        }
+
         // Bank details & QR
         if (document.getElementById('emp-bank-name')) document.getElementById('emp-bank-name').value = emp.bankName || '';
         if (document.getElementById('emp-bank-account')) document.getElementById('emp-bank-account').value = emp.bankAccount || '';
@@ -262,6 +285,9 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         const photoEl = document.getElementById('emp-photo-preview');
         const photo = (photoEl && photoEl.dataset.hasCustom === 'true' && photoEl.getAttribute('src')) ? photoEl.getAttribute('src') : '';
 
+        const idCardEl = document.getElementById('emp-idcard-preview');
+        const idCardPhoto = (idCardEl && idCardEl.style.display !== 'none' && idCardEl.getAttribute('src')) ? idCardEl.getAttribute('src') : '';
+
         const bankName = document.getElementById('emp-bank-name') ? document.getElementById('emp-bank-name').value.trim() : '';
         const bankAccount = document.getElementById('emp-bank-account') ? document.getElementById('emp-bank-account').value.trim() : '';
         const bankAccountName = document.getElementById('emp-bank-account-name') ? document.getElementById('emp-bank-account-name').value.trim() : '';
@@ -279,6 +305,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
             id: editingEmployeeId || Date.now(),
             code: code || '',
             nationalId: nationalId || '',
+            idCardPhoto: idCardPhoto || '',
             name: name || '',
             latinName: latinName || '',
             gender: gender || 'ប្រុស',
@@ -312,6 +339,7 @@ document.getElementById('employeeForm').addEventListener('submit', async (e) => 
         document.getElementById('emp-wage-type').value = 'Monthly';
         if(document.getElementById('emp-currency')) document.getElementById('emp-currency').value = 'USD';
         if (typeof removeEmployeeBankQrInForm === 'function') removeEmployeeBankQrInForm();
+        if (typeof removeEmployeeIdCardPhoto === 'function') removeEmployeeIdCardPhoto();
         editingEmployeeId = null;
         const prevPhoto = document.getElementById('emp-photo-preview');
         if (prevPhoto) {
@@ -424,6 +452,190 @@ if (bankQrFileInput) {
             console.error("Error processing QR image:", err);
             Swal.fire('បញ្ហា', 'មិនអាចអានរូបភាព QR បានឡើយ', 'error');
         }
+    });
+}
+
+// ====== NATIONAL ID CARD PHOTO HELPER & DRAG-AND-DROP ======
+window.removeEmployeeIdCardPhoto = function() {
+    const preview = document.getElementById('emp-idcard-preview');
+    const placeholder = document.getElementById('emp-idcard-placeholder');
+    const removeBtn = document.getElementById('btn-remove-emp-idcard');
+    const viewBtn = document.getElementById('btn-view-emp-idcard');
+    const input = document.getElementById('emp-idcard-photo');
+    const badge = document.getElementById('emp-idcard-status-badge');
+
+    if (preview) {
+        preview.src = '';
+        preview.style.display = 'none';
+    }
+    if (placeholder) placeholder.style.display = 'block';
+    if (removeBtn) removeBtn.style.display = 'none';
+    if (viewBtn) viewBtn.style.display = 'none';
+    if (input) input.value = '';
+    if (badge) {
+        badge.className = 'badge bg-light text-muted border';
+        badge.innerHTML = '<i class="bi bi-card-image me-1"></i>គ្មានរូបកាត';
+    }
+};
+
+window.viewCurrentFormIdCard = function() {
+    const preview = document.getElementById('emp-idcard-preview');
+    if (!preview || !preview.src || preview.style.display === 'none') {
+        Swal.fire({ icon: 'info', title: 'គ្មានរូបភាព', text: 'សូមបញ្ចូលរូបអត្តសញ្ញាណប័ណ្ណជាមុនសិន!' });
+        return;
+    }
+    const empName = document.getElementById('emp-name')?.value || 'អត្តសញ្ញាណប័ណ្ណ';
+    const empCode = document.getElementById('emp-code')?.value || '';
+    
+    currentViewingEmp = { name: empName, code: empCode, _isIdCard: true };
+    currentViewerZoom = 1;
+    currentPanX = 0;
+    currentPanY = 0;
+
+    const modalEl = document.getElementById('empPhotoViewerModal');
+    if (!modalEl) return;
+
+    const nameEl = document.getElementById('viewer-emp-name');
+    if (nameEl) nameEl.innerHTML = `<i class="bi bi-card-heading text-warning me-1"></i> រូបអត្តសញ្ញាណប័ណ្ណ៖ ${empName}`;
+
+    const codeEl = document.getElementById('viewer-emp-code');
+    if (codeEl) codeEl.textContent = empCode ? `(${empCode})` : '';
+
+    const imgEl = document.getElementById('viewer-emp-img');
+    if (imgEl) {
+        imgEl.src = preview.src;
+        imgEl.style.transform = 'translate(0px, 0px) scale(1)';
+    }
+
+    const zoomLevelEl = document.getElementById('viewer-zoom-level');
+    if (zoomLevelEl) zoomLevelEl.textContent = '100%';
+
+    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    modal.show();
+};
+
+window.viewEmployeeIdCardPhoto = async function(empId) {
+    try {
+        const emp = await db.employees.get(empId);
+        if (!emp || !emp.idCardPhoto) {
+            Swal.fire({ icon: 'info', title: 'គ្មានរូបភាព', text: 'បុគ្គលិកនេះមិនទាន់មានរូបអត្តសញ្ញាណប័ណ្ណនៅឡើយទេ។', confirmButtonText: 'យល់ព្រម' });
+            return;
+        }
+        currentViewingEmp = { ...emp, _isIdCard: true };
+        currentViewerZoom = 1;
+        currentPanX = 0;
+        currentPanY = 0;
+
+        const modalEl = document.getElementById('empPhotoViewerModal');
+        if (!modalEl) return;
+
+        const nameEl = document.getElementById('viewer-emp-name');
+        if (nameEl) nameEl.innerHTML = `<i class="bi bi-card-heading text-warning me-1"></i> រូបអត្តសញ្ញាណប័ណ្ណ៖ ${emp.name}`;
+
+        const codeEl = document.getElementById('viewer-emp-code');
+        if (codeEl) codeEl.textContent = emp.code ? `(${emp.code})` : '';
+
+        const imgEl = document.getElementById('viewer-emp-img');
+        if (imgEl) {
+            imgEl.src = emp.idCardPhoto;
+            imgEl.style.transform = 'translate(0px, 0px) scale(1)';
+        }
+
+        const zoomLevelEl = document.getElementById('viewer-zoom-level');
+        if (zoomLevelEl) zoomLevelEl.textContent = '100%';
+
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.show();
+    } catch (err) {
+        console.error('Error viewing employee ID card:', err);
+    }
+};
+
+async function handleIdCardFileSelect(file) {
+    if (!file || !file.type.startsWith('image/')) {
+        Swal.fire({ icon: 'error', text: 'សូមជ្រើសរើសឯកសារជារូបភាព (JPG, PNG, WebP)!', confirmButtonText: 'យល់ព្រម' });
+        return;
+    }
+    try {
+        let compressed;
+        if (typeof compressQrImage === 'function') {
+            compressed = await compressQrImage(file, 1200, 0.85);
+        } else {
+            compressed = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        const preview = document.getElementById('emp-idcard-preview');
+        const placeholder = document.getElementById('emp-idcard-placeholder');
+        const removeBtn = document.getElementById('btn-remove-emp-idcard');
+        const viewBtn = document.getElementById('btn-view-emp-idcard');
+        const badge = document.getElementById('emp-idcard-status-badge');
+
+        if (preview) {
+            preview.src = compressed;
+            preview.style.display = 'block';
+        }
+        if (placeholder) placeholder.style.display = 'none';
+        if (removeBtn) removeBtn.style.display = 'block';
+        if (viewBtn) viewBtn.style.display = 'block';
+        if (badge) {
+            badge.className = 'badge bg-success bg-opacity-25 text-success border border-success';
+            badge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>មានរូបកាត';
+        }
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: 'បញ្ចូលរូបអត្តសញ្ញាណប័ណ្ណជោគជ័យ!',
+                timer: 1300,
+                showConfirmButton: false
+            });
+        }
+    } catch (err) {
+        console.error('Error handling ID card file:', err);
+        Swal.fire({ icon: 'error', text: 'មិនអាចអានរូបភាពអត្តសញ្ញាណប័ណ្ណបានឡើយ: ' + err.message, confirmButtonText: 'យល់ព្រម' });
+    }
+}
+
+const idCardDropzone = document.getElementById('emp-idcard-dropzone');
+const idCardFileInput = document.getElementById('emp-idcard-photo');
+
+if (idCardDropzone && idCardFileInput) {
+    idCardDropzone.addEventListener('click', (e) => {
+        if (e.target.closest('button')) return;
+        idCardFileInput.click();
+    });
+    idCardDropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        idCardDropzone.classList.remove('bg-light');
+        idCardDropzone.classList.add('bg-primary', 'bg-opacity-10');
+        idCardDropzone.style.borderColor = '#0b5ed7';
+    });
+    idCardDropzone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        idCardDropzone.classList.add('bg-light');
+        idCardDropzone.classList.remove('bg-primary', 'bg-opacity-10');
+        idCardDropzone.style.borderColor = '#0d6efd';
+    });
+    idCardDropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        idCardDropzone.classList.add('bg-light');
+        idCardDropzone.classList.remove('bg-primary', 'bg-opacity-10');
+        idCardDropzone.style.borderColor = '#0d6efd';
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleIdCardFileSelect(e.dataTransfer.files[0]);
+        }
+    });
+
+    idCardFileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            handleIdCardFileSelect(e.target.files[0]);
+        }
+        idCardFileInput.value = '';
     });
 }
 
@@ -1111,6 +1323,7 @@ if(empForm) empForm.addEventListener('reset', () => {
     setTimeout(() => {
         if (typeof updatePhotoPlaceholder === 'function') updatePhotoPlaceholder();
         if (typeof updateRemovePhotoBtnVisibility === 'function') updateRemovePhotoBtnVisibility();
+        if (typeof removeEmployeeIdCardPhoto === 'function') removeEmployeeIdCardPhoto();
     }, 10); 
 });
 
@@ -1324,7 +1537,8 @@ window.downloadEmpPhotoJpg = function() {
             if (currentViewingEmp) {
                 safeName = (currentViewingEmp.latinName || currentViewingEmp.name || 'photo').replace(/[^a-zA-Z0-9_\u1780-\u17D3]/g, '_');
             }
-            link.download = `${empCode}_${safeName}.jpg`;
+            const isId = currentViewingEmp && currentViewingEmp._isIdCard;
+            link.download = isId ? `${empCode}_${safeName}_IDCard.jpg` : `${empCode}_${safeName}.jpg`;
             link.href = jpgDataUrl;
             document.body.appendChild(link);
             link.click();
