@@ -461,11 +461,292 @@ if (bankQrFileInput) {
 let idCardCropper = null;
 let idCardScaleX = 1;
 let currentIdCardAspect = 1.586;
+let currentFineTilt = 0;
+let selectedIdCardBg = '#ffffff'; // Default: Clean white background
 let idCardPreviewDebounceTimer = null;
 const idCardCropperModalEl = document.getElementById('idCardCropperModal');
 let idCardCropperModal = null;
 if (typeof bootstrap !== 'undefined' && idCardCropperModalEl) {
     idCardCropperModal = new bootstrap.Modal(idCardCropperModalEl);
+}
+
+// 1. ISO Card Corner Mask
+function applyCardCornerMask(data, W, H, radius, targetRgb, isTransparent) {
+    if (radius <= 0) return;
+    const r2 = radius * radius;
+
+    function maskPixel(px, py) {
+        const idx = (py * W + px) * 4;
+        if (isTransparent) {
+            data[idx + 3] = 0;
+        } else if (targetRgb) {
+            data[idx] = targetRgb.r;
+            data[idx + 1] = targetRgb.g;
+            data[idx + 2] = targetRgb.b;
+            data[idx + 3] = 255;
+        }
+    }
+
+    for (let y = 0; y < radius; y++) {
+        const dy = radius - y;
+        for (let x = 0; x < radius; x++) {
+            const dx = radius - x;
+            if (dx * dx + dy * dy > r2) maskPixel(x, y);
+        }
+        for (let x = W - radius; x < W; x++) {
+            const dx = x - (W - 1 - radius);
+            if (dx * dx + dy * dy > r2) maskPixel(x, y);
+        }
+    }
+
+    for (let y = H - radius; y < H; y++) {
+        const dy = y - (H - 1 - radius);
+        for (let x = 0; x < radius; x++) {
+            const dx = radius - x;
+            if (dx * dx + dy * dy > r2) maskPixel(x, y);
+        }
+        for (let x = W - radius; x < W; x++) {
+            const dx = x - (W - 1 - radius);
+            if (dx * dx + dy * dy > r2) maskPixel(x, y);
+        }
+    }
+}
+
+// 2. Intelligent Card Background Removal with Strict Card Body Protection
+function processCardBackgroundRemoval(ctx, width, height, bgColor, tolerance = 42, safetyMargin = 6, roundCorners = true) {
+    if (!bgColor || bgColor === 'original') return;
+
+    const imgData = ctx.getImageData(0, 0, width, height);
+    const data = imgData.data;
+    const W = width;
+    const H = height;
+
+    const targetRgb = hexToRgb(bgColor);
+    const isTransparent = (bgColor === 'transparent');
+
+    // A. Sample perimeter background reference points from corners and edges
+    const sampleOffset = Math.max(2, Math.min(10, Math.floor(Math.min(W, H) * 0.02)));
+    const sampleCoords = [
+        { x: sampleOffset, y: sampleOffset },
+        { x: W - 1 - sampleOffset, y: sampleOffset },
+        { x: sampleOffset, y: H - 1 - sampleOffset },
+        { x: W - 1 - sampleOffset, y: H - 1 - sampleOffset },
+        { x: Math.floor(W / 2), y: 1 },
+        { x: Math.floor(W / 2), y: H - 2 },
+        { x: 1, y: Math.floor(H / 2) },
+        { x: W - 2, y: Math.floor(H / 2) }
+    ];
+
+    const bgSamples = [];
+    sampleCoords.forEach(pt => {
+        const idx = (pt.y * W + pt.x) * 4;
+        bgSamples.push({ r: data[idx], g: data[idx + 1], b: data[idx + 2] });
+    });
+
+    function isColorNearBg(r, g, b, tol) {
+        for (let i = 0; i < bgSamples.length; i++) {
+            const s = bgSamples[i];
+            const dr = r - s.r;
+            const dg = g - s.g;
+            const db = b - s.b;
+            const dist = Math.sqrt(0.3 * dr * dr + 0.59 * dg * dg + 0.11 * db * db);
+            if (dist <= tol) return true;
+        }
+        return false;
+    }
+
+    // B. Flood-fill from outer perimeter inward
+    const mask = new Uint8Array(W * H);
+    const queue = new Int32Array(W * H);
+    let head = 0;
+    let tail = 0;
+
+    // Seed top and bottom borders
+    for (let x = 0; x < W; x++) {
+        const idxTop = x * 4;
+        if (isColorNearBg(data[idxTop], data[idxTop + 1], data[idxTop + 2], tolerance * 1.3)) {
+            mask[x] = 1;
+            queue[tail++] = x;
+        }
+        const posBtm = (H - 1) * W + x;
+        const idxBtm = posBtm * 4;
+        if (isColorNearBg(data[idxBtm], data[idxBtm + 1], data[idxBtm + 2], tolerance * 1.3)) {
+            mask[posBtm] = 1;
+            queue[tail++] = posBtm;
+        }
+    }
+
+    // Seed left and right borders
+    for (let y = 1; y < H - 1; y++) {
+        const posLft = y * W;
+        const idxLft = posLft * 4;
+        if (mask[posLft] === 0 && isColorNearBg(data[idxLft], data[idxLft + 1], data[idxLft + 2], tolerance * 1.3)) {
+            mask[posLft] = 1;
+            queue[tail++] = posLft;
+        }
+        const posRgt = y * W + (W - 1);
+        const idxRgt = posRgt * 4;
+        if (mask[posRgt] === 0 && isColorNearBg(data[idxRgt], data[idxRgt + 1], data[idxRgt + 2], tolerance * 1.3)) {
+            mask[posRgt] = 1;
+            queue[tail++] = posRgt;
+        }
+    }
+
+    // BFS Flood Fill inward until card edge
+    while (head < tail) {
+        const curr = queue[head++];
+        const cx = curr % W;
+        const cy = (curr / W) | 0;
+
+        if (cx > 0) {
+            const n = curr - 1;
+            if (mask[n] === 0) {
+                const nIdx = n * 4;
+                if (isColorNearBg(data[nIdx], data[nIdx + 1], data[nIdx + 2], tolerance)) {
+                    mask[n] = 1; queue[tail++] = n;
+                }
+            }
+        }
+        if (cx < W - 1) {
+            const n = curr + 1;
+            if (mask[n] === 0) {
+                const nIdx = n * 4;
+                if (isColorNearBg(data[nIdx], data[nIdx + 1], data[nIdx + 2], tolerance)) {
+                    mask[n] = 1; queue[tail++] = n;
+                }
+            }
+        }
+        if (cy > 0) {
+            const n = curr - W;
+            if (mask[n] === 0) {
+                const nIdx = n * 4;
+                if (isColorNearBg(data[nIdx], data[nIdx + 1], data[nIdx + 2], tolerance)) {
+                    mask[n] = 1; queue[tail++] = n;
+                }
+            }
+        }
+        if (cy < H - 1) {
+            const n = curr + W;
+            if (mask[n] === 0) {
+                const nIdx = n * 4;
+                if (isColorNearBg(data[nIdx], data[nIdx + 1], data[nIdx + 2], tolerance)) {
+                    mask[n] = 1; queue[tail++] = n;
+                }
+            }
+        }
+    }
+
+    // C. Card Body Protection (Safety Dilation / Erode Background Mask)
+    // Pulls back background mask by safetyMargin pixels so NOT ONE PIXEL of the card is touched
+    let finalMask = mask;
+    if (safetyMargin > 0) {
+        let curMask = mask;
+        const steps = Math.min(20, Math.max(1, safetyMargin));
+        for (let s = 0; s < steps; s++) {
+            const eroded = new Uint8Array(W * H);
+            for (let y = 1; y < H - 1; y++) {
+                const rowOffset = y * W;
+                for (let x = 1; x < W - 1; x++) {
+                    const idx = rowOffset + x;
+                    if (curMask[idx] === 1) {
+                        if (curMask[idx - 1] === 0 || curMask[idx + 1] === 0 ||
+                            curMask[idx - W] === 0 || curMask[idx + W] === 0) {
+                            eroded[idx] = 0;
+                        } else {
+                            eroded[idx] = 1;
+                        }
+                    }
+                }
+            }
+            curMask = eroded;
+        }
+        finalMask = curMask;
+    }
+
+    // D. Fill confirmed background pixels
+    for (let i = 0; i < W * H; i++) {
+        if (finalMask[i] === 1) {
+            const dIdx = i * 4;
+            if (isTransparent) {
+                data[dIdx + 3] = 0;
+            } else if (targetRgb) {
+                data[dIdx] = targetRgb.r;
+                data[dIdx + 1] = targetRgb.g;
+                data[dIdx + 2] = targetRgb.b;
+                data[dIdx + 3] = 255;
+            }
+        }
+    }
+
+    // E. Optional ISO Rounded Corners clipping
+    if (roundCorners) {
+        const radius = Math.round(Math.min(W, H) * 0.045);
+        applyCardCornerMask(data, W, H, radius, targetRgb, isTransparent);
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+}
+
+// 3. Fine Tilt Adjustment
+function adjustIdCardTilt(delta) {
+    if (!idCardCropper) return;
+    const newTilt = Math.max(-25, Math.min(25, currentFineTilt + delta));
+    const actualDelta = newTilt - currentFineTilt;
+    if (actualDelta === 0) return;
+    currentFineTilt = newTilt;
+
+    const slider = document.getElementById('idcard-tilt');
+    if (slider) slider.value = currentFineTilt;
+    const valEl = document.getElementById('idcard-tilt-val');
+    if (valEl) valEl.textContent = (currentFineTilt > 0 ? '+' : '') + currentFineTilt + '°';
+
+    idCardCropper.rotate(actualDelta);
+    debounceRenderIdCardCropPreview();
+}
+
+function resetIdCardTilt() {
+    if (!idCardCropper) return;
+    if (currentFineTilt !== 0) {
+        idCardCropper.rotate(-currentFineTilt);
+        currentFineTilt = 0;
+    }
+    const slider = document.getElementById('idcard-tilt');
+    if (slider) slider.value = 0;
+    const valEl = document.getElementById('idcard-tilt-val');
+    if (valEl) valEl.textContent = '0°';
+    debounceRenderIdCardCropPreview();
+}
+
+// 4. Auto-Detect and Snap Crop Box to Card Shape
+function autoDetectAndSnapCard() {
+    if (!idCardCropper) return;
+    const imgData = idCardCropper.getImageData();
+    if (!imgData) return;
+
+    const natW = imgData.naturalWidth;
+    const natH = imgData.naturalHeight;
+    const aspect = currentIdCardAspect || 1.586;
+    let targetW, targetH;
+
+    if (natW / natH >= aspect) {
+        targetH = Math.round(natH * 0.88);
+        targetW = Math.round(targetH * aspect);
+    } else {
+        targetW = Math.round(natW * 0.88);
+        targetH = Math.round(targetW / aspect);
+    }
+
+    const targetX = Math.round((natW - targetW) / 2);
+    const targetY = Math.round((natH - targetH) / 2);
+
+    idCardCropper.setData({
+        x: Math.max(0, targetX),
+        y: Math.max(0, targetY),
+        width: targetW,
+        height: targetH
+    });
+
+    debounceRenderIdCardCropPreview();
 }
 
 window.removeEmployeeIdCardPhoto = function() {
@@ -580,6 +861,35 @@ window.openIdCardCropperWithImage = function(imageSrc) {
 
     idCardScaleX = 1;
     currentIdCardAspect = 1.586;
+    currentFineTilt = 0;
+
+    // Reset tilt slider
+    const tiltSlider = document.getElementById('idcard-tilt');
+    if (tiltSlider) tiltSlider.value = 0;
+    const tiltVal = document.getElementById('idcard-tilt-val');
+    if (tiltVal) tiltVal.textContent = '0°';
+
+    // Reset background controls (White background default for clean ID card)
+    selectedIdCardBg = '#ffffff';
+    document.querySelectorAll('.idcard-bg-btn').forEach(b => {
+        if (b.getAttribute('data-color') === '#ffffff') b.classList.add('active');
+        else b.classList.remove('active');
+    });
+    const optWrap = document.getElementById('idcard-bg-options-wrap');
+    if (optWrap) optWrap.style.display = 'block';
+
+    const safety = document.getElementById('idcard-bg-safety');
+    if (safety) safety.value = 6;
+    const safetyVal = document.getElementById('idcard-bg-safety-val');
+    if (safetyVal) safetyVal.textContent = '+6px';
+
+    const tol = document.getElementById('idcard-bg-tolerance');
+    if (tol) tol.value = 42;
+    const tolVal = document.getElementById('idcard-bg-tol-val');
+    if (tolVal) tolVal.textContent = '42';
+
+    const roundBox = document.getElementById('idcard-round-corners');
+    if (roundBox) roundBox.checked = true;
 
     // Reset controls to ID card defaults (25% sharpen, +12 contrast for clear text)
     const sh = document.getElementById('idcard-sharpen'); if (sh) sh.value = 25;
@@ -654,10 +964,16 @@ function renderIdCardLivePreview() {
     previewCtx.clearRect(0, 0, pWidth, pHeight);
     previewCtx.drawImage(croppedCanvas, 0, 0, pWidth, pHeight);
 
+    // 1. Process Background Removal with Zero-Loss Card Protection
+    const bgTol = parseInt(document.getElementById('idcard-bg-tolerance')?.value || '42', 10);
+    const bgSafety = parseInt(document.getElementById('idcard-bg-safety')?.value || '6', 10);
+    const roundCorners = document.getElementById('idcard-round-corners')?.checked ?? true;
+    processCardBackgroundRemoval(previewCtx, pWidth, pHeight, selectedIdCardBg, bgTol, bgSafety, roundCorners);
+
+    // 2. Process Clarity & Light Enhancements
     const sharpen = parseInt(document.getElementById('idcard-sharpen')?.value || '0', 10);
     const brightness = parseInt(document.getElementById('idcard-brightness')?.value || '0', 10);
     const contrast = parseInt(document.getElementById('idcard-contrast')?.value || '0', 10);
-
     processCanvasEnhancements(previewCtx, pWidth, pHeight, brightness, contrast, sharpen);
 
     const sizeBadge = document.getElementById('idcard-crop-file-size');
@@ -735,6 +1051,28 @@ document.getElementById('idcard-rotate-right')?.addEventListener('click', () => 
     }
 });
 
+// Fine Tilt buttons & slider
+document.getElementById('idcard-tilt-minus')?.addEventListener('click', () => adjustIdCardTilt(-1));
+document.getElementById('idcard-tilt-plus')?.addEventListener('click', () => adjustIdCardTilt(1));
+document.getElementById('idcard-tilt-zero')?.addEventListener('click', resetIdCardTilt);
+
+const tiltRange = document.getElementById('idcard-tilt');
+if (tiltRange) {
+    tiltRange.addEventListener('input', (e) => {
+        if (!idCardCropper) return;
+        const newTilt = parseInt(e.target.value, 10);
+        const delta = newTilt - currentFineTilt;
+        currentFineTilt = newTilt;
+        const valEl = document.getElementById('idcard-tilt-val');
+        if (valEl) valEl.textContent = (currentFineTilt > 0 ? '+' : '') + currentFineTilt + '°';
+        idCardCropper.rotate(delta);
+        debounceRenderIdCardCropPreview();
+    });
+}
+
+// Auto-snap button
+document.getElementById('idcard-auto-snap')?.addEventListener('click', autoDetectAndSnapCard);
+
 // Flip Horizontal
 document.getElementById('idcard-flip-h')?.addEventListener('click', () => {
     if (idCardCropper) {
@@ -768,6 +1106,29 @@ document.getElementById('idcard-reset-all')?.addEventListener('click', () => {
         idCardCropper.setAspectRatio(1.586);
         updateIdCardRatioButtons('idcard-ratio-card');
     }
+    resetIdCardTilt();
+
+    selectedIdCardBg = '#ffffff';
+    document.querySelectorAll('.idcard-bg-btn').forEach(b => {
+        if (b.getAttribute('data-color') === '#ffffff') b.classList.add('active');
+        else b.classList.remove('active');
+    });
+    const optWrap = document.getElementById('idcard-bg-options-wrap');
+    if (optWrap) optWrap.style.display = 'block';
+
+    const safety = document.getElementById('idcard-bg-safety');
+    if (safety) safety.value = 6;
+    const safetyVal = document.getElementById('idcard-bg-safety-val');
+    if (safetyVal) safetyVal.textContent = '+6px';
+
+    const tol = document.getElementById('idcard-bg-tolerance');
+    if (tol) tol.value = 42;
+    const tolVal = document.getElementById('idcard-bg-tol-val');
+    if (tolVal) tolVal.textContent = '42';
+
+    const roundBox = document.getElementById('idcard-round-corners');
+    if (roundBox) roundBox.checked = true;
+
     const sh = document.getElementById('idcard-sharpen'); if (sh) sh.value = 25;
     const shV = document.getElementById('idcard-sharpen-val'); if (shV) shV.textContent = '25%';
     const br = document.getElementById('idcard-brightness'); if (br) br.value = 0;
@@ -799,6 +1160,47 @@ document.getElementById('idcard-ratio-portrait')?.addEventListener('click', () =
     debounceRenderIdCardCropPreview();
 });
 
+// Background Selection Chips
+document.querySelectorAll('.idcard-bg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.idcard-bg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedIdCardBg = btn.getAttribute('data-color');
+        const optWrap = document.getElementById('idcard-bg-options-wrap');
+        if (optWrap) {
+            optWrap.style.display = (selectedIdCardBg === 'original') ? 'none' : 'block';
+        }
+        debounceRenderIdCardCropPreview();
+    });
+});
+
+document.getElementById('idcard-bg-custom')?.addEventListener('input', (e) => {
+    document.querySelectorAll('.idcard-bg-btn').forEach(b => b.classList.remove('active'));
+    selectedIdCardBg = e.target.value;
+    const optWrap = document.getElementById('idcard-bg-options-wrap');
+    if (optWrap) optWrap.style.display = 'block';
+    debounceRenderIdCardCropPreview();
+});
+
+// Card Safety Margin slider
+document.getElementById('idcard-bg-safety')?.addEventListener('input', (e) => {
+    const valEl = document.getElementById('idcard-bg-safety-val');
+    if (valEl) valEl.textContent = '+' + e.target.value + 'px';
+    debounceRenderIdCardCropPreview();
+});
+
+// Background Tolerance slider
+document.getElementById('idcard-bg-tolerance')?.addEventListener('input', (e) => {
+    const valEl = document.getElementById('idcard-bg-tol-val');
+    if (valEl) valEl.textContent = e.target.value;
+    debounceRenderIdCardCropPreview();
+});
+
+// Rounded corners toggle
+document.getElementById('idcard-round-corners')?.addEventListener('change', () => {
+    debounceRenderIdCardCropPreview();
+});
+
 // Auto-Enhance Button (✨)
 document.getElementById('btn-idcard-auto-enhance')?.addEventListener('click', () => {
     const sh = document.getElementById('idcard-sharpen'); if (sh) sh.value = 45;
@@ -810,7 +1212,7 @@ document.getElementById('btn-idcard-auto-enhance')?.addEventListener('click', ()
     debounceRenderIdCardCropPreview();
 });
 
-// Sliders listener
+// Clarity Sliders listener
 ['idcard-sharpen', 'idcard-brightness', 'idcard-contrast'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
@@ -854,15 +1256,31 @@ if (btnIdCardSave) {
             }
 
             const highResCtx = highResCanvas.getContext('2d');
+
+            // 1. Process Background Removal with Zero-Loss Card Protection
+            const bgTol = parseInt(document.getElementById('idcard-bg-tolerance')?.value || '42', 10);
+            const bgSafety = parseInt(document.getElementById('idcard-bg-safety')?.value || '6', 10);
+            const roundCorners = document.getElementById('idcard-round-corners')?.checked ?? true;
+            processCardBackgroundRemoval(highResCtx, targetWidth, targetHeight, selectedIdCardBg, bgTol, bgSafety, roundCorners);
+
+            // 2. Process Clarity & Light Enhancements
             const sharpen = parseInt(document.getElementById('idcard-sharpen')?.value || '0', 10);
             const brightness = parseInt(document.getElementById('idcard-brightness')?.value || '0', 10);
             const contrast = parseInt(document.getElementById('idcard-contrast')?.value || '0', 10);
-
             processCanvasEnhancements(highResCtx, targetWidth, targetHeight, brightness, contrast, sharpen);
 
-            let finalDataUrl = highResCanvas.toDataURL('image/webp', 0.88);
-            if (!finalDataUrl || finalDataUrl.length < 100 || !finalDataUrl.startsWith('data:image/webp')) {
-                finalDataUrl = highResCanvas.toDataURL('image/jpeg', 0.88);
+            // 3. Export as high-res WebP (or PNG for transparent)
+            let finalDataUrl;
+            if (selectedIdCardBg === 'transparent') {
+                finalDataUrl = highResCanvas.toDataURL('image/webp', 0.90);
+                if (!finalDataUrl || !finalDataUrl.startsWith('data:image/webp')) {
+                    finalDataUrl = highResCanvas.toDataURL('image/png');
+                }
+            } else {
+                finalDataUrl = highResCanvas.toDataURL('image/webp', 0.88);
+                if (!finalDataUrl || !finalDataUrl.startsWith('data:image/webp')) {
+                    finalDataUrl = highResCanvas.toDataURL('image/jpeg', 0.88);
+                }
             }
 
             // Put into preview and form state

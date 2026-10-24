@@ -1072,22 +1072,46 @@
                                 </div>
                             </div>
 
-                            <!-- Toolbar 2: Aspect Ratio Buttons -->
-                            <div class="d-flex flex-wrap align-items-center gap-1 mt-2">
-                                <span class="small fw-bold text-muted me-1" style="font-size: 0.76rem;"><i class="bi bi-aspect-ratio me-1"></i>ទ្រង់ទ្រាយកាត់៖</span>
-                                <button type="button" class="btn btn-sm btn-primary active fw-bold px-2 py-1" id="idcard-ratio-card" style="font-size: 0.78rem;">
-                                    <i class="bi bi-card-heading me-1"></i>💳 កាតផ្ដេក (Landscape 1.58:1)
+                            <!-- Toolbar 1b: Fine-Tune Tilt Straightening -->
+                            <div class="d-flex align-items-center justify-content-between gap-1 mt-1 p-1 bg-light rounded border">
+                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold py-0 px-2" id="idcard-tilt-minus" title="បង្វិលតម្រង់ -1°">
+                                    <i class="bi bi-arrow-counterclockwise"></i> -1°
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary px-2 py-1" id="idcard-ratio-free" style="font-size: 0.78rem;">
-                                    <i class="bi bi-crop me-1"></i>📐 កាត់សេរី (Free)
+                                <div class="d-flex align-items-center flex-grow-1 mx-2">
+                                    <small class="fw-bold text-dark me-2 text-nowrap" style="font-size: 0.72rem;">
+                                        <i class="bi bi-compass me-1 text-primary"></i>តម្រង់មុំកាត (Tilt): <span id="idcard-tilt-val" class="text-primary fw-bold">0°</span>
+                                    </small>
+                                    <input type="range" class="form-range flex-grow-1" id="idcard-tilt" min="-25" max="25" value="0" style="height: 4px;">
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-dark fw-bold py-0 px-2" id="idcard-tilt-plus" title="បង្វិលតម្រង់ +1°">
+                                    +1° <i class="bi bi-arrow-clockwise"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary px-2 py-1" id="idcard-ratio-portrait" style="font-size: 0.78rem;">
-                                    <i class="bi bi-phone me-1"></i>📱 កាតបញ្ឈរ (Portrait)
+                                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" id="idcard-tilt-zero" title="តម្រង់ស្មើ 0°">
+                                    0°
+                                </button>
+                            </div>
+
+                            <!-- Toolbar 2: Aspect Ratio Buttons & Auto-Snap -->
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-1 mt-2">
+                                <div class="d-flex flex-wrap align-items-center gap-1">
+                                    <span class="small fw-bold text-muted me-1" style="font-size: 0.74rem;"><i class="bi bi-aspect-ratio me-1"></i>ទ្រង់ទ្រាយ៖</span>
+                                    <button type="button" class="btn btn-sm btn-primary active fw-bold px-2 py-1" id="idcard-ratio-card" style="font-size: 0.76rem;">
+                                        <i class="bi bi-card-heading me-1"></i>💳 កាតផ្ដេក (1.58:1)
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary px-2 py-1" id="idcard-ratio-free" style="font-size: 0.76rem;">
+                                        <i class="bi bi-crop me-1"></i>📐 សេរី (Free)
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary px-2 py-1" id="idcard-ratio-portrait" style="font-size: 0.76rem;">
+                                        <i class="bi bi-phone me-1"></i>📱 កាតបញ្ឈរ
+                                    </button>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-success fw-bold px-2 py-1" id="idcard-auto-snap" title="ស្វែងរក និងតម្រឹមតាមរាងកាតស្វ័យប្រវត្តិ" style="font-size: 0.76rem;">
+                                    <i class="bi bi-magic me-1"></i>🎯 តម្រឹមតាមកាត
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Right Column: Live Preview + Clarity / Sharpening Controls -->
+                        <!-- Right Column: Live Preview + Background Removal + Clarity Controls -->
                         <div class="col-lg-5 d-flex flex-column">
                             <!-- Live Preview Card -->
                             <div class="card border bg-white shadow-sm mb-2 text-center p-2">
@@ -1105,6 +1129,79 @@
                                 </div>
                                 <div class="small text-muted mt-1" style="font-size: 0.76rem;">
                                     ទំហំរូបភាព៖ <b id="idcard-crop-file-size" class="text-success fw-bold">~85 KB</b> (ច្បាស់ម៉ត់ &amp; អាច Zoom មើលអក្សរបាន)
+                                </div>
+                            </div>
+
+                            <!-- Card Background Removal & Protection Card -->
+                            <div class="card border bg-light shadow-sm p-2 mb-2">
+                                <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom">
+                                    <label class="form-label fw-bold mb-0 text-dark small">
+                                        <i class="bi bi-eraser-fill text-danger me-1"></i>លុប Background រក្សាទម្រង់កាត
+                                    </label>
+                                    <span class="badge bg-success-subtle text-success border border-success px-2 py-0" style="font-size: 0.68rem;">
+                                        <i class="bi bi-shield-check me-1"></i>រក្សាសាច់កាត 100%
+                                    </span>
+                                </div>
+
+                                <!-- Background Color Selection Chips -->
+                                <div class="mb-2">
+                                    <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">ជ្រើសរើសផ្ទៃខាងក្រៅកាត៖</small>
+                                    <div class="d-flex flex-wrap align-items-center gap-1" id="idcard-bg-chips">
+                                        <button type="button" class="btn btn-sm btn-outline-dark idcard-bg-btn px-2 py-1" data-color="original">
+                                            ដើម
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary idcard-bg-btn active px-2 py-1 fw-bold" data-color="#ffffff" style="border-left: 5px solid #ffffff; background-color: rgba(255,255,255,0.7);">
+                                            🤍 ស (White)
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary idcard-bg-btn px-2 py-1" data-color="transparent" style="border-left: 5px dashed #6c757d;">
+                                            ✨ ថ្លា (No BG)
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary idcard-bg-btn px-2 py-1" data-color="#f8f9fa" style="border-left: 5px solid #ced4da;">
+                                            ⚪ ប្រផេះ
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info idcard-bg-btn px-2 py-1" data-color="#e7f1ff" style="border-left: 5px solid #0dcaf0;">
+                                            🔵 ខៀវ
+                                        </button>
+                                        <label class="btn btn-sm btn-outline-secondary px-2 py-1 mb-0 d-flex align-items-center" style="cursor: pointer;" title="ជ្រើសពណ៌តាមចិត្ត">
+                                            <input type="color" id="idcard-bg-custom" value="#ffffff" class="p-0 border-0" style="width: 20px; height: 18px; cursor: pointer; background: transparent;">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div id="idcard-bg-options-wrap">
+                                    <!-- Card Safety Margin Slider (Guarantees zero card cut-off) -->
+                                    <div class="mb-2 p-1 rounded bg-white border">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-success fw-bold" style="font-size: 0.72rem;">
+                                                <i class="bi bi-shield-fill-check me-1"></i>រឹមសុវត្ថិភាពសាច់កាត (Card Safety Margin):
+                                            </small>
+                                            <small id="idcard-bg-safety-val" class="fw-bold text-success" style="font-size: 0.72rem;">+6px</small>
+                                        </div>
+                                        <input type="range" class="form-range" id="idcard-bg-safety" min="0" max="20" value="6" style="height: 5px;">
+                                        <div class="text-muted" style="font-size: 0.65rem;">
+                                            <i class="bi bi-check2 me-1 text-success"></i>ការពារ 100% មិនឱ្យដាច់សាច់កាត គែម ឬអក្សរសូម្បីតែបន្តិច (Safe Buffer)
+                                        </div>
+                                    </div>
+
+                                    <!-- Background Tolerance Slider -->
+                                    <div class="mb-1">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-dark fw-bold" style="font-size: 0.72rem;">
+                                                <i class="bi bi-sliders me-1 text-primary"></i>កម្រិតលុបផ្ទៃតុ (Background Tolerance):
+                                            </small>
+                                            <small id="idcard-bg-tol-val" class="fw-bold text-primary" style="font-size: 0.72rem;">42</small>
+                                        </div>
+                                        <input type="range" class="form-range" id="idcard-bg-tolerance" min="15" max="80" value="42" style="height: 4px;">
+                                        <div class="text-muted" style="font-size: 0.65rem;">សារ៉េដើម្បីលុបផ្ទៃតុ ឈើ ក្រណាត់ ឬផ្ទៃខាងក្រៅឱ្យជ្រះស្អាត</div>
+                                    </div>
+
+                                    <!-- Rounded Corners Toggle -->
+                                    <div class="form-check form-switch mt-1">
+                                        <input class="form-check-input" type="checkbox" id="idcard-round-corners" checked style="cursor: pointer;">
+                                        <label class="form-check-label fw-bold text-dark" for="idcard-round-corners" style="font-size: 0.72rem; cursor: pointer;">
+                                            <i class="bi bi-aspect-ratio me-1 text-info"></i>កាត់រាងជ្រុងមូលកាតស្តង់ដារ ISO (Rounded Corners)
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1191,7 +1288,7 @@
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792742000000"></script>
+    <script type="module" src="src/js/main.js?v=1792743000000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">
