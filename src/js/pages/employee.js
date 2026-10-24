@@ -855,34 +855,308 @@ function resetIdCardTilt() {
     debounceRenderIdCardCropPreview();
 }
 
-// 4. Auto-Detect and Snap Crop Box to Card Shape
-function autoDetectAndSnapCard() {
+// 4. Smart Computer-Vision Auto-Detect Card Bounding Box
+function detectCardBoundingBox(imageEl) {
+    if (!imageEl || !idCardCropper) return null;
+
+    try {
+        const imgData = idCardCropper.getImageData();
+        if (!imgData) return null;
+
+        const rot = (imgData.rotate || 0) % 360;
+        const isSwapped = (rot === 90 || rot === 270 || rot === -90 || rot === -270);
+
+        const baseW = imgData.naturalWidth;
+        const baseH = imgData.naturalHeight;
+        const effW = isSwapped ? baseH : baseW;
+        const effH = isSwapped ? baseW : baseH;
+
+        if (!effW || !effH || effW < 60 || effH < 60) return null;
+
+        // Downscale to max 320px for instantaneous analysis (<5ms) and noise suppression
+        const maxDim = 320;
+        let sw, sh;
+        if (effW >= effH) {
+            sw = maxDim;
+            sh = Math.max(30, Math.round(maxDim * (effH / effW)));
+        } else {
+            sh = maxDim;
+            sw = Math.max(30, Math.round(maxDim * (effW / effH)));
+        }
+
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = sw;
+        offCanvas.height = sh;
+        const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+
+        // Draw image with current rotation and flip applied
+        offCtx.save();
+        offCtx.translate(sw / 2, sh / 2);
+        if (rot !== 0) {
+            offCtx.rotate((rot * Math.PI) / 180);
+        }
+        if (idCardScaleX && idCardScaleX < 0) {
+            offCtx.scale(-1, 1);
+        }
+        if (isSwapped) {
+            offCtx.drawImage(imageEl, -sh / 2, -sw / 2, sh, sw);
+        } else {
+            offCtx.drawImage(imageEl, -sw / 2, -sh / 2, sw, sh);
+        }
+        offCtx.restore();
+
+        const imgBytes = offCtx.getImageData(0, 0, sw, sh);
+        const data = imgBytes.data;
+
+        // 1. Sample Background colors along 4 outer borders (margins)
+        let bgR = 0, bgG = 0, bgB = 0, bgSamples = 0;
+        const stepX = Math.max(1, Math.floor(sw / 20));
+        const stepY = Math.max(1, Math.floor(sh / 20));
+
+        // Sample top & bottom rows
+        for (let x = 0; x < sw; x += stepX) {
+            let idx = x * 4;
+            bgR += data[idx]; bgG += data[idx + 1]; bgB += data[idx + 2];
+            bgSamples++;
+
+            idx = ((sh - 1) * sw + x) * 4;
+            bgR += data[idx]; bgG += data[idx + 1]; bgB += data[idx + 2];
+            bgSamples++;
+        }
+
+        // Sample left & right columns
+        for (let y = 0; y < sh; y += stepY) {
+            let idx = (y * sw) * 4;
+            bgR += data[idx]; bgG += data[idx + 1]; bgB += data[idx + 2];
+            bgSamples++;
+
+            idx = (y * sw + (sw - 1)) * 4;
+            bgR += data[idx]; bgG += data[idx + 1]; bgB += data[idx + 2];
+            bgSamples++;
+        }
+
+        const avgBgR = bgR / Math.max(1, bgSamples);
+        const avgBgG = bgG / Math.max(1, bgSamples);
+        const avgBgB = bgB / Math.max(1, bgSamples);
+
+        // 2. Measure Row & Column Contrast / Edge Energy
+        const startX = Math.floor(sw * 0.12);
+        const endX = Math.floor(sw * 0.88);
+        const startY = Math.floor(sh * 0.12);
+        const endY = Math.floor(sh * 0.88);
+
+        const rowEnergy = new Float32Array(sh);
+        const colEnergy = new Float32Array(sw);
+        let totalEnergy = 0, countEnergy = 0;
+
+        for (let y = 1; y < sh - 1; y++) {
+            let rSum = 0, rCount = 0;
+            const rOffset = y * sw;
+            for (let x = startX; x <= endX; x++) {
+                const idx = (rOffset + x) * 4;
+                const dR = data[idx] - avgBgR;
+                const dG = data[idx + 1] - avgBgG;
+                const dB = data[idx + 2] - avgBgB;
+                const colorDiff = Math.sqrt(dR * dR + dG * dG + dB * dB);
+
+                // Quick edge gradient
+                const upIdx = ((y - 1) * sw + x) * 4;
+                const dnIdx = ((y + 1) * sw + x) * 4;
+                const gradY = Math.abs(data[dnIdx] - data[upIdx]) + Math.abs(data[dnIdx + 1] - data[upIdx + 1]);
+                const leftIdx = (rOffset + (x - 1)) * 4;
+                const rtIdx = (rOffset + (x + 1)) * 4;
+                const gradX = Math.abs(data[rtIdx] - data[leftIdx]) + Math.abs(data[rtIdx + 1] - data[leftIdx + 1]);
+
+                const energy = colorDiff * 0.75 + (gradX + gradY) * 0.25;
+                rSum += energy;
+                rCount++;
+                totalEnergy += energy;
+                countEnergy++;
+            }
+            rowEnergy[y] = rCount > 0 ? rSum / rCount : 0;
+        }
+
+        for (let x = 1; x < sw - 1; x++) {
+            let cSum = 0, cCount = 0;
+            for (let y = startY; y <= endY; y++) {
+                const idx = (y * sw + x) * 4;
+                const dR = data[idx] - avgBgR;
+                const dG = data[idx + 1] - avgBgG;
+                const dB = data[idx + 2] - avgBgB;
+                const colorDiff = Math.sqrt(dR * dR + dG * dG + dB * dB);
+
+                const leftIdx = (y * sw + (x - 1)) * 4;
+                const rtIdx = (y * sw + (x + 1)) * 4;
+                const gradX = Math.abs(data[rtIdx] - data[leftIdx]) + Math.abs(data[rtIdx + 1] - data[leftIdx + 1]);
+                const upIdx = ((y - 1) * sw + x) * 4;
+                const dnIdx = ((y + 1) * sw + x) * 4;
+                const gradY = Math.abs(data[dnIdx] - data[upIdx]) + Math.abs(data[dnIdx + 1] - data[upIdx + 1]);
+
+                const energy = colorDiff * 0.75 + (gradX + gradY) * 0.25;
+                cSum += energy;
+                cCount++;
+            }
+            colEnergy[x] = cCount > 0 ? cSum / cCount : 0;
+        }
+
+        const meanE = countEnergy > 0 ? totalEnergy / countEnergy : 40;
+        const thresh = Math.max(28, meanE * 0.60);
+
+        // Find Y range
+        let minY = 0, maxY = sh - 1;
+        for (let y = 1; y < sh - 1; y++) {
+            if (rowEnergy[y] >= thresh) { minY = y; break; }
+        }
+        for (let y = sh - 2; y >= 1; y--) {
+            if (rowEnergy[y] >= thresh) { maxY = y; break; }
+        }
+
+        // Find X range
+        let minX = 0, maxX = sw - 1;
+        for (let x = 1; x < sw - 1; x++) {
+            if (colEnergy[x] >= thresh) { minX = x; break; }
+        }
+        for (let x = sw - 2; x >= 1; x--) {
+            if (colEnergy[x] >= thresh) { maxX = x; break; }
+        }
+
+        const detW = maxX - minX;
+        const detH = maxY - minY;
+
+        // If card occupies at least 22% of image width and height
+        if (detW < sw * 0.22 || detH < sh * 0.22) {
+            return null;
+        }
+
+        const scaleX = effW / sw;
+        const scaleY = effH / sh;
+
+        // 1.5% safety padding around detected boundaries so zero content is clipped
+        const padX = detW * 0.015;
+        const padY = detH * 0.015;
+
+        const finalX = Math.max(0, Math.floor((minX - padX) * scaleX));
+        const finalY = Math.max(0, Math.floor((minY - padY) * scaleY));
+        const finalW = Math.min(effW - finalX, Math.ceil((detW + padX * 2) * scaleX));
+        const finalH = Math.min(effH - finalY, Math.ceil((detH + padY * 2) * scaleY));
+
+        const isLandscape = finalW >= finalH;
+
+        return {
+            x: finalX,
+            y: finalY,
+            width: finalW,
+            height: finalH,
+            effW: effW,
+            effH: effH,
+            isLandscape: isLandscape
+        };
+    } catch (err) {
+        console.warn('Auto card boundary detection failed:', err);
+        return null;
+    }
+}
+
+function autoDetectAndSnapCard(silent = false) {
     if (!idCardCropper) return;
+    const imageEl = document.getElementById('idcard-cropper-image');
     const imgData = idCardCropper.getImageData();
     if (!imgData) return;
 
-    const natW = imgData.naturalWidth;
-    const natH = imgData.naturalHeight;
-    const aspect = currentIdCardAspect || 1.586;
-    let targetW, targetH;
+    const rot = (imgData.rotate || 0) % 360;
+    const isSwapped = (rot === 90 || rot === 270 || rot === -90 || rot === -270);
+    const effW = isSwapped ? imgData.naturalHeight : imgData.naturalWidth;
+    const effH = isSwapped ? imgData.naturalWidth : imgData.naturalHeight;
 
-    if (natW / natH >= aspect) {
-        targetH = Math.round(natH * 0.88);
-        targetW = Math.round(targetH * aspect);
+    const detected = detectCardBoundingBox(imageEl);
+
+    if (detected && detected.width > 50 && detected.height > 50) {
+        // Set ratio according to detected card orientation
+        if (detected.isLandscape) {
+            currentIdCardAspect = 1.586;
+            idCardCropper.setAspectRatio(1.586);
+            updateIdCardRatioButtons('idcard-ratio-card');
+        } else {
+            currentIdCardAspect = 1 / 1.586;
+            idCardCropper.setAspectRatio(currentIdCardAspect);
+            updateIdCardRatioButtons('idcard-ratio-portrait');
+        }
+
+        const aspect = currentIdCardAspect;
+        let targetW = detected.width;
+        let targetH = Math.round(targetW / aspect);
+
+        if (targetH > detected.height * 1.15) {
+            targetH = detected.height;
+            targetW = Math.round(targetH * aspect);
+        }
+
+        let targetX = detected.x + Math.round((detected.width - targetW) / 2);
+        let targetY = detected.y + Math.round((detected.height - targetH) / 2);
+
+        // Clamp inside bounds
+        if (targetX < 0) targetX = 0;
+        if (targetY < 0) targetY = 0;
+        if (targetX + targetW > effW) {
+            targetW = effW - targetX;
+            targetH = Math.round(targetW / aspect);
+        }
+        if (targetY + targetH > effH) {
+            targetH = effH - targetY;
+            targetW = Math.round(targetH * aspect);
+        }
+
+        idCardCropper.setData({
+            x: Math.max(0, targetX),
+            y: Math.max(0, targetY),
+            width: targetW,
+            height: targetH
+        });
+
+        if (!silent && typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '🎯 បាន Auto ចាប់យកតែទម្រង់កាតស្វ័យប្រវត្តិ!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
     } else {
-        targetW = Math.round(natW * 0.88);
-        targetH = Math.round(targetW / aspect);
+        // Fallback: 88% centered crop box
+        const aspect = currentIdCardAspect || 1.586;
+        let targetW, targetH;
+
+        if (effW / effH >= aspect) {
+            targetH = Math.round(effH * 0.88);
+            targetW = Math.round(targetH * aspect);
+        } else {
+            targetW = Math.round(effW * 0.88);
+            targetH = Math.round(targetW / aspect);
+        }
+
+        const targetX = Math.round((effW - targetW) / 2);
+        const targetY = Math.round((effH - targetH) / 2);
+
+        idCardCropper.setData({
+            x: Math.max(0, targetX),
+            y: Math.max(0, targetY),
+            width: targetW,
+            height: targetH
+        });
+
+        if (!silent && typeof Swal !== 'undefined') {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: 'បានតម្រឹមតាមទំហំកាតស្តង់ដារ',
+                timer: 1800,
+                showConfirmButton: false
+            });
+        }
     }
-
-    const targetX = Math.round((natW - targetW) / 2);
-    const targetY = Math.round((natH - targetH) / 2);
-
-    idCardCropper.setData({
-        x: Math.max(0, targetX),
-        y: Math.max(0, targetY),
-        width: targetW,
-        height: targetH
-    });
 
     debounceRenderIdCardCropPreview();
 }
@@ -1196,9 +1470,11 @@ if (idCardCropperModalEl) {
                 if (canvasData && imgData && imgData.naturalWidth) {
                     initialZoomRatio = canvasData.width / imgData.naturalWidth;
                 }
+                // Automatic computer-vision card snap upon upload
+                autoDetectAndSnapCard(true);
             }
             renderIdCardLivePreview();
-        }, 150);
+        }, 180);
     });
 
     idCardCropperModalEl.addEventListener('hidden.bs.modal', () => {
@@ -1375,7 +1651,9 @@ document.getElementById('idcard-persp-reset')?.addEventListener('click', () => {
 });
 
 // Auto-snap button
-document.getElementById('idcard-auto-snap')?.addEventListener('click', autoDetectAndSnapCard);
+document.getElementById('idcard-auto-snap')?.addEventListener('click', () => {
+    autoDetectAndSnapCard(false);
+});
 
 // Flip Horizontal
 document.getElementById('idcard-flip-h')?.addEventListener('click', () => {
