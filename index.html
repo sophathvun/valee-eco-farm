@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="src/css/income.css?v=1792674000">
     <link rel="stylesheet" href="src/css/expense.css?v=1792674000">
     <link rel="stylesheet" href="src/css/reports.css?v=1792674000">
-    <link rel="stylesheet" href="src/css/employee.css?v=1792749000000">
+    <link rel="stylesheet" href="src/css/employee.css?v=1792820000000">
     <link rel="stylesheet" href="src/css/attendance.css?v=1792697000000">
     <link rel="stylesheet" href="src/css/attendance-report.css?v=1792697000000">
     <link rel="stylesheet" href="src/css/payroll.css?v=1792674000">
@@ -326,12 +326,27 @@
     </div>
     <script>
     window.onerror = function(msg, url, lineNo, columnNo, error) {
+        const msgStr = (msg || '').toString().toLowerCase();
+        // Ignore benign non-critical errors (ServiceWorker, ResizeObserver)
+        if (msgStr.includes('resizeobserver') || msgStr.includes('serviceworker') || msgStr.includes('service worker')) {
+            console.debug('Suppressed benign window error:', msg);
+            return true;
+        }
         document.getElementById('error-box').style.display = 'block';
         document.getElementById('error-box').innerHTML += '<p>Error: ' + msg + '<br>URL: ' + url + ' (Line: ' + lineNo + ')</p>';
     };
     window.addEventListener('unhandledrejection', function(event) {
-        document.getElementById('error-box').style.display = 'block';
         const reason = event.reason;
+        const msg = (reason ? (reason.message || (typeof reason === 'string' ? reason : reason.toString())) : '').toLowerCase();
+
+        // Suppress benign errors like ServiceWorker registration/update failures or ResizeObserver
+        if (msg.includes('serviceworker') || msg.includes('service worker') || msg.includes('failed to update a serviceworker') || msg.includes('resizeobserver')) {
+            console.debug('Suppressed benign promise rejection:', reason);
+            event.preventDefault();
+            return;
+        }
+
+        document.getElementById('error-box').style.display = 'block';
         const stack = reason && reason.stack ? '<pre style="font-size:11px; white-space:pre-wrap; margin-top:5px; background:rgba(0,0,0,0.25); padding:6px; border-radius:4px;">' + reason.stack + '</pre>' : '';
         document.getElementById('error-box').innerHTML += '<p>Promise Rejection: ' + (reason ? (reason.message || reason.toString()) : 'Unknown') + stack + '</p>';
     });
@@ -1353,12 +1368,20 @@
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js?v=1792655500000').then(reg => {
-                reg.update();
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => {
+                        if (reg) {
+                            reg.update().catch(err => console.debug('SW update check skipped:', err));
+                        }
+                    })
+                    .catch(err => {
+                        console.debug('SW registration skipped:', err);
+                    });
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792749000000"></script>
+    <script type="module" src="src/js/main.js?v=1792820000000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">
