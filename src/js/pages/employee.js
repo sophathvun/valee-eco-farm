@@ -651,7 +651,7 @@ function applyCardCornerMask(data, W, H, radius, targetRgb, isTransparent) {
 }
 
 // 2. Intelligent Card Background Removal with Strict Card Body Protection
-function processCardBackgroundRemoval(ctx, width, height, bgColor, tolerance = 42, safetyMargin = 6, roundCorners = true) {
+function processCardBackgroundRemoval(ctx, width, height, bgColor, tolerance = 30, safetyMargin = 6, roundCorners = true) {
     if (!bgColor || bgColor === 'original') return;
 
     const imgData = ctx.getImageData(0, 0, width, height);
@@ -662,26 +662,65 @@ function processCardBackgroundRemoval(ctx, width, height, bgColor, tolerance = 4
     const targetRgb = hexToRgb(bgColor);
     const isTransparent = (bgColor === 'transparent');
 
-    // A. Sample perimeter background reference points from corners and edges
-    const sampleOffset = Math.max(2, Math.min(10, Math.floor(Math.min(W, H) * 0.02)));
-    const sampleCoords = [
-        { x: sampleOffset, y: sampleOffset },
-        { x: W - 1 - sampleOffset, y: sampleOffset },
-        { x: sampleOffset, y: H - 1 - sampleOffset },
-        { x: W - 1 - sampleOffset, y: H - 1 - sampleOffset },
-        { x: Math.floor(W / 2), y: 1 },
-        { x: Math.floor(W / 2), y: H - 2 },
-        { x: 1, y: Math.floor(H / 2) },
-        { x: W - 2, y: Math.floor(H / 2) }
+    // 1. INVIOLABLE CARD CORE PROTECTION:
+    // Any pixel deeper than maxBorderDepth from outer edges is 100% GUARANTEED TO BE THE CARD!
+    // Background slivers (from slight rotation or outer table) can only exist right at extreme edges.
+    const maxBorderDepthX = Math.max(4, Math.min(28, Math.floor(W * 0.07)));
+    const maxBorderDepthY = Math.max(4, Math.min(28, Math.floor(H * 0.07)));
+
+    // 2. Sample Card Body reference colors across the central 60% of the card
+    const cardSamples = [];
+    const sampleGridX = [0.30, 0.45, 0.55, 0.70];
+    const sampleGridY = [0.30, 0.45, 0.55, 0.70];
+    sampleGridY.forEach(sy => {
+        sampleGridX.forEach(sx => {
+            const px = Math.floor(W * sx);
+            const py = Math.floor(H * sy);
+            const idx = (py * W + px) * 4;
+            cardSamples.push({ r: data[idx], g: data[idx + 1], b: data[idx + 2] });
+        });
+    });
+
+    function isColorCard(r, g, b) {
+        for (let i = 0; i < cardSamples.length; i++) {
+            const cs = cardSamples[i];
+            const dr = r - cs.r;
+            const dg = g - cs.g;
+            const db = b - cs.b;
+            const dist = Math.sqrt(0.3 * dr * dr + 0.59 * dg * dg + 0.11 * db * db);
+            if (dist < 32) return true; // Matches card interior color
+        }
+        return false;
+    }
+
+    // 3. Sample TRUE background only from the 4 extreme outer corners
+    // BUT only if they DO NOT match the card colors!
+    const cornerPts = [
+        { x: 0, y: 0 },
+        { x: W - 1, y: 0 },
+        { x: 0, y: H - 1 },
+        { x: W - 1, y: H - 1 },
+        { x: 1, y: 1 },
+        { x: W - 2, y: 1 },
+        { x: 1, y: H - 2 },
+        { x: W - 2, y: H - 2 }
     ];
 
     const bgSamples = [];
-    sampleCoords.forEach(pt => {
+    cornerPts.forEach(pt => {
         const idx = (pt.y * W + pt.x) * 4;
-        bgSamples.push({ r: data[idx], g: data[idx + 1], b: data[idx + 2] });
+        const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+        if (!isColorCard(r, g, b)) {
+            bgSamples.push({ r, g, b });
+        }
     });
 
+    const hasDetectedBg = bgSamples.length > 0;
+
     function isColorNearBg(r, g, b, tol) {
+        if (!hasDetectedBg) return false;
+        if (isColorCard(r, g, b)) return false; // Absolute barrier: card color is NEVER background!
+
         for (let i = 0; i < bgSamples.length; i++) {
             const s = bgSamples[i];
             const dr = r - s.r;
@@ -693,89 +732,108 @@ function processCardBackgroundRemoval(ctx, width, height, bgColor, tolerance = 4
         return false;
     }
 
-    // B. Flood-fill from outer perimeter inward
+    // 4. Directional Boundary Scanners from 4 edges (stops strictly at card edge!)
     const mask = new Uint8Array(W * H);
-    const queue = new Int32Array(W * H);
-    let head = 0;
-    let tail = 0;
 
-    // Seed top and bottom borders
-    for (let x = 0; x < W; x++) {
-        const idxTop = x * 4;
-        if (isColorNearBg(data[idxTop], data[idxTop + 1], data[idxTop + 2], tolerance * 1.3)) {
-            mask[x] = 1;
-            queue[tail++] = x;
+    if (hasDetectedBg) {
+        const effectiveTol = Math.min(50, tolerance);
+
+        // Scan Top downward
+        for (let x = 0; x < W; x++) {
+            for (let y = 0; y < maxBorderDepthY; y++) {
+                const idx = (y * W + x) * 4;
+                const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+
+                if (y < maxBorderDepthY - 1) {
+                    const nIdx = ((y + 1) * W + x) * 4;
+                    const stepDiff = Math.abs(data[nIdx] - r) + Math.abs(data[nIdx + 1] - g) + Math.abs(data[nIdx + 2] - b);
+                    if (stepDiff > 42) {
+                        if (isColorNearBg(r, g, b, effectiveTol)) mask[y * W + x] = 1;
+                        break; // Stop at sharp card boundary
+                    }
+                }
+
+                if (isColorNearBg(r, g, b, effectiveTol)) {
+                    mask[y * W + x] = 1;
+                } else {
+                    break; // Hit card body -> STOP immediately!
+                }
+            }
         }
-        const posBtm = (H - 1) * W + x;
-        const idxBtm = posBtm * 4;
-        if (isColorNearBg(data[idxBtm], data[idxBtm + 1], data[idxBtm + 2], tolerance * 1.3)) {
-            mask[posBtm] = 1;
-            queue[tail++] = posBtm;
+
+        // Scan Bottom upward
+        for (let x = 0; x < W; x++) {
+            for (let d = 0; d < maxBorderDepthY; d++) {
+                const y = H - 1 - d;
+                const idx = (y * W + x) * 4;
+                const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+
+                if (d < maxBorderDepthY - 1) {
+                    const nIdx = ((y - 1) * W + x) * 4;
+                    const stepDiff = Math.abs(data[nIdx] - r) + Math.abs(data[nIdx + 1] - g) + Math.abs(data[nIdx + 2] - b);
+                    if (stepDiff > 42) {
+                        if (isColorNearBg(r, g, b, effectiveTol)) mask[y * W + x] = 1;
+                        break;
+                    }
+                }
+
+                if (isColorNearBg(r, g, b, effectiveTol)) {
+                    mask[y * W + x] = 1;
+                } else {
+                    break; // Hit card body -> STOP!
+                }
+            }
+        }
+
+        // Scan Left rightward
+        for (let y = 0; y < H; y++) {
+            for (let x = 0; x < maxBorderDepthX; x++) {
+                const idx = (y * W + x) * 4;
+                const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+
+                if (x < maxBorderDepthX - 1) {
+                    const nIdx = (y * W + (x + 1)) * 4;
+                    const stepDiff = Math.abs(data[nIdx] - r) + Math.abs(data[nIdx + 1] - g) + Math.abs(data[nIdx + 2] - b);
+                    if (stepDiff > 42) {
+                        if (isColorNearBg(r, g, b, effectiveTol)) mask[y * W + x] = 1;
+                        break;
+                    }
+                }
+
+                if (isColorNearBg(r, g, b, effectiveTol)) {
+                    mask[y * W + x] = 1;
+                } else {
+                    break; // Hit card body -> STOP!
+                }
+            }
+        }
+
+        // Scan Right leftward
+        for (let y = 0; y < H; y++) {
+            for (let d = 0; d < maxBorderDepthX; d++) {
+                const x = W - 1 - d;
+                const idx = (y * W + x) * 4;
+                const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+
+                if (d < maxBorderDepthX - 1) {
+                    const nIdx = (y * W + (x - 1)) * 4;
+                    const stepDiff = Math.abs(data[nIdx] - r) + Math.abs(data[nIdx + 1] - g) + Math.abs(data[nIdx + 2] - b);
+                    if (stepDiff > 42) {
+                        if (isColorNearBg(r, g, b, effectiveTol)) mask[y * W + x] = 1;
+                        break;
+                    }
+                }
+
+                if (isColorNearBg(r, g, b, effectiveTol)) {
+                    mask[y * W + x] = 1;
+                } else {
+                    break; // Hit card body -> STOP!
+                }
+            }
         }
     }
 
-    // Seed left and right borders
-    for (let y = 1; y < H - 1; y++) {
-        const posLft = y * W;
-        const idxLft = posLft * 4;
-        if (mask[posLft] === 0 && isColorNearBg(data[idxLft], data[idxLft + 1], data[idxLft + 2], tolerance * 1.3)) {
-            mask[posLft] = 1;
-            queue[tail++] = posLft;
-        }
-        const posRgt = y * W + (W - 1);
-        const idxRgt = posRgt * 4;
-        if (mask[posRgt] === 0 && isColorNearBg(data[idxRgt], data[idxRgt + 1], data[idxRgt + 2], tolerance * 1.3)) {
-            mask[posRgt] = 1;
-            queue[tail++] = posRgt;
-        }
-    }
-
-    // BFS Flood Fill inward until card edge
-    while (head < tail) {
-        const curr = queue[head++];
-        const cx = curr % W;
-        const cy = (curr / W) | 0;
-
-        if (cx > 0) {
-            const n = curr - 1;
-            if (mask[n] === 0) {
-                const nIdx = n * 4;
-                if (isColorNearBg(data[nIdx], data[nIdx + 1], data[nIdx + 2], tolerance)) {
-                    mask[n] = 1; queue[tail++] = n;
-                }
-            }
-        }
-        if (cx < W - 1) {
-            const n = curr + 1;
-            if (mask[n] === 0) {
-                const nIdx = n * 4;
-                if (isColorNearBg(data[nIdx], data[nIdx + 1], data[nIdx + 2], tolerance)) {
-                    mask[n] = 1; queue[tail++] = n;
-                }
-            }
-        }
-        if (cy > 0) {
-            const n = curr - W;
-            if (mask[n] === 0) {
-                const nIdx = n * 4;
-                if (isColorNearBg(data[nIdx], data[nIdx + 1], data[nIdx + 2], tolerance)) {
-                    mask[n] = 1; queue[tail++] = n;
-                }
-            }
-        }
-        if (cy < H - 1) {
-            const n = curr + W;
-            if (mask[n] === 0) {
-                const nIdx = n * 4;
-                if (isColorNearBg(data[nIdx], data[nIdx + 1], data[nIdx + 2], tolerance)) {
-                    mask[n] = 1; queue[tail++] = n;
-                }
-            }
-        }
-    }
-
-    // C. Card Body Protection (Safety Dilation / Erode Background Mask)
-    // Pulls back background mask by safetyMargin pixels so NOT ONE PIXEL of the card is touched
+    // 5. Safety Margin Pullback (Erode Background Mask away from the card)
     let finalMask = mask;
     if (safetyMargin > 0) {
         let curMask = mask;
@@ -789,7 +847,7 @@ function processCardBackgroundRemoval(ctx, width, height, bgColor, tolerance = 4
                     if (curMask[idx] === 1) {
                         if (curMask[idx - 1] === 0 || curMask[idx + 1] === 0 ||
                             curMask[idx - W] === 0 || curMask[idx + W] === 0) {
-                            eroded[idx] = 0;
+                            eroded[idx] = 0; // Pull back away from card
                         } else {
                             eroded[idx] = 1;
                         }
@@ -801,7 +859,7 @@ function processCardBackgroundRemoval(ctx, width, height, bgColor, tolerance = 4
         finalMask = curMask;
     }
 
-    // D. Fill confirmed background pixels
+    // 6. Fill confirmed background pixels
     for (let i = 0; i < W * H; i++) {
         if (finalMask[i] === 1) {
             const dIdx = i * 4;
@@ -816,7 +874,7 @@ function processCardBackgroundRemoval(ctx, width, height, bgColor, tolerance = 4
         }
     }
 
-    // E. Optional ISO Rounded Corners clipping
+    // 7. ISO Rounded Corners (Applies clean rounded corners strictly outside card boundary)
     if (roundCorners) {
         const radius = Math.round(Math.min(W, H) * 0.045);
         applyCardCornerMask(data, W, H, radius, targetRgb, isTransparent);
@@ -1315,9 +1373,9 @@ window.openIdCardCropperWithImage = function(imageSrc) {
     if (safetyVal) safetyVal.textContent = '+6px';
 
     const tol = document.getElementById('idcard-bg-tolerance');
-    if (tol) tol.value = 42;
+    if (tol) tol.value = 30;
     const tolVal = document.getElementById('idcard-bg-tol-val');
-    if (tolVal) tolVal.textContent = '42';
+    if (tolVal) tolVal.textContent = '30';
 
     const roundBox = document.getElementById('idcard-round-corners');
     if (roundBox) roundBox.checked = true;
@@ -1399,7 +1457,7 @@ function renderIdCardLivePreview() {
     applyPerspectiveWarp(previewCanvas, currentPerspX, currentPerspY);
 
     // 2. Process Background Removal with Zero-Loss Card Protection
-    const bgTol = parseInt(document.getElementById('idcard-bg-tolerance')?.value || '42', 10);
+    const bgTol = parseInt(document.getElementById('idcard-bg-tolerance')?.value || '30', 10);
     const bgSafety = parseInt(document.getElementById('idcard-bg-safety')?.value || '6', 10);
     const roundCorners = document.getElementById('idcard-round-corners')?.checked ?? true;
     processCardBackgroundRemoval(previewCtx, pWidth, pHeight, selectedIdCardBg, bgTol, bgSafety, roundCorners);
@@ -1704,9 +1762,9 @@ document.getElementById('idcard-reset-all')?.addEventListener('click', () => {
     if (safetyVal) safetyVal.textContent = '+6px';
 
     const tol = document.getElementById('idcard-bg-tolerance');
-    if (tol) tol.value = 42;
+    if (tol) tol.value = 30;
     const tolVal = document.getElementById('idcard-bg-tol-val');
-    if (tolVal) tolVal.textContent = '42';
+    if (tolVal) tolVal.textContent = '30';
 
     const roundBox = document.getElementById('idcard-round-corners');
     if (roundBox) roundBox.checked = true;
@@ -1843,7 +1901,7 @@ if (btnIdCardSave) {
             applyPerspectiveWarp(highResCanvas, currentPerspX, currentPerspY);
 
             // 2. Process Background Removal with Zero-Loss Card Protection
-            const bgTol = parseInt(document.getElementById('idcard-bg-tolerance')?.value || '42', 10);
+            const bgTol = parseInt(document.getElementById('idcard-bg-tolerance')?.value || '30', 10);
             const bgSafety = parseInt(document.getElementById('idcard-bg-safety')?.value || '6', 10);
             const roundCorners = document.getElementById('idcard-round-corners')?.checked ?? true;
             processCardBackgroundRemoval(highResCtx, targetWidth, targetHeight, selectedIdCardBg, bgTol, bgSafety, roundCorners);
