@@ -462,12 +462,150 @@ let idCardCropper = null;
 let idCardScaleX = 1;
 let currentIdCardAspect = 1.586;
 let currentFineTilt = 0;
+let currentPerspX = 0;
+let currentPerspY = 0;
+let initialZoomRatio = 1;
+let isUserDraggingZoomSlider = false;
 let selectedIdCardBg = '#ffffff'; // Default: Clean white background
 let idCardPreviewDebounceTimer = null;
 const idCardCropperModalEl = document.getElementById('idCardCropperModal');
 let idCardCropperModal = null;
 if (typeof bootstrap !== 'undefined' && idCardCropperModalEl) {
     idCardCropperModal = new bootstrap.Modal(idCardCropperModalEl);
+}
+
+// 0. Projective Perspective Warp for Straightening Keystoned / Distorted Cards
+function getPerspectiveCorners(W, H, perspX, perspY) {
+    const px = (perspX || 0) / 100;
+    const py = (perspY || 0) / 100;
+
+    let x0 = 0, y0 = 0;
+    let x1 = W, y1 = 0;
+    let x2 = W, y2 = H;
+    let x3 = 0, y3 = H;
+
+    if (px > 0) {
+        const insetY = (H * px * 0.42);
+        y0 += insetY;
+        y3 -= insetY;
+    } else if (px < 0) {
+        const insetY = (H * Math.abs(px) * 0.42);
+        y1 += insetY;
+        y2 -= insetY;
+    }
+
+    if (py > 0) {
+        const insetX = (W * py * 0.42);
+        x0 += insetX;
+        x1 -= insetX;
+    } else if (py < 0) {
+        const insetX = (W * Math.abs(py) * 0.42);
+        x3 += insetX;
+        x2 -= insetX;
+    }
+
+    return { x0, y0, x1, y1, x2, y2, x3, y3 };
+}
+
+function applyPerspectiveWarp(canvas, perspX, perspY) {
+    if ((!perspX || perspX === 0) && (!perspY || perspY === 0)) return;
+
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width;
+    const H = canvas.height;
+
+    const srcImgData = ctx.getImageData(0, 0, W, H);
+    const srcData = srcImgData.data;
+
+    const dstImgData = ctx.createImageData(W, H);
+    const dstData = dstImgData.data;
+
+    const { x0, y0, x1, y1, x2, y2, x3, y3 } = getPerspectiveCorners(W, H, perspX, perspY);
+
+    const dx1 = x1 - x2;
+    const dx2 = x3 - x2;
+    const sx = x0 - x1 + x2 - x3;
+    const dy1 = y1 - y2;
+    const dy2 = y3 - y2;
+    const sy = y0 - y1 + y2 - y3;
+
+    let a, b, c, d, e, f, g = 0, h = 0;
+    const det = dx1 * dy2 - dx2 * dy1;
+
+    if (Math.abs(det) > 1e-7 && (Math.abs(sx) > 1e-7 || Math.abs(sy) > 1e-7)) {
+        g = (sx * dy2 - sy * dx2) / det;
+        h = (dx1 * sy - dy1 * sx) / det;
+        a = x1 - x0 + g * x1;
+        b = x3 - x0 + h * x3;
+        c = x0;
+        d = y1 - y0 + g * y1;
+        e = y3 - y0 + h * y3;
+        f = y0;
+    } else {
+        a = x1 - x0;
+        b = x3 - x0;
+        c = x0;
+        d = y1 - y0;
+        e = y3 - y0;
+        f = y0;
+    }
+
+    const invW = 1.0 / W;
+    const invH = 1.0 / H;
+
+    for (let v = 0; v < H; v++) {
+        const vPrime = v * invH;
+        const rowDst = v * W;
+
+        for (let u = 0; u < W; u++) {
+            const uPrime = u * invW;
+            const den = g * uPrime + h * vPrime + 1.0;
+
+            const srcX = (a * uPrime + b * vPrime + c) / den;
+            const srcY = (d * uPrime + e * vPrime + f) / den;
+
+            if (srcX >= 0 && srcX < W - 1 && srcY >= 0 && srcY < H - 1) {
+                const ix = srcX | 0;
+                const iy = srcY | 0;
+                const fx = srcX - ix;
+                const fy = srcY - iy;
+                const ifx = 1.0 - fx;
+                const ify = 1.0 - fy;
+
+                const i00 = (iy * W + ix) * 4;
+                const i10 = i00 + 4;
+                const i01 = ((iy + 1) * W + ix) * 4;
+                const i11 = i01 + 4;
+
+                const dstIdx = (rowDst + u) * 4;
+
+                dstData[dstIdx]     = ify * (ifx * srcData[i00]     + fx * srcData[i10])     + fy * (ifx * srcData[i01]     + fx * srcData[i11]);
+                dstData[dstIdx + 1] = ify * (ifx * srcData[i00 + 1] + fx * srcData[i10 + 1]) + fy * (ifx * srcData[i01 + 1] + fx * srcData[i11 + 1]);
+                dstData[dstIdx + 2] = ify * (ifx * srcData[i00 + 2] + fx * srcData[i10 + 2]) + fy * (ifx * srcData[i01 + 2] + fx * srcData[i11 + 2]);
+                dstData[dstIdx + 3] = ify * (ifx * srcData[i00 + 3] + fx * srcData[i10 + 3]) + fy * (ifx * srcData[i01 + 3] + fx * srcData[i11 + 3]);
+            } else if (srcX >= 0 && srcX < W && srcY >= 0 && srcY < H) {
+                const ix = Math.min(W - 1, Math.max(0, Math.round(srcX)));
+                const iy = Math.min(H - 1, Math.max(0, Math.round(srcY)));
+                const srcIdx = (iy * W + ix) * 4;
+                const dstIdx = (rowDst + u) * 4;
+                dstData[dstIdx]     = srcData[srcIdx];
+                dstData[dstIdx + 1] = srcData[srcIdx + 1];
+                dstData[dstIdx + 2] = srcData[srcIdx + 2];
+                dstData[dstIdx + 3] = srcData[srcIdx + 3];
+            }
+        }
+    }
+
+    ctx.putImageData(dstImgData, 0, 0);
+}
+
+function updateZoomSliderFromRatio(ratio) {
+    if (!initialZoomRatio || initialZoomRatio <= 0) initialZoomRatio = ratio;
+    const pct = Math.round((ratio / initialZoomRatio) * 100);
+    const slider = document.getElementById('idcard-zoom-slider');
+    const valEl = document.getElementById('idcard-zoom-val');
+    if (slider && !isUserDraggingZoomSlider) slider.value = Math.max(30, Math.min(300, pct));
+    if (valEl) valEl.textContent = Math.max(30, Math.min(300, pct)) + '%';
 }
 
 // 1. ISO Card Corner Mask
@@ -862,12 +1000,31 @@ window.openIdCardCropperWithImage = function(imageSrc) {
     idCardScaleX = 1;
     currentIdCardAspect = 1.586;
     currentFineTilt = 0;
+    currentPerspX = 0;
+    currentPerspY = 0;
+    initialZoomRatio = 1;
 
     // Reset tilt slider
     const tiltSlider = document.getElementById('idcard-tilt');
     if (tiltSlider) tiltSlider.value = 0;
     const tiltVal = document.getElementById('idcard-tilt-val');
     if (tiltVal) tiltVal.textContent = '0°';
+
+    // Reset perspective sliders
+    const perspXSlider = document.getElementById('idcard-persp-x');
+    if (perspXSlider) perspXSlider.value = 0;
+    const perspXVal = document.getElementById('idcard-persp-x-val');
+    if (perspXVal) perspXVal.textContent = '0';
+    const perspYSlider = document.getElementById('idcard-persp-y');
+    if (perspYSlider) perspYSlider.value = 0;
+    const perspYVal = document.getElementById('idcard-persp-y-val');
+    if (perspYVal) perspYVal.textContent = '0';
+
+    // Reset zoom slider
+    const zoomSlider = document.getElementById('idcard-zoom-slider');
+    if (zoomSlider) zoomSlider.value = 100;
+    const zoomVal = document.getElementById('idcard-zoom-val');
+    if (zoomVal) zoomVal.textContent = '100%';
 
     // Reset background controls (White background default for clean ID card)
     selectedIdCardBg = '#ffffff';
@@ -964,13 +1121,16 @@ function renderIdCardLivePreview() {
     previewCtx.clearRect(0, 0, pWidth, pHeight);
     previewCtx.drawImage(croppedCanvas, 0, 0, pWidth, pHeight);
 
-    // 1. Process Background Removal with Zero-Loss Card Protection
+    // 1. Perspective Warp (Corrects trapezoid / unequal corners into standard rectangle!)
+    applyPerspectiveWarp(previewCanvas, currentPerspX, currentPerspY);
+
+    // 2. Process Background Removal with Zero-Loss Card Protection
     const bgTol = parseInt(document.getElementById('idcard-bg-tolerance')?.value || '42', 10);
     const bgSafety = parseInt(document.getElementById('idcard-bg-safety')?.value || '6', 10);
     const roundCorners = document.getElementById('idcard-round-corners')?.checked ?? true;
     processCardBackgroundRemoval(previewCtx, pWidth, pHeight, selectedIdCardBg, bgTol, bgSafety, roundCorners);
 
-    // 2. Process Clarity & Light Enhancements
+    // 3. Process Clarity & Light Enhancements
     const sharpen = parseInt(document.getElementById('idcard-sharpen')?.value || '0', 10);
     const brightness = parseInt(document.getElementById('idcard-brightness')?.value || '0', 10);
     const contrast = parseInt(document.getElementById('idcard-contrast')?.value || '0', 10);
@@ -1004,11 +1164,12 @@ if (idCardCropperModalEl) {
         if (!image) return;
         if (idCardCropper) idCardCropper.destroy();
 
+        // viewMode: 0 allows free, unrestricted zooming in and out!
         idCardCropper = new Cropper(image, {
             aspectRatio: currentIdCardAspect || 1.586,
-            viewMode: 1,
+            viewMode: 0,
             dragMode: 'move',
-            autoCropArea: 0.92,
+            autoCropArea: 0.88,
             restore: false,
             guides: true,
             center: true,
@@ -1016,10 +1177,28 @@ if (idCardCropperModalEl) {
             cropBoxMovable: true,
             cropBoxResizable: true,
             toggleDragModeOnDblclick: false,
-            crop: debounceRenderIdCardCropPreview
+            zoomable: true,
+            zoomOnWheel: true,
+            wheelZoomRatio: 0.1,
+            zoomOnTouch: true,
+            crop: debounceRenderIdCardCropPreview,
+            zoom: (e) => {
+                if (e && e.detail && e.detail.ratio) {
+                    updateZoomSliderFromRatio(e.detail.ratio);
+                }
+            }
         });
 
-        setTimeout(renderIdCardLivePreview, 150);
+        setTimeout(() => {
+            if (idCardCropper) {
+                const canvasData = idCardCropper.getCanvasData();
+                const imgData = idCardCropper.getImageData();
+                if (canvasData && imgData && imgData.naturalWidth) {
+                    initialZoomRatio = canvasData.width / imgData.naturalWidth;
+                }
+            }
+            renderIdCardLivePreview();
+        }, 150);
     });
 
     idCardCropperModalEl.addEventListener('hidden.bs.modal', () => {
@@ -1051,6 +1230,68 @@ document.getElementById('idcard-rotate-right')?.addEventListener('click', () => 
     }
 });
 
+// Drag Mode toggles
+document.getElementById('idcard-mode-move')?.addEventListener('click', () => {
+    if (!idCardCropper) return;
+    idCardCropper.setDragMode('move');
+    document.getElementById('idcard-mode-move')?.classList.add('active');
+    document.getElementById('idcard-mode-crop')?.classList.remove('active');
+});
+
+document.getElementById('idcard-mode-crop')?.addEventListener('click', () => {
+    if (!idCardCropper) return;
+    idCardCropper.setDragMode('crop');
+    document.getElementById('idcard-mode-crop')?.classList.add('active');
+    document.getElementById('idcard-mode-move')?.classList.remove('active');
+});
+
+// Free Zoom Slider & Buttons
+const zoomSliderEl = document.getElementById('idcard-zoom-slider');
+if (zoomSliderEl) {
+    zoomSliderEl.addEventListener('mousedown', () => { isUserDraggingZoomSlider = true; });
+    zoomSliderEl.addEventListener('mouseup', () => { isUserDraggingZoomSlider = false; });
+    zoomSliderEl.addEventListener('touchstart', () => { isUserDraggingZoomSlider = true; });
+    zoomSliderEl.addEventListener('touchend', () => { isUserDraggingZoomSlider = false; });
+    zoomSliderEl.addEventListener('input', (e) => {
+        if (!idCardCropper) return;
+        const pct = parseInt(e.target.value, 10);
+        const valEl = document.getElementById('idcard-zoom-val');
+        if (valEl) valEl.textContent = pct + '%';
+        if (!initialZoomRatio || initialZoomRatio <= 0) {
+            const canvasData = idCardCropper.getCanvasData();
+            const imgData = idCardCropper.getImageData();
+            initialZoomRatio = (canvasData && imgData) ? (canvasData.width / imgData.naturalWidth) : 1;
+        }
+        idCardCropper.zoomTo(initialZoomRatio * (pct / 100));
+        debounceRenderIdCardCropPreview();
+    });
+}
+
+document.getElementById('idcard-zoom-in')?.addEventListener('click', () => {
+    if (idCardCropper) {
+        idCardCropper.zoom(0.2);
+        debounceRenderIdCardCropPreview();
+    }
+});
+
+document.getElementById('idcard-zoom-out')?.addEventListener('click', () => {
+    if (idCardCropper) {
+        idCardCropper.zoom(-0.2);
+        debounceRenderIdCardCropPreview();
+    }
+});
+
+document.getElementById('idcard-zoom-reset')?.addEventListener('click', () => {
+    if (idCardCropper && initialZoomRatio) {
+        idCardCropper.zoomTo(initialZoomRatio);
+        const s = document.getElementById('idcard-zoom-slider');
+        if (s) s.value = 100;
+        const valEl = document.getElementById('idcard-zoom-val');
+        if (valEl) valEl.textContent = '100%';
+        debounceRenderIdCardCropPreview();
+    }
+});
+
 // Fine Tilt buttons & slider
 document.getElementById('idcard-tilt-minus')?.addEventListener('click', () => adjustIdCardTilt(-1));
 document.getElementById('idcard-tilt-plus')?.addEventListener('click', () => adjustIdCardTilt(1));
@@ -1070,6 +1311,69 @@ if (tiltRange) {
     });
 }
 
+// Perspective Horizontal (Left vs Right)
+const perspXSlider = document.getElementById('idcard-persp-x');
+if (perspXSlider) {
+    perspXSlider.addEventListener('input', (e) => {
+        currentPerspX = parseInt(e.target.value, 10);
+        const valEl = document.getElementById('idcard-persp-x-val');
+        if (valEl) valEl.textContent = (currentPerspX > 0 ? '+' : '') + currentPerspX;
+        debounceRenderIdCardCropPreview();
+    });
+}
+document.getElementById('idcard-persp-x-minus')?.addEventListener('click', () => {
+    currentPerspX = Math.max(-30, currentPerspX - 5);
+    if (perspXSlider) perspXSlider.value = currentPerspX;
+    const valEl = document.getElementById('idcard-persp-x-val');
+    if (valEl) valEl.textContent = (currentPerspX > 0 ? '+' : '') + currentPerspX;
+    debounceRenderIdCardCropPreview();
+});
+document.getElementById('idcard-persp-x-plus')?.addEventListener('click', () => {
+    currentPerspX = Math.min(30, currentPerspX + 5);
+    if (perspXSlider) perspXSlider.value = currentPerspX;
+    const valEl = document.getElementById('idcard-persp-x-val');
+    if (valEl) valEl.textContent = (currentPerspX > 0 ? '+' : '') + currentPerspX;
+    debounceRenderIdCardCropPreview();
+});
+
+// Perspective Vertical (Top vs Bottom)
+const perspYSlider = document.getElementById('idcard-persp-y');
+if (perspYSlider) {
+    perspYSlider.addEventListener('input', (e) => {
+        currentPerspY = parseInt(e.target.value, 10);
+        const valEl = document.getElementById('idcard-persp-y-val');
+        if (valEl) valEl.textContent = (currentPerspY > 0 ? '+' : '') + currentPerspY;
+        debounceRenderIdCardCropPreview();
+    });
+}
+document.getElementById('idcard-persp-y-minus')?.addEventListener('click', () => {
+    currentPerspY = Math.max(-30, currentPerspY - 5);
+    if (perspYSlider) perspYSlider.value = currentPerspY;
+    const valEl = document.getElementById('idcard-persp-y-val');
+    if (valEl) valEl.textContent = (currentPerspY > 0 ? '+' : '') + currentPerspY;
+    debounceRenderIdCardCropPreview();
+});
+document.getElementById('idcard-persp-y-plus')?.addEventListener('click', () => {
+    currentPerspY = Math.min(30, currentPerspY + 5);
+    if (perspYSlider) perspYSlider.value = currentPerspY;
+    const valEl = document.getElementById('idcard-persp-y-val');
+    if (valEl) valEl.textContent = (currentPerspY > 0 ? '+' : '') + currentPerspY;
+    debounceRenderIdCardCropPreview();
+});
+
+// Perspective Reset
+document.getElementById('idcard-persp-reset')?.addEventListener('click', () => {
+    currentPerspX = 0;
+    currentPerspY = 0;
+    if (perspXSlider) perspXSlider.value = 0;
+    if (perspYSlider) perspYSlider.value = 0;
+    const valX = document.getElementById('idcard-persp-x-val');
+    if (valX) valX.textContent = '0';
+    const valY = document.getElementById('idcard-persp-y-val');
+    if (valY) valY.textContent = '0';
+    debounceRenderIdCardCropPreview();
+});
+
 // Auto-snap button
 document.getElementById('idcard-auto-snap')?.addEventListener('click', autoDetectAndSnapCard);
 
@@ -1082,22 +1386,7 @@ document.getElementById('idcard-flip-h')?.addEventListener('click', () => {
     }
 });
 
-// Zoom in / out
-document.getElementById('idcard-zoom-in')?.addEventListener('click', () => {
-    if (idCardCropper) {
-        idCardCropper.zoom(0.1);
-        debounceRenderIdCardCropPreview();
-    }
-});
-
-document.getElementById('idcard-zoom-out')?.addEventListener('click', () => {
-    if (idCardCropper) {
-        idCardCropper.zoom(-0.1);
-        debounceRenderIdCardCropPreview();
-    }
-});
-
-// Reset
+// Reset All
 document.getElementById('idcard-reset-all')?.addEventListener('click', () => {
     if (idCardCropper) {
         idCardScaleX = 1;
@@ -1105,8 +1394,23 @@ document.getElementById('idcard-reset-all')?.addEventListener('click', () => {
         currentIdCardAspect = 1.586;
         idCardCropper.setAspectRatio(1.586);
         updateIdCardRatioButtons('idcard-ratio-card');
+        if (initialZoomRatio) idCardCropper.zoomTo(initialZoomRatio);
     }
     resetIdCardTilt();
+
+    currentPerspX = 0;
+    currentPerspY = 0;
+    if (perspXSlider) perspXSlider.value = 0;
+    if (perspYSlider) perspYSlider.value = 0;
+    const valX = document.getElementById('idcard-persp-x-val');
+    if (valX) valX.textContent = '0';
+    const valY = document.getElementById('idcard-persp-y-val');
+    if (valY) valY.textContent = '0';
+
+    const s = document.getElementById('idcard-zoom-slider');
+    if (s) s.value = 100;
+    const valZoom = document.getElementById('idcard-zoom-val');
+    if (valZoom) valZoom.textContent = '100%';
 
     selectedIdCardBg = '#ffffff';
     document.querySelectorAll('.idcard-bg-btn').forEach(b => {
@@ -1257,19 +1561,22 @@ if (btnIdCardSave) {
 
             const highResCtx = highResCanvas.getContext('2d');
 
-            // 1. Process Background Removal with Zero-Loss Card Protection
+            // 1. Perspective Warp (Corrects trapezoid / unequal corners into standard rectangle!)
+            applyPerspectiveWarp(highResCanvas, currentPerspX, currentPerspY);
+
+            // 2. Process Background Removal with Zero-Loss Card Protection
             const bgTol = parseInt(document.getElementById('idcard-bg-tolerance')?.value || '42', 10);
             const bgSafety = parseInt(document.getElementById('idcard-bg-safety')?.value || '6', 10);
             const roundCorners = document.getElementById('idcard-round-corners')?.checked ?? true;
             processCardBackgroundRemoval(highResCtx, targetWidth, targetHeight, selectedIdCardBg, bgTol, bgSafety, roundCorners);
 
-            // 2. Process Clarity & Light Enhancements
+            // 3. Process Clarity & Light Enhancements
             const sharpen = parseInt(document.getElementById('idcard-sharpen')?.value || '0', 10);
             const brightness = parseInt(document.getElementById('idcard-brightness')?.value || '0', 10);
             const contrast = parseInt(document.getElementById('idcard-contrast')?.value || '0', 10);
             processCanvasEnhancements(highResCtx, targetWidth, targetHeight, brightness, contrast, sharpen);
 
-            // 3. Export as high-res WebP (or PNG for transparent)
+            // 4. Export as high-res WebP (or PNG for transparent)
             let finalDataUrl;
             if (selectedIdCardBg === 'transparent') {
                 finalDataUrl = highResCanvas.toDataURL('image/webp', 0.90);
@@ -1310,7 +1617,7 @@ if (btnIdCardSave) {
                 Swal.fire({
                     icon: 'success',
                     title: 'កាត់ និងកែប្រែរូបអត្តសញ្ញាណប័ណ្ណជោគជ័យ!',
-                    text: 'រូបភាពកាតត្រូវបានរក្សាទុកយ៉ាងច្បាស់ម៉ត់',
+                    text: 'រូបភាពកាតត្រូវបានកែតម្រង់ និងរក្សាទុកយ៉ាងច្បាស់ម៉ត់',
                     timer: 1500,
                     showConfirmButton: false
                 });

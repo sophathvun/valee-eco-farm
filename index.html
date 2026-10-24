@@ -1052,23 +1052,48 @@
                                 <img id="idcard-cropper-image" src="" style="max-width: 100%; display: block;">
                             </div>
 
-                            <!-- Toolbar 1: Rotation & Zoom -->
+                            <!-- Toolbar 1: Rotation, Zoom & Drag Mode -->
                             <div class="d-flex flex-wrap justify-content-between align-items-center gap-1 mt-2 p-1 bg-light rounded border">
+                                <!-- Rotations & Flip -->
                                 <div class="d-flex flex-wrap gap-1">
-                                    <button type="button" class="btn btn-sm btn-outline-dark fw-bold" id="idcard-rotate-left" title="បង្វិលឆ្វេង 90°">
-                                        <i class="bi bi-arrow-counterclockwise me-1"></i>បង្វិលឆ្វេង 90°
+                                    <button type="button" class="btn btn-sm btn-outline-dark fw-bold py-1 px-2" id="idcard-rotate-left" title="បង្វិលឆ្វេង 90°">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i>90° ឆ្វេង
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-dark fw-bold" id="idcard-rotate-right" title="បង្វិលស្តាំ 90°">
-                                        <i class="bi bi-arrow-clockwise me-1"></i>បង្វិលស្តាំ 90°
+                                    <button type="button" class="btn btn-sm btn-outline-dark fw-bold py-1 px-2" id="idcard-rotate-right" title="បង្វិលស្តាំ 90°">
+                                        <i class="bi bi-arrow-clockwise me-1"></i>90° ស្តាំ
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="idcard-flip-h" title="ត្រឡប់ឆ្វេង-ស្តាំ">
-                                        <i class="bi bi-symmetry-vertical me-1"></i>ត្រឡប់ផ្ដេក
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" id="idcard-flip-h" title="ត្រឡប់ឆ្វេង-ស្តាំ">
+                                        <i class="bi bi-symmetry-vertical"></i>
+                                    </button>
+                                    <!-- Drag mode toggle -->
+                                    <button type="button" class="btn btn-sm btn-outline-primary active py-1 px-2" id="idcard-mode-move" title="ចុចដើម្បីរំកិលរូបភាព (Pan Image)">
+                                        <i class="bi bi-arrows-move me-1"></i>រំកិលរូប
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" id="idcard-mode-crop" title="ចុចដើម្បីគូស/កែស៊ុម (Crop Box)">
+                                        <i class="bi bi-crop me-1"></i>កែស៊ុម
                                     </button>
                                 </div>
+
+                                <!-- Smooth Free Zoom Slider & Buttons (Unrestricted Zoom) -->
                                 <div class="d-flex align-items-center gap-1">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary px-2" id="idcard-zoom-in" title="Zoom In"><i class="bi bi-zoom-in"></i></button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary px-2" id="idcard-zoom-out" title="Zoom Out"><i class="bi bi-zoom-out"></i></button>
-                                    <button type="button" class="btn btn-sm btn-outline-warning fw-bold px-2" id="idcard-reset-all" title="កំណត់ដើម"><i class="bi bi-arrow-repeat me-1"></i>Reset</button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2 fw-bold" id="idcard-zoom-out" title="Zoom Out (បង្រួម)">
+                                        <i class="bi bi-zoom-out"></i>
+                                    </button>
+                                    <div class="d-flex align-items-center mx-1" style="min-width: 140px;">
+                                        <small class="fw-bold text-dark me-1 text-nowrap" style="font-size: 0.72rem;">
+                                            <i class="bi bi-search text-primary me-1"></i>Zoom: <span id="idcard-zoom-val" class="text-primary fw-bold">100%</span>
+                                        </small>
+                                        <input type="range" class="form-range flex-grow-1" id="idcard-zoom-slider" min="30" max="300" value="100" style="height: 4px; cursor: pointer;">
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2 fw-bold" id="idcard-zoom-in" title="Zoom In (ពង្រីក)">
+                                        <i class="bi bi-zoom-in"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" id="idcard-zoom-reset" title="កំណត់ Zoom 100% ដើម">
+                                        100%
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning fw-bold py-1 px-2" id="idcard-reset-all" title="កំណត់ដើមទាំងអស់">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
                                 </div>
                             </div>
 
@@ -1089,6 +1114,51 @@
                                 <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" id="idcard-tilt-zero" title="តម្រង់ស្មើ 0°">
                                     0°
                                 </button>
+                            </div>
+
+                            <!-- Toolbar 1c: Perspective Correction / ស្មើជ្រុងកាត (ធំឆ្វេង-ស្តាំ ឬ ធំលើ-ក្រោម) -->
+                            <div class="p-2 mt-1 bg-light rounded border">
+                                <div class="d-flex align-items-center justify-content-between mb-1 pb-1 border-bottom">
+                                    <span class="fw-bold text-dark" style="font-size: 0.74rem;">
+                                        <i class="bi bi-distribute-vertical text-primary me-1"></i>តម្រង់ជ្រុងកាតឱ្យស្មើគ្នា (Perspective / ធំឆ្វេង-ស្តាំ ឬ ធំលើ-ក្រោម)
+                                    </span>
+                                    <button type="button" class="btn btn-xs btn-outline-warning fw-bold py-0 px-2" id="idcard-persp-reset" style="font-size: 0.68rem;">
+                                        <i class="bi bi-arrow-repeat me-1"></i>ស្មើដើម (0, 0)
+                                    </button>
+                                </div>
+                                <div class="row g-2">
+                                    <!-- Perspective Horizontal (Left vs Right) -->
+                                    <div class="col-md-6">
+                                        <div class="d-flex justify-content-between align-items-center mb-0">
+                                            <small class="text-dark fw-bold" style="font-size: 0.7rem;">
+                                                <i class="bi bi-arrows-expand me-1 text-info"></i>ទ្រេត ឆ្វេង-ស្តាំ (Left / Right):
+                                            </small>
+                                            <small id="idcard-persp-x-val" class="fw-bold text-primary" style="font-size: 0.7rem;">0</small>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" id="idcard-persp-x-minus" title="ទាញឆ្វេងឱ្យធំ" style="font-size: 0.66rem;">◀ ធំឆ្វេង</button>
+                                            <input type="range" class="form-range flex-grow-1" id="idcard-persp-x" min="-30" max="30" value="0" style="height: 4px;">
+                                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" id="idcard-persp-x-plus" title="ទាញស្តាំឱ្យធំ" style="font-size: 0.66rem;">ធំស្តាំ ▶</button>
+                                        </div>
+                                        <div class="text-muted text-center" style="font-size: 0.62rem;">កែសម្រួលកាតដែលធំម្ខាង តូចម្ខាង (ឆ្វេង / ស្តាំ)</div>
+                                    </div>
+
+                                    <!-- Perspective Vertical (Top vs Bottom) -->
+                                    <div class="col-md-6">
+                                        <div class="d-flex justify-content-between align-items-center mb-0">
+                                            <small class="text-dark fw-bold" style="font-size: 0.7rem;">
+                                                <i class="bi bi-arrows-collapse me-1 text-info"></i>ទ្រេត លើ-ក្រោម (Top / Bottom):
+                                            </small>
+                                            <small id="idcard-persp-y-val" class="fw-bold text-primary" style="font-size: 0.7rem;">0</small>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" id="idcard-persp-y-minus" title="ទាញលើឱ្យធំ" style="font-size: 0.66rem;">▲ ធំលើ</button>
+                                            <input type="range" class="form-range flex-grow-1" id="idcard-persp-y" min="-30" max="30" value="0" style="height: 4px;">
+                                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" id="idcard-persp-y-plus" title="ទាញក្រោមឱ្យធំ" style="font-size: 0.66rem;">ធំក្រោម ▼</button>
+                                        </div>
+                                        <div class="text-muted text-center" style="font-size: 0.62rem;">កែសម្រួលកាតដែលធំខាងលើ ឬធំខាងក្រោម</div>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Toolbar 2: Aspect Ratio Buttons & Auto-Snap -->
@@ -1288,7 +1358,7 @@
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792743000000"></script>
+    <script type="module" src="src/js/main.js?v=1792745000000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">
