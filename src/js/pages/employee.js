@@ -43,7 +43,7 @@ async function loadEmployees() {
                 ${emp.idCardPhoto ? `<button type="button" class="btn btn-xs btn-outline-primary py-0 px-2 mt-1 rounded-pill" style="font-size: 0.68rem;" onclick="viewEmployeeIdCardPhoto(${emp.id})" title="ចុចដើម្បីមើលរូបអត្តសញ្ញាណប័ណ្ណធំ"><i class="bi bi-card-image me-1"></i>រូបកាត</button>` : ''}
             </td>
             <td class="text-start">
-                <div class="text-dark emp-name-km">${emp.name}</div>
+                <div class="text-dark emp-name-km fw-bold" onclick="viewEmployeeProfile(${emp.id})" style="cursor: pointer;" title="ចុចដើម្បីមើលព័ត៌មានបុគ្គលិក">${emp.name}</div>
                 ${emp.latinName ? `<div class="text-muted emp-name-latin">${emp.latinName}</div>` : ''}
             </td>
             <td>${emp.gender}</td>
@@ -52,10 +52,11 @@ async function loadEmployees() {
             <td><span class="badge bg-secondary">${typeLabel}</span></td>
             <td>${emp.phone}</td>
             <td class="text-info fw-bold">${formatCurrency(emp.salary, emp.currency || 'USD')} <small class="text-muted">${wageSuffix}</small></td>
-            <td class="align-middle">
+            <td class="align-middle text-nowrap">
+                <button class="btn btn-sm btn-outline-info me-1 py-1 px-2 shadow-sm" onclick="viewEmployeeProfile(${emp.id})" title="មើលព័ត៌មានបុគ្គលិក (View Profile)"><i class="bi bi-eye-fill"></i></button>
                 ${hasPermission('employee_manage') ? `
-                <button class="btn btn-sm btn-outline-warning btn-edit me-1" onclick="editEmployee(${emp.id})"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button>
-                <button class="btn btn-sm btn-outline-danger btn-delete" onclick="deleteEmployee(${emp.id})"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button>
+                <button class="btn btn-sm btn-outline-warning btn-edit me-1 py-1 px-2" onclick="editEmployee(${emp.id})" title="កែប្រែ"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button>
+                <button class="btn btn-sm btn-outline-danger btn-delete py-1 px-2" onclick="deleteEmployee(${emp.id})" title="លុប"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg></button>
                 ` : ''}
             </td>
         `;
@@ -63,6 +64,310 @@ async function loadEmployees() {
     });
 }
 window.loadEmployees = loadEmployees;
+
+// View Staff Profile Modal Function
+window.viewEmployeeProfile = async function(empId) {
+    try {
+        const emp = await db.employees.get(empId);
+        if (!emp) {
+            Swal.fire({ icon: 'error', text: 'រកមិនឃើញទិន្នន័យបុគ្គលិកនេះឡើយ!' });
+            return;
+        }
+
+        // Set Photos & Names
+        const photoEl = document.getElementById('prof-photo');
+        if (photoEl) photoEl.src = emp.photo || 'assets/images/default-avatar.svg';
+
+        const photoWrap = document.getElementById('prof-photo-wrap');
+        if (photoWrap) {
+            photoWrap.onclick = () => {
+                if (typeof viewEmployeePhoto === 'function') viewEmployeePhoto(emp.id);
+            };
+        }
+
+        const nameEl = document.getElementById('prof-name');
+        if (nameEl) nameEl.textContent = emp.name || '-';
+        const codeEl = document.getElementById('prof-code');
+        if (codeEl) codeEl.textContent = emp.code || 'N/A';
+        const latinEl = document.getElementById('prof-latin-name');
+        if (latinEl) latinEl.textContent = emp.latinName || '';
+        const deptEl = document.getElementById('prof-department');
+        if (deptEl) deptEl.textContent = emp.department || '-';
+        const posEl = document.getElementById('prof-position');
+        if (posEl) posEl.textContent = emp.position || '-';
+
+        // Type Badge
+        const typeBadge = document.getElementById('prof-type-badge');
+        if (typeBadge) {
+            const isFull = (emp.type || 'Full-Time') === 'Full-Time';
+            typeBadge.className = isFull ? 'badge bg-success-subtle text-success border border-success' : 'badge bg-warning-subtle text-warning border border-warning';
+            typeBadge.textContent = emp.type || 'Full-Time';
+        }
+
+        // E-Face Badge
+        const efaceBadge = document.getElementById('prof-eface-badge');
+        if (efaceBadge) {
+            if (emp.faceDescriptor) {
+                efaceBadge.className = 'badge bg-success-subtle text-success border border-success px-2 py-1';
+                efaceBadge.innerHTML = '<i class="bi bi-shield-check me-1"></i>E-Face: បានចុះឈ្មោះ';
+            } else {
+                efaceBadge.className = 'badge bg-secondary-subtle text-muted border px-2 py-1';
+                efaceBadge.innerHTML = '<i class="bi bi-dash-circle me-1"></i>E-Face: មិនទាន់ចុះឈ្មោះ';
+            }
+        }
+
+        // Personal Info
+        const genderEl = document.getElementById('prof-gender');
+        if (genderEl) genderEl.textContent = emp.gender || '-';
+        const dobEl = document.getElementById('prof-dob');
+        if (dobEl) dobEl.textContent = emp.dob ? (typeof formatEngDate === 'function' ? formatEngDate(emp.dob) : emp.dob) : '-';
+        
+        const phoneEl = document.getElementById('prof-phone');
+        if (phoneEl) {
+            if (emp.phone) {
+                phoneEl.innerHTML = `<a href="tel:${emp.phone}" class="text-decoration-none text-primary fw-bold"><i class="bi bi-telephone-outbound me-1"></i>${emp.phone}</a>`;
+            } else {
+                phoneEl.textContent = '-';
+            }
+        }
+
+        const natIdEl = document.getElementById('prof-national-id');
+        if (natIdEl) natIdEl.textContent = emp.nationalId || '-';
+
+        // ID Card Preview & View Buttons
+        const idcardBox = document.getElementById('prof-idcard-preview-box');
+        const idcardBtnWrap = document.getElementById('prof-idcard-btn-wrap');
+        const idcardImg = document.getElementById('prof-idcard-img');
+        const idcardImgWrap = document.getElementById('prof-idcard-img-wrap');
+        const btnViewIdCard = document.getElementById('prof-btn-view-idcard');
+
+        if (emp.idCardPhoto) {
+            if (idcardBox) idcardBox.style.display = 'block';
+            if (idcardBtnWrap) idcardBtnWrap.style.display = 'block';
+            if (idcardImg) idcardImg.src = emp.idCardPhoto;
+            const openIdCardViewer = () => {
+                if (typeof viewEmployeeIdCardPhoto === 'function') viewEmployeeIdCardPhoto(emp.id);
+            };
+            if (idcardImgWrap) idcardImgWrap.onclick = openIdCardViewer;
+            if (btnViewIdCard) btnViewIdCard.onclick = openIdCardViewer;
+        } else {
+            if (idcardBox) idcardBox.style.display = 'none';
+            if (idcardBtnWrap) idcardBtnWrap.style.display = 'none';
+        }
+
+        // Employment & Compensation
+        const startEl = document.getElementById('prof-start-date');
+        if (startEl) startEl.textContent = emp.startDate ? (typeof formatEngDate === 'function' ? formatEngDate(emp.startDate) : emp.startDate) : '-';
+        const typeTxtEl = document.getElementById('prof-type-text');
+        if (typeTxtEl) typeTxtEl.textContent = emp.type || 'Full-Time';
+
+        const wageTypeNames = {
+            'Monthly': 'ប្រចាំខែ (Monthly)',
+            'Daily': 'ប្រចាំថ្ងៃ (Daily)',
+            'Shift': 'តាមវេន (Shift)',
+            'Hourly': 'តាមម៉ោង (Hourly)'
+        };
+        const wageEl = document.getElementById('prof-wage-type');
+        if (wageEl) wageEl.textContent = wageTypeNames[emp.wageType] || emp.wageType || 'ប្រចាំខែ';
+
+        let wageSuffix = '';
+        if (emp.wageType === 'Monthly') wageSuffix = '/ ខែ';
+        else if (emp.wageType === 'Daily') wageSuffix = '/ ថ្ងៃ';
+        else if (emp.wageType === 'Shift') wageSuffix = '/ វេន';
+        else if (emp.wageType === 'Hourly') wageSuffix = '/ ម៉ោង';
+
+        const salaryEl = document.getElementById('prof-salary');
+        if (salaryEl) {
+            salaryEl.innerHTML = `${formatCurrency(emp.salary, emp.currency || 'USD')} <small class="text-muted fw-normal">${wageSuffix}</small>`;
+        }
+
+        // Bank Details
+        const bNameEl = document.getElementById('prof-bank-name');
+        if (bNameEl) bNameEl.textContent = emp.bankName || 'មិនទាន់មានធនាគារ';
+        const bAccEl = document.getElementById('prof-bank-account');
+        if (bAccEl) bAccEl.textContent = emp.bankAccount || '-';
+        const bAccNameEl = document.getElementById('prof-bank-acc-name');
+        if (bAccNameEl) bAccNameEl.textContent = emp.bankAccountName || '';
+
+        const bankQrWrap = document.getElementById('prof-bank-qr-wrap');
+        const bankQrImg = document.getElementById('prof-bank-qr-img');
+        if (emp.bankQr) {
+            if (bankQrWrap) {
+                bankQrWrap.style.display = 'block';
+                bankQrWrap.onclick = () => {
+                    const modalEl = document.getElementById('empPhotoViewerModal');
+                    if (modalEl) {
+                        modalEl.style.zIndex = '1080';
+                        setTimeout(() => {
+                            const backdrops = document.querySelectorAll('.modal-backdrop');
+                            if (backdrops.length > 1) {
+                                backdrops[backdrops.length - 1].style.zIndex = '1075';
+                            }
+                        }, 10);
+                        const nameEl = document.getElementById('viewer-emp-name');
+                        if (nameEl) nameEl.textContent = `Bank QR - ${emp.name}`;
+                        const codeEl = document.getElementById('viewer-emp-code');
+                        if (codeEl) codeEl.textContent = emp.bankName || 'KHQR';
+                        const imgEl = document.getElementById('viewer-emp-img');
+                        if (imgEl) imgEl.src = emp.bankQr;
+                        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                        modal.show();
+                    }
+                };
+            }
+            if (bankQrImg) bankQrImg.src = emp.bankQr;
+        } else {
+            if (bankQrWrap) bankQrWrap.style.display = 'none';
+        }
+
+        // Edit button inside modal
+        const editBtn = document.getElementById('prof-btn-edit');
+        if (editBtn) {
+            if (typeof hasPermission === 'function' && !hasPermission('employee_manage')) {
+                editBtn.style.display = 'none';
+            } else {
+                editBtn.style.display = 'inline-block';
+                editBtn.onclick = () => {
+                    const profModalEl = document.getElementById('empProfileModal');
+                    if (profModalEl) {
+                        const modalInstance = bootstrap.Modal.getInstance(profModalEl);
+                        if (modalInstance) modalInstance.hide();
+                    }
+                    setTimeout(() => editEmployee(emp.id), 250);
+                };
+            }
+        }
+
+        window.currentViewProfileEmpId = emp.id;
+
+        // Show Modal
+        const modalEl = document.getElementById('empProfileModal');
+        if (modalEl) {
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+    } catch (err) {
+        console.error('Error loading employee profile:', err);
+        Swal.fire({ icon: 'error', text: 'មានបញ្ហាក្នុងការបើកមើល Profile បុគ្គលិក!' });
+    }
+};
+
+// Print Employee Profile
+window.printEmployeeProfile = async function() {
+    const empId = window.currentViewProfileEmpId;
+    if (!empId) return;
+    const emp = await db.employees.get(empId);
+    if (!emp) return;
+
+    const printWin = window.open('', '', 'width=850,height=950');
+    if (!printWin) {
+        Swal.fire({ icon: 'warning', text: 'សូមអនុញ្ញាត Pop-up Window ដើម្បីបោះពុម្ព!' });
+        return;
+    }
+
+    let wageSuffix = '';
+    if (emp.wageType === 'Monthly') wageSuffix = '/ ខែ';
+    else if (emp.wageType === 'Daily') wageSuffix = '/ ថ្ងៃ';
+    else if (emp.wageType === 'Shift') wageSuffix = '/ វេន';
+    else if (emp.wageType === 'Hourly') wageSuffix = '/ ម៉ោង';
+
+    const formattedDob = emp.dob ? (typeof formatEngDate === 'function' ? formatEngDate(emp.dob) : emp.dob) : '-';
+    const formattedStartDate = emp.startDate ? (typeof formatEngDate === 'function' ? formatEngDate(emp.startDate) : emp.startDate) : '-';
+
+    printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Staff Profile - ${emp.code || ''} ${emp.name || ''}</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap');
+                body { font-family: 'Kantumruy Pro', sans-serif; padding: 24px; color: #212529; background: #fff; }
+                .profile-box { border: 2px solid #0d6efd; border-radius: 12px; padding: 24px; }
+                .avatar-box { width: 120px; height: 120px; border-radius: 12px; object-fit: cover; border: 2px solid #dee2e6; }
+                .idcard-img { max-width: 260px; height: auto; border: 1px solid #ced4da; border-radius: 8px; }
+                .table-info td { padding: 6px 12px; font-size: 0.95rem; }
+                @media print { .no-print { display: none !important; } }
+            </style>
+        </head>
+        <body>
+            <div class="profile-box">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                    <div>
+                        <h3 class="fw-bold text-primary mb-1">ព័ត៌មានបុគ្គលិក (Staff Profile)</h3>
+                        <div class="text-muted small">កាលបរិច្ឆេទបោះពុម្ព៖ ${new Date().toLocaleDateString('km-KH')}</div>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-primary fs-5 px-3 py-2 rounded-pill">${emp.code || 'N/A'}</span>
+                    </div>
+                </div>
+
+                <div class="row align-items-center mb-4">
+                    <div class="col-auto">
+                        <img src="${emp.photo || 'assets/images/default-avatar.svg'}" class="avatar-box shadow-sm">
+                    </div>
+                    <div class="col">
+                        <h4 class="fw-bold text-dark mb-1">${emp.name || ''}</h4>
+                        <h5 class="text-muted text-uppercase mb-2">${emp.latinName || ''}</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-secondary">${emp.gender || ''}</span>
+                            <span class="badge bg-info text-dark">តួនាទី៖ ${emp.position || '-'}</span>
+                            <span class="badge bg-light text-dark border">ផ្នែក៖ ${emp.department || '-'}</span>
+                            <span class="badge bg-success">${emp.type || 'Full-Time'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-6">
+                        <h6 class="fw-bold text-primary border-bottom pb-1 mb-2">ព័ត៌មានផ្ទាល់ខ្លួន</h6>
+                        <table class="table-info w-100">
+                            <tr><td class="text-muted">ថ្ងៃខែឆ្នាំកំណើត៖</td><td class="fw-bold">${formattedDob}</td></tr>
+                            <tr><td class="text-muted">លេខទូរស័ព្ទ៖</td><td class="fw-bold">${emp.phone || '-'}</td></tr>
+                            <tr><td class="text-muted">លេខអត្តសញ្ញាណប័ណ្ណ៖</td><td class="fw-bold">${emp.nationalId || '-'}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="fw-bold text-success border-bottom pb-1 mb-2">ការងារ និងប្រាក់បៀវត្សរ៍</h6>
+                        <table class="table-info w-100">
+                            <tr><td class="text-muted">ថ្ងៃចូលធ្វើការ៖</td><td class="fw-bold">${formattedStartDate}</td></tr>
+                            <tr><td class="text-muted">ប្រភេទការងារ៖</td><td class="fw-bold">${emp.type || 'Full-Time'}</td></tr>
+                            <tr><td class="text-muted">ប្រភេទប្រាក់ឈ្នួល៖</td><td class="fw-bold">${emp.wageType || 'Monthly'}</td></tr>
+                            <tr><td class="text-muted">ប្រាក់ខែ/ប្រាក់ឈ្នួល៖</td><td class="fw-bold text-success">${formatCurrency(emp.salary, emp.currency || 'USD')} ${wageSuffix}</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                ${(emp.bankName || emp.bankAccount) ? `
+                <div class="mt-3 pt-2 border-top">
+                    <h6 class="fw-bold text-dark mb-2">គណនីធនាគារ</h6>
+                    <div class="p-2 border rounded bg-light d-flex justify-content-between align-items-center">
+                        <div>
+                            <div><b>ធនាគារ៖</b> ${emp.bankName || '-'}</div>
+                            <div><b>លេខគណនី៖</b> ${emp.bankAccount || '-'}</div>
+                            <div><b>ឈ្មោះគណនី៖</b> ${emp.bankAccountName || '-'}</div>
+                        </div>
+                        ${emp.bankQr ? `<img src="${emp.bankQr}" style="width: 80px; height: 80px; object-fit: contain;" class="border p-1 bg-white rounded">` : ''}
+                    </div>
+                </div>
+                ` : ''}
+
+                ${emp.idCardPhoto ? `
+                <div class="mt-3 pt-2 border-top">
+                    <h6 class="fw-bold text-primary mb-2">រូបថតអត្តសញ្ញាណប័ណ្ណ</h6>
+                    <img src="${emp.idCardPhoto}" class="idcard-img shadow-sm">
+                </div>
+                ` : ''}
+            </div>
+            <div class="text-center mt-3 no-print">
+                <button class="btn btn-primary px-4 fw-bold" onclick="window.print()">បោះពុម្ព (Print)</button>
+                <button class="btn btn-secondary px-4 ms-2" onclick="window.close()">បិទ (Close)</button>
+            </div>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+};
 
 window.openAddEmployeeModal = async function() {
     editingEmployeeId = null;
@@ -1293,6 +1598,13 @@ window.viewEmployeeIdCardPhoto = async function(empId) {
 
         const modalEl = document.getElementById('empPhotoViewerModal');
         if (!modalEl) return;
+        modalEl.style.zIndex = '1085';
+        setTimeout(() => {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 1) {
+                backdrops[backdrops.length - 1].style.zIndex = '1080';
+            }
+        }, 10);
 
         const nameEl = document.getElementById('viewer-emp-name');
         if (nameEl) nameEl.innerHTML = `<i class="bi bi-card-heading text-warning me-1"></i> រូបអត្តសញ្ញាណប័ណ្ណ៖ ${emp.name}`;
@@ -2792,6 +3104,13 @@ window.viewEmployeePhoto = async function(empId) {
 
         const modalEl = document.getElementById('empPhotoViewerModal');
         if (!modalEl) return;
+        modalEl.style.zIndex = '1085';
+        setTimeout(() => {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 1) {
+                backdrops[backdrops.length - 1].style.zIndex = '1080';
+            }
+        }, 10);
 
         const nameEl = document.getElementById('viewer-emp-name');
         if (nameEl) nameEl.textContent = emp.name || 'រូបថតបុគ្គលិក';
@@ -2933,6 +3252,16 @@ window.downloadEmpPhotoJpg = function() {
     tempImg.src = img.src;
 };
 
-
-
+// Stacked Modal backdrop fix for Viewer and Profile
+const photoViewerModalEl = document.getElementById('empPhotoViewerModal');
+if (photoViewerModalEl) {
+    photoViewerModalEl.addEventListener('hidden.bs.modal', () => {
+        setTimeout(() => {
+            const openModals = document.querySelectorAll('.modal.show');
+            if (openModals.length > 0) {
+                document.body.classList.add('modal-open');
+            }
+        }, 50);
+    });
+}
 
