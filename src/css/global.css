@@ -11591,13 +11591,13 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
 }
 @media screen and (max-width: 767px) {
 
-    /* Premium Mobile Card Layout for Tables (exclude attendance and print tables) */
-    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) table:not(.att-table):not(.print-table) thead { display: none; }
+    /* Premium Mobile Card Layout for Tables (exclude attendance, employee, and print tables) */
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) table:not(#employeeTable):not(.att-table):not(.print-table) thead { display: none; }
     
-    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table),
-    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table) > tbody,
-    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table) > tbody > tr,
-    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(.att-table):not(.print-table) > tbody > tr > td {
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(#employeeTable):not(.att-table):not(.print-table),
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(#employeeTable):not(.att-table):not(.print-table) > tbody,
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(#employeeTable):not(.att-table):not(.print-table) > tbody > tr,
+    .table-responsive:not(#attendance-table-container):not(#rep-attendance-table-container) > table:not(#employeeTable):not(.att-table):not(.print-table) > tbody > tr > td {
         display: block;
         width: 100%;
     }

@@ -69,4 +69,248 @@
     height: 14px;
 }
 
+/* ========================================================
+   EMPLOYEE LIST MOBILE CARD VIEW (max-width: 768px)
+   Matches User Request:
+   1. រូបថត (Photo) on Left
+   2. បន្ទាប់ពីរូបថត (Next to Photo):
+      - អត្តលេខ (Code) & Full-Time/Part-Time Badge
+      - ឈ្មោះបុគ្គលិកខ្មែរ (Khmer Name)
+      - ឈ្មោះបុគ្គលិកអង់គ្លេស (English Name)
+   3. បន្ទាប់៖ តួនាទី (Position)
+   4. ផ្នែកការងារ & ប្រាក់បៀវត្សរ៍ (Department & Salary)
+   5. លេខទូរស័ព្ទ (Phone link) & Action Buttons (View/Edit/Delete)
+   ======================================================== */
+@media screen and (max-width: 768px) {
+    #employeeTable {
+        display: block !important;
+        width: 100% !important;
+        border: none !important;
+    }
 
+    #employeeTable thead {
+        display: none !important;
+    }
+
+    #employeeList {
+        display: block !important;
+        width: 100% !important;
+        padding: 4px 0 !important;
+    }
+
+    .table-responsive > #employeeTable > #employeeList > tr,
+    #employeeList tr {
+        display: grid !important;
+        grid-template-columns: 80px 1fr auto !important;
+        grid-template-rows: auto auto auto auto auto !important;
+        column-gap: 12px !important;
+        row-gap: 2px !important;
+        padding: 12px 14px !important;
+        margin-bottom: 12px !important;
+        background-color: var(--bs-body-bg, #ffffff) !important;
+        border: 1px solid var(--bs-border-color, #dee2e6) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    [data-bs-theme="dark"] .table-responsive > #employeeTable > #employeeList > tr,
+    [data-bs-theme="dark"] #employeeList tr {
+        background-color: var(--bs-tertiary-bg, #2b3035) !important;
+        border-color: rgba(255, 255, 255, 0.12) !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    #employeeList td {
+        display: block !important;
+        width: auto !important;
+        border: none !important;
+        padding: 0 !important;
+        background: transparent !important;
+        text-align: left !important;
+    }
+
+    /* 1. រូបថត (Photo) on Left: Spans rows 1, 2, 3 */
+    #employeeList td.td-emp-photo,
+    #employeeList td:nth-child(1) {
+        grid-column: 1 / 2 !important;
+        grid-row: 1 / 4 !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+        padding-top: 2px !important;
+    }
+
+    #employeeList td.td-emp-photo img.emp-avatar,
+    #employeeList td:nth-child(1) img.emp-avatar {
+        width: 76px !important;
+        height: 76px !important;
+        border-radius: 14px !important;
+        object-fit: cover !important;
+        border: 2px solid rgba(13, 110, 253, 0.25) !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12) !important;
+        cursor: pointer !important;
+    }
+
+    /* 2. បន្ទាប់ពីរូបថត: អត្តលេខ (Code) */
+    #employeeList td.td-emp-code,
+    #employeeList td:nth-child(2) {
+        grid-column: 2 / 3 !important;
+        grid-row: 1 !important;
+        font-weight: 700 !important;
+        font-size: 0.86rem !important;
+        color: #0d6efd !important;
+        display: flex !important;
+        align-items: center !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    /* Type badge (Full-Time / Part-Time) at Top Right */
+    #employeeList td.td-emp-type,
+    #employeeList td:nth-child(8) {
+        grid-column: 3 / 4 !important;
+        grid-row: 1 !important;
+        text-align: right !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+    }
+
+    #employeeList td.td-emp-type .badge,
+    #employeeList td:nth-child(8) .badge {
+        font-size: 0.72rem !important;
+        padding: 3px 8px !important;
+        border-radius: 20px !important;
+    }
+
+    /* 3. ឈ្មោះបុគ្គលិកខ្មែរ & អង់គ្លេស (Khmer & English Name) */
+    #employeeList td.td-emp-name,
+    #employeeList td:nth-child(4) {
+        grid-column: 2 / 4 !important;
+        grid-row: 2 !important;
+        line-height: 1.25 !important;
+        padding: 2px 0 !important;
+    }
+
+    #employeeList td.td-emp-name .emp-name-km,
+    #employeeList td:nth-child(4) .emp-name-km {
+        font-size: 1.05rem !important;
+        font-weight: 700 !important;
+        color: var(--bs-body-color, #212529) !important;
+        cursor: pointer !important;
+        margin-bottom: 1px !important;
+    }
+
+    #employeeList td.td-emp-name .emp-name-latin,
+    #employeeList td:nth-child(4) .emp-name-latin {
+        font-size: 0.78rem !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        color: var(--bs-secondary-color, #6c757d) !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    /* 4. បន្ទាប់: តួនាទី (Position) */
+    #employeeList td.td-emp-position,
+    #employeeList td:nth-child(7) {
+        grid-column: 2 / 4 !important;
+        grid-row: 3 !important;
+        font-size: 0.88rem !important;
+        font-weight: 600 !important;
+        color: #0a58ca !important;
+        display: flex !important;
+        align-items: center !important;
+        margin-top: 2px !important;
+    }
+
+    [data-bs-theme="dark"] #employeeList td.td-emp-position,
+    [data-bs-theme="dark"] #employeeList td:nth-child(7) {
+        color: #6ea8fe !important;
+    }
+
+    #employeeList td.td-emp-position::before,
+    #employeeList td:nth-child(7)::before {
+        content: "តួនាទី៖ ";
+        color: var(--bs-secondary-color, #6c757d);
+        font-weight: normal;
+        margin-right: 4px;
+    }
+
+    /* 5. Sub-details Row (Department on left, Salary on right) */
+    #employeeList td.td-emp-dept,
+    #employeeList td:nth-child(6) {
+        grid-column: 1 / 3 !important;
+        grid-row: 4 !important;
+        font-size: 0.78rem !important;
+        color: var(--bs-secondary-color, #6c757d);
+        border-top: 1px dashed var(--bs-border-color, #e9ecef) !important;
+        padding-top: 8px !important;
+        margin-top: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    #employeeList td.td-emp-dept::before,
+    #employeeList td:nth-child(6)::before {
+        content: "ផ្នែក៖ ";
+        font-weight: 600;
+        margin-right: 3px;
+    }
+
+    #employeeList td.td-emp-salary,
+    #employeeList td:nth-child(10) {
+        grid-column: 3 / 4 !important;
+        grid-row: 4 !important;
+        font-size: 0.86rem !important;
+        font-weight: 700 !important;
+        text-align: right !important;
+        border-top: 1px dashed var(--bs-border-color, #e9ecef) !important;
+        padding-top: 8px !important;
+        margin-top: 8px !important;
+        color: #198754 !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+    }
+
+    /* 6. Bottom Bar: Phone on left, Action buttons on right */
+    #employeeList td.td-emp-phone,
+    #employeeList td:nth-child(9) {
+        grid-column: 1 / 2 !important;
+        grid-row: 5 !important;
+        border-top: 1px solid var(--bs-border-color, #dee2e6) !important;
+        padding-top: 8px !important;
+        margin-top: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        font-size: 0.8rem !important;
+    }
+
+    #employeeList td.td-emp-actions,
+    #employeeList td:nth-child(11) {
+        grid-column: 2 / 4 !important;
+        grid-row: 5 !important;
+        border-top: 1px solid var(--bs-border-color, #dee2e6) !important;
+        padding-top: 8px !important;
+        margin-top: 6px !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+
+    #employeeList td.td-emp-actions .btn {
+        padding: 4px 10px !important;
+        font-size: 0.82rem !important;
+        border-radius: 8px !important;
+    }
+
+    /* Hide redundant columns on mobile card (viewable in full detail via Staff Profile) */
+    #employeeList td.td-emp-natid,
+    #employeeList td:nth-child(3),
+    #employeeList td.td-emp-gender,
+    #employeeList td:nth-child(5) {
+        display: none !important;
+    }
+}

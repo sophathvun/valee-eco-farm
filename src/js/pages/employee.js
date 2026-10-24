@@ -36,23 +36,23 @@ async function loadEmployees() {
         else if (wageType === 'Hourly') wageSuffix = '/ \u1798\u17c9\u17c4\u1784';
         
         tr.innerHTML = `
-            <td><img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="emp-avatar" onclick="viewEmployeePhoto(${emp.id})" title="ចុចដើម្បីមើលរូបធំ និងទាញយក"></td>
-            <td class="fw-bold text-primary">${emp.code || 'N/A'}</td>
-            <td>
+            <td class="td-emp-photo"><img src="${emp.photo || 'assets/images/default-avatar.svg'}" onerror="this.src='assets/images/default-avatar.svg'" class="emp-avatar" onclick="viewEmployeePhoto(${emp.id})" title="ចុចដើម្បីមើលរូបធំ និងទាញយក"></td>
+            <td class="td-emp-code fw-bold text-primary">${emp.code || 'N/A'}</td>
+            <td class="td-emp-natid">
                 <div>${emp.nationalId || '-'}</div>
                 ${emp.idCardPhoto ? `<button type="button" class="btn btn-xs btn-outline-primary py-0 px-2 mt-1 rounded-pill" style="font-size: 0.68rem;" onclick="viewEmployeeIdCardPhoto(${emp.id})" title="ចុចដើម្បីមើលរូបអត្តសញ្ញាណប័ណ្ណធំ"><i class="bi bi-card-image me-1"></i>រូបកាត</button>` : ''}
             </td>
-            <td class="text-start">
+            <td class="td-emp-name text-start">
                 <div class="text-dark emp-name-km fw-bold" onclick="viewEmployeeProfile(${emp.id})" style="cursor: pointer;" title="ចុចដើម្បីមើលព័ត៌មានបុគ្គលិក">${emp.name}</div>
                 ${emp.latinName ? `<div class="text-muted emp-name-latin">${emp.latinName}</div>` : ''}
             </td>
-            <td>${emp.gender}</td>
-            <td>${emp.department || ''}</td>
-            <td>${emp.position}</td>
-            <td><span class="badge bg-secondary">${typeLabel}</span></td>
-            <td>${emp.phone}</td>
-            <td class="text-info fw-bold">${formatCurrency(emp.salary, emp.currency || 'USD')} <small class="text-muted">${wageSuffix}</small></td>
-            <td class="align-middle text-nowrap">
+            <td class="td-emp-gender">${emp.gender}</td>
+            <td class="td-emp-dept">${emp.department || ''}</td>
+            <td class="td-emp-position">${emp.position}</td>
+            <td class="td-emp-type"><span class="badge bg-secondary">${typeLabel}</span></td>
+            <td class="td-emp-phone">${emp.phone ? `<a href="tel:${emp.phone}" class="text-decoration-none text-muted"><i class="bi bi-telephone me-1 text-primary"></i>${emp.phone}</a>` : '-'}</td>
+            <td class="td-emp-salary text-info fw-bold">${formatCurrency(emp.salary, emp.currency || 'USD')} <small class="text-muted">${wageSuffix}</small></td>
+            <td class="td-emp-actions align-middle text-nowrap">
                 <button class="btn btn-sm btn-outline-info me-1 py-1 px-2 shadow-sm" onclick="viewEmployeeProfile(${emp.id})" title="មើលព័ត៌មានបុគ្គលិក (View Profile)"><i class="bi bi-eye-fill"></i></button>
                 ${hasPermission('employee_manage') ? `
                 <button class="btn btn-sm btn-outline-warning btn-edit me-1 py-1 px-2" onclick="editEmployee(${emp.id})" title="កែប្រែ"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg></button>
