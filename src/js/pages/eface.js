@@ -1380,7 +1380,7 @@ function displayAlreadyScannedCard(emp, existingTime, slotTitle, canEarlyOut = f
     if (nameEl) nameEl.innerText = emp.latinName ? emp.latinName.toUpperCase() : emp.name;
     if (subnameEl) subnameEl.innerText = emp.latinName ? emp.name : '';
     if (idEl) idEl.innerText = emp.code || `EMP-${emp.id}`;
-    if (campusEl) campusEl.innerText = window.efaceCampusName || 'VALEE ECO FARM';
+    if (campusEl) campusEl.innerText = window.efaceCampusName || 'VALLE ECO FARM';
     if (deptEl) deptEl.innerText = emp.department || 'Operations';
     if (posEl) posEl.innerText = `${emp.position || 'បុគ្គលិក'} (${emp.type || 'Full-Time'})`;
     if (shiftEl) shiftEl.innerText = slotTitle;
@@ -1535,7 +1535,7 @@ async function dispatchEfaceEarlyOutTelegramAlert(emp, timeStr, dateStr, hoursSt
 ⏰ <b>ម៉ោងចេញជាក់ស្តែង:</b> <b>${timeStr}</b>
 ⏱️ <b>ម៉ោងបំពេញការងារសរុប:</b> <b>${hoursStr}</b>
 📝 <b>មូលហេតុ:</b> ${escapeHtml(reason || 'មិនស្រួលខ្លួន / សុំចេញមុនម៉ោង')}
-📍 <b>ទីតាំង:</b> ${escapeHtml(window.efaceCampusName || 'VALEE ECO FARM')}
+📍 <b>ទីតាំង:</b> ${escapeHtml(window.efaceCampusName || 'VALLE ECO FARM')}
 ━━━━━━━━━━━━━━━━━━
 <i>កត់ត្រាស្វ័យប្រវត្តិតាមរយៈប្រព័ន្ធ E-Face Scanner</i>`;
 
@@ -1855,7 +1855,7 @@ function displayEfaceResultCard(emp, timeStr, shiftKh, isLate, lateMins, statusT
     if (nameEl) nameEl.innerText = emp.latinName ? emp.latinName.toUpperCase() : emp.name;
     if (subnameEl) subnameEl.innerText = emp.latinName ? emp.name : '';
     if (idEl) idEl.innerText = emp.code || `EMP-${emp.id}`;
-    if (campusEl) campusEl.innerText = window.efaceCampusName || 'VALEE ECO FARM';
+    if (campusEl) campusEl.innerText = window.efaceCampusName || 'VALLE ECO FARM';
     if (deptEl) deptEl.innerText = emp.department || 'Operations';
     if (posEl) posEl.innerText = emp.position || 'Staff';
     if (shiftEl) shiftEl.innerText = shiftKh;

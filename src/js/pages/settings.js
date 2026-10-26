@@ -995,7 +995,7 @@ window.loadTelegramSettings = async function() {
 
         if (tokenEl) tokenEl.value = settings.botToken || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ';
         if (chatEl) chatEl.value = settings.chatId || '-5344695591';
-        if (farmEl) farmEl.value = settings.farmName || 'VALEE ECO FARM';
+        if (farmEl) farmEl.value = settings.farmName || 'VALLE ECO FARM';
         if (enableEl) enableEl.checked = settings.enabled !== false;
         const threshEl = document.getElementById('telegramFaceThreshold');
         if (threshEl) threshEl.value = String(settings.faceMatchThreshold || '0.40');
@@ -1021,7 +1021,7 @@ window.saveTelegramSettings = async function(e) {
     if (e && e.preventDefault) e.preventDefault();
     const token = (document.getElementById('telegramBotToken')?.value || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ').trim();
     const chatId = (document.getElementById('telegramChatId')?.value || '-5344695591').trim();
-    const farmName = (document.getElementById('telegramFarmName')?.value || 'VALEE ECO FARM').trim();
+    const farmName = (document.getElementById('telegramFarmName')?.value || 'VALLE ECO FARM').trim();
     const enabled = document.getElementById('telegramAlertEnabled')?.checked ?? true;
 
     try {
@@ -1058,7 +1058,7 @@ window.saveTelegramSettings = async function(e) {
 window.testTelegramConnection = async function() {
     const token = (document.getElementById('telegramBotToken')?.value || '').trim();
     const chatId = (document.getElementById('telegramChatId')?.value || '').trim();
-    const farmName = (document.getElementById('telegramFarmName')?.value || 'VALEE ECO FARM').trim();
+    const farmName = (document.getElementById('telegramFarmName')?.value || 'VALLE ECO FARM').trim();
 
     if (!token || !chatId) {
         Swal.fire('ខ្វះទិន្នន័យ', 'សូមបញ្ចូល Bot Token និង Chat ID ជាមុនសិន!', 'warning');
@@ -1406,7 +1406,7 @@ window.loadGpsSettings = async function() {
         const lngEl = document.getElementById('gpsFarmLng');
         const radiusEl = document.getElementById('gpsAllowedRadius');
 
-        if (farmEl) farmEl.value = settings.farmName || 'VALEE ECO FARM';
+        if (farmEl) farmEl.value = settings.farmName || 'VALLE ECO FARM';
         if (latEl && settings.latitude) latEl.value = settings.latitude;
         if (lngEl && settings.longitude) lngEl.value = settings.longitude;
         if (radiusEl && settings.radiusMeters) radiusEl.value = String(settings.radiusMeters);
@@ -1583,7 +1583,7 @@ window.saveGpsSettings = async function(e) {
     if (e) e.preventDefault();
     const hiddenVal = document.getElementById('gpsGeofenceEnabled')?.value;
     const enabled = (hiddenVal === 'true');
-    const farmName = (document.getElementById('gpsFarmName')?.value || 'VALEE ECO FARM').trim();
+    const farmName = (document.getElementById('gpsFarmName')?.value || 'VALLE ECO FARM').trim();
     const lat = parseFloat(document.getElementById('gpsFarmLat')?.value);
     const lng = parseFloat(document.getElementById('gpsFarmLng')?.value);
     const radiusMeters = parseInt(document.getElementById('gpsAllowedRadius')?.value || '200', 10);

@@ -1,6 +1,6 @@
 {
-  "name": "Valee Eco Farm System",
-  "short_name": "Valee Farm",
+  "name": "Valle Eco Farm System",
+  "short_name": "Valle Farm",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
