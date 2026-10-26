@@ -565,25 +565,23 @@
                         </div>
                     </div>
                 </div>
-
-
-
                 <!-- Telegram Settings Tab -->
                 <div id="settings-telegram-tab" class="settings-tab" style="display: none;">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-8">
-                            <div class="card shadow-sm border-0 border-top border-primary border-4">
+                    <div class="row">
+                        <!-- Left Col: Attendance Alerts (E-Face) -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-primary border-4 h-100">
                                 <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
                                     <div class="d-flex align-items-center">
                                         <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
                                             <i class="bi bi-telegram text-primary fs-4"></i>
                                         </div>
                                         <div>
-                                            <h5 class="mb-0 fw-bold text-dark">ការកំណត់ Telegram Bot (Attendance Alerts)</h5>
-                                            <small class="text-muted">ផ្ញើដំណឹងវត្តមាន និងរូបថតបុគ្គលិកទៅកាន់ Telegram Group ដោយស្វ័យប្រវត្តិ</small>
+                                            <h5 class="mb-0 fw-bold text-dark">Telegram ??????? (Attendance Group)</h5>
+                                            <small class="text-muted">????????????????????? E-Face ?????? Group ???????</small>
                                         </div>
                                     </div>
-                                    <div class="form-check form-switch fs-5">
+                                    <div class="form-check form-switch fs-5 mb-0">
                                         <input class="form-check-input" type="checkbox" id="telegramAlertEnabled" checked>
                                     </div>
                                 </div>
@@ -593,66 +591,156 @@
                                             <label class="form-label fw-bold">Telegram Bot Token <span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <span class="input-group-text bg-light"><i class="bi bi-key-fill text-muted"></i></span>
-                                                <input type="text" class="form-control" id="telegramBotToken" placeholder="ឧទាហរណ៍: 7123456789:AAHk... (Bot Token ពី @BotFather)" required>
+                                                <input type="text" class="form-control" id="telegramBotToken" placeholder="???????: 7123456789:AAHk... (Bot Token ?? @BotFather)" required>
                                             </div>
-                                            <small class="text-muted">ទទួលបាន Bot Token ដោយការផ្ញើសារ /newbot ទៅកាន់ <a href="https://t.me/BotFather" target="_blank" class="fw-bold text-decoration-none">@BotFather</a> លើ Telegram</small>
+                                            <small class="text-muted">??????? Bot Token ????????????? /newbot ?????? <a href="https://t.me/BotFather" target="_blank" class="fw-bold text-decoration-none">@BotFather</a> ?? Telegram</small>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold">Telegram Chat ID / Group ID <span class="text-danger">*</span></label>
+                                            <label class="form-label fw-bold">Attendance Group Chat ID <span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <span class="input-group-text bg-light"><i class="bi bi-chat-dots-fill text-muted"></i></span>
-                                                <input type="text" class="form-control" id="telegramChatId" placeholder="ឧទាហរណ៍: -1001234567890 (Telegram Group ID)" required>
+                                                <input type="text" class="form-control" id="telegramChatId" placeholder="???????: -1001234567890 (Attendance Group ID)" required>
                                             </div>
-                                            <small class="text-muted">បន្ថែម Bot របស់អ្នកចូលក្នុង Group រួចយក Group Chat ID (អាចប្រើ bot ដូចជា <a href="https://t.me/RawDataBot" target="_blank" class="fw-bold text-decoration-none">@RawDataBot</a> ដើម្បីមើល Group ID)</small>
+                                            <small class="text-muted">Group Chat ID ???????????????????????????????</small>
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold">ឈ្មោះទីតាំង / សាខា (Campus / Location Name)</label>
+                                            <label class="form-label fw-bold">??????????? / ???? (Campus / Location Name)</label>
                                             <div class="input-group">
                                                 <span class="input-group-text bg-light"><i class="bi bi-geo-alt-fill text-muted"></i></span>
                                                 <input type="text" class="form-control" id="telegramFarmName" placeholder="VALEE ECO FARM">
                                             </div>
-                                            <small class="text-muted">បង្ហាញនៅលើចំណងជើងនៃដំណឹងវត្តមានដែលផ្ញើទៅ Telegram</small>
+                                            <small class="text-muted">???????????????????????????????????????? Telegram</small>
                                         </div>
 
-                                        
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold">កម្រិតសុវត្ថិភាពស្កែនមុខ (Face Match Security Threshold)</label>
+                                            <label class="form-label fw-bold">???????????????????????? (Face Match Security Threshold)</label>
                                             <div class="input-group">
                                                 <span class="input-group-text bg-light"><i class="bi bi-shield-lock-fill text-muted"></i></span>
                                                 <select class="form-select" id="telegramFaceThreshold">
-                                                    <option value="0.38">តឹងរ៉ឹងបំផុត (Very Strict: 0.38 - គ្មានការច្រឡំមុខ)</option>
-                                                    <option value="0.40" selected>ស្តង់ដារកម្រិតខ្ពស់ (High Accuracy: 0.40 - ណែនាំ)</option>
-                                                    <option value="0.43">ស្តង់ដារទូទៅ (Standard: 0.43)</option>
-                                                    <option value="0.46">កម្រិតធូរ (Flexible: 0.46 - សម្រាប់កាមេរ៉ាខ្សោយ)</option>
+                                                    <option value="0.38">???????????? (Very Strict: 0.38 - ????????????????)</option>
+                                                    <option value="0.40" selected>??????????????????? (High Accuracy: 0.40 - ?????)</option>
+                                                    <option value="0.43">???????????? (Standard: 0.43)</option>
+                                                    <option value="0.46">????????? (Flexible: 0.46 - ???????????????????)</option>
                                                 </select>
                                             </div>
-                                            <small class="text-muted">កម្រិត 0.40 ធានាថាមុខដែលមិនទាន់ចុះឈ្មោះ ឬមនុស្សក្រៅ នឹងមិនច្រឡំជាបុគ្គលិកផ្សេងដាច់ខាត (Prevents false matches)</small>
                                         </div>
 
                                         <div class="alert alert-info border-0 d-flex align-items-center mb-4" style="background-color: #f0f7ff; border-left: 4px solid #0d6efd !important;">
                                             <i class="bi bi-info-circle-fill text-primary fs-4 me-3"></i>
                                             <div class="small">
-                                                <strong>ចំណាំ៖</strong> រាល់ពេលបុគ្គលិកស្កែនមុខតាមរយៈប្រព័ន្ធ <b>E-Face Attendance</b> ប្រព័ន្ធនឹងកត់ត្រាវត្តមានភ្លាមៗ និងផ្ញើសារដំណឹងព្រមទាំងរូបថតបុគ្គលិកចូលទៅកាន់ Telegram Group នេះក្នុងពេលដំណាលគ្នា។
+                                                <strong>??????</strong> ????????????????????????????? <b>E-Face Attendance</b> ??????????????????????????????? ????????????????????????????????????????????? Group ???????????
                                             </div>
                                         </div>
 
                                         <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                                             <button type="button" class="btn btn-outline-info" id="btnTestTelegram" onclick="testTelegramConnection()">
-                                                <i class="bi bi-send-check me-1"></i> តេស្តផ្ញើសារសាកល្បង (Test Alert)
+                                                <i class="bi bi-send-check me-1"></i> ???????????? (Test Alert)
                                             </button>
                                             <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">
-                                                <i class="bi bi-save me-1"></i> រក្សាទុកការកំណត់ (Save)
+                                                <i class="bi bi-save me-1"></i> ???????? (Save)
                                             </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Right Col: Payment Voucher Group & Staff PINs Manager -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card shadow-sm border-0 border-top border-success border-4 h-100">
+                                <div class="card-header bg-white d-flex align-items-center justify-content-between py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-success bg-opacity-10 p-2 me-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                            <i class="bi bi-receipt text-success fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-0 fw-bold text-dark">Telegram ????????????????? (Payment Group)</h5>
+                                            <small class="text-muted">??????????????? ???????????????? Telegram Group ????????????????????</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body p-4">
+                                    <form id="paymentVoucherSettingsForm" onsubmit="savePaymentVoucherSettings(event)">
+                                        
+                                        <!-- Shareable Form Link -->
+                                        <div class="mb-3 p-3 bg-light rounded-3 border">
+                                            <label class="form-label fw-bold text-primary small mb-1">
+                                                <i class="bi bi-link-45deg me-1"></i>?????????????????????? Share ????? Telegram Group
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control bg-white font-monospace small" id="pv-share-link" readonly value="https://sophathvun.github.io/valee-eco-farm/#pv">
+                                                <button class="btn btn-primary px-3" type="button" onclick="copyVoucherFormLink()">
+                                                    <i class="bi bi-clipboard me-1"></i> ????? (Copy)
+                                                </button>
+                                            </div>
+                                            <small class="text-muted" style="font-size: 0.72rem;">* ????????????????????? Pin ?? Telegram Group ????????????????????????????????????????????</small>
+                                        </div>
+
+                                        <!-- Payment Group Chat ID -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Payment Group Chat ID <span class="text-danger">*</span></label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i class="bi bi-chat-dots-fill text-success"></i></span>
+                                                <input type="text" class="form-control" id="telegramPaymentChatId" placeholder="???????: -1009876543210 (Group ID ????)" required>
+                                            </div>
+                                            <small class="text-muted">Add Bot ???????????????????? Payment Group ???? ????? Chat ID ??????????????</small>
+                                        </div>
+
+                                        <!-- Custom Bot Token (Optional) -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold small text-secondary">Payment Bot Token (Optional / ????????????)</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light"><i class="bi bi-key-fill text-muted"></i></span>
+                                                <input type="text" class="form-control" id="telegramPaymentBotToken" placeholder="???????? ?????????????????? Bot ??? Attendance ????">
+                                            </div>
+                                            <small class="text-muted" style="font-size: 0.72rem;">* ?????????????????? Bot ??????????????? (???????????????? Bot ???????)</small>
+                                        </div>
+
+                                        <!-- 5 Voucher Staff & 4-Digit PINs Manager -->
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <label class="form-label fw-bold mb-0">
+                                                    <i class="bi bi-people-fill text-primary me-1"></i>????????????????? ? ???? &amp; ??? PIN
+                                                </label>
+                                                <small class="text-muted" style="font-size: 0.75rem;">(PIN ? ?????????????????)</small>
+                                            </div>
+                                            
+                                            <div class="table-responsive border rounded-3">
+                                                <table class="table table-sm table-bordered table-hover mb-0 align-middle">
+                                                    <thead class="table-light small">
+                                                        <tr>
+                                                            <th class="text-center" style="width: 36px;">#</th>
+                                                            <th>????????????? (Staff Name)</th>
+                                                            <th class="text-center" style="width: 110px;">PIN ? ?????</th>
+                                                            <th class="text-center" style="width: 60px;">?????</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="voucherStaffTableBody">
+                                                        <!-- Populated via JS -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <small class="text-muted" style="font-size: 0.72rem;">* ???????? Login ??? PIN ??????????????????????????? ????????????????????????????????</small>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                            <button type="button" class="btn btn-outline-success" id="btnTestPaymentTelegram" onclick="testPaymentTelegramConnection()">
+                                                <i class="bi bi-send-check me-1"></i> ???????????????? (Test Payment Alert)
+                                            </button>
+                                            <button type="submit" class="btn btn-success px-4 fw-bold shadow-sm">
+                                                <i class="bi bi-save me-1"></i> ??????????????????????????? (Save)
+                                            </button>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-
 
                 <!-- GPS Geofence Settings Tab -->
                 <div id="settings-gps-tab" class="settings-tab" style="display: none;">

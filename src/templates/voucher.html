@@ -1,0 +1,260 @@
+<!-- Payment Voucher Template -->
+<div class="container-fluid py-3 px-2 px-md-4" id="voucher-page-container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+
+            <!-- Top Header Branding -->
+            <div class="text-center mb-3">
+                <div class="d-inline-flex align-items-center justify-content-center bg-white p-2 rounded-circle shadow-sm border mb-2" style="width: 64px; height: 64px;">
+                    <img src="assets/images/logo.png" alt="Logo" class="img-fluid" style="max-height: 48px;" onerror="this.src='assets/images/icon-192.png'">
+                </div>
+                <h4 class="fw-bold mb-0 text-success" id="pv-farm-title">VALEE ECO FARM</h4>
+                <div class="text-muted fw-semibold" style="font-size: 0.9rem;">
+                    🧾 ប័ណ្ណទូទាត់ប្រាក់ (PAYMENT VOUCHER)
+                </div>
+                <div class="d-flex justify-content-center align-items-center gap-2 mt-1">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1" style="font-size: 0.72rem;">
+                        <i class="bi bi-cloud-check-fill me-1"></i>Cloud Synced
+                    </span>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1" style="font-size: 0.72rem;">
+                        <i class="bi bi-telegram me-1"></i>Telegram Auto-Publish
+                    </span>
+                </div>
+            </div>
+
+            <!-- SCREEN 1: Staff Identification & PIN Login (shown if not remembered) -->
+            <div class="card shadow-sm border-0 rounded-4 mb-3" id="pv-auth-screen" style="display: none;">
+                <div class="card-body p-4 text-center">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width: 56px; height: 56px;">
+                        <i class="bi bi-shield-lock-fill fs-2"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">ផ្ទៀងផ្ទាត់បុគ្គលិកទូទាត់ប្រាក់</h5>
+                    <p class="text-muted small mb-3">សូមជ្រើសរើសឈ្មោះរបស់អ្នក និងវាយលេខសម្ងាត់ ៤ ខ្ទង់ ដើម្បីចាប់ផ្ដើម</p>
+
+                    <form id="pv-auth-form" onsubmit="handleVoucherUserLogin(event)">
+                        <div class="text-start mb-3">
+                            <label class="form-label fw-bold small text-secondary">
+                                <i class="bi bi-person-fill text-primary me-1"></i>ជ្រើសរើសឈ្មោះរបស់អ្នក (Select Your Name) <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select form-select-lg rounded-3" id="pv-auth-user-select" required>
+                                <option value="" disabled selected>-- សូមជ្រើសរើសឈ្មោះរបស់អ្នក --</option>
+                            </select>
+                        </div>
+
+                        <div class="text-start mb-3">
+                            <label class="form-label fw-bold small text-secondary">
+                                <i class="bi bi-key-fill text-warning me-1"></i>លេខកូដសម្ងាត់ (4-Digit PIN) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <input type="password" class="form-control text-center fw-bold fs-3 letter-spacing-lg rounded-start-3" id="pv-auth-pin" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="••••" required autocomplete="off">
+                                <button class="btn btn-outline-secondary rounded-end-3" type="button" id="pv-toggle-pin-btn" onclick="togglePinVisibility()">
+                                    <i class="bi bi-eye" id="pv-pin-eye-icon"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted" style="font-size: 0.75rem;">វាយលេខសម្ងាត់ ៤ ខ្ទង់ដែល Admin បានផ្ដល់ជូន</small>
+                        </div>
+
+                        <div class="form-check text-start mb-3">
+                            <input class="form-check-input" type="checkbox" id="pv-remember-me" checked>
+                            <label class="form-check-label small text-secondary" for="pv-remember-me">
+                                ចងចាំឈ្មោះខ្ញុំលើទូរស័ព្ទនេះ (លើកក្រោយមិនបាច់វាយ PIN ទៀតទេ)
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm py-2">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> ចូលបំពេញប័ណ្ណ (Unlock Form)
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SCREEN 2: Main Voucher Form (shown once authenticated/remembered) -->
+            <div id="pv-main-screen" style="display: none;">
+
+                <!-- Logged In User Profile Bar -->
+                <div class="bg-white p-2 p-md-3 rounded-4 shadow-sm border mb-3 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                            <i class="bi bi-person-check-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark lh-sm" id="pv-active-staff-name">កំពុងផ្ទុក...</div>
+                            <div class="text-muted small" style="font-size: 0.74rem;">
+                                <i class="bi bi-check-circle-fill text-success me-1"></i>អ្នកបញ្ចូលទិន្នន័យ (Prepared By)
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1" onclick="switchVoucherUser()" style="font-size: 0.75rem;" title="ប្ដូរទៅកាន់បុគ្គលិកផ្សេង">
+                        <i class="bi bi-arrow-repeat me-1"></i>ប្ដូរអ្នកប្រើ
+                    </button>
+                </div>
+
+                <!-- Main Voucher Card -->
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-3">
+                    <div class="card-header bg-gradient bg-primary text-white py-3 px-3 px-md-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0 fw-bold"><i class="bi bi-file-earmark-text-fill me-1"></i> ព័ត៌មានប័ណ្ណទូទាត់ប្រាក់</h6>
+                                <small class="text-white-50" style="font-size: 0.75rem;">សូមបំពេញព័ត៌មានខាងក្រោមឱ្យបានត្រឹមត្រូវ</small>
+                            </div>
+                            <span class="badge bg-white text-primary fw-bold px-2 py-1 rounded-pill" id="pv-display-voucher-no">
+                                #PV-AUTO
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-3 p-md-4">
+                        <form id="paymentVoucherForm" onsubmit="handleSavePaymentVoucher(event)">
+
+                            <!-- Hidden Voucher Number -->
+                            <input type="hidden" id="pv-voucher-no" value="">
+
+                            <!-- Row: Date & Time Picker (Custom selectable by user!) -->
+                            <div class="row g-2 mb-3">
+                                <div class="col-7">
+                                    <label class="form-label fw-bold small text-secondary mb-1">
+                                        <i class="bi bi-calendar-event text-primary me-1"></i>កាលបរិច្ឆេទចំណាយ (Date) <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" class="form-control rounded-3" id="pv-date" required>
+                                    <small class="text-muted" style="font-size: 0.68rem;">* អាចរើសថ្ងៃមុនៗបាន</small>
+                                </div>
+                                <div class="col-5">
+                                    <label class="form-label fw-bold small text-secondary mb-1">
+                                        <i class="bi bi-clock text-primary me-1"></i>ម៉ោង (Time) <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="time" class="form-control rounded-3" id="pv-time" required>
+                                </div>
+                            </div>
+
+                            <!-- Payee / Supplier -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary mb-1">
+                                    <i class="bi bi-person-badge text-primary me-1"></i>អ្នកទទួលប្រាក់ / ហាងផ្គត់ផ្គង់ (Payee / Supplier) <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control rounded-3" id="pv-payee" placeholder="ឧ. ហាងកសិកម្ម ហេង ហេង, លោក សុខា..." required autocomplete="off">
+                            </div>
+
+                            <!-- Expense Category -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary mb-1">
+                                    <i class="bi bi-tags-fill text-primary me-1"></i>ប្រភេទចំណាយ (Expense Category) <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-select rounded-3" id="pv-category" required>
+                                    <option value="" disabled selected>-- ជ្រើសរើសប្រភេទចំណាយ --</option>
+                                </select>
+                            </div>
+
+                            <!-- Amount & Currency -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary mb-1">
+                                    <i class="bi bi-cash-stack text-success me-1"></i>ចំនួនទឹកប្រាក់ទូទាត់ (Amount) <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light fw-bold text-primary" id="pv-cur-symbol">$</span>
+                                    <input type="number" step="any" min="0.01" class="form-control fw-bold text-danger fs-3" id="pv-amount" placeholder="0.00" required oninput="calcVoucherConversion()">
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="pv-currency" id="pv-cur-usd" value="USD" checked onchange="onVoucherCurrencyChange()">
+                                        <label class="btn btn-outline-primary d-flex align-items-center fw-bold px-3" for="pv-cur-usd">USD ($)</label>
+
+                                        <input type="radio" class="btn-check" name="pv-currency" id="pv-cur-khr" value="KHR" onchange="onVoucherCurrencyChange()">
+                                        <label class="btn btn-outline-primary d-flex align-items-center fw-bold px-3" for="pv-cur-khr">KHR (៛)</label>
+                                    </div>
+                                </div>
+                                <div id="pv-conversion-note" class="text-primary fw-semibold mt-1" style="font-size: 0.8rem;">
+                                    អត្រាប្តូរប្រាក់ $1 = 4,100 ៛
+                                </div>
+                            </div>
+
+                            <!-- Payment Method (Cash vs Bank) -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary mb-1">
+                                    <i class="bi bi-credit-card-2-front-fill text-primary me-1"></i>វិធីសាស្រ្តទូទាត់ (Payment Method) <span class="text-danger">*</span>
+                                </label>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <input type="radio" class="btn-check" name="pv-method" id="pv-method-cash" value="Cash" checked>
+                                        <label class="btn btn-outline-success w-100 py-2 rounded-3 text-center d-flex flex-column align-items-center" for="pv-method-cash">
+                                            <i class="bi bi-cash-coin fs-4 mb-1"></i>
+                                            <span class="fw-bold" style="font-size: 0.88rem;">សាច់ប្រាក់សុទ្ធ (Cash)</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="radio" class="btn-check" name="pv-method" id="pv-method-bank" value="Bank">
+                                        <label class="btn btn-outline-warning w-100 py-2 rounded-3 text-center d-flex flex-column align-items-center text-dark" for="pv-method-bank">
+                                            <i class="bi bi-bank fs-4 mb-1 text-warning"></i>
+                                            <span class="fw-bold" style="font-size: 0.88rem;">ធនាគារ (Bank Transfer)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description / Purpose -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-secondary mb-1">
+                                    <i class="bi bi-chat-left-text-fill text-primary me-1"></i>បរិយាយមុខចំណាយ / មូលហេតុ (Description)
+                                </label>
+                                <textarea class="form-control rounded-3" id="pv-description" rows="2" placeholder="បញ្ជាក់ពីសម្ភារៈ ឬគោលបំណងទូទាត់..."></textarea>
+                            </div>
+
+                            <!-- Receipt Photo Attachment -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-secondary mb-1">
+                                    <i class="bi bi-camera-fill text-primary me-1"></i>រូបថតវិក្កយបត្រ / បង្កាន់ដៃ (Receipt / Bill Photo)
+                                </label>
+                                
+                                <input type="file" id="pv-receipt-input" accept="image/*" capture="environment" style="display: none;" onchange="handleReceiptFileSelect(event)">
+                                
+                                <div id="pv-photo-upload-placeholder">
+                                    <button type="button" class="btn btn-outline-primary w-100 py-3 rounded-3 d-flex flex-column align-items-center justify-content-center" style="border-style: dashed; border-width: 2px;" onclick="document.getElementById('pv-receipt-input').click()">
+                                        <i class="bi bi-camera fs-1 mb-1 text-primary"></i>
+                                        <span class="fw-bold">ថតរូបវិក្កយបត្រ ឬជ្រើសរូបភាព</span>
+                                        <small class="text-muted" style="font-size: 0.74rem;">ចុចត្រង់នេះដើម្បីបើកកាមេរ៉ាទូរស័ព្ទ ឬរើសរូបពីវិចិត្រសាល</small>
+                                    </button>
+                                </div>
+
+                                <!-- Photo Preview Box (Hidden initially) -->
+                                <div id="pv-photo-preview-wrap" class="mt-2 text-center position-relative" style="display: none;">
+                                    <div class="border rounded-3 p-2 bg-light d-inline-block position-relative shadow-sm" style="max-width: 100%;">
+                                        <img id="pv-photo-preview" src="" alt="Receipt Preview" class="img-fluid rounded-2" style="max-height: 240px; object-fit: contain;">
+                                        <div class="d-flex justify-content-center gap-2 mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="removeReceiptPhoto()">
+                                                <i class="bi bi-trash-fill me-1"></i>លុបរូបចេញ
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="document.getElementById('pv-receipt-input').click()">
+                                                <i class="bi bi-camera-fill me-1"></i>ថតឡើងវិញ
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" id="pv-save-btn" class="btn btn-success btn-lg w-100 fw-bold py-3 rounded-pill shadow d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-send-check-fill fs-5"></i>
+                                <span>រក្សាទុក និងផ្ញើចូល Telegram (Save &amp; Publish)</span>
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Recent Vouchers Collapsible Accordion -->
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+                    <div class="card-header bg-white py-2 px-3 d-flex justify-content-between align-items-center" role="button" onclick="toggleRecentVouchers()">
+                        <div class="fw-bold small text-dark d-flex align-items-center">
+                            <i class="bi bi-clock-history text-primary me-2"></i>ប្រវត្តិប័ណ្ណទូទាត់ដែលបានបញ្ចូលថ្មីៗ
+                        </div>
+                        <i class="bi bi-chevron-down text-muted" id="pv-recent-chevron"></i>
+                    </div>
+                    <div class="card-body p-2" id="pv-recent-body" style="display: none;">
+                        <div id="pv-recent-list" class="list-group list-group-flush small">
+                            <div class="text-center text-muted py-3">កំពុងទាញយកទិន្នន័យ...</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

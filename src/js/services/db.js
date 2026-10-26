@@ -143,5 +143,8 @@ const db = {
     workShifts: new FirebaseStore('workShifts'),
     payroll: new FirebaseStore('payroll'),
     telegramSettings: new FirebaseStore('telegramSettings'),
-    gpsSettings: new FirebaseStore('gpsSettings')
+    gpsSettings: new FirebaseStore('gpsSettings'),
+    paymentVouchers: new FirebaseStore('paymentVouchers'),
+    voucherUsers: new FirebaseStore('voucherUsers')
 };
+

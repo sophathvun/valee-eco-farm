@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="src/css/payroll.css?v=1792674000">
     <link rel="stylesheet" href="src/css/settings.css?v=1792674000">
     <link rel="stylesheet" href="src/css/eface.css?v=1792683000000">
+    <link rel="stylesheet" href="src/css/voucher.css?v=1792840000000">
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
@@ -126,6 +127,32 @@
             if (typeof window.initEface === 'function') window.initEface();
         };
 
+                window.openPublicVoucher = function() {
+            window.location.hash = '#pv';
+            document.documentElement.classList.add('public-voucher-mode');
+            if (document.body) document.body.classList.add('public-voucher-mode');
+            const loginView = document.getElementById('login-view');
+            const mainWrapper = document.getElementById('main-wrapper');
+            if (loginView) loginView.style.display = 'none';
+            if (mainWrapper) mainWrapper.style.display = 'flex';
+            if (typeof window.showTab === 'function') window.showTab('voucher');
+            if (typeof window.initVoucher === 'function') window.initVoucher();
+        };
+
+        window.exitPublicVoucherToLogin = function() {
+            document.documentElement.classList.remove('public-voucher-mode');
+            if (document.body) document.body.classList.remove('public-voucher-mode');
+            try {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            } catch(e) {
+                window.location.hash = '';
+            }
+            const loginView = document.getElementById('login-view');
+            const mainWrapper = document.getElementById('main-wrapper');
+            if (loginView) loginView.style.display = 'flex';
+            if (mainWrapper) mainWrapper.style.display = 'none';
+        };
+
         window.exitPublicEfaceToLogin = function() {
             if (typeof window.stopEfaceScanning === 'function') window.stopEfaceScanning();
             document.documentElement.classList.remove('public-eface-mode');
@@ -144,17 +171,24 @@
         window.addEventListener('hashchange', function() {
             var hash = (window.location.hash || '').toLowerCase();
             var isEfaceRoute = hash.startsWith('#eface') || hash.startsWith('#scan');
+            var isVoucherRoute = hash.startsWith('#pv') || hash.startsWith('#voucher') || hash.startsWith('#payment-voucher');
             var isAuth = !!localStorage.getItem('currentUser');
             if (!isAuth) {
                 if (isEfaceRoute) {
                     window.openPublicEfaceScanner();
+                } else if (isVoucherRoute) {
+                    window.openPublicVoucher();
                 } else if (hash === '' || hash === '#login') {
                     window.exitPublicEfaceToLogin();
+                    window.exitPublicVoucherToLogin();
                 }
             } else {
                 if (isEfaceRoute) {
                     if (typeof window.showTab === 'function') window.showTab('eface');
                     if (typeof window.initEface === 'function') window.initEface();
+                } else if (isVoucherRoute) {
+                    if (typeof window.showTab === 'function') window.showTab('voucher');
+                    if (typeof window.initVoucher === 'function') window.initVoucher();
                 }
             }
         });
@@ -357,15 +391,22 @@
         (function() {
             var hash = (window.location.hash || '').toLowerCase();
             var isEfaceRoute = hash.startsWith('#eface') || hash.startsWith('#scan');
+            var isVoucherRoute = hash.startsWith('#pv') || hash.startsWith('#voucher') || hash.startsWith('#payment-voucher');
             var isAuth = !!localStorage.getItem('currentUser');
-            if (isAuth || isEfaceRoute) {
+            if (isAuth || isEfaceRoute || isVoucherRoute) {
                 document.write('<style id="pre-auth-style">#login-view{display:none!important;}#main-wrapper{display:flex!important;}</style>');
                 if (!isAuth && isEfaceRoute) {
                     document.documentElement.classList.add('public-eface-mode');
                 }
+                if (!isAuth && isVoucherRoute) {
+                    document.documentElement.classList.add('public-voucher-mode');
+                }
             }
             if (isEfaceRoute) {
                 document.write('<style id="pre-eface-style">#dashboard-view{display:none!important;}#eface-view{display:block!important;}</style>');
+            }
+            if (isVoucherRoute) {
+                document.write('<style id="pre-voucher-style">#dashboard-view{display:none!important;}#voucher-view{display:block!important;}</style>');
             }
         })();
     </script>
@@ -508,6 +549,12 @@
                     <a href="#" class="nav-link" id="nav-expense" onclick="showTab('expense')">
                         <span class="nav-link-icon">💸</span>
                         <span class="nav-link-title" data-i18n="menu_expense">ចំណាយ</span>
+                    </a>
+                </li>
+                <li class="nav-item sys-menu-item" data-perm="expense">
+                    <a href="#" class="nav-link" id="nav-voucher" onclick="showTab('voucher')">
+                        <span class="nav-link-icon">🧾</span>
+                        <span class="nav-link-title">ប័ណ្ណទូទាត់ (Voucher)</span>
                     </a>
                 </li>
                 <li class="nav-item sys-menu-item" data-perm="reports">
@@ -1381,7 +1428,7 @@
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1792820000000"></script>
+    <script type="module" src="src/js/main.js?v=1792840000000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">

@@ -999,6 +999,19 @@ window.loadTelegramSettings = async function() {
         if (enableEl) enableEl.checked = settings.enabled !== false;
         const threshEl = document.getElementById('telegramFaceThreshold');
         if (threshEl) threshEl.value = String(settings.faceMatchThreshold || '0.40');
+        const paymentChatEl = document.getElementById('telegramPaymentChatId');
+        const paymentTokenEl = document.getElementById('telegramPaymentBotToken');
+        if (paymentChatEl) paymentChatEl.value = settings.paymentChatId || '';
+        if (paymentTokenEl) paymentTokenEl.value = settings.paymentBotToken || '';
+
+        const shareLinkEl = document.getElementById('pv-share-link');
+        if (shareLinkEl) {
+            shareLinkEl.value = `${window.location.origin}${window.location.pathname}#pv`;
+        }
+
+        if (typeof loadVoucherStaffTable === 'function') {
+            await loadVoucherStaffTable();
+        }
     } catch (e) {
         console.error('Error loading telegram settings:', e);
     }
@@ -1102,6 +1115,223 @@ window.testTelegramConnection = async function() {
     }
 };
 
+
+// ====== PAYMENT VOUCHER SETTINGS & 5 STAFF PINs ======
+window.savePaymentVoucherSettings = async function(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const paymentChatId = (document.getElementById('telegramPaymentChatId')?.value || '').trim();
+    const paymentBotToken = (document.getElementById('telegramPaymentBotToken')?.value || '').trim();
+
+    if (!paymentChatId) {
+        Swal.fire('???? Payment Group Chat ID', '????????? Chat ID ?? Telegram Group ??????????????????????!', 'warning');
+        return;
+    }
+
+    try {
+        const existing = (typeof db !== 'undefined' && db.telegramSettings) ? await db.telegramSettings.first() : null;
+        if (existing) {
+            await db.telegramSettings.update(existing.id, {
+                paymentChatId: paymentChatId,
+                paymentBotToken: paymentBotToken,
+                updatedAt: new Date().toISOString()
+            });
+        } else if (typeof db !== 'undefined' && db.telegramSettings) {
+            await db.telegramSettings.add({
+                paymentChatId: paymentChatId,
+                paymentBotToken: paymentBotToken,
+                botToken: '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ',
+                chatId: '-5344695591',
+                enabled: true,
+                createdAt: new Date().toISOString()
+            });
+        }
+
+        // Save 5 Staff rows
+        await saveVoucherStaffTable();
+
+        Swal.fire({
+            icon: 'success',
+            title: '??????!',
+            text: '??????????????????? Telegram Payment Group ??????????????? ? ???????????!',
+            timer: 1800,
+            showConfirmButton: false
+        });
+    } catch (err) {
+        Swal.fire({
+            icon: 'error',
+            title: '??????',
+            text: '???????????????????: ' + (err.message || err)
+        });
+    }
+};
+
+window.testPaymentTelegramConnection = async function() {
+    const mainToken = (document.getElementById('telegramBotToken')?.value || '').trim() || '8823338803:AAF8xrTeSo4Up7u5R9L1absAIK-GU-n4_eQ';
+    const customToken = (document.getElementById('telegramPaymentBotToken')?.value || '').trim();
+    const token = customToken || mainToken;
+    const chatId = (document.getElementById('telegramPaymentChatId')?.value || '').trim();
+
+    if (!chatId) {
+        Swal.fire('???? Payment Group Chat ID', '????????? Payment Group Chat ID ?? Telegram Group ????????????!', 'warning');
+        return;
+    }
+
+    const btn = document.getElementById('btnTestPaymentTelegram');
+    const oldHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> ????????????...';
+        btn.disabled = true;
+    }
+
+    try {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-GB');
+        const day = String(now.getDate()).padStart(2, '0');
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const dateFormatted = day + '-' + months[now.getMonth()] + '-' + now.getFullYear();
+
+        const text =
+`?? <b>????????????????? (PAYMENT VOUCHER): ???????????????</b>
+?????????????????
+?? <b>????:</b> ${timeStr}
+?? <b>???????????:</b> ${dateFormatted}
+?? <b>????????:</b> ?????????? Payment Telegram Group ?????????????! ?
+?? <b>????????:</b> ?????????????????????????????????????????????????`;
+
+        const res = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: text,
+                parse_mode: 'HTML'
+            })
+        });
+        const resJson = await res.json();
+        if (resJson.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: '????????????????!',
+                text: '????????????????????????????????????? Payment Telegram Group ??????????',
+                confirmButtonColor: '#198754'
+            });
+        } else {
+            throw new Error(resJson.description || '?????????????????????');
+        }
+    } catch (err) {
+        Swal.fire({
+            icon: 'error',
+            title: '????????????????',
+            text: '??????????????????: ' + (err.message || err) + '\n?????????????? Invite Bot ???????? Payment Group ???? ???????????????? Admin?',
+            confirmButtonColor: '#dc3545'
+        });
+    } finally {
+        if (btn) {
+            btn.innerHTML = oldHtml;
+            btn.disabled = false;
+        }
+    }
+};
+
+window.copyVoucherFormLink = function() {
+    const linkInput = document.getElementById('pv-share-link');
+    if (!linkInput) return;
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999);
+    try {
+        navigator.clipboard.writeText(linkInput.value).then(() => {
+            Swal.fire({
+                icon: 'success',
+                title: '???????? Link ???????!',
+                text: '????????? Link ????? Share ? Pin ????? Telegram Group ?????????????????????????????????????',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }).catch(() => {
+            Swal.fire('Link ???????????????????????', linkInput.value, 'info');
+        });
+    } catch(e) {
+        Swal.fire('Link ???????????????????????', linkInput.value, 'info');
+    }
+};
+
+window.loadVoucherStaffTable = async function() {
+    const tbody = document.getElementById('voucherStaffTableBody');
+    if (!tbody) return;
+
+    let users = [];
+    try {
+        if (typeof db !== 'undefined' && db.voucherUsers) {
+            users = await db.voucherUsers.toArray();
+        }
+    } catch (e) {
+        console.warn('loadVoucherStaffTable error:', e);
+    }
+
+    if (!users || users.length === 0) {
+        users = [
+            { id: 'pv_user_1', name: 'User 1 (???????? ?)', pin: '1111', role: 'Staff', active: true },
+            { id: 'pv_user_2', name: 'User 2 (???????? ?)', pin: '2222', role: 'Staff', active: true },
+            { id: 'pv_user_3', name: 'User 3 (???????? ?)', pin: '3333', role: 'Staff', active: true },
+            { id: 'pv_user_4', name: 'User 4 (???????? ?)', pin: '4444', role: 'Staff', active: true },
+            { id: 'pv_user_5', name: 'User 5 (???????? ?)', pin: '5555', role: 'Staff', active: true }
+        ];
+    }
+
+    while (users.length < 5) {
+        const i = users.length + 1;
+        users.push({ id: `pv_user_${i}`, name: `User ${i} (???????? ${i})`, pin: `${i}${i}${i}${i}`, role: 'Staff', active: true });
+    }
+
+    const escapeAttr = (s) => (s || '').replace(/"/g, '&quot;');
+
+    tbody.innerHTML = '';
+    users.slice(0, 5).forEach((u, idx) => {
+        const tr = document.createElement('tr');
+        tr.dataset.userId = u.id || `pv_user_${idx+1}`;
+        tr.innerHTML = `
+            <td class="text-center fw-bold align-middle">${idx + 1}</td>
+            <td>
+                <input type="text" class="form-control form-control-sm pv-staff-name-input" value="${escapeAttr(u.name || '')}" placeholder="?????????????..." required>
+            </td>
+            <td style="width: 120px;">
+                <input type="text" maxlength="4" class="form-control form-control-sm text-center fw-bold pv-staff-pin-input font-monospace" value="${escapeAttr(u.pin || '1234')}" placeholder="4 PIN" required>
+            </td>
+            <td class="text-center align-middle" style="width: 60px;">
+                <div class="form-check form-switch d-inline-block">
+                    <input class="form-check-input pv-staff-active-input" type="checkbox" ${u.active !== false ? 'checked' : ''}>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+};
+
+window.saveVoucherStaffTable = async function() {
+    const tbody = document.getElementById('voucherStaffTableBody');
+    if (!tbody || typeof db === 'undefined' || !db.voucherUsers) return;
+
+    const rows = tbody.querySelectorAll('tr');
+    for (const row of rows) {
+        const userId = row.dataset.userId;
+        const name = (row.querySelector('.pv-staff-name-input')?.value || '').trim();
+        const pin = (row.querySelector('.pv-staff-pin-input')?.value || '').trim();
+        const active = row.querySelector('.pv-staff-active-input')?.checked ?? true;
+
+        if (name && pin) {
+            try {
+                const existing = await db.voucherUsers.get(userId);
+                if (existing) {
+                    await db.voucherUsers.update(userId, { name, pin, active, updatedAt: new Date().toISOString() });
+                } else {
+                    await db.voucherUsers.add({ id: userId, name, pin, active, createdAt: new Date().toISOString() });
+                }
+            } catch (err) {
+                console.warn('Error saving voucher user row:', err);
+            }
+        }
+    }
+};
 
 // ====== GPS GEOFENCE SETTINGS ======
 window.calculateHaversineDistance = function(lat1, lon1, lat2, lon2) {

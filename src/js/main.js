@@ -7,6 +7,7 @@ const viewsToLoad = [
     'invoice-list',
     'income',
     'expense',
+    'voucher',
     'reports',
     'employee',
     'eface',
@@ -63,7 +64,8 @@ async function initializeApp() {
         'src/js/utils/utils.js',
         'src/js/utils/print-util.js',
         'src/js/utils/auth.js',
-        'src/js/pages/eface.js'
+        'src/js/pages/eface.js',
+        'src/js/pages/voucher.js'
     ];
 
     const adminScripts = [
@@ -107,9 +109,24 @@ async function initializeApp() {
         setTimeout(() => {
             loadScriptList(adminScripts);
         }, 1500);
+    } else if (isVoucherRoute) {
+        // FAST-TRACK: Load core & voucher scripts first so form is instantly interactive!
+        await loadScriptList(coreScripts);
+        if (typeof checkLogin === 'function') {
+            await checkLogin();
+        }
+        if (typeof initVoucher === 'function') initVoucher();
+        if (typeof applyTranslations === 'function') applyTranslations();
+
+        setTimeout(() => {
+            loadScriptList(adminScripts);
+        }, 1500);
     } else {
         // Normal load for full system
         await loadScriptList([...coreScripts, ...adminScripts]);
+        if (targetRoute === 'voucher' && typeof initVoucher === 'function') {
+            initVoucher();
+        }
     }
     
     // Initialize Flatpickr for all date inputs

@@ -1,0 +1,89 @@
+/* voucher.css - Payment Voucher Mobile & Responsive Styling */
+
+html.public-voucher-mode,
+body.public-voucher-mode {
+    background-color: #f1f5f9 !important;
+    overflow-x: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.public-voucher-mode #login-view {
+    display: none !important;
+}
+
+body.public-voucher-mode #main-wrapper {
+    display: flex !important;
+    width: 100vw !important;
+    min-height: 100vh !important;
+    background-color: #f1f5f9 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body.public-voucher-mode .sidebar,
+body.public-voucher-mode .sidebar-backdrop,
+body.public-voucher-mode .mobile-bottom-nav,
+body.public-voucher-mode .top-navbar {
+    display: none !important;
+}
+
+body.public-voucher-mode .main-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+}
+
+body.public-voucher-mode #main-content-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+body.public-voucher-mode .view-section:not(#voucher-view) {
+    display: none !important;
+}
+
+body.public-voucher-mode #voucher-view {
+    display: block !important;
+    min-height: 100vh;
+    padding: 0.5rem;
+}
+
+/* In-App / Normal Mode for Voucher */
+#voucher-view {
+    min-height: 80vh;
+}
+
+#voucher-page-container {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.letter-spacing-lg {
+    letter-spacing: 0.4rem;
+}
+
+/* Smooth Focus states */
+#voucher-page-container .form-control:focus,
+#voucher-page-container .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.15);
+}
+
+/* Card aesthetics */
+#voucher-page-container .card {
+    transition: transform 0.15s ease-in-out;
+}
+
+/* Dark Mode Overrides */
+[data-bs-theme="dark"] html.public-voucher-mode,
+[data-bs-theme="dark"] body.public-voucher-mode {
+    background-color: #0f172a !important;
+}
+
+[data-bs-theme="dark"] body.public-voucher-mode #main-wrapper {
+    background-color: #0f172a !important;
+}

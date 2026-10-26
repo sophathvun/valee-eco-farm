@@ -56,10 +56,11 @@ async function checkLogin() {
     const sessionUser = localStorage.getItem('currentUser');
     const hash = (window.location.hash || '').toLowerCase();
     const isEfaceRoute = hash.startsWith('#eface') || hash.startsWith('#scan');
+    const isVoucherRoute = hash.startsWith('#pv') || hash.startsWith('#voucher') || hash.startsWith('#payment-voucher');
 
     if (sessionUser) {
-        document.body.classList.remove('public-eface-mode');
-        document.documentElement.classList.remove('public-eface-mode');
+        document.body.classList.remove('public-eface-mode', 'public-voucher-mode');
+        document.documentElement.classList.remove('public-eface-mode', 'public-voucher-mode');
         try {
             currentUser = JSON.parse(sessionUser);
             const loginView = document.getElementById('login-view');
@@ -81,10 +82,13 @@ async function checkLogin() {
             const targetTab = hashTab || (pending && pending.tabId) || localStorage.getItem('activeTab') || 'dashboard';
             const targetSub = hashSub || (pending && pending.subId) || localStorage.getItem('activeSubTab') || null;
 
-            if (hasPermission(targetTab) || targetTab === 'eface') {
+            if (hasPermission(targetTab) || targetTab === 'eface' || targetTab === 'voucher') {
                 showTab(targetTab, targetSub);
+                if (targetTab === 'voucher' && typeof window.initVoucher === 'function') {
+                    window.initVoucher();
+                }
             } else {
-                const fallbackTab = ['dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'reports', 'employee', 'eface', 'attendance', 'payroll', 'settings'].find(t => hasPermission(t)) || 'dashboard';
+                const fallbackTab = ['dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'voucher', 'reports', 'employee', 'eface', 'attendance', 'payroll', 'settings'].find(t => hasPermission(t)) || 'dashboard';
                 showTab(fallbackTab);
             }
         } catch (e) {
@@ -97,6 +101,8 @@ async function checkLogin() {
         // Public Attendance Scanner Mode
         document.body.classList.add('public-eface-mode');
         document.documentElement.classList.add('public-eface-mode');
+        document.body.classList.remove('public-voucher-mode');
+        document.documentElement.classList.remove('public-voucher-mode');
         const loginView = document.getElementById('login-view');
         const mainWrapper = document.getElementById('main-wrapper');
         if (loginView) loginView.style.display = 'none';
@@ -104,9 +110,23 @@ async function checkLogin() {
 
         showTab('eface');
         return true;
-    } else {
+    } else if (isVoucherRoute) {
+        // Public Payment Voucher Mode
+        document.body.classList.add('public-voucher-mode');
+        document.documentElement.classList.add('public-voucher-mode');
         document.body.classList.remove('public-eface-mode');
         document.documentElement.classList.remove('public-eface-mode');
+        const loginView = document.getElementById('login-view');
+        const mainWrapper = document.getElementById('main-wrapper');
+        if (loginView) loginView.style.display = 'none';
+        if (mainWrapper) mainWrapper.style.display = 'flex';
+
+        showTab('voucher');
+        if (typeof window.initVoucher === 'function') window.initVoucher();
+        return true;
+    } else {
+        document.body.classList.remove('public-eface-mode', 'public-voucher-mode');
+        document.documentElement.classList.remove('public-eface-mode', 'public-voucher-mode');
         const loginView = document.getElementById('login-view');
         const mainWrapper = document.getElementById('main-wrapper');
         if (loginView) loginView.style.display = 'flex';
@@ -114,6 +134,7 @@ async function checkLogin() {
         setTimeout(ensureDefaultAdmin, 200);
         return false;
     }
+}
 }
 
 window.openPublicEfaceScanner = function() {
@@ -212,6 +233,7 @@ async function logoutUser() {
 }
 
 function hasPermission(perm) {
+    if (perm === 'voucher' || perm === 'eface') return true;
     if (!currentUser) return false;
     if ((currentUser.username || '').toLowerCase() === 'admin') return true;
     return Boolean(currentUser.permissions && currentUser.permissions.includes(perm));
