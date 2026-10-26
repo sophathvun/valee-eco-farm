@@ -135,7 +135,6 @@ async function checkLogin() {
         return false;
     }
 }
-}
 
 window.openPublicEfaceScanner = function() {
     window.location.hash = '#eface';
