@@ -22,9 +22,10 @@ async function initializeApp() {
     const container = document.getElementById('main-content-container');
     const hash = (window.location.hash || '').toLowerCase();
     const isEfaceRoute = hash.startsWith('#eface') || hash.startsWith('#scan');
+    const isVoucherRoute = hash.startsWith('#pv') || hash.startsWith('#voucher') || hash.startsWith('#payment-voucher');
     const hashTab = location.hash ? location.hash.replace('#', '').split('?')[0].split('/')[0] : null;
-    const targetRoute = isEfaceRoute ? 'eface' : (hashTab || (localStorage.getItem('currentUser') ? (localStorage.getItem('activeTab') || 'dashboard') : 'dashboard'));
-    const appVersion = '1792820000000';
+    const targetRoute = isEfaceRoute ? 'eface' : (isVoucherRoute ? 'voucher' : (hashTab || (localStorage.getItem('currentUser') ? (localStorage.getItem('activeTab') || 'dashboard') : 'dashboard')));
+    const appVersion = '1792845000000';
     
     // 1. Fetch and inject all HTML templates in PARALLEL using Promise.all for instant speed
     const templatePromises = viewsToLoad.map(async (view) => {
