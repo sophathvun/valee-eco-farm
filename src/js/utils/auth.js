@@ -598,6 +598,10 @@ window.showTab = function(tabId, subId = null) {
         if (typeof initPayroll === 'function') initPayroll();
     }
 
+    if (tabId === 'voucher') {
+        if (typeof initVoucher === 'function') initVoucher();
+    }
+
     if (typeof window.applyTranslations === 'function') {
         const activeView = document.getElementById(tabId + '-view');
         if (activeView) window.applyTranslations(activeView);

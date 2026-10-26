@@ -86,7 +86,8 @@
         }
 
         const currentVal = select.value;
-        select.innerHTML = '<option value="" disabled selected>-- ជ្រើសរើសប្រភេទចំណាយ --</option>';
+        const defaultPrompt = (typeof t === 'function') ? t('pv_select_category', '-- ជ្រើសរើសប្រភេទចំណាយ --') : '-- ជ្រើសរើសប្រភេទចំណាយ --';
+        select.innerHTML = `<option value="" disabled selected data-i18n="pv_select_category">${defaultPrompt}</option>`;
         categories.forEach(c => {
             const opt = document.createElement('option');
             opt.value = c.name;
@@ -97,23 +98,39 @@
         if (currentVal) select.value = currentVal;
     }
 
-    // Set today's date and current time
+    // Set today's date and current time & initialize premium Flatpickr calendar
     function setupDefaultDateTime() {
         const dateInput = document.getElementById('pv-date');
         const timeInput = document.getElementById('pv-time');
         const now = new Date();
 
-        if (dateInput && !dateInput.value) {
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            const dd = String(now.getDate()).padStart(2, '0');
-            dateInput.value = `${yyyy}-${mm}-${dd}`;
-        }
-
         if (timeInput && !timeInput.value) {
             const hh = String(now.getHours()).padStart(2, '0');
             const min = String(now.getMinutes()).padStart(2, '0');
             timeInput.value = `${hh}:${min}`;
+        }
+
+        if (dateInput) {
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
+
+            if (typeof flatpickr !== 'undefined') {
+                if (dateInput._flatpickr) {
+                    try { dateInput._flatpickr.destroy(); } catch (e) {}
+                }
+                flatpickr(dateInput, {
+                    dateFormat: 'Y-m-d',
+                    altInput: true,
+                    altFormat: 'd-m-Y',
+                    allowInput: true,
+                    disableMobile: true,
+                    defaultDate: dateInput.value || todayStr
+                });
+            } else if (!dateInput.value) {
+                dateInput.value = todayStr;
+            }
         }
     }
 
@@ -179,7 +196,8 @@
         const select = document.getElementById('pv-auth-user-select');
         if (!select) return;
 
-        select.innerHTML = '<option value="" disabled selected>-- សូមជ្រើសរើសឈ្មោះរបស់អ្នក --</option>';
+        const defaultPrompt = (typeof t === 'function') ? t('pv_select_name_placeholder', '-- សូមជ្រើសរើសឈ្មោះរបស់អ្នក --') : '-- សូមជ្រើសរើសឈ្មោះរបស់អ្នក --';
+        select.innerHTML = `<option value="" disabled selected data-i18n="pv_select_name_placeholder">${defaultPrompt}</option>`;
         const users = (cachedVoucherUsers && cachedVoucherUsers.length > 0) ? cachedVoucherUsers : DEFAULT_VOUCHER_USERS;
         users.filter(u => u.active !== false).forEach(u => {
             const opt = document.createElement('option');
@@ -312,21 +330,23 @@
         const noteEl = document.getElementById('pv-conversion-note');
         if (!noteEl) return;
 
+        const isEn = window.i18n && window.i18n.currentLang === 'en';
         const rate = window.sysExchangeRate || 4100;
         const val = amountInput ? parseFloat(amountInput.value) : 0;
         const isUsd = curUsd && curUsd.checked;
 
         if (!val || isNaN(val) || val <= 0) {
-            noteEl.textContent = `អត្រាប្តូរប្រាក់ $1 = ${rate.toLocaleString()} ៛`;
+            noteEl.textContent = isEn ? `Exchange Rate $1 = ${rate.toLocaleString()} KHR` : `អត្រាប្តូរប្រាក់ $1 = ${rate.toLocaleString()} ៛`;
             return;
         }
 
+        const ratePrefix = isEn ? 'Rate' : 'អត្រា';
         if (isUsd) {
             const khrEquiv = Math.round(val * rate);
-            noteEl.innerHTML = `💵 <b>$${val.toFixed(2)}</b> ≈ <span class="text-danger">${khrEquiv.toLocaleString()} ៛</span> (អត្រា: ${rate.toLocaleString()} ៛)`;
+            noteEl.innerHTML = `💵 <b>$${val.toFixed(2)}</b> ≈ <span class="text-danger">${khrEquiv.toLocaleString()} ៛</span> (${ratePrefix}: ${rate.toLocaleString()} ៛)`;
         } else {
             const usdEquiv = (val / rate).toFixed(2);
-            noteEl.innerHTML = `💵 <b>${val.toLocaleString()} ៛</b> ≈ <span class="text-danger">$${usdEquiv}</span> (អត្រា: ${rate.toLocaleString()} ៛)`;
+            noteEl.innerHTML = `💵 <b>${val.toLocaleString()} ៛</b> ≈ <span class="text-danger">$${usdEquiv}</span> (${ratePrefix}: ${rate.toLocaleString()} ៛)`;
         }
     };
 
@@ -702,7 +722,8 @@
 
             const all = await db.paymentVouchers.toArray();
             if (!all || all.length === 0) {
-                container.innerHTML = '<div class="text-center text-muted py-3">មិនទាន់មានប័ណ្ណទូទាត់នៅឡើយទេ</div>';
+                const emptyText = (typeof t === 'function') ? t('pv_no_records_yet', 'មិនទាន់មានប័ណ្ណទូទាត់នៅឡើយទេ') : 'មិនទាន់មានប័ណ្ណទូទាត់នៅឡើយទេ';
+                container.innerHTML = `<div class="text-center text-muted py-3" data-i18n="pv_no_records_yet">${emptyText}</div>`;
                 return;
             }
 
@@ -758,5 +779,22 @@
         } catch (e) {}
         return dateStr;
     }
+
+    // Re-sync language-specific texts when language is changed
+    window.addEventListener('languageChanged', function() {
+        calcVoucherConversion();
+        const catSelect = document.getElementById('pv-category');
+        if (catSelect && catSelect.options[0] && catSelect.options[0].disabled) {
+            catSelect.options[0].textContent = (typeof t === 'function') ? t('pv_select_category', '-- ជ្រើសរើសប្រភេទចំណាយ --') : '-- ជ្រើសរើសប្រភេទចំណាយ --';
+        }
+        const userSelect = document.getElementById('pv-auth-user-select');
+        if (userSelect && userSelect.options[0] && userSelect.options[0].disabled) {
+            userSelect.options[0].textContent = (typeof t === 'function') ? t('pv_select_name_placeholder', '-- សូមជ្រើសរើសឈ្មោះរបស់អ្នក --') : '-- សូមជ្រើសរើសឈ្មោះរបស់អ្នក --';
+        }
+        if (typeof applyTranslations === 'function') {
+            const container = document.getElementById('voucher-page-container');
+            if (container) applyTranslations(container);
+        }
+    });
 
 })();
