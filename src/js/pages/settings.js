@@ -1123,7 +1123,7 @@ window.savePaymentVoucherSettings = async function(e) {
     const paymentBotToken = (document.getElementById('telegramPaymentBotToken')?.value || '').trim();
 
     if (!paymentChatId) {
-        Swal.fire('???? Payment Group Chat ID', '????????? Chat ID ?? Telegram Group ??????????????????????!', 'warning');
+        Swal.fire('ខ្វះ Payment Group Chat ID', 'សូមបញ្ចូល Chat ID នៃ Telegram Group ថ្មីសម្រាប់ប័ណ្ណទូទាត់!', 'warning');
         return;
     }
 
@@ -1151,16 +1151,16 @@ window.savePaymentVoucherSettings = async function(e) {
 
         Swal.fire({
             icon: 'success',
-            title: '??????!',
-            text: '??????????????????? Telegram Payment Group ??????????????? ? ???????????!',
+            title: 'ជោគជ័យ!',
+            text: 'បានរក្សាទុកការកំណត់ Telegram Payment Group និងបុគ្គលិកទាំង ៥ នាក់រួចរាល់!',
             timer: 1800,
             showConfirmButton: false
         });
     } catch (err) {
         Swal.fire({
             icon: 'error',
-            title: '??????',
-            text: '???????????????????: ' + (err.message || err)
+            title: 'បរាជ័យ',
+            text: 'មិនអាចរក្សាទុកបានទេ: ' + (err.message || err)
         });
     }
 };
@@ -1172,14 +1172,14 @@ window.testPaymentTelegramConnection = async function() {
     const chatId = (document.getElementById('telegramPaymentChatId')?.value || '').trim();
 
     if (!chatId) {
-        Swal.fire('???? Payment Group Chat ID', '????????? Payment Group Chat ID ?? Telegram Group ????????????!', 'warning');
+        Swal.fire('ខ្វះ Payment Group Chat ID', 'សូមបញ្ចូល Payment Group Chat ID នៃ Telegram Group ថ្មីជាមុនសិន!', 'warning');
         return;
     }
 
     const btn = document.getElementById('btnTestPaymentTelegram');
     const oldHtml = btn ? btn.innerHTML : '';
     if (btn) {
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> ????????????...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> កំពុងផ្ញើសារ...';
         btn.disabled = true;
     }
 
@@ -1191,12 +1191,12 @@ window.testPaymentTelegramConnection = async function() {
         const dateFormatted = day + '-' + months[now.getMonth()] + '-' + now.getFullYear();
 
         const text =
-`?? <b>????????????????? (PAYMENT VOUCHER): ???????????????</b>
-?????????????????
-?? <b>????:</b> ${timeStr}
-?? <b>???????????:</b> ${dateFormatted}
-?? <b>????????:</b> ?????????? Payment Telegram Group ?????????????! ?
-?? <b>????????:</b> ?????????????????????????????????????????????????`;
+`🧾 <b>ប័ណ្ណទូទាត់ប្រាក់ (PAYMENT VOUCHER): សារតេស្តសាកល្បង</b>
+━━━━━━━━━━━━━━━━━
+▫️ <b>ម៉ោង:</b> ${timeStr}
+▫️ <b>កាលបរិច្ឆេទ:</b> ${dateFormatted}
+▫️ <b>ស្ថានភាព:</b> ការតភ្ជាប់ Payment Telegram Group ទទួលបានជោគជ័យ! ✅
+▫️ <b>ប្រព័ន្ធ:</b> ត្រៀមខ្លួនរួចរាល់សម្រាប់ទទួលប័ណ្ណទូទាត់ពីបុគ្គលិក`;
 
         const res = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
             method: 'POST',
@@ -1211,18 +1211,18 @@ window.testPaymentTelegramConnection = async function() {
         if (resJson.ok) {
             Swal.fire({
                 icon: 'success',
-                title: '????????????????!',
-                text: '????????????????????????????????????? Payment Telegram Group ??????????',
+                title: 'ការតភ្ជាប់ជោគជ័យ!',
+                text: 'សារតេស្តប័ណ្ណទូទាត់ត្រូវបានផ្ញើទៅកាន់ Payment Telegram Group ដោយជោគជ័យ។',
                 confirmButtonColor: '#198754'
             });
         } else {
-            throw new Error(resJson.description || '?????????????????????');
+            throw new Error(resJson.description || 'បរាជ័យក្នុងការផ្ញើសារ');
         }
     } catch (err) {
         Swal.fire({
             icon: 'error',
-            title: '????????????????',
-            text: '??????????????????: ' + (err.message || err) + '\n?????????????? Invite Bot ???????? Payment Group ???? ???????????????? Admin?',
+            title: 'ការតភ្ជាប់បរាជ័យ',
+            text: 'មិនអាចផ្ញើសារបានទេ: ' + (err.message || err) + '\nសូមប្រាកដថាបាន Invite Bot ចូលក្នុង Payment Group ថ្មី និងផ្ដល់សិទ្ធិជា Admin។',
             confirmButtonColor: '#dc3545'
         });
     } finally {
@@ -1242,16 +1242,16 @@ window.copyVoucherFormLink = function() {
         navigator.clipboard.writeText(linkInput.value).then(() => {
             Swal.fire({
                 icon: 'success',
-                title: '???????? Link ???????!',
-                text: '????????? Link ????? Share ? Pin ????? Telegram Group ?????????????????????????????????????',
+                title: 'បានចម្លង Link រួចរាល់!',
+                text: 'អ្នកអាចយក Link នេះទៅ Share ឬ Pin ក្នុង Telegram Group ដើម្បីឱ្យបុគ្គលិកចុចបំពេញប័ណ្ណទូទាត់។',
                 timer: 2000,
                 showConfirmButton: false
             });
         }).catch(() => {
-            Swal.fire('Link ???????????????????????', linkInput.value, 'info');
+            Swal.fire('Link សម្រាប់បំពេញប័ណ្ណទូទាត់', linkInput.value, 'info');
         });
     } catch(e) {
-        Swal.fire('Link ???????????????????????', linkInput.value, 'info');
+        Swal.fire('Link សម្រាប់បំពេញប័ណ្ណទូទាត់', linkInput.value, 'info');
     }
 };
 
@@ -1270,17 +1270,17 @@ window.loadVoucherStaffTable = async function() {
 
     if (!users || users.length === 0) {
         users = [
-            { id: 'pv_user_1', name: 'User 1 (???????? ?)', pin: '1111', role: 'Staff', active: true },
-            { id: 'pv_user_2', name: 'User 2 (???????? ?)', pin: '2222', role: 'Staff', active: true },
-            { id: 'pv_user_3', name: 'User 3 (???????? ?)', pin: '3333', role: 'Staff', active: true },
-            { id: 'pv_user_4', name: 'User 4 (???????? ?)', pin: '4444', role: 'Staff', active: true },
-            { id: 'pv_user_5', name: 'User 5 (???????? ?)', pin: '5555', role: 'Staff', active: true }
+            { id: 'pv_user_1', name: 'User 1 (បុគ្គលិក ១)', pin: '1111', role: 'Staff', active: true },
+            { id: 'pv_user_2', name: 'User 2 (បុគ្គលិក ២)', pin: '2222', role: 'Staff', active: true },
+            { id: 'pv_user_3', name: 'User 3 (បុគ្គលិក ៣)', pin: '3333', role: 'Staff', active: true },
+            { id: 'pv_user_4', name: 'User 4 (បុគ្គលិក ៤)', pin: '4444', role: 'Staff', active: true },
+            { id: 'pv_user_5', name: 'User 5 (បុគ្គលិក ៥)', pin: '5555', role: 'Staff', active: true }
         ];
     }
 
     while (users.length < 5) {
         const i = users.length + 1;
-        users.push({ id: `pv_user_${i}`, name: `User ${i} (???????? ${i})`, pin: `${i}${i}${i}${i}`, role: 'Staff', active: true });
+        users.push({ id: `pv_user_${i}`, name: `User ${i} (បុគ្គលិក ${i})`, pin: `${i}${i}${i}${i}`, role: 'Staff', active: true });
     }
 
     const escapeAttr = (s) => (s || '').replace(/"/g, '&quot;');
@@ -1292,7 +1292,7 @@ window.loadVoucherStaffTable = async function() {
         tr.innerHTML = `
             <td class="text-center fw-bold align-middle">${idx + 1}</td>
             <td>
-                <input type="text" class="form-control form-control-sm pv-staff-name-input" value="${escapeAttr(u.name || '')}" placeholder="?????????????..." required>
+                <input type="text" class="form-control form-control-sm pv-staff-name-input" value="${escapeAttr(u.name || '')}" placeholder="ឈ្មោះបុគ្គលិក..." required>
             </td>
             <td style="width: 120px;">
                 <input type="text" maxlength="4" class="form-control form-control-sm text-center fw-bold pv-staff-pin-input font-monospace" value="${escapeAttr(u.pin || '1234')}" placeholder="4 PIN" required>
@@ -1332,6 +1332,7 @@ window.saveVoucherStaffTable = async function() {
         }
     }
 };
+
 
 // ====== GPS GEOFENCE SETTINGS ======
 window.calculateHaversineDistance = function(lat1, lon1, lat2, lon2) {
