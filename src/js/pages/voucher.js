@@ -341,12 +341,13 @@
         }
 
         const ratePrefix = isEn ? 'Rate' : 'អត្រា';
+        const curUnit = isEn ? 'KHR' : '៛';
         if (isUsd) {
             const khrEquiv = Math.round(val * rate);
-            noteEl.innerHTML = `💵 <b>$${val.toFixed(2)}</b> ≈ <span class="text-danger">${khrEquiv.toLocaleString()} ៛</span> (${ratePrefix}: ${rate.toLocaleString()} ៛)`;
+            noteEl.innerHTML = `💵 <b>$${val.toFixed(2)}</b> ≈ <span class="text-danger">${khrEquiv.toLocaleString()} ${curUnit}</span> (${ratePrefix}: ${rate.toLocaleString()} ${curUnit})`;
         } else {
             const usdEquiv = (val / rate).toFixed(2);
-            noteEl.innerHTML = `💵 <b>${val.toLocaleString()} ៛</b> ≈ <span class="text-danger">$${usdEquiv}</span> (${ratePrefix}: ${rate.toLocaleString()} ៛)`;
+            noteEl.innerHTML = `💵 <b>${val.toLocaleString()} ${curUnit}</b> ≈ <span class="text-danger">$${usdEquiv}</span> (${ratePrefix}: ${rate.toLocaleString()} ${curUnit})`;
         }
     };
 
@@ -535,25 +536,36 @@
             });
 
             // 4. Show Success Dialog
+            const isEn = window.i18n && window.i18n.currentLang === 'en';
+            const alertTitle = isEn ? 'Success!' : 'ជោគជ័យ!';
+            const line1 = isEn ? '✅ Recorded as expense in system' : '✅ បានកត់ត្រាចូលជាចំណាយក្នុងប្រព័ន្ធ';
+            const line2 = isEn ? '✈️ Dispatched to Telegram Group' : '✈️ បានផ្ញើដំណឹងចូល Telegram Group រួចរាល់';
+            const lblVoucher = isEn ? 'Voucher No:' : 'លេខប័ណ្ណ:';
+            const lblDate = isEn ? 'Date:' : 'កាលបរិច្ឆេទ:';
+            const lblPayee = isEn ? 'Payee / Supplier:' : 'អ្នកទទួលប្រាក់:';
+            const lblAmount = isEn ? 'Amount:' : 'ចំនួនទឹកប្រាក់:';
+            const lblStaff = isEn ? 'Prepared By:' : 'អ្នកបញ្ចូល:';
+            const btnText = isEn ? 'Create Next Voucher' : 'បង្កើតប័ណ្ណថ្មីទៀត';
+
             await Swal.fire({
                 icon: 'success',
-                title: 'ជោគជ័យ!',
+                title: alertTitle,
                 html: `
                     <div class="text-start p-2">
                         <div class="alert alert-success py-2 mb-2">
-                            <strong>✅ បានកត់ត្រាចូលជាចំណាយ (Expense) ក្នុងប្រព័ន្ធ</strong><br>
-                            <strong>✈️ បានផ្ញើដំណឹងចូល Telegram Group រួចរាល់</strong>
+                            <strong>${line1}</strong><br>
+                            <strong>${line2}</strong>
                         </div>
                         <ul class="list-unstyled mb-0 small">
-                            <li>▫️ <b>លេខប័ណ្ណ:</b> #${voucherNo}</li>
-                            <li>▫️ <b>កាលបរិច្ឆេទ:</b> ${formatEngDate(selectedDate)}</li>
-                            <li>▫️ <b>អ្នកទទួល:</b> ${escapeHtml(payee)}</li>
-                            <li>▫️ <b>ចំនួនទឹកប្រាក់:</b> <span class="text-danger fw-bold">${currency === 'USD' ? '$' + amount.toFixed(2) : amount.toLocaleString() + ' ៛'}</span></li>
-                            <li>▫️ <b>អ្នកបញ្ចូល:</b> <span class="text-primary fw-bold">${escapeHtml(activeVoucherUser.name)}</span></li>
+                            <li>▫️ <b>${lblVoucher}</b> #${voucherNo}</li>
+                            <li>▫️ <b>${lblDate}</b> ${formatEngDate(selectedDate)}</li>
+                            <li>▫️ <b>${lblPayee}</b> ${escapeHtml(payee)}</li>
+                            <li>▫️ <b>${lblAmount}</b> <span class="text-danger fw-bold">${currency === 'USD' ? '$' + amount.toFixed(2) : amount.toLocaleString() + ' ៛'}</span></li>
+                            <li>▫️ <b>${lblStaff}</b> <span class="text-primary fw-bold">${escapeHtml(activeVoucherUser.name)}</span></li>
                         </ul>
                     </div>
                 `,
-                confirmButtonText: 'បង្កើតប័ណ្ណថ្មីទៀត (Next Voucher)',
+                confirmButtonText: btnText,
                 confirmButtonColor: '#198754'
             });
 
@@ -632,16 +644,16 @@
                 amountStr = `${data.amount.toLocaleString()} ៛ (≈ $${usdVal})`;
             }
 
-            const methodStr = data.paymentMethod === 'Bank' ? '🏦 ធនាគារ (Bank Transfer)' : '💵 សាច់ប្រាក់សុទ្ធ (Cash)';
+            const methodStr = data.paymentMethod === 'Bank' ? '🏦 ធនាគារ' : '💵 សាច់ប្រាក់សុទ្ធ';
 
             const caption =
-`🧾 <b>ប័ណ្ណទូទាត់ប្រាក់ / PAYMENT VOUCHER</b>
+`🧾 <b>ប័ណ្ណទូទាត់ប្រាក់</b>
 ━━━━━━━━━━━━━━━━━
 ▫️ <b>លេខប័ណ្ណ:</b> <code>#${escapeHtml(data.voucherNo)}</code>
-▫️ <b>កាលបរិច្ឆេទចំណាយ:</b> ${formatEngDate(data.date)}
+▫️ <b>កាលបរិច្ឆេទ:</b> ${formatEngDate(data.date)}
 ▫️ <b>ម៉ោងទូទាត់:</b> ${data.time}
 ▫️ <b>អ្នកបញ្ចូលទិន្នន័យ:</b> <b>${escapeHtml(data.staffName)}</b> ✍️
-▫️ <b>អ្នកទទួលប្រាក់:</b> ${escapeHtml(data.payee)}
+▫️ <b>អ្នកទទួលប្រាក់ / អ្នកផ្គត់ផ្គង់:</b> ${escapeHtml(data.payee)}
 ▫️ <b>ប្រភេទចំណាយ:</b> ${escapeHtml(data.category)}
 ▫️ <b>ចំនួនទឹកប្រាក់:</b> <b>${amountStr}</b>
 ▫️ <b>វិធីទូទាត់:</b> ${methodStr}

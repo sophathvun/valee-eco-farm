@@ -10,14 +10,14 @@
                 </div>
                 <h4 class="fw-bold mb-0 text-success" id="pv-farm-title">VALLE ECO FARM</h4>
                 <div class="text-muted fw-semibold" style="font-size: 0.9rem;">
-                    🧾 <span data-i18n="pv_title">ប័ណ្ណទូទាត់ប្រាក់ (PAYMENT VOUCHER)</span>
+                    🧾 <span data-i18n="pv_title">ប័ណ្ណទូទាត់ប្រាក់</span>
                 </div>
                 <div class="d-flex justify-content-center align-items-center gap-2 mt-1">
                     <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1" style="font-size: 0.72rem;">
-                        <i class="bi bi-cloud-check-fill me-1"></i><span data-i18n="pv_cloud_synced">Cloud Synced</span>
+                        <i class="bi bi-cloud-check-fill me-1"></i><span data-i18n="pv_cloud_synced">ភ្ជាប់ Cloud រួចរាល់</span>
                     </span>
                     <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1" style="font-size: 0.72rem;">
-                        <i class="bi bi-telegram me-1"></i><span data-i18n="pv_telegram_auto">Telegram Auto-Publish</span>
+                        <i class="bi bi-telegram me-1"></i><span data-i18n="pv_telegram_auto">ផ្ញើដំណឹង Telegram ស្វ័យប្រវត្តិ</span>
                     </span>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                     <form id="pv-auth-form" onsubmit="handleVoucherUserLogin(event)">
                         <div class="text-start mb-3">
                             <label class="form-label fw-bold small text-secondary">
-                                <i class="bi bi-person-fill text-primary me-1"></i><span data-i18n="pv_select_name">ជ្រើសរើសឈ្មោះរបស់អ្នក (Select Your Name)</span> <span class="text-danger">*</span>
+                                <i class="bi bi-person-fill text-primary me-1"></i><span data-i18n="pv_select_name">ជ្រើសរើសឈ្មោះរបស់អ្នក</span> <span class="text-danger">*</span>
                             </label>
                             <select class="form-select form-select-lg rounded-3" id="pv-auth-user-select" required>
                                 <option value="" disabled selected data-i18n="pv_select_name_placeholder">-- សូមជ្រើសរើសឈ្មោះរបស់អ្នក --</option>
@@ -43,7 +43,7 @@
 
                         <div class="text-start mb-3">
                             <label class="form-label fw-bold small text-secondary">
-                                <i class="bi bi-key-fill text-warning me-1"></i><span data-i18n="pv_pin_label">លេខកូដសម្ងាត់ (4-Digit PIN)</span> <span class="text-danger">*</span>
+                                <i class="bi bi-key-fill text-warning me-1"></i><span data-i18n="pv_pin_label">លេខកូដសម្ងាត់ ៤ ខ្ទង់</span> <span class="text-danger">*</span>
                             </label>
                             <div class="input-group input-group-lg">
                                 <input type="password" class="form-control text-center fw-bold fs-3 letter-spacing-lg rounded-start-3" id="pv-auth-pin" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="••••" required autocomplete="off">
@@ -62,7 +62,7 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 rounded-pill shadow-sm py-2 px-3" style="font-size: 0.92rem; font-weight: 500;">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> <span data-i18n="pv_unlock_btn">ចូលបំពេញប័ណ្ណ (Unlock Form)</span>
+                            <i class="bi bi-box-arrow-in-right me-1"></i> <span data-i18n="pv_unlock_btn">ចូលបំពេញប័ណ្ណ</span>
                         </button>
                     </form>
                 </div>
@@ -80,24 +80,26 @@
                         <div>
                             <div class="fw-bold text-dark lh-sm" id="pv-active-staff-name">កំពុងផ្ទុក...</div>
                             <div class="text-muted small" style="font-size: 0.74rem;">
-                                <i class="bi bi-check-circle-fill text-success me-1"></i><span data-i18n="pv_prepared_by">អ្នកបញ្ចូលទិន្នន័យ (Prepared By)</span>
+                                <i class="bi bi-check-circle-fill text-success me-1"></i><span data-i18n="pv_prepared_by">អ្នកបញ្ចូលទិន្នន័យ</span>
                             </div>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1" onclick="switchVoucherUser()" style="font-size: 0.75rem;" title="ប្ដូរទៅកាន់បុគ្គលិកផ្សេង" data-i18n-title="pv_switch_user">
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1" onclick="switchVoucherUser()" style="font-size: 0.75rem;" title="ប្ដូរអ្នកប្រើ" data-i18n-title="pv_switch_user">
                         <i class="bi bi-arrow-repeat me-1"></i><span data-i18n="pv_switch_user">ប្ដូរអ្នកប្រើ</span>
                     </button>
                 </div>
 
                 <!-- Main Voucher Card -->
                 <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-3">
-                    <div class="card-header bg-gradient bg-primary text-white py-3 px-3 px-md-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="mb-0 fw-bold"><i class="bi bi-file-earmark-text-fill me-1"></i> <span data-i18n="pv_form_title">ព័ត៌មានប័ណ្ណទូទាត់ប្រាក់</span></h6>
-                                <small class="text-white-50" style="font-size: 0.75rem;" data-i18n="pv_form_subtitle">សូមបំពេញព័ត៌មានខាងក្រោមឱ្យបានត្រឹមត្រូវ</small>
+                    <div class="card-header bg-gradient bg-primary text-white py-2 py-md-3 px-3 px-md-4">
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                            <div class="flex-grow-1 min-w-0" style="overflow: hidden;">
+                                <h6 class="mb-0 fw-bold text-nowrap text-truncate" style="font-size: 0.95rem; white-space: nowrap;">
+                                    <i class="bi bi-file-earmark-text-fill me-1"></i><span data-i18n="pv_form_title">ព័ត៌មានប័ណ្ណទូទាត់ប្រាក់</span>
+                                </h6>
+                                <small class="text-white-50 text-nowrap text-truncate d-block" style="font-size: 0.73rem; white-space: nowrap;" data-i18n="pv_form_subtitle">សូមបំពេញព័ត៌មានខាងក្រោមឱ្យបានត្រឹមត្រូវ</small>
                             </div>
-                            <span class="badge bg-white text-primary fw-bold px-2 py-1 rounded-pill" id="pv-display-voucher-no">
+                            <span class="badge bg-white text-primary fw-bold px-2 py-1 rounded-pill flex-shrink-0" id="pv-display-voucher-no" style="font-size: 0.76rem; white-space: nowrap;">
                                 #PV-AUTO
                             </span>
                         </div>
@@ -109,18 +111,18 @@
                             <!-- Hidden Voucher Number -->
                             <input type="hidden" id="pv-voucher-no" value="">
 
-                            <!-- Row: Date & Time Picker (Custom selectable by user!) -->
+                            <!-- Row: Date & Time Picker -->
                             <div class="row g-2 mb-3">
                                 <div class="col-7">
                                     <label class="form-label fw-bold small text-secondary mb-1">
-                                        <i class="bi bi-calendar-event text-primary me-1"></i><span data-i18n="pv_date_label">កាលបរិច្ឆេទចំណាយ (Date)</span> <span class="text-danger">*</span>
+                                        <i class="bi bi-calendar-event text-primary me-1"></i><span data-i18n="pv_date_label">កាលបរិច្ឆេទ</span> <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" class="form-control rounded-3" id="pv-date" placeholder="DD-MM-YYYY" required>
                                     <small class="text-muted" style="font-size: 0.68rem;" data-i18n="pv_date_hint">* អាចរើសថ្ងៃមុនៗបាន</small>
                                 </div>
                                 <div class="col-5">
                                     <label class="form-label fw-bold small text-secondary mb-1">
-                                        <i class="bi bi-clock text-primary me-1"></i><span data-i18n="pv_time_label">ម៉ោង (Time)</span> <span class="text-danger">*</span>
+                                        <i class="bi bi-clock text-primary me-1"></i><span data-i18n="pv_time_label">ម៉ោង</span> <span class="text-danger">*</span>
                                     </label>
                                     <input type="time" class="form-control rounded-3" id="pv-time" required>
                                 </div>
@@ -129,7 +131,7 @@
                             <!-- Payee / Supplier -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-secondary mb-1">
-                                    <i class="bi bi-person-badge text-primary me-1"></i><span data-i18n="pv_payee_label">អ្នកទទួលប្រាក់ / ហាងផ្គត់ផ្គង់ (Payee / Supplier)</span> <span class="text-danger">*</span>
+                                    <i class="bi bi-person-badge text-primary me-1"></i><span data-i18n="pv_payee_label">អ្នកទទួលប្រាក់ / អ្នកផ្គត់ផ្គង់</span> <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" class="form-control rounded-3" id="pv-payee" placeholder="ឧ. ហាងកសិកម្ម ហេង ហេង, លោក សុខា..." data-i18n-placeholder="pv_payee_placeholder" required autocomplete="off">
                             </div>
@@ -137,7 +139,7 @@
                             <!-- Expense Category -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-secondary mb-1">
-                                    <i class="bi bi-tags-fill text-primary me-1"></i><span data-i18n="pv_category_label">ប្រភេទចំណាយ (Expense Category)</span> <span class="text-danger">*</span>
+                                    <i class="bi bi-tags-fill text-primary me-1"></i><span data-i18n="pv_category_label">ប្រភេទចំណាយ</span> <span class="text-danger">*</span>
                                 </label>
                                 <select class="form-select rounded-3" id="pv-category" required>
                                     <option value="" disabled selected data-i18n="pv_select_category">-- ជ្រើសរើសប្រភេទចំណាយ --</option>
@@ -147,17 +149,17 @@
                             <!-- Amount & Currency -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-secondary mb-1">
-                                    <i class="bi bi-cash-stack text-success me-1"></i><span data-i18n="pv_amount_label">ចំនួនទឹកប្រាក់ទូទាត់ (Amount)</span> <span class="text-danger">*</span>
+                                    <i class="bi bi-cash-stack text-success me-1"></i><span data-i18n="pv_amount_label">ចំនួនទឹកប្រាក់ទូទាត់</span> <span class="text-danger">*</span>
                                 </label>
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text bg-light fw-bold text-primary" id="pv-cur-symbol">$</span>
                                     <input type="number" step="any" min="0.01" class="form-control fw-bold text-danger fs-3" id="pv-amount" placeholder="0.00" required oninput="calcVoucherConversion()">
                                     <div class="btn-group" role="group">
                                         <input type="radio" class="btn-check" name="pv-currency" id="pv-cur-usd" value="USD" checked onchange="onVoucherCurrencyChange()">
-                                        <label class="btn btn-outline-primary d-flex align-items-center fw-bold px-3" for="pv-cur-usd">USD ($)</label>
+                                        <label class="btn btn-outline-primary d-flex align-items-center fw-bold px-3" for="pv-cur-usd"><span data-i18n="pv_cur_usd">ដុល្លារ ($)</span></label>
 
                                         <input type="radio" class="btn-check" name="pv-currency" id="pv-cur-khr" value="KHR" onchange="onVoucherCurrencyChange()">
-                                        <label class="btn btn-outline-primary d-flex align-items-center fw-bold px-3" for="pv-cur-khr">KHR (៛)</label>
+                                        <label class="btn btn-outline-primary d-flex align-items-center fw-bold px-3" for="pv-cur-khr"><span data-i18n="pv_cur_khr">រៀល (៛)</span></label>
                                     </div>
                                 </div>
                                 <div id="pv-conversion-note" class="text-primary fw-semibold mt-1" style="font-size: 0.8rem;">
@@ -168,21 +170,21 @@
                             <!-- Payment Method (Cash vs Bank) -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-secondary mb-1">
-                                    <i class="bi bi-credit-card-2-front-fill text-primary me-1"></i><span data-i18n="pv_method_label">វិធីសាស្រ្តទូទាត់ (Payment Method)</span> <span class="text-danger">*</span>
+                                    <i class="bi bi-credit-card-2-front-fill text-primary me-1"></i><span data-i18n="pv_method_label">វិធីសាស្រ្តទូទាត់</span> <span class="text-danger">*</span>
                                 </label>
                                 <div class="row g-2">
                                     <div class="col-6">
                                         <input type="radio" class="btn-check" name="pv-method" id="pv-method-cash" value="Cash" checked>
                                         <label class="btn btn-outline-success w-100 py-2 rounded-3 text-center d-flex flex-column align-items-center" for="pv-method-cash">
                                             <i class="bi bi-cash-coin fs-4 mb-1"></i>
-                                            <span class="fw-bold" style="font-size: 0.88rem;" data-i18n="pv_method_cash">សាច់ប្រាក់សុទ្ធ (Cash)</span>
+                                            <span class="fw-bold" style="font-size: 0.88rem;" data-i18n="pv_method_cash">សាច់ប្រាក់សុទ្ធ</span>
                                         </label>
                                     </div>
                                     <div class="col-6">
                                         <input type="radio" class="btn-check" name="pv-method" id="pv-method-bank" value="Bank">
                                         <label class="btn btn-outline-warning w-100 py-2 rounded-3 text-center d-flex flex-column align-items-center text-dark" for="pv-method-bank">
                                             <i class="bi bi-bank fs-4 mb-1 text-warning"></i>
-                                            <span class="fw-bold" style="font-size: 0.88rem;" data-i18n="pv_method_bank">ធនាគារ (Bank Transfer)</span>
+                                            <span class="fw-bold" style="font-size: 0.88rem;" data-i18n="pv_method_bank">ធនាគារ</span>
                                         </label>
                                     </div>
                                 </div>
@@ -191,7 +193,7 @@
                             <!-- Description / Purpose -->
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-secondary mb-1">
-                                    <i class="bi bi-chat-left-text-fill text-primary me-1"></i><span data-i18n="pv_desc_label">បរិយាយមុខចំណាយ / មូលហេតុ (Description)</span>
+                                    <i class="bi bi-chat-left-text-fill text-primary me-1"></i><span data-i18n="pv_desc_label">បរិយាយមុខចំណាយ / មូលហេតុ</span>
                                 </label>
                                 <textarea class="form-control rounded-3" id="pv-description" rows="2" placeholder="បញ្ជាក់ពីសម្ភារៈ ឬគោលបំណងទូទាត់..." data-i18n-placeholder="pv_desc_placeholder"></textarea>
                             </div>
@@ -199,7 +201,7 @@
                             <!-- Receipt Photo Attachment -->
                             <div class="mb-4">
                                 <label class="form-label fw-bold small text-secondary mb-1">
-                                    <i class="bi bi-camera-fill text-primary me-1"></i><span data-i18n="pv_photo_label">រូបថតវិក្កយបត្រ / បង្កាន់ដៃ (Receipt / Bill Photo)</span>
+                                    <i class="bi bi-camera-fill text-primary me-1"></i><span data-i18n="pv_photo_label">រូបថតវិក្កយបត្រ / បង្កាន់ដៃ</span>
                                 </label>
                                 
                                 <input type="file" id="pv-receipt-input" accept="image/*" capture="environment" style="display: none;" onchange="handleReceiptFileSelect(event)">
@@ -231,7 +233,7 @@
                             <!-- Submit Button -->
                             <button type="submit" id="pv-save-btn" class="btn btn-success btn-lg w-100 fw-bold py-3 rounded-pill shadow d-flex align-items-center justify-content-center gap-2">
                                 <i class="bi bi-send-check-fill fs-5"></i>
-                                <span data-i18n="pv_save_btn">រក្សាទុក និងផ្ញើចូល Telegram (Save &amp; Publish)</span>
+                                <span data-i18n="pv_save_btn">រក្សាទុក និងផ្ញើចូល Telegram</span>
                             </button>
 
                         </form>
