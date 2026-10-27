@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <link rel="stylesheet" href="assets/cropper.min.css">
-    <link rel="stylesheet" href="src/css/global.css?v=1793110000000">
+    <link rel="stylesheet" href="src/css/global.css?v=1793175000000">
     <link rel="stylesheet" href="src/css/print.css?v=1792674000">
     <link rel="stylesheet" href="src/css/dashboard.css?v=1792674000">
     <link rel="stylesheet" href="src/css/invoice.css?v=1792674000">
@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="src/css/settings.css?v=1792674000">
     <link rel="stylesheet" href="src/css/eface.css?v=1792683000000">
     <link rel="stylesheet" href="src/css/voucher.css?v=1792848000000">
-    <link rel="stylesheet" href="src/css/wallet.css?v=1793170000000">
+    <link rel="stylesheet" href="src/css/wallet.css?v=1793175000000">
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
@@ -707,15 +707,15 @@
 
             
             <!-- Top Navbar -->
-            <header class="top-navbar d-flex justify-content-between align-items-center shadow-sm px-4 bg-body" style="height: 64px;">
-                <div class="d-flex align-items-center">
+            <header class="top-navbar d-flex justify-content-between align-items-center shadow-sm px-3 px-md-4 bg-body" style="height: 64px;">
+                <div class="top-navbar-left d-none d-md-flex align-items-center">
                     <button class="btn btn-sm btn-outline-secondary d-md-none me-3" onclick="document.querySelector('.sidebar').classList.toggle('mobile-open')">☰</button>
                     <h5 class="m-0 d-flex align-items-center text-muted fs-6" id="top-navbar-title">
                         <span id="top-navbar-text">Dashboard</span>
                     </h5>
                 </div>
                 
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center ms-auto">
                     <!-- Top Navbar Language Switcher -->
                     <div class="lang-switch-wrapper me-3" data-no-i18n="true">
                         <div class="btn-group btn-group-sm rounded-pill p-1 border shadow-sm lang-pill-box" role="group" aria-label="Language Switcher">
@@ -1440,7 +1440,7 @@
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1793170000000"></script>
+    <script type="module" src="src/js/main.js?v=1793175000000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">

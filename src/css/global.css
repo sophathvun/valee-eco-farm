@@ -1,4 +1,4 @@
-﻿
+
 /* Tell mobile browsers that we natively support both light and dark modes, so they don't use Smart Invert */
 :root {
     color-scheme: light dark;
@@ -475,7 +475,10 @@ body.no-settings_emp_structure_delete #settings-emp_structure-tab .btn-delete { 
     .main-panel {
         padding-bottom: 70px !important;
     }
-
+    .top-navbar .top-navbar-left,
+    .top-navbar #top-navbar-title {
+        display: none !important;
+    }
 }
 
 
