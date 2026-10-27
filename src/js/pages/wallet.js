@@ -62,7 +62,34 @@ function isWalletAdmin() {
     if (!window.currentUser) return false;
     const uname = (window.currentUser.username || '').toLowerCase();
     const perms = window.currentUser.permissions || [];
-    return uname === 'admin' || perms.includes('wallet_topup') || perms.includes('settings');
+    const rName = (window.currentUser.roleName || '').toLowerCase();
+    return uname === 'admin' || uname === 'owner' || rName.includes('owner') || rName.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb') || perms.includes('wallet_topup') || perms.includes('settings');
+}
+
+// Check if a user is a Custodian (Handler of petty cash) vs Funder (Admin/Owner)
+function isCustodianUser(u) {
+    if (!u || !u.username) return false;
+    const uname = (u.username || '').toLowerCase();
+    if (uname === 'admin') return false;
+    const allRoles = window.cachedWalletRoles || [];
+    if (u.roleId && allRoles.length > 0) {
+        const r = allRoles.find(ro => ro.id == u.roleId);
+        if (r) {
+            const rName = (r.name || '').toLowerCase();
+            const perms = r.permissions || [];
+            if (rName.includes('admin') || rName.includes('owner') || rName.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb') || perms.includes('wallet_topup')) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function canDeleteWalletTx() {
+    if (!window.currentUser) return false;
+    const uname = (window.currentUser.username || '').toLowerCase();
+    const perms = window.currentUser.permissions || [];
+    return uname === 'admin' || perms.includes('wallet_delete');
 }
 
 // Filter Type (all, topup, expense)
@@ -93,14 +120,18 @@ window.loadWalletData = async function() {
     if (typeof db === 'undefined' || !db.walletTransactions) return;
 
     try {
-        // 1. Load active users
+        // 1. Load active users & roles
         let allUsers = [];
+        let allRoles = [];
         try {
             allUsers = (await db.users.toArray()) || [];
+            allRoles = (await db.roles.toArray()) || [];
         } catch (e) {
             allUsers = [];
+            allRoles = [];
         }
         window.cachedWalletUsers = allUsers;
+        window.cachedWalletRoles = allRoles;
 
         // 2. Load all wallet transactions
         let txList = [];
@@ -279,7 +310,10 @@ function renderCustodiansCarousel(allUsers, allTx, activeUserId) {
     container.appendChild(allItem);
 
     // List non-admin active users or all users
-    const candidateUsers = allUsers.filter(u => (u.username || '').toLowerCase() !== 'admin');
+    let candidateUsers = allUsers.filter(isCustodianUser);
+    if (candidateUsers.length === 0) {
+        candidateUsers = allUsers.filter(u => (u.username || '').toLowerCase() !== 'admin');
+    }
 
     candidateUsers.forEach(u => {
         // Calculate user's specific balance
@@ -418,7 +452,7 @@ function renderWalletTransactions() {
         ` : '';
 
         // Delete button for Admin
-        const deleteBtn = isAdmin ? `
+        const deleteBtn = canDeleteWalletTx() ? `
             <button class="btn btn-sm btn-outline-danger border-0 rounded-circle p-1 ms-1" title="លុបប្រតិបត្តិការ" onclick="deleteWalletTx(${tx.id})">
                 <i class="bi bi-trash"></i>
             </button>
@@ -473,7 +507,10 @@ window.openTopUpModal = async function(preselectedUserId = null) {
     if (select) {
         select.innerHTML = '<option value="">-- សូមជ្រើសរើសអ្នកទទួល --</option>';
         const users = window.cachedWalletUsers || [];
-        const candidates = users.filter(u => (u.username || '').toLowerCase() !== 'admin');
+        let candidates = users.filter(isCustodianUser);
+        if (candidates.length === 0) {
+            candidates = users.filter(u => (u.username || '').toLowerCase() !== 'admin');
+        }
         candidates.forEach(u => {
             const opt = document.createElement('option');
             opt.value = u.id;
