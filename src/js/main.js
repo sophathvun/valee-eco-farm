@@ -26,7 +26,7 @@ async function initializeApp() {
     const isVoucherRoute = hash.startsWith('#pv') || hash.startsWith('#voucher') || hash.startsWith('#payment-voucher');
     const hashTab = location.hash ? location.hash.replace('#', '').split('?')[0].split('/')[0] : null;
     const targetRoute = isEfaceRoute ? 'eface' : (isVoucherRoute ? 'voucher' : (hashTab || (localStorage.getItem('currentUser') ? (localStorage.getItem('activeTab') || 'dashboard') : 'dashboard')));
-    const appVersion = '1793165000000';
+    const appVersion = '1793170000000';
     
     // 1. Fetch and inject all HTML templates in PARALLEL using Promise.all for instant speed
     const templatePromises = viewsToLoad.map(async (view) => {
@@ -258,13 +258,19 @@ async function initializeApp() {
 
                 // Ensure current route view is fully initialized after all scripts have loaded
                 const rawHash = (window.location.hash || '').replace('#', '').trim();
-                const activeTab = rawHash ? rawHash.split('?')[0].split('/')[0] : (localStorage.getItem('activeTab') || 'dashboard');
+                let activeTab = rawHash ? rawHash.split('?')[0].split('/')[0] : (localStorage.getItem('activeTab') || 'dashboard');
+                if (typeof hasPermission === 'function' && !hasPermission(activeTab)) {
+                    activeTab = ['wallet', 'dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'reports', 'employee', 'settings'].find(t => hasPermission(t)) || 'wallet';
+                }
                 if (activeTab === 'attendance-report' && typeof initAttendanceReport === 'function') {
                     initAttendanceReport();
                 } else if (activeTab === 'attendance' && typeof initAttendance === 'function') {
                     initAttendance();
                 } else if (activeTab === 'payroll' && typeof initPayroll === 'function') {
                     initPayroll();
+                } else if (activeTab === 'wallet' && typeof initWallet === 'function') {
+                    initWallet();
+                    if (typeof showTab === 'function') showTab('wallet');
                 } else if (typeof showTab === 'function') {
                     showTab(activeTab);
                 }

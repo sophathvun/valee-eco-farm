@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="src/css/settings.css?v=1792674000">
     <link rel="stylesheet" href="src/css/eface.css?v=1792683000000">
     <link rel="stylesheet" href="src/css/voucher.css?v=1792848000000">
-    <link rel="stylesheet" href="src/css/wallet.css?v=1793165000000">
+    <link rel="stylesheet" href="src/css/wallet.css?v=1793170000000">
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
@@ -672,24 +672,28 @@
         <!-- Main Panel (Includes Top Navbar and Content) -->
         <div class="main-panel flex-grow-1 d-flex flex-column" style="min-width: 0; background-color: var(--bs-secondary-bg);">
 <!-- Mobile Bottom Navigation -->
-    <nav class="mobile-bottom-nav d-md-none bg-body border-top">
-        <a href="#" class="nav-item active" onclick="showTab('dashboard'); updateBottomNav(this);">
+    <nav class="mobile-bottom-nav d-md-none bg-body border-top" id="mobile-bottom-nav-bar">
+        <a href="#" class="nav-item" data-perm="dashboard" onclick="showTab('dashboard'); updateBottomNav(this);">
             <i class="bi bi-grid-fill"></i>
             <span data-i18n="menu_dashboard">ទំព័រដើម</span>
         </a>
-        <a href="#" class="nav-item" onclick="showTab('income'); updateBottomNav(this);">
+        <a href="#" class="nav-item" data-perm="wallet" onclick="showTab('wallet'); updateBottomNav(this);">
             <i class="bi bi-wallet2"></i>
+            <span data-i18n="menu_wallet">កាបូបលុយ</span>
+        </a>
+        <a href="#" class="nav-item" data-perm="income" onclick="showTab('income'); updateBottomNav(this);">
+            <i class="bi bi-cash-coin"></i>
             <span data-i18n="menu_income">ចំណូល</span>
         </a>
-        <a href="#" class="nav-item" onclick="showTab('expense'); updateBottomNav(this);">
+        <a href="#" class="nav-item" data-perm="expense" onclick="showTab('expense'); updateBottomNav(this);">
             <i class="bi bi-cart-dash-fill"></i>
             <span data-i18n="menu_expense">ចំណាយ</span>
         </a>
-        <a href="#" class="nav-item" onclick="showTab('reports'); updateBottomNav(this);">
+        <a href="#" class="nav-item" data-perm="reports" onclick="showTab('reports'); updateBottomNav(this);">
             <i class="bi bi-bar-chart-fill"></i>
             <span data-i18n="menu_reports">របាយការណ៍</span>
         </a>
-        <a href="#" class="nav-item" onclick="document.querySelector('.sidebar').classList.toggle('mobile-open')">
+        <a href="#" class="nav-item" id="bottom-nav-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('mobile-open')">
             <i class="bi bi-list"></i>
             <span data-i18n="menu_bottom_menu">ម៉ឺនុយ</span>
         </a>
@@ -1436,7 +1440,7 @@
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1793165000000"></script>
+    <script type="module" src="src/js/main.js?v=1793170000000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">

@@ -124,7 +124,7 @@ async function checkLogin() {
                     window.initVoucher();
                 }
             } else {
-                const fallbackTab = ['dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'voucher', 'reports', 'employee', 'eface', 'attendance', 'payroll', 'settings'].find(t => hasPermission(t)) || 'dashboard';
+                const fallbackTab = ['wallet', 'dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'voucher', 'reports', 'employee', 'eface', 'attendance', 'payroll', 'settings'].find(t => hasPermission(t)) || 'wallet';
                 showTab(fallbackTab);
             }
         } catch (e) {
@@ -237,13 +237,21 @@ window.loginUser = async function() {
             document.getElementById('main-wrapper').style.display = 'flex';
             applyPermissions();
             
-            if (hasPermission('dashboard')) showTab('dashboard');
-            else if (hasPermission('invoice_add')) showTab('invoice');
-            else if (hasPermission('invoice_list')) showTab('invoice-list');
-            else if (hasPermission('income')) showTab('income');
-            else if (hasPermission('expense')) showTab('expense');
-            else if (hasPermission('reports')) showTab('reports');
-            else if (hasPermission('settings')) showTab('settings');
+            // Redirect to appropriate landing tab based on permissions
+            const priorityTabs = ['dashboard', 'wallet', 'invoice_add', 'invoice_list', 'income', 'expense', 'reports', 'employee_manage', 'settings'];
+            let landed = false;
+            for (const key of priorityTabs) {
+                if (hasPermission(key)) {
+                    const mapped = key === 'invoice_add' ? 'invoice' : (key === 'invoice_list' ? 'invoice-list' : (key === 'employee_manage' ? 'employee' : key));
+                    showTab(mapped);
+                    landed = true;
+                    break;
+                }
+            }
+            if (!landed) {
+                const anyPerm = (currentUser.permissions || []).find(p => p.startsWith('wallet')) ? 'wallet' : 'dashboard';
+                showTab(anyPerm);
+            }
 
             if (typeof window.checkPWAStatus === 'function') window.checkPWAStatus();
             
@@ -298,6 +306,7 @@ function hasPermission(perm) {
     if ((currentUser.username || '').toLowerCase() === 'admin') return true;
     return Boolean(currentUser.permissions && currentUser.permissions.includes(perm));
 }
+window.hasPermission = hasPermission;
 
 window.canEditAttendance = function() {
     if (!currentUser) return false;
@@ -324,16 +333,36 @@ window.canAddAttendance = function() {
 window.applyPermissions = function() {
     if (!currentUser) return;
     const perms = currentUser.permissions || [];
+    const isAdmin = (currentUser.username || '').toLowerCase() === 'admin';
     
-    // Hide menus
+    // 1. Hide/show sidebar menus
     document.querySelectorAll('.sys-menu-item').forEach(el => {
         const p = el.getAttribute('data-perm');
-        if (p && !perms.includes(p) && (currentUser.username || '').toLowerCase() !== 'admin') {
+        if (p && !perms.includes(p) && !isAdmin) {
             el.style.display = 'none';
         } else {
             el.style.display = 'block';
         }
     });
+
+    // 2. Hide/show mobile bottom navigation items
+    let visibleBottomCount = 0;
+    document.querySelectorAll('.mobile-bottom-nav .nav-item[data-perm]').forEach(el => {
+        const p = el.getAttribute('data-perm');
+        if (p && !perms.includes(p) && !isAdmin) {
+            el.style.display = 'none';
+        } else {
+            el.style.display = 'flex';
+            visibleBottomCount++;
+        }
+    });
+
+    // 3. For users who only have wallet permission (Custodian single-app view)
+    const sidebarSearch = document.querySelector('.sidebar-search');
+    const isOnlyWallet = !isAdmin && perms.includes('wallet') && !perms.includes('dashboard') && !perms.includes('income') && !perms.includes('expense') && !perms.includes('reports') && !perms.includes('settings');
+    if (sidebarSearch) {
+        sidebarSearch.style.display = isOnlyWallet ? 'none' : 'block';
+    }
 
     const specificAccessKeys = [
         'income_add', 'income_edit', 'income_delete',
@@ -448,6 +477,7 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
 
     const navIcons = {
         'dashboard': '🔘',
+        'wallet': '👛',
         'invoice': '🧾',
         'invoice-list': '🗂️',
         'income': '💰',
@@ -466,6 +496,7 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
 
     const titleMap = {
         'dashboard': getT('tab_dashboard', 'ទំព័រដើម'),
+        'wallet': getT('menu_wallet', 'កាបូបលុយចំណាយ'),
         'invoice': getT('tab_invoice', 'បង្កើតវិក្កយបត្រ'),
         'invoice-list': getT('tab_invoice_list', 'បញ្ជីវិក្កយបត្រ'),
         'income': getT('tab_income', 'ចំណូល'),
@@ -523,6 +554,17 @@ window.showTab = function(tabId, subId = null) {
     if (!currentUser && tabId === 'eface') {
         document.body.classList.add('public-eface-mode');
         document.documentElement.classList.add('public-eface-mode');
+    }
+
+    // Permission Guard: If user does not have permission for this tab, redirect to their first permitted tab
+    if (currentUser && (currentUser.username || '').toLowerCase() !== 'admin') {
+        if (tabId !== 'eface' && tabId !== 'voucher' && typeof hasPermission === 'function' && !hasPermission(tabId)) {
+            const fallbackTabs = ['wallet', 'dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'reports', 'employee', 'attendance', 'payroll', 'settings'];
+            const allowed = fallbackTabs.find(t => hasPermission(t)) || 'wallet';
+            if (allowed && allowed !== tabId) {
+                return window.showTab(allowed);
+            }
+        }
     }
 
     try {
@@ -650,6 +692,11 @@ window.showTab = function(tabId, subId = null) {
     
     if (tabId === 'attendance') {
         if (typeof initAttendance === 'function') initAttendance();
+    }
+
+    if (tabId === 'wallet') {
+        if (typeof window.initWallet === 'function') window.initWallet();
+        if (typeof window.loadWalletData === 'function') window.loadWalletData();
     }
     
     if (tabId === 'attendance-report') {
