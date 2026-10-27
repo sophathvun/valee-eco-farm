@@ -1,0 +1,404 @@
+<div class="wallet-container">
+    <!-- Header / Title -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+            <h4 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                <span class="fs-4">👛</span>
+                <span data-i18n="menu_wallet">កាបូបលុយចំណាយ</span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle fs-6 rounded-pill px-2 py-1">Petty Cash Float</span>
+            </h4>
+            <small class="text-secondary" id="wallet-welcome-msg">តាមដានលុយបុរេប្រទាន និងការចំណាយជាក់ស្តែងសម្រាប់កសិដ្ឋាន</small>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 rounded-pill px-3" onclick="loadWalletData()">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span data-i18n="refresh">ផ្ទុកឡើងវិញ</span>
+            </button>
+            <button class="btn btn-sm btn-primary d-flex align-items-center gap-1 rounded-pill px-3 write-only" id="btn-open-topup" onclick="openTopUpModal()">
+                <i class="bi bi-plus-circle-fill"></i>
+                <span>+ បញ្ចូលប្រាក់ (Top Up)</span>
+            </button>
+            <button class="btn btn-sm btn-danger d-flex align-items-center gap-1 rounded-pill px-3 write-only" id="btn-open-expense" onclick="openWalletExpenseModal()">
+                <i class="bi bi-dash-circle-fill"></i>
+                <span>- កត់ត្រាចំណាយ (Pay)</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN WALLET HERO CARD (Apple Wallet / Revolut Style) -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-5 col-md-6 col-12">
+            <div class="fintech-wallet-card shadow-lg">
+                <div class="card-glass-layer">
+                    <!-- Card Top Header -->
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <div class="card-brand-tag">VALLE ECO FARM</div>
+                            <div class="card-holder-name" id="wallet-card-user-name">Michael Adams</div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="card-chip-icon">💳</span>
+                            <button class="btn btn-sm btn-balance-toggle" onclick="toggleWalletBalancePrivacy()" title="លាក់/បង្ហាញសមតុល្យ">
+                                <i class="bi bi-eye-fill" id="wallet-eye-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Total Balance Section -->
+                    <div class="balance-pocket mb-3">
+                        <div class="balance-pocket-label">សមតុល្យសរុបក្នុងដៃ (Available Balance)</div>
+                        <div class="balance-values-grid">
+                            <div class="balance-item">
+                                <span class="balance-currency-flag">💵 USD</span>
+                                <span class="balance-number" id="wallet-balance-usd">$0.00</span>
+                            </div>
+                            <div class="balance-item">
+                                <span class="balance-currency-flag">🇰🇭 KHR</span>
+                                <span class="balance-number" id="wallet-balance-khr">0 ៛</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Actions Inside Glass Area -->
+                    <div class="d-flex gap-2 pt-2 border-top border-white-subtle">
+                        <button class="btn btn-light btn-sm flex-fill fw-bold rounded-pill text-dark shadow-sm" id="card-action-topup" onclick="openTopUpModal()">
+                            <i class="bi bi-plus-lg text-primary me-1"></i> Top Up
+                        </button>
+                        <button class="btn btn-danger btn-sm flex-fill fw-bold rounded-pill shadow-sm" id="card-action-pay" onclick="openWalletExpenseModal()">
+                            <i class="bi bi-cart-dash me-1"></i> ចំណាយ (Pay)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI SUMMARY CARDS -->
+        <div class="col-lg-7 col-md-6 col-12">
+            <div class="row g-3 h-100">
+                <!-- Money In KPI -->
+                <div class="col-12 col-sm-6">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 kpi-stat-card border-start border-success border-4">
+                        <div class="card-body d-flex flex-column justify-content-between p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-secondary fw-semibold fs-7">លុយបានទទួល (Money In)</span>
+                                <div class="kpi-icon-circle bg-success-subtle text-success">
+                                    <i class="bi bi-arrow-down-left"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="fs-4 fw-bold text-success" id="kpi-money-in-usd">+$0.00</div>
+                                <div class="fs-6 fw-semibold text-secondary" id="kpi-money-in-khr">+0 ៛</div>
+                            </div>
+                            <small class="text-muted mt-2" style="font-size: 11px;">សរុបលុយដែលបាន Top Up ពីម្ចាស់</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Money Out KPI -->
+                <div class="col-12 col-sm-6">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 kpi-stat-card border-start border-danger border-4">
+                        <div class="card-body d-flex flex-column justify-content-between p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-secondary fw-semibold fs-7">លុយបានចំណាយ (Money Out)</span>
+                                <div class="kpi-icon-circle bg-danger-subtle text-danger">
+                                    <i class="bi bi-arrow-up-right"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="fs-4 fw-bold text-danger" id="kpi-money-out-usd">-$0.00</div>
+                                <div class="fs-6 fw-semibold text-secondary" id="kpi-money-out-khr">-0 ៛</div>
+                            </div>
+                            <small class="text-muted mt-2" style="font-size: 11px;">សរុបចំណាយជាក់ស្តែងលើកសិដ្ឋាន</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK TOP-UP / CUSTODIANS CAROUSEL (Visible to Admin & Owner) -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4" id="wallet-admin-custodians-section">
+        <div class="card-header bg-body border-0 pt-3 pb-2 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-people-fill text-primary"></i>
+                <span>អ្នកកាន់កាបូបលុយ (Custodians / Handlers)</span>
+            </h6>
+            <small class="text-secondary">ចុចលើ Avatar ដើម្បី Top Up ភ្លាមៗ</small>
+        </div>
+        <div class="card-body pt-1 pb-3">
+            <div class="custodians-carousel-scroll d-flex gap-3 align-items-center" id="custodians-avatar-list">
+                <!-- Dynamically loaded avatar circles -->
+                <div class="text-muted fs-7 py-2">កំពុងផ្ទុកបញ្ជីអ្នកកាន់កាបូបលុយ...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TRANSACTIONS & ACTIVITY SECTION -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-body border-bottom pt-3 pb-3">
+            <div class="row align-items-center g-2">
+                <div class="col-md-4 col-12">
+                    <h5 class="mb-0 fw-bold d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history text-secondary"></i>
+                        <span>ប្រវត្តិប្រតិបត្តិការ (Activity Feed)</span>
+                    </h5>
+                </div>
+                <div class="col-md-8 col-12">
+                    <div class="d-flex justify-content-md-end align-items-center gap-2 flex-wrap">
+                        <!-- Filter Pills -->
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-secondary active" id="filter-type-all" onclick="setWalletTypeFilter('all')">ទាំងអស់</button>
+                            <button type="button" class="btn btn-outline-success" id="filter-type-topup" onclick="setWalletTypeFilter('topup')">+ ប្រាក់ចូល</button>
+                            <button type="button" class="btn btn-outline-danger" id="filter-type-expense" onclick="setWalletTypeFilter('expense')">- ប្រាក់ចេញ</button>
+                        </div>
+                        <!-- Custodian selector for Admin -->
+                        <select class="form-select form-select-sm" id="filter-wallet-user" onchange="loadWalletData()" style="max-width: 170px;">
+                            <option value="">អ្នកកាន់ទាំងអស់</option>
+                        </select>
+                        <!-- Date range toggle -->
+                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#walletDateFilterCollapse" aria-expanded="false" title="ចម្រាញ់តាមកាលបរិច្ឆេទ">
+                            <i class="bi bi-funnel"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Range Filter Collapse -->
+            <div class="collapse mt-3" id="walletDateFilterCollapse">
+                <div class="p-3 bg-body-tertiary rounded-3 border">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4 col-6">
+                            <label class="form-label fs-7 mb-1">ចាប់ពីថ្ងៃទី (From)</label>
+                            <input type="date" class="form-control form-control-sm" id="wallet-filter-from" onchange="loadWalletData()">
+                        </div>
+                        <div class="col-md-4 col-6">
+                            <label class="form-label fs-7 mb-1">ដល់ថ្ងៃទី (To)</label>
+                            <input type="date" class="form-control form-control-sm" id="wallet-filter-to" onchange="loadWalletData()">
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <button class="btn btn-sm btn-secondary w-100" onclick="clearWalletFilters()">
+                                <i class="bi bi-x-circle me-1"></i> សម្អាត Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions List Body -->
+        <div class="card-body p-0">
+            <div id="wallet-transaction-list" class="wallet-tx-container">
+                <!-- Dynamically populated transaction cards -->
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border spinner-border-sm text-primary mb-2"></div>
+                    <div>កំពុងផ្ទុកទិន្នន័យប្រតិបត្តិការ...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL 1: TOP UP MODAL (សម្រាប់ម្ចាស់កសិដ្ឋានផ្តល់លុយ)
+     ======================================================== -->
+<div class="modal fade" id="walletTopupModal" tabindex="-1" aria-labelledby="walletTopupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom bg-primary text-white rounded-top-4">
+                <h5 class="modal-title fw-bold" id="walletTopupModalLabel">
+                    <i class="bi bi-plus-circle-fill me-2"></i>បញ្ចូលប្រាក់បុរេប្រទាន (Top Up Wallet)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="walletTopupForm" onsubmit="handleTopUpSubmit(event)">
+                <div class="modal-body p-4">
+                    <!-- Recipient Selection -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold fs-7 mb-1">អ្នកទទួលប្រាក់ (Recipient Custodian) <span class="text-danger">*</span></label>
+                        <select class="form-select" id="topup-recipient" required>
+                            <option value="">-- សូមជ្រើសរើសអ្នកទទួល --</option>
+                        </select>
+                    </div>
+
+                    <!-- Currency Selection -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold fs-7 mb-1">រូបិយប័ណ្ណ (Currency) <span class="text-danger">*</span></label>
+                            <select class="form-select" id="topup-currency" required onchange="updateTopUpCurrencySymbol()">
+                                <option value="USD">ដុល្លារអាមេរិក ($)</option>
+                                <option value="KHR">ប្រាក់រៀល (៛)</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold fs-7 mb-1">កាលបរិច្ឆេទ (Date) <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="topup-date" required>
+                        </div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold fs-7 mb-1">ចំនួនទឹកប្រាក់ (Amount) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text fw-bold fs-5 text-primary" id="topup-symbol">$</span>
+                            <input type="number" step="any" min="0.01" class="form-control form-control-lg fw-bold text-primary" id="topup-amount" placeholder="0.00" required>
+                        </div>
+                    </div>
+
+                    <!-- Description / Purpose -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold fs-7 mb-1">កំណត់សម្គាល់ / គោលបំណង (Purpose / Note)</label>
+                        <input type="text" class="form-control" id="topup-note" placeholder="ឧ. លុយបុរេប្រទានទិញប្រេង និងជីសប្តាហ៍ទី១">
+                    </div>
+
+                    <!-- Telegram Notification Switch -->
+                    <div class="form-check form-switch pt-2">
+                        <input class="form-check-input" type="checkbox" id="topup-telegram-notify" checked>
+                        <label class="form-check-label fs-7" for="topup-telegram-notify">
+                            <i class="bi bi-telegram text-primary me-1"></i> ផ្ញើដំណឹងទៅ Telegram Group
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-body-tertiary rounded-bottom-4">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">បោះបង់</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold" id="btn-save-topup">
+                        <i class="bi bi-check-circle-fill me-1"></i> បញ្ចូលប្រាក់ភ្លាម
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL 2: EXPENSE MODAL (សម្រាប់អ្នកកាន់កត់ត្រាចំណាយ)
+     ======================================================== -->
+<div class="modal fade" id="walletExpenseModal" tabindex="-1" aria-labelledby="walletExpenseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom bg-danger text-white rounded-top-4">
+                <h5 class="modal-title fw-bold" id="walletExpenseModalLabel">
+                    <i class="bi bi-cart-dash-fill me-2"></i>កត់ត្រាចំណាយពីកាបូបលុយ (Pay Expense)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="walletExpenseForm" onsubmit="handleWalletExpenseSubmit(event)">
+                <div class="modal-body p-4">
+                    <!-- Spender & Balance Notice -->
+                    <div class="p-3 bg-danger-subtle text-danger-emphasis rounded-3 border border-danger-subtle mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <span class="fw-bold" id="exp-modal-user-label">អ្នកចំណាយ៖ Michael</span>
+                            <div class="fs-7 text-secondary">ទឹកប្រាក់នឹងកាត់ចេញពីកាបូបលុយរបស់អ្នកដោយស្វ័យប្រវត្ត</div>
+                        </div>
+                        <div class="text-end">
+                            <div class="fs-7 text-muted">សមតុល្យនៅសល់បច្ចុប្បន្ន</div>
+                            <span class="badge bg-danger fs-6" id="exp-modal-balance-badge">$0.00 | 0 ៛</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Date -->
+                        <div class="col-md-6 col-12">
+                            <label class="form-label fw-semibold fs-7 mb-1">កាលបរិច្ឆេទ (Date) <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="wallet-exp-date" required>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="col-md-6 col-12">
+                            <label class="form-label fw-semibold fs-7 mb-1">ប្រភេទចំណាយ (Expense Category) <span class="text-danger">*</span></label>
+                            <select class="form-select" id="wallet-exp-category" required>
+                                <option value="">-- សូមជ្រើសរើសប្រភេទ --</option>
+                            </select>
+                        </div>
+
+                        <!-- Currency -->
+                        <div class="col-md-6 col-12">
+                            <label class="form-label fw-semibold fs-7 mb-1">រូបិយប័ណ្ណចំណាយ (Currency) <span class="text-danger">*</span></label>
+                            <select class="form-select" id="wallet-exp-currency" required onchange="updateWalletExpenseCurrencySymbol()">
+                                <option value="USD">ដុល្លារអាមេរិក ($)</option>
+                                <option value="KHR">ប្រាក់រៀល (៛)</option>
+                            </select>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="col-md-6 col-12">
+                            <label class="form-label fw-semibold fs-7 mb-1">ចំនួនទឹកប្រាក់ (Amount) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text fw-bold fs-5 text-danger" id="wallet-exp-symbol">$</span>
+                                <input type="number" step="any" min="0.01" class="form-control form-control-lg fw-bold text-danger" id="wallet-exp-amount" placeholder="0.00" required>
+                            </div>
+                        </div>
+
+                        <!-- Payee / Supplier -->
+                        <div class="col-md-6 col-12">
+                            <label class="form-label fw-semibold fs-7 mb-1">អ្នកទទួលប្រាក់ / ហាងផ្គត់ផ្គង់ (Paid To / Supplier)</label>
+                            <input type="text" class="form-control" id="wallet-exp-payee" placeholder="ឧ. ហាងលក់ជីគីមី តាសុខ">
+                        </div>
+
+                        <!-- Receipt Photo Attachment -->
+                        <div class="col-md-6 col-12">
+                            <label class="form-label fw-semibold fs-7 mb-1">រូបថតវិក្កយបត្រ / បង្កាន់ដៃ (Receipt Photo)</label>
+                            <input type="file" class="form-control" id="wallet-exp-receipt" accept="image/*" onchange="previewWalletReceipt(event)">
+                            <div id="receipt-preview-container" class="mt-2" style="display: none;">
+                                <img id="receipt-preview-img" src="" alt="Receipt Preview" class="img-thumbnail" style="max-height: 80px; object-fit: contain;">
+                                <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="removeWalletReceipt()">លុបរូប</button>
+                            </div>
+                        </div>
+
+                        <!-- Note / Description -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold fs-7 mb-1">កំណត់សម្គាល់ (Description / Note)</label>
+                            <textarea class="form-control" id="wallet-exp-note" rows="2" placeholder="បញ្ជាក់លម្អិតអំពីការទិញ ឬចំណាយ..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Integration Switches -->
+                    <div class="row mt-3 pt-3 border-top g-2">
+                        <div class="col-md-6 col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="wallet-exp-sync-system" checked>
+                                <label class="form-check-label fs-7 fw-semibold" for="wallet-exp-sync-system">
+                                    <i class="bi bi-journal-check text-success me-1"></i> កត់ត្រាចូលក្នុងប្រព័ន្ធចំណាយកសិដ្ឋាន (System Expense)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="wallet-exp-telegram-notify" checked>
+                                <label class="form-check-label fs-7" for="wallet-exp-telegram-notify">
+                                    <i class="bi bi-telegram text-primary me-1"></i> ផ្ញើដំណឹង និងវិក្កយបត្រទៅ Telegram
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-body-tertiary rounded-bottom-4">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">បោះបង់</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold" id="btn-save-wallet-expense">
+                        <i class="bi bi-check-circle-fill me-1"></i> កត់ត្រាចំណាយភ្លាម
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL 3: RECEIPT VIEWER MODAL
+     ======================================================== -->
+<div class="modal fade" id="walletReceiptViewerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-dark text-white border-0 py-2">
+                <h6 class="modal-title fw-bold" id="receipt-modal-title">រូបថតវិក្កយបត្រ (Receipt)</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 text-center bg-black">
+                <img id="receipt-viewer-img" src="" alt="Receipt Large View" class="img-fluid" style="max-height: 80vh; object-fit: contain;">
+            </div>
+            <div class="modal-footer bg-dark border-0 py-2 d-flex justify-content-between">
+                <span class="text-white-50 fs-7" id="receipt-viewer-info"></span>
+                <button type="button" class="btn btn-sm btn-light rounded-pill px-3" data-bs-dismiss="modal">បិទ</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,407 @@
+/* wallet.css - Modern Fintech Style for Farm Wallet */
+
+.wallet-container {
+    padding: 6px 2px;
+}
+
+/* ========================================================
+   1. FINTECH HERO WALLET CARD
+   ======================================================== */
+.fintech-wallet-card {
+    background: linear-gradient(135deg, #4338ca 0%, #6366f1 50%, #8b5cf6 100%);
+    border-radius: 24px;
+    padding: 24px;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 35px -5px rgba(99, 102, 241, 0.4), 0 8px 16px -6px rgba(99, 102, 241, 0.3) !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.fintech-wallet-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px -5px rgba(99, 102, 241, 0.45), 0 10px 20px -6px rgba(99, 102, 241, 0.35) !important;
+}
+
+/* Subtle decorative wave watermark in background */
+.fintech-wallet-card::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.card-brand-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 2px;
+}
+
+.card-holder-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+}
+
+.card-chip-icon {
+    font-size: 1.6rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.btn-balance-toggle {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.btn-balance-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+}
+
+/* Balance Pocket (Darker Inset Display) */
+.balance-pocket {
+    background: rgba(15, 23, 42, 0.35);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+
+.balance-pocket-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.balance-values-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.balance-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.balance-currency-flag {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 2px;
+}
+
+.balance-number {
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    word-break: break-all;
+}
+
+.border-white-subtle {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ========================================================
+   2. KPI STAT CARDS
+   ======================================================== */
+.kpi-stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.kpi-icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* ========================================================
+   3. CUSTODIANS AVATAR CAROUSEL
+   ======================================================== */
+.custodians-carousel-scroll {
+    overflow-x: auto;
+    padding: 4px 2px 10px 2px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+}
+
+.custodians-carousel-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+.custodians-carousel-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+
+.custodian-avatar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 82px;
+    max-width: 90px;
+    cursor: pointer;
+    text-align: center;
+    padding: 6px 4px;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.custodian-avatar-item:hover {
+    background-color: var(--bs-tertiary-bg);
+    transform: translateY(-3px);
+}
+
+.custodian-avatar-item.active {
+    background-color: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.custodian-avatar-circle {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.15rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    position: relative;
+    border: 2px solid #ffffff;
+    margin-bottom: 6px;
+    transition: transform 0.2s ease;
+}
+
+.custodian-avatar-item:hover .custodian-avatar-circle {
+    transform: scale(1.06);
+    border-color: #6366f1;
+}
+
+.custodian-avatar-circle.add-btn {
+    background: rgba(99, 102, 241, 0.1);
+    color: #4f46e5;
+    border: 2px dashed #6366f1;
+}
+
+.custodian-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bs-body-color);
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 2px;
+}
+
+.custodian-balance-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.custodian-balance-pill.has-money {
+    background: rgba(16, 185, 129, 0.15);
+    color: #059669;
+}
+
+.custodian-balance-pill.low-money {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+/* ========================================================
+   4. TRANSACTIONS & ACTIVITY LIST
+   ======================================================== */
+.wallet-tx-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.wallet-tx-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--bs-border-color);
+    transition: background-color 0.15s ease;
+}
+
+.wallet-tx-row:hover {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.wallet-tx-row:last-child {
+    border-bottom: none;
+}
+
+.tx-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    flex-shrink: 0;
+}
+
+.tx-icon-box.topup {
+    background: rgba(16, 185, 129, 0.14);
+    color: #059669;
+}
+
+.tx-icon-box.expense {
+    background: rgba(239, 68, 68, 0.14);
+    color: #dc2626;
+}
+
+.tx-details {
+    flex: 1;
+    min-width: 0;
+    padding: 0 14px;
+}
+
+.tx-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--bs-body-color);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tx-meta {
+    font-size: 12px;
+    color: var(--bs-secondary-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tx-amounts {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.tx-amount-val {
+    font-size: 1.1rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.tx-amount-val.topup {
+    color: #10b981;
+}
+
+.tx-amount-val.expense {
+    color: #ef4444;
+}
+
+.tx-actions-dropdown {
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+/* ========================================================
+   5. DARK MODE ENHANCEMENTS
+   ======================================================== */
+[data-bs-theme="dark"] .fintech-wallet-card {
+    background: linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #581c87 100%);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6), 0 8px 16px -6px rgba(76, 29, 149, 0.4) !important;
+}
+
+[data-bs-theme="dark"] .balance-pocket {
+    background: rgba(0, 0, 0, 0.45);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] .custodian-avatar-circle {
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #1e293b;
+}
+
+[data-bs-theme="dark"] .custodian-avatar-circle.add-btn {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    border-color: #6366f1;
+}
+
+[data-bs-theme="dark"] .tx-amount-val.topup {
+    color: #34d399;
+}
+
+[data-bs-theme="dark"] .tx-amount-val.expense {
+    color: #f87171;
+}
+
+/* ========================================================
+   6. RESPONSIVE MOBILE TWEAKS (<= 768px)
+   ======================================================== */
+@media (max-width: 768px) {
+    .fintech-wallet-card {
+        border-radius: 20px;
+        padding: 18px;
+    }
+    
+    .card-holder-name {
+        font-size: 1.2rem;
+    }
+
+    .balance-number {
+        font-size: 1.25rem;
+    }
+
+    .wallet-tx-row {
+        padding: 12px 14px;
+    }
+
+    .tx-icon-box {
+        width: 40px;
+        height: 40px;
+        font-size: 1.15rem;
+    }
+
+    .tx-amount-val {
+        font-size: 1rem;
+    }
+}

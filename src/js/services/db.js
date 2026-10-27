@@ -1,4 +1,4 @@
-function checkOnline() {
+﻿function checkOnline() {
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
         throw new Error('គ្មានការតភ្ជាប់អ៊ីនធឺណិត (No Internet Connection)! ប្រព័ន្ធដំណើរការលើ Cloud Online ប៉ុណ្ណោះ សូមភ្ជាប់អ៊ីនធឺណិតដើម្បីបន្ត។');
     }
@@ -145,6 +145,7 @@ const db = {
     telegramSettings: new FirebaseStore('telegramSettings'),
     gpsSettings: new FirebaseStore('gpsSettings'),
     paymentVouchers: new FirebaseStore('paymentVouchers'),
-    voucherUsers: new FirebaseStore('voucherUsers')
+    voucherUsers: new FirebaseStore('voucherUsers'),
+    walletTransactions: new FirebaseStore('walletTransactions')
 };
 

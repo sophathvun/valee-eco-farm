@@ -277,6 +277,7 @@ window.applyPermissions = function() {
     const specificAccessKeys = [
         'income_add', 'income_edit', 'income_delete',
         'expense_add', 'expense_edit', 'expense_delete',
+        'wallet_topup', 'wallet_pay', 'wallet_delete',
         'invoice_add', 'invoice_list_edit', 'invoice_list_delete',
         'employee_add', 'employee_edit', 'employee_delete',
         'attendance_add', 'attendance_edit', 'attendance_delete',

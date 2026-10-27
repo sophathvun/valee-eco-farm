@@ -8,6 +8,7 @@ const viewsToLoad = [
     'income',
     'expense',
     'voucher',
+    'wallet',
     'reports',
     'employee',
     'eface',
@@ -25,7 +26,7 @@ async function initializeApp() {
     const isVoucherRoute = hash.startsWith('#pv') || hash.startsWith('#voucher') || hash.startsWith('#payment-voucher');
     const hashTab = location.hash ? location.hash.replace('#', '').split('?')[0].split('/')[0] : null;
     const targetRoute = isEfaceRoute ? 'eface' : (isVoucherRoute ? 'voucher' : (hashTab || (localStorage.getItem('currentUser') ? (localStorage.getItem('activeTab') || 'dashboard') : 'dashboard')));
-    const appVersion = '1793110000000';
+    const appVersion = '1793120000000';
     
     // 1. Fetch and inject all HTML templates in PARALLEL using Promise.all for instant speed
     const templatePromises = viewsToLoad.map(async (view) => {
@@ -66,7 +67,8 @@ async function initializeApp() {
         'src/js/utils/print-util.js',
         'src/js/utils/auth.js',
         'src/js/pages/eface.js',
-        'src/js/pages/voucher.js'
+        'src/js/pages/voucher.js',
+        'src/js/pages/wallet.js'
     ];
 
     const adminScripts = [
@@ -251,6 +253,7 @@ async function initializeApp() {
                 if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
                 if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
                 if (typeof initPayroll === 'function') initPayroll();
+                if (typeof initWallet === 'function') initWallet();
                 if (typeof applyTranslations === 'function') applyTranslations();
 
                 // Ensure current route view is fully initialized after all scripts have loaded
