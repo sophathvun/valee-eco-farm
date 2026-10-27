@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="src/css/settings.css?v=1792674000">
     <link rel="stylesheet" href="src/css/eface.css?v=1792683000000">
     <link rel="stylesheet" href="src/css/voucher.css?v=1792848000000">
-    <link rel="stylesheet" href="src/css/wallet.css?v=1793120000000">
+    <link rel="stylesheet" href="src/css/wallet.css?v=1793135000000">
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="preload" href="assets/fonts/KhmerOSmuollight.ttf" as="font" type="font/ttf" crossorigin>
@@ -742,9 +742,9 @@
                     <div class="user-profile d-flex align-items-center" style="cursor: pointer;">
                         <div class="text-end me-2 d-none d-md-block lh-1">
                             <div class="fw-bold text-dark fs-6" id="top-user-name">USER</div>
-                            <small class="text-muted" style="font-size: 0.7rem;">Administrator</small>
+                            <small class="text-muted" style="font-size: 0.7rem;" id="top-user-role">Administrator</small>
                         </div>
-                        <img src="assets/images/logo.png" width="35" height="35" class="rounded-circle border sys-logo">
+                        <img id="top-user-avatar" src="assets/images/default-avatar.png" width="35" height="35" class="rounded-circle border shadow-sm object-fit-cover" style="object-fit: cover;">
                     </div>
                 </div>
             </header>
@@ -1436,7 +1436,7 @@
             });
         }
     </script>
-    <script type="module" src="src/js/main.js?v=1793120000000"></script>
+    <script type="module" src="src/js/main.js?v=1793135000000"></script>
 
     <!-- Floating PWA Install Button Container -->
     <div id="pwa-install-container" style="display: none; position: fixed; bottom: 80px; right: 20px; z-index: 9999; align-items: center; gap: 6px;">

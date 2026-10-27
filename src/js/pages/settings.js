@@ -252,8 +252,13 @@ async function loadUsersAndRoles() {
             ? '<span class="badge bg-success ms-2" style="font-size: 0.65em; padding: 0.35em 0.5em;"><i class="bi bi-circle-fill me-1" style="font-size:0.7em;"></i>Online</span>' 
             : '<span class="badge bg-secondary ms-2" style="font-size: 0.65em; padding: 0.35em 0.5em;"><i class="bi bi-circle me-1" style="font-size:0.7em;"></i>Offline</span>';
 
+        const photoHtml = u.photo 
+            ? `<img src="${u.photo}" class="rounded-circle border shadow-sm" style="width: 36px; height: 36px; object-fit: cover;">`
+            : `<div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 36px; height: 36px; font-size: 14px;">${(u.username || 'U').charAt(0).toUpperCase()}</div>`;
+
         tr.innerHTML = `
-            <td class="fw-bold align-middle">
+            <td class="align-middle text-center p-1">${photoHtml}</td>
+            <td class="fw-bold align-middle text-start">
                 <div class="d-flex align-items-center">
                     ${u.username || 'Unknown'} ${onlineBadge}
                 </div>
@@ -270,6 +275,80 @@ async function loadUsersAndRoles() {
         tbody.appendChild(tr);
     });
 }
+
+// User Profile Photo Preview & Compression
+window.currentUserPhotoBase64 = null;
+
+window.previewUserPhoto = async function(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    try {
+        let compressed = null;
+        if (typeof window.compressQrImage === 'function') {
+            compressed = await window.compressQrImage(file, 400, 0.82);
+        } else {
+            compressed = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        const max = 400;
+                        if (w > max || h > max) {
+                            if (w > h) { h = Math.round((h * max) / w); w = max; }
+                            else { w = Math.round((w * max) / h); h = max; }
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.82));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        window.currentUserPhotoBase64 = compressed;
+        const previewImg = document.getElementById('userPhotoPreview');
+        const removeBtn = document.getElementById('btnRemoveUserPhoto');
+        if (previewImg) previewImg.src = compressed;
+        if (removeBtn) removeBtn.classList.remove('d-none');
+    } catch (err) {
+        console.error('Error previewing user photo:', err);
+    }
+};
+
+window.removeUserPhoto = function() {
+    window.currentUserPhotoBase64 = null;
+    const previewImg = document.getElementById('userPhotoPreview');
+    const removeBtn = document.getElementById('btnRemoveUserPhoto');
+    const fileInput = document.getElementById('newUserPhoto');
+    if (fileInput) fileInput.value = '';
+    if (previewImg) previewImg.src = 'assets/images/default-avatar.png';
+    if (removeBtn) removeBtn.classList.add('d-none');
+};
+
+window.cancelEditUser = function() {
+    editingUserId = null;
+    document.getElementById('addUserForm')?.reset();
+    const stCheck = document.getElementById('newUserStatus');
+    const stLbl = document.getElementById('newUserStatusLabel');
+    if (stCheck) stCheck.checked = true;
+    if (stLbl) {
+        stLbl.textContent = 'ON';
+        stLbl.className = 'form-check-label ms-2 fw-bold text-success';
+    }
+    removeUserPhoto();
+    const btn = document.querySelector('#addUserForm button[type="submit"]');
+    if (btn) {
+        btn.textContent = 'បង្កើតគណនី';
+        btn.classList.replace('btn-warning', 'btn-dark');
+    }
+    const cancelBtn = document.getElementById('btnCancelEditUser');
+    if (cancelBtn) cancelBtn.classList.add('d-none');
+};
 
 window.editUser = async function(id) {
     const user = await db.users.get(id);
@@ -296,7 +375,21 @@ window.editUser = async function(id) {
     editingUserId = id;
     const btn = document.querySelector('#addUserForm button[type="submit"]');
     btn.textContent = 'កែប្រែគណនី (Update)';
-    btn.classList.replace('btn-dark', 'btn-warning');
+        btn.classList.replace('btn-dark', 'btn-warning');
+    
+    // Populate photo preview & cancel button
+    window.currentUserPhotoBase64 = user.photo || null;
+    const previewImg = document.getElementById('userPhotoPreview');
+    const removeBtn = document.getElementById('btnRemoveUserPhoto');
+    const fileInput = document.getElementById('newUserPhoto');
+    if (fileInput) fileInput.value = '';
+    if (previewImg) previewImg.src = user.photo || 'assets/images/default-avatar.png';
+    if (removeBtn) {
+        if (user.photo) removeBtn.classList.remove('d-none');
+        else removeBtn.classList.add('d-none');
+    }
+    const cancelBtn = document.getElementById('btnCancelEditUser');
+    if (cancelBtn) cancelBtn.classList.remove('d-none');
 };
 
 document.getElementById('newUserStatus')?.addEventListener('change', (e) => {
@@ -316,6 +409,7 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
     const password = document.getElementById('newUserPassword').value.trim();
     const roleId = document.getElementById('newUserRole').value;
     const isActive = document.getElementById('newUserStatus').checked;
+    const photo = window.currentUserPhotoBase64 || null;
     
     if (!roleId) {
         Swal.fire({icon: 'info', text: 'សូមជ្រើសរើសតួនាទី!', confirmButtonText: 'យល់ព្រម'});
@@ -328,7 +422,22 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
             Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
             return;
         }
-        await db.users.update(editingUserId, { username, password, roleId: parseInt(roleId), isActive });
+        await db.users.update(editingUserId, { username, password, roleId: parseInt(roleId), isActive, photo });
+        try {
+            const cur = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            if (cur && cur.id === editingUserId) {
+                cur.username = username;
+                cur.photo = photo;
+                localStorage.setItem('currentUser', JSON.stringify(cur));
+                if (window.currentUser) {
+                    window.currentUser.username = username;
+                    window.currentUser.photo = photo;
+                }
+                if (typeof window.updateTopNavbarUser === 'function') {
+                    window.updateTopNavbarUser(cur);
+                }
+            }
+        } catch(ex){}
         Swal.fire({icon: 'info', text: 'កែប្រែគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
     } else {
         const exists = await db.users.where('username').equalsIgnoreCase(username).count();
@@ -336,7 +445,7 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
             Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
             return;
         }
-        await db.users.add({ username, password, roleId: parseInt(roleId), isActive });
+        await db.users.add({ username, password, roleId: parseInt(roleId), isActive, photo });
         Swal.fire({icon: 'info', text: 'បង្កើតគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
     }
     
@@ -344,7 +453,10 @@ document.getElementById('addUserForm')?.addEventListener('submit', async (e) => 
     document.getElementById('newUserStatus').checked = true;
     document.getElementById('newUserStatusLabel').textContent = 'ON';
     document.getElementById('newUserStatusLabel').className = 'form-check-label ms-2 fw-bold text-success';
+    removeUserPhoto();
     editingUserId = null;
+    const cancelBtn = document.getElementById('btnCancelEditUser');
+    if (cancelBtn) cancelBtn.classList.add('d-none');
     const btn = document.querySelector('#addUserForm button[type="submit"]');
     btn.textContent = 'បង្កើតគណនី';
     btn.classList.replace('btn-warning', 'btn-dark');

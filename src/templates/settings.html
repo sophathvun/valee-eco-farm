@@ -406,6 +406,23 @@
                                         <div class="col-md-5">
                                             <h6 class="fw-bold mb-3">បញ្ចូលគណនីថ្មី</h6>
                                             <form id="addUserForm">
+                                                <!-- Profile Photo Upload -->
+                                                <div class="mb-3 text-center">
+                                                    <div class="position-relative d-inline-block">
+                                                        <img id="userPhotoPreview" src="assets/images/default-avatar.png" class="rounded-circle border border-2 shadow-sm" style="width: 80px; height: 80px; object-fit: cover; background: #f8f9fa;">
+                                                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 rounded-circle p-0 d-none" id="btnRemoveUserPhoto" title="លុបរូបថត" style="width: 22px; height: 22px; line-height: 20px;" onclick="removeUserPhoto()">
+                                                            <i class="fas fa-times" style="font-size: 11px;"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <label for="newUserPhoto" class="btn btn-sm btn-outline-secondary mb-0 py-1 px-3 rounded-pill" style="cursor: pointer;">
+                                                            <i class="fas fa-camera me-1"></i> រូបថត Profile (Photo)
+                                                        </label>
+                                                        <input type="file" id="newUserPhoto" class="d-none" accept="image/*" onchange="previewUserPhoto(event)">
+                                                    </div>
+                                                    <small class="text-muted d-block mt-1" style="font-size: 0.72rem;">ទំហំរូបភាពត្រូវបានកាត់បន្ថយស្វ័យប្រវត្តិ (Max 400x400)</small>
+                                                </div>
+
                                                 <div class="mb-2">
                                                     <input type="text" class="form-control" id="newUsername" placeholder="ឈ្មោះគណនី (Username)" required>
                                                 </div>
@@ -425,7 +442,10 @@
                                                         <label class="form-check-label ms-2 fw-bold text-success" id="newUserStatusLabel">ON</label>
                                                     </div>
                                                 </div>
-                                                <button type="submit" class="btn btn-dark w-100" id="btnSaveUser">បង្កើតគណនី</button>
+                                                <div class="d-flex gap-2">
+                                                    <button type="submit" class="btn btn-dark flex-fill" id="btnSaveUser">បង្កើតគណនី</button>
+                                                    <button type="button" class="btn btn-outline-secondary d-none" id="btnCancelEditUser" onclick="cancelEditUser()">បោះបង់</button>
+                                                </div>
                                             </form>
                                         </div>
                                         <div class="col-md-7">
@@ -434,6 +454,7 @@
                                                 <table class="table table-bordered text-center text-nowrap align-middle">
                                                     <thead class="table-darkgreen">
                                                         <tr>
+                                                            <th style="width: 50px;">រូបថត</th>
                                                             <th>ឈ្មោះគណនី</th>
                                                             <th>តួនាទី</th>
                                                             <th>ស្ថានភាព</th>

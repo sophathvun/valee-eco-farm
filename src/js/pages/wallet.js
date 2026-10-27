@@ -170,9 +170,21 @@ window.loadWalletData = async function() {
             }
         }
 
-        // Update Card Header Name
+        // Update Card Header Name & Avatar
         const cardNameEl = document.getElementById('wallet-card-user-name');
         if (cardNameEl) cardNameEl.textContent = activeUserName;
+
+        let activeUserPhoto = null;
+        if (!activeUserId) {
+            activeUserPhoto = 'assets/images/logo.png';
+        } else {
+            const foundUser = (allUsers || []).find(u => String(u.id) === String(activeUserId));
+            activeUserPhoto = foundUser && foundUser.photo ? foundUser.photo : null;
+        }
+        const cardAvatarEl = document.getElementById('wallet-card-user-avatar');
+        if (cardAvatarEl) {
+            cardAvatarEl.src = activeUserPhoto || 'assets/images/default-avatar.png';
+        }
 
         // 3. Compute Balances & KPIs
         let targetTx = txList;
@@ -286,8 +298,11 @@ function renderCustodiansCarousel(allUsers, allTx, activeUserId) {
         const uBalUSD = uInUSD - uOutUSD;
         const uBalKHR = uInKHR - uOutKHR;
 
-        // Avatar initial
+        // Avatar initial and photo
         const initial = (u.username || 'U').charAt(0).toUpperCase();
+        const avatarHtml = u.photo 
+            ? `<img src="${u.photo}" alt="${u.username}" class="w-100 h-100 rounded-circle object-fit-cover">` 
+            : initial;
 
         const item = document.createElement('div');
         const isSelected = String(u.id) === String(activeUserId);
@@ -305,8 +320,8 @@ function renderCustodiansCarousel(allUsers, allTx, activeUserId) {
         const balanceText = uBalUSD !== 0 ? formatMoney(uBalUSD, 'USD') : formatMoney(uBalKHR, 'KHR');
 
         item.innerHTML = `
-            <div class="custodian-avatar-circle">
-                ${initial}
+            <div class="custodian-avatar-circle p-0 overflow-hidden">
+                ${avatarHtml}
             </div>
             <div class="custodian-name" title="${u.username}">${u.username}</div>
             <div class="custodian-balance-pill ${hasMoney ? 'has-money' : 'low-money'}">
@@ -386,7 +401,14 @@ function renderWalletTransactions() {
             : (tx.category ? `${tx.category}${tx.payee ? ' - ' + tx.payee : ''}` : (tx.note || 'ចំណាយទូទៅ'));
 
         const dateStr = tx.date || '';
-        const userLabel = tx.userName ? `<span class="badge bg-secondary-subtle text-secondary rounded-pill">${tx.userName}</span>` : '';
+        const userObj = (window.cachedWalletUsers || []).find(u => String(u.id) === String(tx.userId));
+        const userPhoto = userObj && userObj.photo ? userObj.photo : null;
+        const userLabel = tx.userName ? `
+            <span class="badge bg-secondary-subtle text-secondary rounded-pill d-inline-flex align-items-center gap-1 py-1 px-2">
+                ${userPhoto ? `<img src="${userPhoto}" class="rounded-circle object-fit-cover" style="width: 14px; height: 14px;">` : `<i class="bi bi-person-fill" style="font-size: 11px;"></i>`}
+                <span>${tx.userName}</span>
+            </span>
+        ` : '';
 
         // Receipt button if receipt image exists
         const receiptBtn = tx.receiptUrl ? `

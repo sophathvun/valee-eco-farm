@@ -63,12 +63,28 @@ async function checkLogin() {
         document.documentElement.classList.remove('public-eface-mode', 'public-voucher-mode');
         try {
             currentUser = JSON.parse(sessionUser);
+            try {
+                if (currentUser && currentUser.id) {
+                    const freshUser = await db.users.get(currentUser.id);
+                    if (freshUser) {
+                        currentUser.photo = freshUser.photo || null;
+                        currentUser.isActive = freshUser.isActive;
+                        if (freshUser.roleId) {
+                            const role = await db.roles.get(freshUser.roleId);
+                            if (role) {
+                                currentUser.permissions = role.permissions || [];
+                                currentUser.roleName = role.name;
+                            }
+                        }
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    }
+                }
+            } catch(e) {}
             const loginView = document.getElementById('login-view');
             const mainWrapper = document.getElementById('main-wrapper');
             if (loginView) loginView.style.display = 'none';
             if (mainWrapper) mainWrapper.style.display = 'flex';
-            const topUser = document.getElementById('top-user-name');
-            if (topUser) topUser.textContent = (currentUser && currentUser.username ? currentUser.username : '').toUpperCase();
+            updateTopNavbarUser(currentUser);
             applyPermissions();
             if (typeof loadSystemSettings === 'function') loadSystemSettings();
 
@@ -189,6 +205,7 @@ window.loginUser = async function() {
 
             localStorage.setItem('currentUser', JSON.stringify(user));
             currentUser = user;
+            updateTopNavbarUser(currentUser);
             document.body.classList.remove('public-eface-mode');
             document.documentElement.classList.remove('public-eface-mode');
             document.getElementById('loginForm').reset();
@@ -220,6 +237,23 @@ window.loginUser = async function() {
     }
 };
 
+window.updateTopNavbarUser = function(user) {
+    if (!user) return;
+    const topUser = document.getElementById('top-user-name');
+    if (topUser) topUser.textContent = (user.username || '').toUpperCase();
+    
+    const topRole = document.getElementById('top-user-role');
+    if (topRole) {
+        const rName = user.roleName || ((user.username || '').toLowerCase() === 'admin' ? 'Administrator' : 'User');
+        topRole.textContent = rName;
+    }
+    
+    const topAvatar = document.getElementById('top-user-avatar');
+    if (topAvatar) {
+        topAvatar.src = user.photo || 'assets/images/default-avatar.png';
+    }
+};
+
 window.logoutUser = logoutUser;
 async function logoutUser() {
     if (currentUser) {
@@ -228,6 +262,8 @@ async function logoutUser() {
     console.log('Logging out...');
     localStorage.removeItem('currentUser');
     currentUser = null;
+    const topAvatar = document.getElementById('top-user-avatar');
+    if (topAvatar) topAvatar.src = 'assets/images/default-avatar.png';
     window.location.reload();
 }
 
