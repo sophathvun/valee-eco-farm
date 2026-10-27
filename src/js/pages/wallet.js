@@ -8,6 +8,20 @@ window.cachedWalletUsers = [];
 // Initialize Wallet on load / tab activation
 window.initWallet = async function() {
     try {
+        // Pre-populate user name & avatar immediately from active session to avoid any flicker/delay on slow networks
+        const cur = getWalletUser();
+        if (cur) {
+            const cardNameEl = document.getElementById('wallet-card-user-name');
+            const cardAvatarEl = document.getElementById('wallet-card-user-avatar');
+            const isAdmin = isWalletAdmin();
+            if (!isAdmin) {
+                if (cardNameEl) cardNameEl.textContent = cur.fullname || cur.username || '';
+                if (cardAvatarEl && cur.photo) cardAvatarEl.src = cur.photo;
+            } else {
+                if (cardNameEl && !window.currentWalletUserId) cardNameEl.textContent = 'VALLE MASTER WALLET';
+                if (cardAvatarEl && !window.currentWalletUserId) cardAvatarEl.src = 'assets/images/logo.png';
+            }
+        }
         await loadWalletData();
     } catch (e) {
         console.error('Error initializing wallet:', e);
