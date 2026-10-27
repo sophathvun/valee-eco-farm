@@ -413,6 +413,11 @@
                                                         <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 rounded-circle p-0 d-none" id="btnRemoveUserPhoto" title="លុបរូបថត" style="width: 22px; height: 22px; line-height: 20px;" onclick="removeUserPhoto()">
                                                             <i class="fas fa-times" style="font-size: 11px;"></i>
                                                         </button>
+                                                        <div id="userPhotoSpinner" class="position-absolute top-50 start-50 translate-middle d-none bg-dark bg-opacity-50 rounded-circle p-2">
+                                                            <div class="spinner-border spinner-border-sm text-white" role="status">
+                                                                <span class="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <div class="mt-2">
                                                         <label for="newUserPhoto" class="btn btn-sm btn-outline-secondary mb-0 py-1 px-3 rounded-pill" style="cursor: pointer;">
@@ -420,7 +425,7 @@
                                                         </label>
                                                         <input type="file" id="newUserPhoto" class="d-none" accept="image/*" onchange="previewUserPhoto(event)">
                                                     </div>
-                                                    <small class="text-muted d-block mt-1" style="font-size: 0.72rem;">ទំហំរូបភាពត្រូវបានកាត់បន្ថយស្វ័យប្រវត្តិ (Max 400x400)</small>
+                                                    <small id="userPhotoStatus" class="text-muted d-block mt-1" style="font-size: 0.72rem;">ទំហំរូបភាពត្រូវបានកាត់បន្ថយស្វ័យប្រវត្តិ (Max 250x250)</small>
                                                 </div>
 
                                                 <div class="mb-2">

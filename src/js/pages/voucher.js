@@ -354,15 +354,18 @@
     // ==========================================
     // RECEIPT PHOTO COMPRESSION & HANDLING
     // ==========================================
-    window.handleReceiptFileSelect = function(e) {
+        window.handleReceiptFileSelect = function(e) {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const img = new Image();
-            img.onload = function() {
-                // Resize to max 1280px maintaining aspect ratio
+        const blobUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onerror = function(err) {
+            URL.revokeObjectURL(blobUrl);
+            console.error("Voucher photo load error:", err);
+        };
+        img.onload = function() {
+            try {
                 const maxDim = 1280;
                 let width = img.width;
                 let height = img.height;
@@ -383,7 +386,6 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // JPEG quality 0.8 keeps size under 250KB for fast Telegram/Firestore sync
                 compressedReceiptDataUrl = canvas.toDataURL('image/jpeg', 0.8);
 
                 const previewImg = document.getElementById('pv-photo-preview');
@@ -393,10 +395,11 @@
                 if (previewImg) previewImg.src = compressedReceiptDataUrl;
                 if (previewWrap) previewWrap.style.display = 'block';
                 if (placeholder) placeholder.style.display = 'none';
-            };
-            img.src = evt.target.result;
+            } finally {
+                URL.revokeObjectURL(blobUrl);
+            }
         };
-        reader.readAsDataURL(file);
+        img.src = blobUrl;
     };
 
     window.removeReceiptPhoto = function() {

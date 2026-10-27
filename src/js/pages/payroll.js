@@ -1899,12 +1899,14 @@ window.viewPayslip = async function(batchId, empId) {
 // Image Compression Helper for Bank QR Code
 window.compressQrImage = function(file, maxDimension = 600, quality = 0.9) {
     return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = reject;
-        reader.onload = (e) => {
-            const img = new Image();
-            img.onerror = reject;
-            img.onload = () => {
+        const blobUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onerror = (err) => {
+            URL.revokeObjectURL(blobUrl);
+            reject(err);
+        };
+        img.onload = () => {
+            try {
                 let { width, height } = img;
                 if (width > maxDimension || height > maxDimension) {
                     if (width > height) {
@@ -1915,23 +1917,21 @@ window.compressQrImage = function(file, maxDimension = 600, quality = 0.9) {
                         height = maxDimension;
                     }
                 }
-
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
-
-                // Fill white background so transparent PNGs/QRs don't turn black
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, width, height);
                 ctx.drawImage(img, 0, 0, width, height);
-
-                // JPEG at 0.9 keeps QR crisp and sharp for scanning while keeping size ~30KB-50KB
+                URL.revokeObjectURL(blobUrl);
                 resolve(canvas.toDataURL('image/jpeg', quality));
-            };
-            img.src = e.target.result;
+            } catch (e) {
+                URL.revokeObjectURL(blobUrl);
+                reject(e);
+            }
         };
-        reader.readAsDataURL(file);
+        img.src = blobUrl;
     });
 };
 

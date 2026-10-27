@@ -642,11 +642,14 @@ window.previewWalletReceipt = function(e) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-        const img = new Image();
-        img.onload = function() {
-            // Compress image to reasonable resolution for fast cloud sync
+    const blobUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onerror = function(err) {
+        URL.revokeObjectURL(blobUrl);
+        console.error("Wallet receipt error:", err);
+    };
+    img.onload = function() {
+        try {
             const canvas = document.createElement('canvas');
             const MAX_WIDTH = 1200;
             const MAX_HEIGHT = 1200;
@@ -664,21 +667,24 @@ window.previewWalletReceipt = function(e) {
                     height = MAX_HEIGHT;
                 }
             }
+
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
 
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
             window.walletReceiptBase64 = compressedBase64;
-            const previewImg = document.getElementById('receipt-preview-img');
-            const container = document.getElementById('receipt-preview-container');
+
+            const previewImg = document.getElementById('wallet-exp-receipt-preview');
+            const previewWrap = document.getElementById('wallet-exp-receipt-wrap');
             if (previewImg) previewImg.src = compressedBase64;
-            if (container) container.style.display = 'block';
-        };
-        img.src = evt.target.result;
+            if (previewWrap) previewWrap.style.display = 'block';
+        } finally {
+            URL.revokeObjectURL(blobUrl);
+        }
     };
-    reader.readAsDataURL(file);
+    img.src = blobUrl;
 };
 
 window.removeWalletReceipt = function() {
