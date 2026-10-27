@@ -1,9 +1,14 @@
-<style>
+﻿<style>
 /* Income table - Cash columns light green, Bank columns light blue */
 #recentIncomeList tr td:nth-child(3),
 #recentIncomeList tr td:nth-child(4) { background-color: rgba(25,135,84,0.07); }
 #recentIncomeList tr td:nth-child(5),
 #recentIncomeList tr td:nth-child(6) { background-color: rgba(13,110,253,0.06); }
+
+[data-bs-theme="dark"] #recentIncomeList tr td:nth-child(3),
+[data-bs-theme="dark"] #recentIncomeList tr td:nth-child(4) { background-color: rgba(25,135,84,0.16) !important; }
+[data-bs-theme="dark"] #recentIncomeList tr td:nth-child(5),
+[data-bs-theme="dark"] #recentIncomeList tr td:nth-child(6) { background-color: rgba(13,110,253,0.16) !important; }
 </style>
 <div class="row">
     <div class="col-md-12">

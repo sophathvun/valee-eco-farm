@@ -10,7 +10,102 @@
     display: none !important;
 }
 
-/* Mobile Card View with Ribbon Numbering */
+/* Light Mode Column Tints */
+#recentExpenseList tr td:nth-child(3),
+#recentExpenseList tr td:nth-child(4) {
+    background-color: rgba(220, 53, 69, 0.07);
+}
+#recentExpenseList tr td:nth-child(5),
+#recentExpenseList tr td:nth-child(6) {
+    background-color: rgba(255, 152, 0, 0.07);
+}
+
+/* Dark Mode Column Tints & Thead/Tfoot Styles */
+[data-bs-theme="dark"] #recentExpenseList tr td:nth-child(3),
+[data-bs-theme="dark"] #recentExpenseList tr td:nth-child(4) {
+    background-color: rgba(220, 53, 69, 0.16) !important;
+}
+[data-bs-theme="dark"] #recentExpenseList tr td:nth-child(5),
+[data-bs-theme="dark"] #recentExpenseList tr td:nth-child(6) {
+    background-color: rgba(255, 152, 0, 0.16) !important;
+}
+
+[data-bs-theme="dark"] .table-darkred th.th-cash-khr { background-color: #991b1b !important; color: #fff !important; }
+[data-bs-theme="dark"] .table-darkred th.th-cash-usd { background-color: #7f1d1d !important; color: #fff !important; }
+[data-bs-theme="dark"] .table-darkred th.th-bank-khr { background-color: #c2410c !important; color: #fff !important; }
+[data-bs-theme="dark"] .table-darkred th.th-bank-usd { background-color: #9a3412 !important; color: #fff !important; }
+
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr.table-light td {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr:nth-child(2) {
+    background-color: rgba(220, 53, 69, 0.22) !important;
+}
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr:nth-child(2) td {
+    background-color: transparent !important;
+    color: #fca5a5 !important;
+}
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr:nth-child(3) {
+    background-color: #7f1d1d !important;
+}
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr:nth-child(3) td,
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr:nth-child(3) td * {
+    background-color: transparent !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr.rate-note-row,
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr:nth-child(4) {
+    background-color: #0f172a !important;
+}
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr.rate-note-row td,
+[data-bs-theme="dark"] #recentExpenseList + tfoot tr:nth-child(4) td {
+    background-color: transparent !important;
+    color: #94a3b8 !important;
+}
+
+/* ==========================================
+   DESKTOP TABLE (>= 769px)
+   ========================================== */
+@media (min-width: 769px) {
+    #recentExpenseList tr::before {
+        display: none !important;
+        content: none !important;
+        position: static !important;
+    }
+    #recentExpenseList tr {
+        display: table-row !important;
+        padding: 0 !important;
+    }
+    #recentExpenseList tr td {
+        display: table-cell !important;
+    }
+    .table-responsive {
+        max-height: 600px !important;
+        overflow-y: auto !important;
+        overflow-x: auto !important;
+    }
+    #recentExpenseList + tfoot {
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 2 !important;
+        display: table-footer-group !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.08) !important;
+        border-radius: 0 !important;
+    }
+    #recentExpenseList + tfoot tr {
+        display: table-row !important;
+    }
+    #recentExpenseList + tfoot tr td {
+        display: table-cell !important;
+    }
+}
+
+/* ==========================================
+   MOBILE CARD VIEW (<= 768px)
+   ========================================== */
 @media (max-width: 768px) {
     #recentExpenseList {
         counter-reset: expenseCounter;

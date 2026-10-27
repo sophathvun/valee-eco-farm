@@ -10,7 +10,102 @@
     display: none !important;
 }
 
-/* Mobile Card View with Ribbon Numbering */
+/* Light Mode Column Tints */
+#recentIncomeList tr td:nth-child(3),
+#recentIncomeList tr td:nth-child(4) {
+    background-color: rgba(25, 135, 84, 0.07);
+}
+#recentIncomeList tr td:nth-child(5),
+#recentIncomeList tr td:nth-child(6) {
+    background-color: rgba(13, 110, 253, 0.06);
+}
+
+/* Dark Mode Column Tints & Thead/Tfoot Styles */
+[data-bs-theme="dark"] #recentIncomeList tr td:nth-child(3),
+[data-bs-theme="dark"] #recentIncomeList tr td:nth-child(4) {
+    background-color: rgba(25, 135, 84, 0.16) !important;
+}
+[data-bs-theme="dark"] #recentIncomeList tr td:nth-child(5),
+[data-bs-theme="dark"] #recentIncomeList tr td:nth-child(6) {
+    background-color: rgba(13, 110, 253, 0.16) !important;
+}
+
+[data-bs-theme="dark"] .table-darkgreen th.th-cash-khr { background-color: #065f46 !important; color: #fff !important; }
+[data-bs-theme="dark"] .table-darkgreen th.th-cash-usd { background-color: #047857 !important; color: #fff !important; }
+[data-bs-theme="dark"] .table-darkgreen th.th-bank-khr { background-color: #1d4ed8 !important; color: #fff !important; }
+[data-bs-theme="dark"] .table-darkgreen th.th-bank-usd { background-color: #1e40af !important; color: #fff !important; }
+
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr.table-light td {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr:nth-child(2) {
+    background-color: rgba(25, 135, 84, 0.22) !important;
+}
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr:nth-child(2) td {
+    background-color: transparent !important;
+    color: #86efac !important;
+}
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr:nth-child(3) {
+    background-color: #14532d !important;
+}
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr:nth-child(3) td,
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr:nth-child(3) td * {
+    background-color: transparent !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr.rate-note-row,
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr:nth-child(4) {
+    background-color: #0f172a !important;
+}
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr.rate-note-row td,
+[data-bs-theme="dark"] #recentIncomeList + tfoot tr:nth-child(4) td {
+    background-color: transparent !important;
+    color: #94a3b8 !important;
+}
+
+/* ==========================================
+   DESKTOP TABLE (>= 769px)
+   ========================================== */
+@media (min-width: 769px) {
+    #recentIncomeList tr::before {
+        display: none !important;
+        content: none !important;
+        position: static !important;
+    }
+    #recentIncomeList tr {
+        display: table-row !important;
+        padding: 0 !important;
+    }
+    #recentIncomeList tr td {
+        display: table-cell !important;
+    }
+    .table-responsive {
+        max-height: 600px !important;
+        overflow-y: auto !important;
+        overflow-x: auto !important;
+    }
+    #recentIncomeList + tfoot {
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 2 !important;
+        display: table-footer-group !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.08) !important;
+        border-radius: 0 !important;
+    }
+    #recentIncomeList + tfoot tr {
+        display: table-row !important;
+    }
+    #recentIncomeList + tfoot tr td {
+        display: table-cell !important;
+    }
+}
+
+/* ==========================================
+   MOBILE CARD VIEW (<= 768px)
+   ========================================== */
 @media (max-width: 768px) {
     #recentIncomeList {
         counter-reset: incomeCounter;

@@ -1,9 +1,14 @@
-<style>
+﻿<style>
 /* Expense table - Cash columns light red, Bank columns light orange */
 #recentExpenseList tr td:nth-child(3),
 #recentExpenseList tr td:nth-child(4) { background-color: rgba(220,53,69,0.07); }
 #recentExpenseList tr td:nth-child(5),
 #recentExpenseList tr td:nth-child(6) { background-color: rgba(255,152,0,0.07); }
+
+[data-bs-theme="dark"] #recentExpenseList tr td:nth-child(3),
+[data-bs-theme="dark"] #recentExpenseList tr td:nth-child(4) { background-color: rgba(220,53,69,0.16) !important; }
+[data-bs-theme="dark"] #recentExpenseList tr td:nth-child(5),
+[data-bs-theme="dark"] #recentExpenseList tr td:nth-child(6) { background-color: rgba(255,152,0,0.16) !important; }
 </style>
 <div class="row">
     <div class="col-md-12">
