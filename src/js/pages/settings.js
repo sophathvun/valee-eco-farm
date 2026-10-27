@@ -660,6 +660,21 @@ window.saveRolePermissions = async function() {
     });
     
     await db.roles.update(parseInt(roleId), { permissions: perms });
+
+    // Sync active session if current user has this role
+    try {
+        const cur = (typeof window.getCurrentUser === 'function' ? window.getCurrentUser() : null) || JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (cur && String(cur.roleId) === String(roleId)) {
+            cur.permissions = perms;
+            cur.roleName = role.name;
+            localStorage.setItem('currentUser', JSON.stringify(cur));
+            window.currentUser = cur;
+            if (typeof window.applyPermissions === 'function') {
+                window.applyPermissions();
+            }
+        }
+    } catch (e) {}
+
     Swal.fire('ជោគជ័យ', 'សិទ្ធិត្រូវបានរក្សាទុក!', 'success');
 }
 

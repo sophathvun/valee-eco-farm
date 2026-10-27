@@ -57,38 +57,106 @@ function formatMoney(amount, currency = 'USD') {
     }
 }
 
-// Check if user is Admin or Farm Owner
+// Get currently logged-in user safely
+function getWalletUser() {
+    if (typeof window.getCurrentUser === 'function') {
+        const u = window.getCurrentUser();
+        if (u) return u;
+    }
+    if (window.currentUser) return window.currentUser;
+    try {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            window.currentUser = parsed;
+            return parsed;
+        }
+    } catch(e) {}
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        window.currentUser = currentUser;
+        return currentUser;
+    }
+    return null;
+}
+
+// Check if user is Admin or Farm Owner (Funder)
 function isWalletAdmin() {
-    if (!window.currentUser) return false;
-    const uname = (window.currentUser.username || '').toLowerCase();
-    const perms = window.currentUser.permissions || [];
-    const rName = (window.currentUser.roleName || '').toLowerCase();
-    return uname === 'admin' || uname === 'owner' || rName.includes('owner') || rName.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb') || perms.includes('wallet_topup') || perms.includes('settings');
+    const cur = getWalletUser();
+    if (!cur) return false;
+    const uname = (cur.username || '').toLowerCase().trim();
+    const fname = (cur.fullname || cur.name || '').toLowerCase().trim();
+    const rName = (cur.roleName || '').toLowerCase().trim();
+    const perms = Array.isArray(cur.permissions) ? cur.permissions : [];
+
+    // 1. Superadmin
+    if (uname === 'admin') return true;
+
+    // 2. Direct name/role match (owner, ម្ចាស់, or Sophath / Vun Sophath)
+    if (uname === 'owner' || uname.includes('owner') || uname.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb')) return true;
+    if (fname.includes('owner') || fname.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb')) return true;
+    if (rName.includes('owner') || rName.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb') || rName.includes('admin')) return true;
+    if (uname.includes('sophath') || fname.includes('sophath')) return true;
+
+    // 3. Permission checks
+    if (perms.includes('wallet_topup') || perms.includes('settings')) return true;
+
+    // 4. Dynamic DB check if roleId is present
+    const allRoles = window.cachedWalletRoles || [];
+    if (cur.roleId && allRoles.length > 0) {
+        const r = allRoles.find(ro => ro.id == cur.roleId);
+        if (r) {
+            const rNameDb = (r.name || '').toLowerCase().trim();
+            const rPerms = r.permissions || [];
+            if (rNameDb.includes('owner') || rNameDb.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb') || rNameDb.includes('admin') || rPerms.includes('wallet_topup') || rPerms.includes('settings')) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 // Check if a user is a Custodian (Handler of petty cash) vs Funder (Admin/Owner)
 function isCustodianUser(u) {
     if (!u || !u.username) return false;
-    const uname = (u.username || '').toLowerCase();
+    const uname = (u.username || '').toLowerCase().trim();
+    const fname = (u.fullname || u.name || '').toLowerCase().trim();
+
     if (uname === 'admin') return false;
+
+    // The currently logged in user is not their own recipient if they are an admin/funder
+    const cur = getWalletUser();
+    if (cur && isWalletAdmin()) {
+        if (String(u.id) === String(cur.id) || uname === (cur.username || '').toLowerCase().trim()) {
+            return false;
+        }
+    }
+
+    // Role checks
     const allRoles = window.cachedWalletRoles || [];
     if (u.roleId && allRoles.length > 0) {
         const r = allRoles.find(ro => ro.id == u.roleId);
         if (r) {
-            const rName = (r.name || '').toLowerCase();
+            const rName = (r.name || '').toLowerCase().trim();
             const perms = r.permissions || [];
             if (rName.includes('admin') || rName.includes('owner') || rName.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb') || perms.includes('wallet_topup')) {
                 return false;
             }
         }
     }
+
+    if (uname === 'owner' || uname.includes('owner') || fname.includes('owner') || uname.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb') || fname.includes('\u1798\u17d2\u1785\u17b6\u179f\u17cb') || uname.includes('sophath') || fname.includes('sophath')) {
+        return false;
+    }
+
     return true;
 }
 
 function canDeleteWalletTx() {
-    if (!window.currentUser) return false;
-    const uname = (window.currentUser.username || '').toLowerCase();
-    const perms = window.currentUser.permissions || [];
+    const cur = getWalletUser();
+    if (!cur) return false;
+    const uname = (cur.username || '').toLowerCase().trim();
+    const perms = cur.permissions || [];
     return uname === 'admin' || perms.includes('wallet_delete');
 }
 
@@ -133,6 +201,28 @@ window.loadWalletData = async function() {
         window.cachedWalletUsers = allUsers;
         window.cachedWalletRoles = allRoles;
 
+        // Sync logged-in user's role and permissions directly from DB
+        const cur = getWalletUser();
+        if (cur && allUsers.length > 0) {
+            const dbU = allUsers.find(x => (cur.id && x.id === cur.id) || (x.username || '').toLowerCase().trim() === (cur.username || '').toLowerCase().trim());
+            if (dbU) {
+                cur.fullname = dbU.fullname || cur.fullname;
+                cur.photo = dbU.photo || cur.photo;
+                if (dbU.roleId && allRoles.length > 0) {
+                    cur.roleId = dbU.roleId;
+                    const r = allRoles.find(ro => ro.id == dbU.roleId);
+                    if (r) {
+                        cur.roleName = r.name;
+                        cur.permissions = r.permissions || [];
+                    }
+                }
+                window.currentUser = cur;
+                try {
+                    localStorage.setItem('currentUser', JSON.stringify(cur));
+                } catch(e) {}
+            }
+        }
+
         // 2. Load all wallet transactions
         let txList = [];
         try {
@@ -149,7 +239,7 @@ window.loadWalletData = async function() {
         window._allWalletTransactions = txList;
 
         const isAdmin = isWalletAdmin();
-        const loggedUser = window.currentUser || { username: 'Guest', id: 0 };
+        const loggedUser = getWalletUser() || { username: 'Guest', id: 0 };
 
         // Hide/Show Top Up button based on permission
         const topupBtn = document.getElementById('btn-open-topup');
@@ -164,10 +254,15 @@ window.loadWalletData = async function() {
                 userFilterSelect.style.display = 'inline-block';
                 const currentVal = userFilterSelect.value;
                 userFilterSelect.innerHTML = '<option value="">អ្នកកាន់ទាំងអស់ (All Handlers)</option>';
-                allUsers.forEach(u => {
+                let candidateList = allUsers.filter(u => u.isActive !== false && isCustodianUser(u));
+                if (candidateList.length === 0) {
+                    const cUser = getWalletUser();
+                    candidateList = allUsers.filter(u => u.isActive !== false && (u.username || '').toLowerCase() !== 'admin' && String(u.id) !== String(cUser?.id));
+                }
+                candidateList.forEach(u => {
                     const opt = document.createElement('option');
                     opt.value = u.id;
-                    opt.textContent = u.username;
+                    opt.textContent = u.fullname ? `${u.fullname} (@${u.username})` : u.username;
                     if (String(u.id) === String(currentVal)) opt.selected = true;
                     userFilterSelect.appendChild(opt);
                 });
@@ -310,9 +405,10 @@ function renderCustodiansCarousel(allUsers, allTx, activeUserId) {
     container.appendChild(allItem);
 
     // List non-admin active users or all users
-    let candidateUsers = allUsers.filter(isCustodianUser);
+    let candidateUsers = allUsers.filter(u => u.isActive !== false && isCustodianUser(u));
     if (candidateUsers.length === 0) {
-        candidateUsers = allUsers.filter(u => (u.username || '').toLowerCase() !== 'admin');
+        const cUser = getWalletUser();
+        candidateUsers = allUsers.filter(u => u.isActive !== false && (u.username || '').toLowerCase() !== 'admin' && String(u.id) !== String(cUser?.id));
     }
 
     candidateUsers.forEach(u => {
@@ -333,9 +429,10 @@ function renderCustodiansCarousel(allUsers, allTx, activeUserId) {
         const uBalKHR = uInKHR - uOutKHR;
 
         // Avatar initial and photo
-        const initial = (u.username || 'U').charAt(0).toUpperCase();
+        const displayName = u.fullname || u.username;
+        const initial = (displayName || 'U').charAt(0).toUpperCase();
         const avatarHtml = u.photo 
-            ? `<img src="${u.photo}" alt="${u.username}" class="w-100 h-100 rounded-circle object-fit-cover">` 
+            ? `<img src="${u.photo}" alt="${displayName}" class="w-100 h-100 rounded-circle object-fit-cover">` 
             : initial;
 
         const item = document.createElement('div');
@@ -357,7 +454,7 @@ function renderCustodiansCarousel(allUsers, allTx, activeUserId) {
             <div class="custodian-avatar-circle p-0 overflow-hidden">
                 ${avatarHtml}
             </div>
-            <div class="custodian-name" title="${u.username}">${u.username}</div>
+            <div class="custodian-name" title="${displayName}">${displayName}</div>
             <div class="custodian-balance-pill ${hasMoney ? 'has-money' : 'low-money'}">
                 ${balanceText}
             </div>
@@ -386,7 +483,7 @@ function renderWalletTransactions() {
 
     let list = window._allWalletTransactions || [];
     const isAdmin = isWalletAdmin();
-    const loggedUser = window.currentUser || { username: 'Guest', id: 0 };
+    const loggedUser = getWalletUser() || { username: 'Guest', id: 0 };
 
     // Filter by Active Custodian
     if (!isAdmin) {
@@ -507,22 +604,33 @@ window.openTopUpModal = async function(preselectedUserId = null) {
     if (select) {
         select.innerHTML = '<option value="">-- សូមជ្រើសរើសអ្នកទទួល --</option>';
         const users = window.cachedWalletUsers || [];
-        let candidates = users.filter(isCustodianUser);
+        const cur = getWalletUser();
+        let candidates = users.filter(u => u.isActive !== false && isCustodianUser(u));
         if (candidates.length === 0) {
-            candidates = users.filter(u => (u.username || '').toLowerCase() !== 'admin');
+            candidates = users.filter(u => u.isActive !== false && (u.username || '').toLowerCase() !== 'admin' && String(u.id) !== String(cur?.id));
         }
-        candidates.forEach(u => {
+
+        if (candidates.length === 0) {
             const opt = document.createElement('option');
-            opt.value = u.id;
-            opt.dataset.name = u.username;
-            opt.textContent = u.username;
-            if (preselectedUserId && String(u.id) === String(preselectedUserId)) {
-                opt.selected = true;
-            } else if (window.currentWalletUserId && String(u.id) === String(window.currentWalletUserId)) {
-                opt.selected = true;
-            }
+            opt.value = '';
+            opt.disabled = true;
+            opt.textContent = '-- ពុំទាន់មានគណនីអ្នកកាន់លុយ (សូមបង្កើត User ក្នុង Settings) --';
             select.appendChild(opt);
-        });
+        } else {
+            candidates.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.id;
+                const displayName = u.fullname ? `${u.fullname} (@${u.username})` : u.username;
+                opt.dataset.name = displayName;
+                opt.textContent = displayName;
+                if (preselectedUserId && String(u.id) === String(preselectedUserId)) {
+                    opt.selected = true;
+                } else if (window.currentWalletUserId && String(u.id) === String(window.currentWalletUserId)) {
+                    opt.selected = true;
+                }
+                select.appendChild(opt);
+            });
+        }
     }
 
     updateTopUpCurrencySymbol();
@@ -567,6 +675,8 @@ window.handleTopUpSubmit = async function(e) {
     }
 
     try {
+        const cur = getWalletUser();
+        const creatorName = cur ? (cur.fullname || cur.username) : 'Owner';
         const txObj = {
             id: Date.now() + Math.floor(Math.random() * 1000),
             type: 'topup',
@@ -576,7 +686,7 @@ window.handleTopUpSubmit = async function(e) {
             amount: amountVal,
             date: date,
             note: note || 'បញ្ចូលប្រាក់បុរេប្រទាន',
-            createdBy: (window.currentUser && window.currentUser.username) || 'Admin',
+            createdBy: creatorName,
             createdAt: new Date().toISOString()
         };
 
@@ -630,7 +740,7 @@ window.openWalletExpenseModal = async function() {
     if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
 
     // Determine current user
-    const loggedUser = window.currentUser || { username: 'Michael', id: 0 };
+    const loggedUser = getWalletUser() || { username: 'Guest', id: 0 };
     const isAdmin = isWalletAdmin();
     const effectiveUserId = (!isAdmin && loggedUser.id) ? loggedUser.id : (window.currentWalletUserId || loggedUser.id || loggedUser.username);
     const effectiveUserName = (!isAdmin && loggedUser.username) ? loggedUser.username : (document.getElementById('wallet-card-user-name')?.textContent || loggedUser.username);
@@ -755,7 +865,7 @@ window.handleWalletExpenseSubmit = async function(e) {
         return;
     }
 
-    const loggedUser = window.currentUser || { username: 'Guest', id: 0 };
+    const loggedUser = getWalletUser() || { username: 'Guest', id: 0 };
     const isAdmin = isWalletAdmin();
     const effectiveUserId = (!isAdmin && loggedUser.id) ? loggedUser.id : (window.currentWalletUserId || loggedUser.id || loggedUser.username);
     const effectiveUserName = (!isAdmin && loggedUser.username) ? loggedUser.username : (document.getElementById('wallet-card-user-name')?.textContent || loggedUser.username);

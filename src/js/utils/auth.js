@@ -1,5 +1,22 @@
 // ======= AUTHENTICATION LOGIC =======
 let currentUser = null;
+window.currentUser = null;
+
+window.getCurrentUser = function() {
+    if (window.currentUser) return window.currentUser;
+    try {
+        const stored = localStorage.getItem('currentUser');
+        if (stored) {
+            window.currentUser = JSON.parse(stored);
+            return window.currentUser;
+        }
+    } catch(e) {}
+    if (typeof currentUser !== 'undefined' && currentUser) {
+        window.currentUser = currentUser;
+        return currentUser;
+    }
+    return null;
+};
 
 function showPermissionExpiredAlert() {
     if (typeof Swal === 'undefined') {
@@ -63,10 +80,12 @@ async function checkLogin() {
         document.documentElement.classList.remove('public-eface-mode', 'public-voucher-mode');
         try {
             currentUser = JSON.parse(sessionUser);
+            window.currentUser = currentUser;
             try {
                 if (currentUser && currentUser.id) {
                     const freshUser = await db.users.get(currentUser.id);
                     if (freshUser) {
+                        currentUser.fullname = freshUser.fullname || currentUser.fullname;
                         currentUser.photo = freshUser.photo || null;
                         currentUser.isActive = freshUser.isActive;
                         if (freshUser.roleId) {
@@ -76,6 +95,7 @@ async function checkLogin() {
                                 currentUser.roleName = role.name;
                             }
                         }
+                        window.currentUser = currentUser;
                         localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     }
                 }
@@ -196,7 +216,10 @@ window.loginUser = async function() {
             }
             if (user.roleId) {
                 const role = await db.roles.get(user.roleId);
-                if (role) user.permissions = role.permissions || [];
+                if (role) {
+                    user.permissions = role.permissions || [];
+                    user.roleName = role.name;
+                }
             }
             
             // Set online status
@@ -205,6 +228,7 @@ window.loginUser = async function() {
 
             localStorage.setItem('currentUser', JSON.stringify(user));
             currentUser = user;
+            window.currentUser = user;
             updateTopNavbarUser(currentUser);
             document.body.classList.remove('public-eface-mode');
             document.documentElement.classList.remove('public-eface-mode');
@@ -262,6 +286,7 @@ async function logoutUser() {
     console.log('Logging out...');
     localStorage.removeItem('currentUser');
     currentUser = null;
+    window.currentUser = null;
     const topAvatar = document.getElementById('top-user-avatar');
     if (topAvatar) topAvatar.src = 'assets/images/default-avatar.png';
     window.location.reload();
