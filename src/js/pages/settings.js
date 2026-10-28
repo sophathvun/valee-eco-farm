@@ -1232,8 +1232,18 @@ document.addEventListener('change', function(e) {
     if (e.target && e.target.classList.contains('role-perm-checkbox')) {
         const val = e.target.value;
         if (e.target.checked) {
-            if (val.startsWith('reports_')) document.getElementById('rpermReports').checked = true;
-            if (val.startsWith('settings_')) document.getElementById('rpermSettings').checked = true;
+            if (val.startsWith('reports_')) {
+                const repCb = document.getElementById('rpermReports') || document.querySelector('.role-perm-checkbox[value="reports"]');
+                if (repCb) repCb.checked = true;
+            }
+            if (val.startsWith('settings_')) {
+                const setCb = document.getElementById('rpermSettings') || document.querySelector('.role-perm-checkbox[value="settings"]');
+                if (setCb) setCb.checked = true;
+            }
+            if (val.startsWith('wallet_')) {
+                const walCb = document.querySelector('.role-perm-checkbox[value="wallet"]');
+                if (walCb) walCb.checked = true;
+            }
         } else {
             // If parent unchecked, uncheck all children
             if (val === 'reports') {
@@ -1241,6 +1251,9 @@ document.addEventListener('change', function(e) {
             }
             if (val === 'settings') {
                 document.querySelectorAll('.role-perm-checkbox[value^="settings_"]').forEach(cb => cb.checked = false);
+            }
+            if (val === 'wallet') {
+                document.querySelectorAll('.role-perm-checkbox[value^="wallet_"]').forEach(cb => cb.checked = false);
             }
         }
     }

@@ -79,7 +79,7 @@
             menu_invoice_list: "បញ្ជីវិក្កយបត្រ",
             menu_income: "ចំណូល",
             menu_expense: "ចំណាយ",
-            menu_wallet: "កាបូបលុយចំណាយ",
+            menu_wallet: "កាបូបលុយ",
             menu_reports: "របាយការណ៍",
             menu_reports_summary: "📊 ចំណូលចំណាយ",
             menu_reports_income: "📈 ចំណូល",
@@ -355,7 +355,7 @@
             pv_saving_telegram: "កំពុងរក្សាទុក និងផ្ញើ Telegram...",
 
             // Wallet Specific
-            menu_wallet: "កាបូបលុយចំណាយ",
+            menu_wallet: "កាបូបលុយ",
             menu_voucher: "ប័ណ្ណទូទាត់ (Voucher)",
             wallet_available_balance: "សមតុល្យសរុបក្នុងដៃ",
             wallet_topup_btn: "បញ្ចូលប្រាក់ (Top Up)",
@@ -483,7 +483,7 @@
             menu_invoice_list: "Invoice List",
             menu_income: "Income",
             menu_expense: "Expense",
-            menu_wallet: "Farm Wallet",
+            menu_wallet: "Wallet",
             menu_reports: "Reports",
             menu_reports_summary: "📊 Income & Expense",
             menu_reports_income: "📈 Income",
@@ -759,7 +759,7 @@
             pv_saving_telegram: "Saving & publishing to Telegram...",
 
             // Wallet Specific
-            menu_wallet: "Farm Wallet",
+            menu_wallet: "Wallet",
             menu_voucher: "Payment Voucher",
             wallet_available_balance: "Available Balance",
             wallet_topup_btn: "Top Up",
@@ -1131,9 +1131,9 @@
             "មិនទាន់មានប័ណ្ណទូទាត់នៅឡើយទេ": "No payment vouchers recorded yet",
 
             // Wallet Phrases
-            "កាបូបលុយចំណាយ": "Farm Wallet",
-            "កាបូបលុយ": "Farm Wallet",
-            "Farm Wallet": "Farm Wallet",
+            "កាបូបលុយចំណាយ": "Wallet",
+            "កាបូបលុយ": "Wallet",
+            "Farm Wallet": "Wallet",
             "ប័ណ្ណទូទាត់ (Voucher)": "Payment Voucher",
             "សមតុល្យសរុបក្នុងដៃ": "Available Balance",
             "សមតុល្យសរុបក្នុងដៃ (Available Balance)": "Available Balance",

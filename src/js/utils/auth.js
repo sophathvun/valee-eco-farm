@@ -90,11 +90,16 @@ async function checkLogin() {
                         currentUser.photo = freshUser.photo || null;
                         currentUser.isActive = freshUser.isActive;
                         if (freshUser.roleId) {
-                            const role = await db.roles.get(freshUser.roleId);
+                            let role = null;
+                            try {
+                                role = (await db.roles.get(parseInt(freshUser.roleId))) || (await db.roles.get(freshUser.roleId));
+                            } catch(re) {}
                             if (role) {
-                                currentUser.permissions = role.permissions || [];
+                                currentUser.permissions = Array.from(new Set([...(role.permissions || []), ...(freshUser.permissions || [])]));
                                 currentUser.roleName = role.name;
                             }
+                        } else if (freshUser.permissions) {
+                            currentUser.permissions = freshUser.permissions;
                         }
                         window.currentUser = currentUser;
                         localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -216,11 +221,16 @@ window.loginUser = async function() {
                 return;
             }
             if (user.roleId) {
-                const role = await db.roles.get(user.roleId);
+                let role = null;
+                try {
+                    role = (await db.roles.get(parseInt(user.roleId))) || (await db.roles.get(user.roleId));
+                } catch(re) {}
                 if (role) {
-                    user.permissions = role.permissions || [];
+                    user.permissions = Array.from(new Set([...(role.permissions || []), ...(user.permissions || [])]));
                     user.roleName = role.name;
                 }
+            } else if (!user.permissions) {
+                user.permissions = [];
             }
             
             // Set online status
@@ -308,7 +318,13 @@ function hasPermission(perm) {
     if (perm === 'voucher' || perm === 'eface') return true;
     if (!currentUser) return false;
     if ((currentUser.username || '').toLowerCase() === 'admin') return true;
-    return Boolean(currentUser.permissions && currentUser.permissions.includes(perm));
+    const perms = currentUser.permissions || [];
+    if (perms.includes(perm)) return true;
+    // Wallet permission: if user has any wallet-related permission, grant access to wallet tab
+    if (perm === 'wallet' && perms.some(p => p === 'wallet' || p.startsWith('wallet_') || p === 'wallet_view')) {
+        return true;
+    }
+    return false;
 }
 window.hasPermission = hasPermission;
 
@@ -342,7 +358,7 @@ window.applyPermissions = function() {
     // 1. Hide/show sidebar menus
     document.querySelectorAll('.sys-menu-item').forEach(el => {
         const p = el.getAttribute('data-perm');
-        if (p && !perms.includes(p) && !isAdmin) {
+        if (p && !hasPermission(p) && !isAdmin) {
             el.style.display = 'none';
         } else {
             el.style.display = 'block';
@@ -353,7 +369,7 @@ window.applyPermissions = function() {
     let visibleBottomCount = 0;
     document.querySelectorAll('.mobile-bottom-nav .nav-item[data-perm]').forEach(el => {
         const p = el.getAttribute('data-perm');
-        if (p && !perms.includes(p) && !isAdmin) {
+        if (p && !hasPermission(p) && !isAdmin) {
             el.style.display = 'none';
         } else {
             el.style.display = 'flex';
@@ -501,7 +517,7 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
 
     const titleMap = {
         'dashboard': getT('tab_dashboard', 'ទំព័រដើម'),
-        'wallet': getT('menu_wallet', 'កាបូបលុយចំណាយ'),
+        'wallet': getT('menu_wallet', 'កាបូបលុយ'),
         'voucher': getT('menu_voucher', 'ប័ណ្ណទូទាត់ (Voucher)'),
         'invoice': getT('tab_invoice', 'បង្កើតវិក្កយបត្រ'),
         'invoice-list': getT('tab_invoice_list', 'បញ្ជីវិក្កយបត្រ'),
@@ -647,10 +663,12 @@ window.showTab = function(tabId, subId = null) {
         if (icon) icon.textContent = '▲';
     }
     
-        // Sync mobile bottom nav
+    // Sync mobile bottom nav
     document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(el => {
         el.classList.remove('active');
-        if (el.getAttribute('onclick') && el.getAttribute('onclick').includes("showTab('" + tabId + "')")) {
+        const onclickAttr = el.getAttribute('onclick') || '';
+        const permAttr = el.getAttribute('data-perm') || '';
+        if (permAttr === tabId || onclickAttr.includes("'" + tabId + "'")) {
             el.classList.add('active');
         }
     });
@@ -701,8 +719,12 @@ window.showTab = function(tabId, subId = null) {
     }
 
     if (tabId === 'wallet') {
-        if (typeof window.initWallet === 'function') window.initWallet();
-        if (typeof window.loadWalletData === 'function') window.loadWalletData();
+        try {
+            if (typeof window.initWallet === 'function') window.initWallet();
+            if (typeof window.loadWalletData === 'function') window.loadWalletData();
+        } catch(we) {
+            console.error('Error activating wallet tab:', we);
+        }
     }
     
     if (tabId === 'attendance-report') {
