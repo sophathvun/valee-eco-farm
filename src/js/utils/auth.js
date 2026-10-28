@@ -482,6 +482,7 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
     const navIcons = {
         'dashboard': '🔘',
         'wallet': '👛',
+        'voucher': '🧾',
         'invoice': '🧾',
         'invoice-list': '🗂️',
         'income': '💰',
@@ -501,6 +502,7 @@ window.updateTopNavbarTitle = function(tId = null, sId = null) {
     const titleMap = {
         'dashboard': getT('tab_dashboard', 'ទំព័រដើម'),
         'wallet': getT('menu_wallet', 'កាបូបលុយចំណាយ'),
+        'voucher': getT('menu_voucher', 'ប័ណ្ណទូទាត់ (Voucher)'),
         'invoice': getT('tab_invoice', 'បង្កើតវិក្កយបត្រ'),
         'invoice-list': getT('tab_invoice_list', 'បញ្ជីវិក្កយបត្រ'),
         'income': getT('tab_income', 'ចំណូល'),

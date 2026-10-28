@@ -265,7 +265,9 @@ window.loadWalletData = async function() {
             if (isAdmin) {
                 userFilterSelect.style.display = 'inline-block';
                 const currentVal = userFilterSelect.value;
-                userFilterSelect.innerHTML = '<option value="">អ្នកកាន់ទាំងអស់ (All Handlers)</option>';
+                const isEn = (window.i18n && window.i18n.currentLang === 'en');
+                const allHandlersText = isEn ? 'All Handlers' : 'អ្នកកាន់ទាំងអស់';
+                userFilterSelect.innerHTML = `<option value="">${allHandlersText}</option>`;
                 let candidateList = allUsers.filter(u => u.isActive !== false && isCustodianUser(u));
                 if (candidateList.length === 0) {
                     const cUser = getWalletUser();
@@ -380,6 +382,11 @@ window.loadWalletData = async function() {
         // 5. Render Transaction Feed
         renderWalletTransactions();
 
+        const walletView = document.getElementById('wallet-view');
+        if (walletView && typeof window.applyTranslations === 'function') {
+            window.applyTranslations(walletView);
+        }
+
     } catch (err) {
         console.error('Error loading wallet data:', err);
     }
@@ -398,6 +405,8 @@ function renderCustodiansCarousel(allUsers, allTx, activeUserId) {
     section.style.display = 'block';
     container.innerHTML = '';
 
+    const isEn = (window.i18n && window.i18n.currentLang === 'en');
+
     // "All / Master" Item
     const allItem = document.createElement('div');
     allItem.className = `custodian-avatar-item ${!activeUserId ? 'active' : ''}`;
@@ -411,8 +420,8 @@ function renderCustodiansCarousel(allUsers, allTx, activeUserId) {
         <div class="custodian-avatar-circle" style="background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color: #fff;">
             <i class="bi bi-wallet2"></i>
         </div>
-        <div class="custodian-name">ទាំងអស់</div>
-        <div class="custodian-balance-pill">Overview</div>
+        <div class="custodian-name">${isEn ? 'All' : 'ទាំងអស់'}</div>
+        <div class="custodian-balance-pill">${isEn ? 'Overview' : 'ទូទៅ'}</div>
     `;
     container.appendChild(allItem);
 
@@ -482,7 +491,7 @@ function renderCustodiansCarousel(allUsers, allTx, activeUserId) {
         <div class="custodian-avatar-circle add-btn">
             <i class="bi bi-plus-lg"></i>
         </div>
-        <div class="custodian-name">+ ដាក់លុយ</div>
+        <div class="custodian-name">${isEn ? '+ Top Up' : '+ ដាក់លុយ'}</div>
         <div class="custodian-balance-pill">Top Up</div>
     `;
     container.appendChild(addItem);
@@ -493,6 +502,7 @@ function renderWalletTransactions() {
     const container = document.getElementById('wallet-transaction-list');
     if (!container) return;
 
+    const isEn = (window.i18n && window.i18n.currentLang === 'en');
     let list = window._allWalletTransactions || [];
     const isAdmin = isWalletAdmin();
     const loggedUser = getWalletUser() || { username: 'Guest', id: 0 };
@@ -523,8 +533,8 @@ function renderWalletTransactions() {
         container.innerHTML = `
             <div class="text-center py-5 text-muted">
                 <div class="fs-1 mb-2">📭</div>
-                <div class="fw-semibold">មិនមានប្រតិបត្តិការនៅក្នុងបញ្ជីនេះទេ</div>
-                <small class="text-secondary">រាល់ការបញ្ចូលប្រាក់ ឬការចំណាយ នឹងបង្ហាញនៅទីនេះ</small>
+                <div class="fw-semibold">${isEn ? 'No transactions in this list' : 'មិនមានប្រតិបត្តិការនៅក្នុងបញ្ជីនេះទេ'}</div>
+                <small class="text-secondary">${isEn ? 'All top-ups and expenses will appear here' : 'រាល់ការបញ្ចូលប្រាក់ ឬការចំណាយ នឹងបង្ហាញនៅទីនេះ'}</small>
             </div>
         `;
         return;
@@ -539,9 +549,11 @@ function renderWalletTransactions() {
         const prefix = isTopup ? '+' : '-';
         const amountFormatted = prefix + formatMoney(tx.amount, tx.currency);
 
-        const title = isTopup 
-            ? (tx.note || 'បញ្ចូលប្រាក់បុរេប្រទាន (Top Up)') 
-            : (tx.category ? `${tx.category}${tx.payee ? ' - ' + tx.payee : ''}` : (tx.note || 'ចំណាយទូទៅ'));
+        const defaultTopUp = isEn ? 'Wallet Top Up' : 'បញ្ចូលប្រាក់បុរេប្រទាន (Top Up)';
+        const defaultExpense = isEn ? 'General Expense' : 'ចំណាយទូទៅ';
+        const title = isTopup
+            ? (tx.note || defaultTopUp)
+            : (tx.category ? `${tx.category}${tx.payee ? ' - ' + tx.payee : ''}` : (tx.note || defaultExpense));
 
         const dateStr = tx.date || '';
         const userObj = (window.cachedWalletUsers || []).find(u => String(u.id) === String(tx.userId));
@@ -556,13 +568,13 @@ function renderWalletTransactions() {
         // Receipt button if receipt image exists
         const receiptBtn = tx.receiptUrl ? `
             <button class="btn btn-sm btn-outline-info rounded-pill py-0 px-2" style="font-size: 11px;" onclick="viewReceiptPhoto('${encodeURIComponent(tx.receiptUrl)}', '${encodeURIComponent(title)}')">
-                <i class="bi bi-image"></i> វិក្កយបត្រ
+                <i class="bi bi-image"></i> ${isEn ? 'Receipt' : 'វិក្កយបត្រ'}
             </button>
         ` : '';
 
         // Delete button for Admin
         const deleteBtn = canDeleteWalletTx() ? `
-            <button class="btn btn-sm btn-outline-danger border-0 rounded-circle p-1 ms-1" title="លុបប្រតិបត្តិការ" onclick="deleteWalletTx(${tx.id})">
+            <button class="btn btn-sm btn-outline-danger border-0 rounded-circle p-1 ms-1" title="${isEn ? 'Delete transaction' : 'លុបប្រតិបត្តិការ'}" onclick="deleteWalletTx(${tx.id})">
                 <i class="bi bi-trash"></i>
             </button>
         ` : '';
@@ -1078,3 +1090,14 @@ async function dispatchWalletTelegramAlert(type, tx) {
         console.warn('Telegram wallet alert dispatch skipped:', err);
     }
 }
+
+// Global listener for language switcher to update wallet immediately
+window.addEventListener('languageChanged', () => {
+    const walletView = document.getElementById('wallet-view');
+    if (walletView && typeof window.applyTranslations === 'function') {
+        window.applyTranslations(walletView);
+    }
+    if (typeof window.loadWalletData === 'function') {
+        window.loadWalletData();
+    }
+});
