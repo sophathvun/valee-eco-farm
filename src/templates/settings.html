@@ -403,39 +403,54 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-5">
+                                        <div class="col-lg-4 col-md-5">
                                             <h6 class="fw-bold mb-3">បញ្ចូលគណនីថ្មី</h6>
                                             <form id="addUserForm">
-                                                <!-- Profile Photo Upload -->
-                                                <div class="mb-3 text-center">
-                                                    <div class="position-relative d-inline-block">
-                                                        <img id="userPhotoPreview" src="assets/images/default-avatar.png" class="rounded-circle border border-2 shadow-sm" style="width: 80px; height: 80px; object-fit: cover; background: #f8f9fa;">
-                                                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 rounded-circle p-0 d-none" id="btnRemoveUserPhoto" title="លុបរូបថត" style="width: 22px; height: 22px; line-height: 20px;" onclick="removeUserPhoto()">
-                                                            <i class="fas fa-times" style="font-size: 11px;"></i>
-                                                        </button>
-                                                        <div id="userPhotoSpinner" class="position-absolute top-50 start-50 translate-middle d-none bg-dark bg-opacity-50 rounded-circle p-2">
-                                                            <div class="spinner-border spinner-border-sm text-white" role="status">
-                                                                <span class="visually-hidden">Loading...</span>
+                                                <!-- Profile Photo Upload & Dropzone -->
+                                                <div class="mb-3">
+                                                    <div id="userPhotoDropzone" class="border border-2 rounded-3 p-3 text-center position-relative" style="border-style: dashed !important; border-color: #b0c4de; background-color: #f8fafc; transition: all 0.2s ease; cursor: pointer;" onclick="document.getElementById('newUserPhoto').click()">
+                                                        <div class="position-relative d-inline-block">
+                                                            <img id="userPhotoPreview" src="assets/images/default-avatar.png" class="rounded-circle border border-2 shadow-sm" style="width: 85px; height: 85px; object-fit: cover; background: #ffffff;">
+                                                            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 rounded-circle p-0 d-none" id="btnRemoveUserPhoto" title="លុបរូបថត" style="width: 24px; height: 24px; line-height: 22px;" onclick="event.stopPropagation(); removeUserPhoto();">
+                                                                <i class="fas fa-times" style="font-size: 11px;"></i>
+                                                            </button>
+                                                            <div id="userPhotoSpinner" class="position-absolute top-50 start-50 translate-middle d-none bg-dark bg-opacity-50 rounded-circle p-2">
+                                                                <div class="spinner-border spinner-border-sm text-white" role="status">
+                                                                    <span class="visually-hidden">Loading...</span>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="mt-2">
-                                                        <label for="newUserPhoto" class="btn btn-sm btn-outline-secondary mb-0 py-1 px-3 rounded-pill" style="cursor: pointer;">
-                                                            <i class="fas fa-camera me-1"></i> រូបថត Profile (Photo)
-                                                        </label>
+                                                        <div class="mt-2">
+                                                            <span class="badge bg-white text-primary border border-primary px-2 py-1 shadow-sm" style="font-size: 0.76rem;">
+                                                                <i class="fas fa-camera me-1"></i>រូបថត Profile (Photo)
+                                                            </span>
+                                                        </div>
+                                                        <div class="text-secondary small mt-1" style="font-size: 0.75rem;">
+                                                            ទម្លាក់រូបភាព (Drag & Drop) ឬ <b>Ctrl+V</b> (Paste)
+                                                        </div>
+                                                        <small id="userPhotoStatus" class="text-muted d-block mt-1" style="font-size: 0.72rem;">ទំហំ 400x400px • WebP &lt; 40KB</small>
                                                         <input type="file" id="newUserPhoto" class="d-none" accept="image/*" onchange="previewUserPhoto(event)">
                                                     </div>
-                                                    <small id="userPhotoStatus" class="text-muted d-block mt-1" style="font-size: 0.72rem;">ទំហំរូបភាពត្រូវបានកាត់បន្ថយស្វ័យប្រវត្តិ (Max 250x250)</small>
                                                 </div>
 
                                                 <div class="mb-2">
+                                                    <label class="form-label fw-bold small mb-1">ឈ្មោះពេញ (Full Name):</label>
+                                                    <input type="text" class="form-control" id="newFullname" placeholder="ឈ្មោះពេញ (ឧ. វ៉ាន់ សុផាត)">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="form-label fw-bold small mb-1">ឈ្មោះគណនី (Username) <span class="text-danger">*</span>:</label>
                                                     <input type="text" class="form-control" id="newUsername" placeholder="ឈ្មោះគណនី (Username)" required>
                                                 </div>
                                                 <div class="mb-2">
+                                                    <label class="form-label fw-bold small mb-1">លេខទូរស័ព្ទ (Phone Number):</label>
+                                                    <input type="tel" class="form-control" id="newUserPhone" placeholder="លេខទូរស័ព្ទ (ឧ. 012 345 678)">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="form-label fw-bold small mb-1">លេខសម្ងាត់ (Password) <span class="text-danger">*</span>:</label>
                                                     <input type="password" class="form-control" id="newUserPassword" placeholder="លេខសម្ងាត់ (Password)" required>
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label class="fw-bold mb-1">ជ្រើសរើសតួនាទី (Role):</label>
+                                                    <label class="fw-bold small mb-1">ជ្រើសរើសតួនាទី (Role) <span class="text-danger">*</span>:</label>
                                                     <select class="form-select" id="newUserRole" required>
                                                         <option value="">-- សូមជ្រើសរើសតួនាទី --</option>
                                                     </select>
@@ -453,14 +468,16 @@
                                                 </div>
                                             </form>
                                         </div>
-                                        <div class="col-md-7">
+                                        <div class="col-lg-8 col-md-7">
                                             <h6 class="fw-bold mb-3 mt-4 mt-md-0">បញ្ជីគណនី</h6>
                                             <div class="table-responsive">
                                                 <table class="table table-bordered text-center text-nowrap align-middle">
                                                     <thead class="table-darkgreen">
                                                         <tr>
                                                             <th style="width: 50px;">រូបថត</th>
+                                                            <th>ឈ្មោះពេញ</th>
                                                             <th>ឈ្មោះគណនី</th>
+                                                            <th>លេខទូរស័ព្ទ</th>
                                                             <th>តួនាទី</th>
                                                             <th>ស្ថានភាព</th>
                                                             <th>សកម្មភាព</th>
@@ -471,6 +488,58 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- USER PHOTO CROPPER MODAL -->
+                    <div class="modal fade" id="userPhotoCropModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+                        <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;">
+                            <div class="modal-content shadow-lg border-0 rounded-3">
+                                <div class="modal-header bg-dark text-white py-2 px-3">
+                                    <h6 class="modal-title fw-bold mb-0">
+                                        <i class="fas fa-crop-alt me-2 text-warning"></i>កាត់រូបភាព Profile (Crop 400x400)
+                                    </h6>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-3">
+                                    <!-- Cropper Viewport -->
+                                    <div style="height: 320px; width: 100%; overflow: hidden; background: #111; border-radius: 8px;" class="d-flex align-items-center justify-content-center shadow-inner">
+                                        <img id="userCropperImage" src="" style="max-width: 100%; display: block;">
+                                    </div>
+                                    <!-- Rotate & Zoom Toolbar -->
+                                    <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="userCropRotateLeft" title="បង្វិលឆ្វេង 90°"><i class="fas fa-undo me-1"></i>ឆ្វេង</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="userCropRotateRight" title="បង្វិលស្តាំ 90°"><i class="fas fa-redo me-1"></i>ស្តាំ</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="userCropZoomIn" title="ពង្រីក"><i class="fas fa-search-plus"></i></button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="userCropZoomOut" title="បង្រួម"><i class="fas fa-search-minus"></i></button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning" id="userCropReset" title="កំណត់ឡើងវិញ (Reset)"><i class="fas fa-sync-alt me-1"></i>Reset</button>
+                                    </div>
+                                    <!-- Output Preview & Specs Card -->
+                                    <div class="d-flex align-items-center justify-content-between p-2 mt-2 rounded bg-light border">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="width: 58px; height: 58px; border-radius: 50%; overflow: hidden; border: 2px solid #0d6efd;" class="bg-white flex-shrink-0 shadow-sm">
+                                                <canvas id="userCropLiveCanvas" width="100" height="100" style="width: 100%; height: 100%; object-fit: cover;"></canvas>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold small text-dark">ទំហំលទ្ធផល (Output Size)</div>
+                                                <div class="text-muted" style="font-size: 0.75rem;">Square 400x400px • WebP</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-success text-white px-2 py-1" style="font-size: 0.75rem;">
+                                                &lt; 40KB High Quality
+                                            </span>
+                                            <div class="text-muted small mt-1" id="userCropLiveSize" style="font-size: 0.72rem;">WebP Format</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer py-2 bg-light">
+                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">បោះបង់</button>
+                                    <button type="button" class="btn btn-sm btn-primary px-3 fw-bold" id="btnApplyUserCrop">
+                                        <i class="fas fa-check me-1"></i> កាត់ និងរក្សាទុក (Crop & Save)
+                                    </button>
                                 </div>
                             </div>
                         </div>

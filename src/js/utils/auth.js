@@ -86,6 +86,7 @@ async function checkLogin() {
                     const freshUser = await db.users.get(currentUser.id);
                     if (freshUser) {
                         currentUser.fullname = freshUser.fullname || currentUser.fullname;
+                        currentUser.phone = freshUser.phone || currentUser.phone;
                         currentUser.photo = freshUser.photo || null;
                         currentUser.isActive = freshUser.isActive;
                         if (freshUser.roleId) {
@@ -272,7 +273,10 @@ window.loginUser = async function() {
 window.updateTopNavbarUser = function(user) {
     if (!user) return;
     const topUser = document.getElementById('top-user-name');
-    if (topUser) topUser.textContent = (user.username || '').toUpperCase();
+    if (topUser) {
+        const displayName = user.fullname || user.username || '';
+        topUser.textContent = displayName.toUpperCase();
+    }
     
     const topRole = document.getElementById('top-user-role');
     if (topRole) {

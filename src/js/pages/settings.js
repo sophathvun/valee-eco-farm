@@ -209,6 +209,9 @@ document.getElementById('shiftsForm')?.addEventListener('submit', async (e) => {
 let editingUserId = null;
 
 async function loadUsersAndRoles() {
+    if (typeof initUserPhotoFeatures === 'function') {
+        initUserPhotoFeatures();
+    }
     const roles = await db.roles.toArray();
     const roleSelect = document.getElementById('newUserRole');
     if (roleSelect) {
@@ -253,16 +256,20 @@ async function loadUsersAndRoles() {
             : '<span class="badge bg-secondary ms-2" style="font-size: 0.65em; padding: 0.35em 0.5em;"><i class="bi bi-circle me-1" style="font-size:0.7em;"></i>Offline</span>';
 
         const photoHtml = u.photo 
-            ? `<img src="${u.photo}" class="rounded-circle border shadow-sm" style="width: 36px; height: 36px; object-fit: cover;">`
-            : `<div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 36px; height: 36px; font-size: 14px;">${(u.username || 'U').charAt(0).toUpperCase()}</div>`;
+            ? `<img src="${u.photo}" class="rounded-circle border shadow-sm" style="width: 38px; height: 38px; object-fit: cover;">`
+            : `<div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 38px; height: 38px; font-size: 14px;">${(u.username || 'U').charAt(0).toUpperCase()}</div>`;
 
         tr.innerHTML = `
             <td class="align-middle text-center p-1">${photoHtml}</td>
-            <td class="fw-bold align-middle text-start">
+            <td class="fw-bold align-middle text-start text-dark">
+                ${u.fullname || '-'}
+            </td>
+            <td class="align-middle text-start">
                 <div class="d-flex align-items-center">
-                    ${u.username || 'Unknown'} ${onlineBadge}
+                    <span class="fw-semibold">${u.username || 'Unknown'}</span> ${onlineBadge}
                 </div>
             </td>
+            <td class="align-middle text-start font-monospace small text-muted">${u.phone || '-'}</td>
             <td class="align-middle"><span class="badge bg-primary">${roleName}</span></td>
             <td class="align-middle">${statusToggle}</td>
             <td class="align-middle">
@@ -337,55 +344,160 @@ async function compressImageFast(file, maxDim = 250, quality = 0.8) {
     });
 }
 
-// User Profile Photo Preview & Compression
+// ====== USER PHOTO CROPPER & COMPRESSION (400x400 WebP < 40KB) ======
 window.currentUserPhotoBase64 = null;
+let userPhotoCropperInstance = null;
+let userCropModalInstance = null;
+let userCropCurrentBlobUrl = null;
+let userCropDebounceTimer = null;
 
-window.previewUserPhoto = async function(event) {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
+window.openUserPhotoCropper = function(fileOrBlob) {
+    if (!fileOrBlob) return;
+    if (fileOrBlob.type && !fileOrBlob.type.startsWith('image/')) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'warning', title: 'សូមជ្រើសរើសជារូបភាព', text: 'ឯកសារដែលបានជ្រើសរើសមិនមែនជារូបភាពទេ។' });
+        }
+        return;
+    }
 
-    const previewImg = document.getElementById('userPhotoPreview');
-    const removeBtn = document.getElementById('btnRemoveUserPhoto');
-    const spinner = document.getElementById('userPhotoSpinner');
-    const statusTxt = document.getElementById('userPhotoStatus');
+    const modalEl = document.getElementById('userPhotoCropModal');
+    if (!modalEl) {
+        console.warn('userPhotoCropModal element not found');
+        return;
+    }
 
-    // 1. INSTANT ZERO-LATENCY PREVIEW (0 milliseconds!)
-    const objectUrl = URL.createObjectURL(file);
-    if (previewImg) previewImg.src = objectUrl;
-    if (removeBtn) removeBtn.classList.remove('d-none');
-    if (spinner) spinner.classList.remove('d-none');
-    if (statusTxt) {
-        statusTxt.textContent = 'កំពុងកែសម្រួលរូបភាព... (Optimizing...)';
-        statusTxt.className = 'text-primary fw-bold d-block mt-1';
+    if (userCropCurrentBlobUrl) {
+        URL.revokeObjectURL(userCropCurrentBlobUrl);
+    }
+    userCropCurrentBlobUrl = URL.createObjectURL(fileOrBlob);
+
+    const imgEl = document.getElementById('userCropperImage');
+    if (imgEl) {
+        imgEl.src = userCropCurrentBlobUrl;
+    }
+
+    if (typeof bootstrap !== 'undefined') {
+        if (!userCropModalInstance) {
+            userCropModalInstance = new bootstrap.Modal(modalEl);
+        }
+        userCropModalInstance.show();
+    }
+};
+
+function renderUserCropLivePreview() {
+    clearTimeout(userCropDebounceTimer);
+    userCropDebounceTimer = setTimeout(() => {
+        if (!userPhotoCropperInstance) return;
+        const canvas = userPhotoCropperInstance.getCroppedCanvas({
+            width: 100,
+            height: 100,
+            imageSmoothingQuality: 'medium'
+        });
+        if (!canvas) return;
+        const liveCanvas = document.getElementById('userCropLiveCanvas');
+        if (liveCanvas) {
+            const ctx = liveCanvas.getContext('2d');
+            ctx.clearRect(0, 0, liveCanvas.width, liveCanvas.height);
+            ctx.drawImage(canvas, 0, 0, liveCanvas.width, liveCanvas.height);
+        }
+    }, 60);
+}
+
+async function applyUserCrop() {
+    if (!userPhotoCropperInstance) return;
+    const applyBtn = document.getElementById('btnApplyUserCrop');
+    if (applyBtn) {
+        applyBtn.disabled = true;
+        applyBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> កំពុងដំណើរការ...';
     }
 
     try {
-        // 2. ULTRA-FAST HARDWARE COMPRESSION (<50ms)
-        const compressed = await compressImageFast(file, 250, 0.8);
-        window.currentUserPhotoBase64 = compressed;
-        if (previewImg) previewImg.src = compressed;
-        URL.revokeObjectURL(objectUrl);
+        const croppedCanvas = userPhotoCropperInstance.getCroppedCanvas({
+            width: 400,
+            height: 400,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+        });
 
+        if (!croppedCanvas) {
+            throw new Error('មិនអាចទាញយកទិន្នន័យរូបភាពពី Cropper បានទេ');
+        }
+
+        // Draw onto opaque canvas (white background for any transparency)
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = 400;
+        finalCanvas.height = 400;
+        const ctx = finalCanvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 400, 400);
+        ctx.drawImage(croppedCanvas, 0, 0, 400, 400);
+
+        // Compress to WebP (with fallback to jpeg)
+        let quality = 0.88;
+        let format = 'image/webp';
+        let dataUrl = finalCanvas.toDataURL(format, quality);
+        if (!dataUrl.startsWith('data:image/webp')) {
+            format = 'image/jpeg';
+            dataUrl = finalCanvas.toDataURL(format, quality);
+        }
+
+        // Measure byte size in KB
+        let sizeKb = Math.round((dataUrl.length * 3 / 4) / 1024 * 10) / 10;
+
+        // Step down quality iteratively until < 40KB (target <= 38.5KB)
+        while (sizeKb > 38.5 && quality > 0.3) {
+            quality -= 0.08;
+            dataUrl = finalCanvas.toDataURL(format, quality);
+            sizeKb = Math.round((dataUrl.length * 3 / 4) / 1024 * 10) / 10;
+        }
+
+        if (sizeKb > 39.5) {
+            dataUrl = finalCanvas.toDataURL(format, 0.25);
+            sizeKb = Math.round((dataUrl.length * 3 / 4) / 1024 * 10) / 10;
+        }
+
+        // Update preview and state
+        window.currentUserPhotoBase64 = dataUrl;
+        const previewImg = document.getElementById('userPhotoPreview');
+        if (previewImg) previewImg.src = dataUrl;
+
+        const removeBtn = document.getElementById('btnRemoveUserPhoto');
+        if (removeBtn) removeBtn.classList.remove('d-none');
+
+        const statusTxt = document.getElementById('userPhotoStatus');
         if (statusTxt) {
-            statusTxt.textContent = 'រូបភាពរួចរាល់ (Ready)';
-            statusTxt.className = 'text-success fw-bold d-block mt-1';
-            setTimeout(() => {
-                if (statusTxt) {
-                    statusTxt.textContent = 'ទំហំរូបភាពត្រូវបានកាត់បន្ថយស្វ័យប្រវត្តិ (Max 250x250)';
-                    statusTxt.className = 'text-muted d-block mt-1';
-                }
-            }, 1500);
+            statusTxt.innerHTML = `<span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>400x400px (${sizeKb} KB - WebP) រួចរាល់</span>`;
+        }
+
+        // Hide modal
+        if (userCropModalInstance) {
+            userCropModalInstance.hide();
+        } else {
+            const modalEl = document.getElementById('userPhotoCropModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                const bsModal = bootstrap.Modal.getInstance(modalEl);
+                if (bsModal) bsModal.hide();
+            }
         }
     } catch (err) {
-        console.error('Error previewing user photo:', err);
-        URL.revokeObjectURL(objectUrl);
-        if (statusTxt) {
-            statusTxt.textContent = 'ទំហំរូបភាពត្រូវបានកាត់បន្ថយស្វ័យប្រវត្តិ (Max 250x250)';
-            statusTxt.className = 'text-muted d-block mt-1';
+        console.error('Error applying user crop:', err);
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'error', title: 'បរាជ័យ', text: 'មានបញ្ហាក្នុងការកាត់រូបភាព៖ ' + err.message });
         }
     } finally {
-        if (spinner) spinner.classList.add('d-none');
+        if (applyBtn) {
+            applyBtn.disabled = false;
+            applyBtn.innerHTML = '<i class="fas fa-check me-1"></i> កាត់ និងរក្សាទុក (Crop & Save)';
+        }
     }
+}
+
+window.previewUserPhoto = function(event) {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+        openUserPhotoCropper(file);
+    }
+    event.target.value = '';
 };
 
 window.removeUserPhoto = function() {
@@ -400,14 +512,160 @@ window.removeUserPhoto = function() {
     if (removeBtn) removeBtn.classList.add('d-none');
     if (spinner) spinner.classList.add('d-none');
     if (statusTxt) {
-        statusTxt.textContent = 'ទំហំរូបភាពត្រូវបានកាត់បន្ថយស្វ័យប្រវត្តិ (Max 250x250)';
+        statusTxt.innerHTML = 'ទំហំ 400x400px • WebP &lt; 40KB';
         statusTxt.className = 'text-muted d-block mt-1';
     }
 };
 
+function initUserPhotoFeatures() {
+    if (window._userPhotoFeaturesInitialized) return;
+    const dropzone = document.getElementById('userPhotoDropzone');
+    const modalEl = document.getElementById('userPhotoCropModal');
+    if (!dropzone || !modalEl) return;
+    window._userPhotoFeaturesInitialized = true;
+
+    // Modal lifecycle
+    modalEl.addEventListener('shown.bs.modal', () => {
+        const imgEl = document.getElementById('userCropperImage');
+        if (userPhotoCropperInstance) {
+            userPhotoCropperInstance.destroy();
+            userPhotoCropperInstance = null;
+        }
+        if (typeof Cropper !== 'undefined' && imgEl) {
+            userPhotoCropperInstance = new Cropper(imgEl, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 0.9,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+                crop: () => {
+                    renderUserCropLivePreview();
+                }
+            });
+            setTimeout(renderUserCropLivePreview, 150);
+        }
+    });
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        if (userPhotoCropperInstance) {
+            userPhotoCropperInstance.destroy();
+            userPhotoCropperInstance = null;
+        }
+        if (userCropCurrentBlobUrl) {
+            URL.revokeObjectURL(userCropCurrentBlobUrl);
+            userCropCurrentBlobUrl = null;
+        }
+        const imgEl = document.getElementById('userCropperImage');
+        if (imgEl) imgEl.src = '';
+    });
+
+    // Cropper Controls
+    document.getElementById('userCropRotateLeft')?.addEventListener('click', () => {
+        if (userPhotoCropperInstance) {
+            userPhotoCropperInstance.rotate(-90);
+            renderUserCropLivePreview();
+        }
+    });
+    document.getElementById('userCropRotateRight')?.addEventListener('click', () => {
+        if (userPhotoCropperInstance) {
+            userPhotoCropperInstance.rotate(90);
+            renderUserCropLivePreview();
+        }
+    });
+    document.getElementById('userCropZoomIn')?.addEventListener('click', () => {
+        if (userPhotoCropperInstance) {
+            userPhotoCropperInstance.zoom(0.1);
+            renderUserCropLivePreview();
+        }
+    });
+    document.getElementById('userCropZoomOut')?.addEventListener('click', () => {
+        if (userPhotoCropperInstance) {
+            userPhotoCropperInstance.zoom(-0.1);
+            renderUserCropLivePreview();
+        }
+    });
+    document.getElementById('userCropReset')?.addEventListener('click', () => {
+        if (userPhotoCropperInstance) {
+            userPhotoCropperInstance.reset();
+            renderUserCropLivePreview();
+        }
+    });
+    document.getElementById('btnApplyUserCrop')?.addEventListener('click', applyUserCrop);
+
+    // Drag and Drop
+    ['dragenter', 'dragover'].forEach(evtName => {
+        dropzone.addEventListener(evtName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.style.borderColor = '#0d6efd';
+            dropzone.style.backgroundColor = '#e8f0fe';
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(evtName => {
+        dropzone.addEventListener(evtName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.style.borderColor = '#b0c4de';
+            dropzone.style.backgroundColor = '#f8fafc';
+        }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            if (file.type && file.type.startsWith('image/')) {
+                openUserPhotoCropper(file);
+            } else {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'warning', text: 'សូមទម្លាក់ឯកសារជារូបភាព (Image file) ប៉ុណ្ណោះ' });
+                }
+            }
+        }
+    }, false);
+
+    // Paste (Ctrl+V)
+    document.addEventListener('paste', (e) => {
+        const usersTab = document.getElementById('settings-users-tab');
+        if (!usersTab || usersTab.style.display === 'none') return;
+
+        const items = (e.clipboardData || window.clipboardData)?.items;
+        if (!items) return;
+
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type && items[i].type.startsWith('image/')) {
+                const file = items[i].getAsFile();
+                if (file) {
+                    e.preventDefault();
+                    openUserPhotoCropper(file);
+                    break;
+                }
+            }
+        }
+    });
+}
+
+// Auto-run features initialization
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initUserPhotoFeatures);
+} else {
+    initUserPhotoFeatures();
+}
+
 window.cancelEditUser = function() {
     editingUserId = null;
     document.getElementById('addUserForm')?.reset();
+    const fnInput = document.getElementById('newFullname');
+    if (fnInput) fnInput.value = '';
+    const phInput = document.getElementById('newUserPhone');
+    if (phInput) phInput.value = '';
     const stCheck = document.getElementById('newUserStatus');
     const stLbl = document.getElementById('newUserStatusLabel');
     if (stCheck) stCheck.checked = true;
@@ -429,7 +687,9 @@ window.editUser = async function(id) {
     const user = await db.users.get(id);
     if (!user) return;
     
+    if (document.getElementById('newFullname')) document.getElementById('newFullname').value = user.fullname || '';
     document.getElementById('newUsername').value = user.username;
+    if (document.getElementById('newUserPhone')) document.getElementById('newUserPhone').value = user.phone || '';
     document.getElementById('newUserPassword').value = user.password;
     if (user.roleId) {
         document.getElementById('newUserRole').value = user.roleId;
@@ -450,18 +710,26 @@ window.editUser = async function(id) {
     editingUserId = id;
     const btn = document.querySelector('#addUserForm button[type="submit"]');
     btn.textContent = 'កែប្រែគណនី (Update)';
-        btn.classList.replace('btn-dark', 'btn-warning');
+    btn.classList.replace('btn-dark', 'btn-warning');
     
     // Populate photo preview & cancel button
     window.currentUserPhotoBase64 = user.photo || null;
     const previewImg = document.getElementById('userPhotoPreview');
     const removeBtn = document.getElementById('btnRemoveUserPhoto');
     const fileInput = document.getElementById('newUserPhoto');
+    const statusTxt = document.getElementById('userPhotoStatus');
     if (fileInput) fileInput.value = '';
     if (previewImg) previewImg.src = user.photo || 'assets/images/default-avatar.png';
     if (removeBtn) {
         if (user.photo) removeBtn.classList.remove('d-none');
         else removeBtn.classList.add('d-none');
+    }
+    if (statusTxt) {
+        if (user.photo) {
+            statusTxt.innerHTML = '<span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>រូបភាព Profile បច្ចុប្បន្ន</span>';
+        } else {
+            statusTxt.innerHTML = 'ទំហំ 400x400px • WebP &lt; 40KB';
+        }
     }
     const cancelBtn = document.getElementById('btnCancelEditUser');
     if (cancelBtn) cancelBtn.classList.remove('d-none');
@@ -479,69 +747,75 @@ document.getElementById('newUserStatus')?.addEventListener('change', (e) => {
 });
 
 document.getElementById('addUserForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
     const saveBtn = document.getElementById('btnSaveUser');
     if (saveBtn) {
         saveBtn.disabled = true;
-        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> \u1780\u17c6\u1796\u17bb\u1784\u179a\u1780\u17d2\u179f\u17b6\u1791\u17bb\u1780... (Saving...)';
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> កំពុងរក្សាទុក... (Saving...)';
     }
-    e.preventDefault();
-    const username = document.getElementById('newUsername').value.trim();
-    const password = document.getElementById('newUserPassword').value.trim();
-    const roleId = document.getElementById('newUserRole').value;
-    const isActive = document.getElementById('newUserStatus').checked;
-    const photo = window.currentUserPhotoBase64 || null;
-    
-    if (!roleId) {
-        Swal.fire({icon: 'info', text: 'សូមជ្រើសរើសតួនាទី!', confirmButtonText: 'យល់ព្រម'});
-        return;
-    }
-    
-    if (editingUserId) {
-        const exists = await db.users.where('username').equalsIgnoreCase(username).first();
-        if (exists && exists.id !== editingUserId) {
-            Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
+    try {
+        const fullname = (document.getElementById('newFullname')?.value || '').trim();
+        const username = document.getElementById('newUsername').value.trim();
+        const phone = (document.getElementById('newUserPhone')?.value || '').trim();
+        const password = document.getElementById('newUserPassword').value.trim();
+        const roleId = document.getElementById('newUserRole').value;
+        const isActive = document.getElementById('newUserStatus').checked;
+        const photo = window.currentUserPhotoBase64 || null;
+
+        if (!roleId) {
+            Swal.fire({icon: 'info', text: 'សូមជ្រើសរើសតួនាទី!', confirmButtonText: 'យល់ព្រម'});
             return;
         }
-        await db.users.update(editingUserId, { username, password, roleId: parseInt(roleId), isActive, photo });
-        try {
-            const cur = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            if (cur && cur.id === editingUserId) {
-                cur.username = username;
-                cur.photo = photo;
-                localStorage.setItem('currentUser', JSON.stringify(cur));
-                if (window.currentUser) {
-                    window.currentUser.username = username;
-                    window.currentUser.photo = photo;
-                }
-                if (typeof window.updateTopNavbarUser === 'function') {
-                    window.updateTopNavbarUser(cur);
-                }
+
+        if (editingUserId) {
+            const exists = await db.users.where('username').equalsIgnoreCase(username).first();
+            if (exists && exists.id !== editingUserId) {
+                Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
+                return;
             }
-        } catch(ex){}
-        Swal.fire({icon: 'info', text: 'កែប្រែគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
-    } else {
-        const exists = await db.users.where('username').equalsIgnoreCase(username).count();
-        if (exists > 0) {
-            Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
-            return;
+            await db.users.update(editingUserId, { fullname, username, phone, password, roleId: parseInt(roleId), isActive, photo });
+            try {
+                const cur = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                if (cur && cur.id === editingUserId) {
+                    cur.fullname = fullname;
+                    cur.username = username;
+                    cur.phone = phone;
+                    cur.photo = photo;
+                    localStorage.setItem('currentUser', JSON.stringify(cur));
+                    if (window.currentUser) {
+                        window.currentUser.fullname = fullname;
+                        window.currentUser.username = username;
+                        window.currentUser.phone = phone;
+                        window.currentUser.photo = photo;
+                    }
+                    if (typeof window.updateTopNavbarUser === 'function') {
+                        window.updateTopNavbarUser(cur);
+                    }
+                }
+            } catch(ex){}
+            Swal.fire({icon: 'info', text: 'កែប្រែគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
+        } else {
+            const exists = await db.users.where('username').equalsIgnoreCase(username).count();
+            if (exists > 0) {
+                Swal.fire({icon: 'info', text: 'ឈ្មោះគណនីនេះមានរួចហើយ!', confirmButtonText: 'យល់ព្រម'});
+                return;
+            }
+            await db.users.add({ fullname, username, phone, password, roleId: parseInt(roleId), isActive, photo });
+            Swal.fire({icon: 'info', text: 'បង្កើតគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
         }
-        await db.users.add({ username, password, roleId: parseInt(roleId), isActive, photo });
-        Swal.fire({icon: 'info', text: 'បង្កើតគណនីបានជោគជ័យ!', confirmButtonText: 'យល់ព្រម'});
+
+        cancelEditUser();
+        loadUsersAndRoles();
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            if (editingUserId) {
+                saveBtn.textContent = 'កែប្រែគណនី (Update)';
+            } else {
+                saveBtn.textContent = 'បង្កើតគណនី';
+            }
+        }
     }
-    
-    document.getElementById('addUserForm').reset();
-    document.getElementById('newUserStatus').checked = true;
-    document.getElementById('newUserStatusLabel').textContent = 'ON';
-    document.getElementById('newUserStatusLabel').className = 'form-check-label ms-2 fw-bold text-success';
-    removeUserPhoto();
-    editingUserId = null;
-    const cancelBtn = document.getElementById('btnCancelEditUser');
-    if (cancelBtn) cancelBtn.classList.add('d-none');
-    const btn = document.querySelector('#addUserForm button[type="submit"]');
-    btn.textContent = 'បង្កើតគណនី';
-    btn.classList.replace('btn-warning', 'btn-dark');
-    
-    loadUsersAndRoles();
 });
 
 window.toggleUserStatus = async function(id, isActive) {
