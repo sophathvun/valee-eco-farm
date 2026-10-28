@@ -26,7 +26,7 @@ async function initializeApp() {
     const isVoucherRoute = hash.startsWith('#pv') || hash.startsWith('#voucher') || hash.startsWith('#payment-voucher');
     const hashTab = location.hash ? location.hash.replace('#', '').split('?')[0].split('/')[0] : null;
     const targetRoute = isEfaceRoute ? 'eface' : (isVoucherRoute ? 'voucher' : (hashTab || (localStorage.getItem('currentUser') ? (localStorage.getItem('activeTab') || 'dashboard') : 'dashboard')));
-    const appVersion = '1793188000000';
+    const appVersion = '1793189000000';
     
     // 1. Fetch and inject all HTML templates in PARALLEL using Promise.all for instant speed
     const templatePromises = viewsToLoad.map(async (view) => {
@@ -241,19 +241,12 @@ async function initializeApp() {
     if (!isEfaceRoute && typeof checkLogin === 'function') {
         checkLogin().then((isLoggedIn) => {
             if (isLoggedIn && currentUser) {
+                // Load common lightweight form lookups
                 if (typeof loadCategories === 'function') loadCategories();
                 if (typeof loadUnits === 'function') loadUnits();
                 if (typeof loadPreparers === 'function') loadPreparers();
-                if (typeof loadUsersAndRoles === 'function') loadUsersAndRoles();
                 if (typeof addInvoiceRow === 'function') addInvoiceRow();
                 if (typeof generateInvoiceNumber === 'function') generateInvoiceNumber();
-                if (typeof loadInvoices === 'function') loadInvoices();
-                if (typeof loadData === 'function') loadData();
-                if (typeof loadEmployees === 'function') loadEmployees();
-                if (typeof loadDepartmentsForEmp === 'function') loadDepartmentsForEmp();
-                if (typeof loadPositionsForEmp === 'function') loadPositionsForEmp();
-                if (typeof initPayroll === 'function') initPayroll();
-                if (typeof initWallet === 'function') initWallet();
                 if (typeof applyTranslations === 'function') applyTranslations();
 
                 // Ensure current route view is fully initialized after all scripts have loaded
@@ -262,16 +255,9 @@ async function initializeApp() {
                 if (typeof hasPermission === 'function' && !hasPermission(activeTab)) {
                     activeTab = ['wallet', 'dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'reports', 'employee', 'settings'].find(t => hasPermission(t)) || 'wallet';
                 }
-                if (activeTab === 'attendance-report' && typeof initAttendanceReport === 'function') {
-                    initAttendanceReport();
-                } else if (activeTab === 'attendance' && typeof initAttendance === 'function') {
-                    initAttendance();
-                } else if (activeTab === 'payroll' && typeof initPayroll === 'function') {
-                    initPayroll();
-                } else if (activeTab === 'wallet' && typeof initWallet === 'function') {
-                    initWallet();
-                    if (typeof showTab === 'function') showTab('wallet');
-                } else if (typeof showTab === 'function') {
+
+                // Activate only the current route tab (showTab will lazily load and cache data for this tab!)
+                if (typeof showTab === 'function') {
                     showTab(activeTab);
                 }
             }

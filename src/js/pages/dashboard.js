@@ -22,12 +22,10 @@ function formatTxNote(note) {
 
 // ====== DASHBOARD & LIST DATA ======
 async function loadData() {
-    if (typeof window.autoCleanDuplicatePayrollExpense === 'function') {
-        try {
-            await window.autoCleanDuplicatePayrollExpense();
-        } catch (e) {
-            console.warn('loadData autoCleanDuplicatePayrollExpense error:', e);
-        }
+    if (typeof window.autoCleanDuplicatePayrollExpense === 'function' && !window._payrollCleanedSession) {
+        setTimeout(() => {
+            window.autoCleanDuplicatePayrollExpense().catch(e => console.warn(e));
+        }, 1500);
     }
     let allTx = await db.transactions.toArray();
     allTx.sort((a, b) => {

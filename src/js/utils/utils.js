@@ -188,9 +188,11 @@ window.compressQrImage = function(file, maxDimension = 600, quality = 0.9) {
 // ====== AUTOMATIC CLEANUP & DEDUPLICATION FOR PAYROLL EXPENSES ======
 let isCleaningPayrollDuplicates = false;
 window.autoCleanDuplicatePayrollExpense = async function() {
+    if (window._payrollCleanedSession) return;
     if (isCleaningPayrollDuplicates) return;
     if (typeof db === 'undefined' || !db.transactions) return;
 
+    window._payrollCleanedSession = true;
     isCleaningPayrollDuplicates = true;
     try {
         const allTx = await db.transactions.toArray();

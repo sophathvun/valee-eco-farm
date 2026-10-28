@@ -81,31 +81,7 @@ async function checkLogin() {
         try {
             currentUser = JSON.parse(sessionUser);
             window.currentUser = currentUser;
-            try {
-                if (currentUser && currentUser.id) {
-                    const freshUser = await db.users.get(currentUser.id);
-                    if (freshUser) {
-                        currentUser.fullname = freshUser.fullname || currentUser.fullname;
-                        currentUser.phone = freshUser.phone || currentUser.phone;
-                        currentUser.photo = freshUser.photo || null;
-                        currentUser.isActive = freshUser.isActive;
-                        if (freshUser.roleId) {
-                            let role = null;
-                            try {
-                                role = (await db.roles.get(parseInt(freshUser.roleId))) || (await db.roles.get(freshUser.roleId));
-                            } catch(re) {}
-                            if (role) {
-                                currentUser.permissions = Array.from(new Set([...(role.permissions || []), ...(freshUser.permissions || [])]));
-                                currentUser.roleName = role.name;
-                            }
-                        } else if (freshUser.permissions) {
-                            currentUser.permissions = freshUser.permissions;
-                        }
-                        window.currentUser = currentUser;
-                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    }
-                }
-            } catch(e) {}
+
             const loginView = document.getElementById('login-view');
             const mainWrapper = document.getElementById('main-wrapper');
             if (loginView) loginView.style.display = 'none';
@@ -132,6 +108,34 @@ async function checkLogin() {
             } else {
                 const fallbackTab = ['wallet', 'dashboard', 'invoice', 'invoice-list', 'income', 'expense', 'voucher', 'reports', 'employee', 'eface', 'attendance', 'payroll', 'settings'].find(t => hasPermission(t)) || 'wallet';
                 showTab(fallbackTab);
+            }
+
+            // Sync user profile & permissions asynchronously in background without blocking view rendering
+            if (currentUser && currentUser.id) {
+                db.users.get(currentUser.id).then(async (freshUser) => {
+                    if (freshUser) {
+                        currentUser.fullname = freshUser.fullname || currentUser.fullname;
+                        currentUser.phone = freshUser.phone || currentUser.phone;
+                        currentUser.photo = freshUser.photo || null;
+                        currentUser.isActive = freshUser.isActive;
+                        if (freshUser.roleId) {
+                            let role = null;
+                            try {
+                                role = (await db.roles.get(parseInt(freshUser.roleId))) || (await db.roles.get(freshUser.roleId));
+                            } catch(re) {}
+                            if (role) {
+                                currentUser.permissions = Array.from(new Set([...(role.permissions || []), ...(freshUser.permissions || [])]));
+                                currentUser.roleName = role.name;
+                            }
+                        } else if (freshUser.permissions) {
+                            currentUser.permissions = freshUser.permissions;
+                        }
+                        window.currentUser = currentUser;
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        updateTopNavbarUser(currentUser);
+                        applyPermissions();
+                    }
+                }).catch(() => {});
             }
         } catch (e) {
             console.error('Error restoring session:', e);
@@ -720,8 +724,11 @@ window.showTab = function(tabId, subId = null) {
 
     if (tabId === 'wallet') {
         try {
-            if (typeof window.initWallet === 'function') window.initWallet();
-            if (typeof window.loadWalletData === 'function') window.loadWalletData();
+            if (typeof window.initWallet === 'function') {
+                window.initWallet();
+            } else if (typeof window.loadWalletData === 'function') {
+                window.loadWalletData();
+            }
         } catch(we) {
             console.error('Error activating wallet tab:', we);
         }

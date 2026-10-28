@@ -202,12 +202,16 @@ window.loadWalletData = async function() {
     if (typeof db === 'undefined' || !db.walletTransactions) return;
 
     try {
-        // 1. Load active users & roles
+        // 1. Load active users & roles in parallel
         let allUsers = [];
         let allRoles = [];
         try {
-            allUsers = (await db.users.toArray()) || [];
-            allRoles = (await db.roles.toArray()) || [];
+            const [uList, rList] = await Promise.all([
+                db.users.toArray(),
+                db.roles.toArray()
+            ]);
+            allUsers = uList || [];
+            allRoles = rList || [];
         } catch (e) {
             allUsers = [];
             allRoles = [];

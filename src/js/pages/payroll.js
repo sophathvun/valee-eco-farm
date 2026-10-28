@@ -71,13 +71,11 @@ window.loadPayrollBatches = async function() {
             db.payroll = new FirebaseStore('payroll');
         }
 
-        // Clean any duplicates before loading
-        if (typeof window.autoCleanDuplicatePayrollExpense === 'function') {
-            try {
-                await window.autoCleanDuplicatePayrollExpense();
-            } catch (e) {
-                console.warn('loadPayrollBatches autoCleanDuplicatePayrollExpense error:', e);
-            }
+        // Clean any duplicates in background once per session without blocking render
+        if (typeof window.autoCleanDuplicatePayrollExpense === 'function' && !window._payrollCleanedSession) {
+            setTimeout(() => {
+                window.autoCleanDuplicatePayrollExpense().catch(e => console.warn(e));
+            }, 1500);
         }
 
         const allBatches = await db.payroll.toArray();

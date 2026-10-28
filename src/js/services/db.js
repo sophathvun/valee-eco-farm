@@ -1,4 +1,4 @@
-﻿function checkOnline() {
+function checkOnline() {
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
         throw new Error('គ្មានការតភ្ជាប់អ៊ីនធឺណិត (No Internet Connection)! ប្រព័ន្ធដំណើរការលើ Cloud Online ប៉ុណ្ណោះ សូមភ្ជាប់អ៊ីនធឺណិតដើម្បីបន្ត។');
     }
@@ -65,21 +65,44 @@ function validateAndSanitize(obj) {
 
 class FirebaseStore {
     constructor(collectionName) {
+        this.collectionName = collectionName;
         this.col = firestore.collection(collectionName);
+        this._cache = null;
+        this._cacheTime = 0;
+        this._inFlightToArray = null;
     }
-    async count() { 
+
+    _isStaticStore() {
+        const staticNames = ['categories', 'units', 'preparers', 'roles', 'departments', 'positions', 'brandSettings', 'workShifts', 'telegramSettings', 'gpsSettings'];
+        return staticNames.includes(this.collectionName);
+    }
+
+    _getTTL() {
+        return this._isStaticStore() ? 60000 : 8000;
+    }
+
+    _invalidateCache() {
+        this._cache = null;
+        this._cacheTime = 0;
+    }
+
+    async count() {
+        if (this._cache) return this._cache.length;
         checkOnline();
-        const snap = await retryOperation(() => this.col.get()); 
-        return snap.size; 
+        const snap = await retryOperation(() => this.col.get());
+        return snap.size;
     }
-    async add(obj) { 
+
+    async add(obj) {
         checkOnline();
         validateAndSanitize(obj);
         if(!obj.id) obj.id = Date.now() + Math.floor(Math.random() * 10000);
-        await retryOperation(() => this.col.doc(obj.id.toString()).set(obj)); 
-        return obj.id; 
+        await retryOperation(() => this.col.doc(obj.id.toString()).set(obj));
+        this._invalidateCache();
+        return obj.id;
     }
-    async bulkAdd(arr) { 
+
+    async bulkAdd(arr) {
         checkOnline();
         const batch = firestore.batch();
         arr.forEach(obj => {
@@ -88,34 +111,70 @@ class FirebaseStore {
             batch.set(this.col.doc(obj.id.toString()), obj);
         });
         await retryOperation(() => batch.commit());
+        this._invalidateCache();
     }
-    async get(id) { 
+
+    async get(id) {
         if(!id) return null;
+        if (this._cache) {
+            const found = this._cache.find(item => String(item.id) === String(id));
+            if (found) return found;
+        }
         checkOnline();
-        const doc = await retryOperation(() => this.col.doc(id.toString()).get()); 
-        return doc.exists ? doc.data() : null; 
+        const doc = await retryOperation(() => this.col.doc(id.toString()).get());
+        return doc.exists ? doc.data() : null;
     }
-    async update(id, obj) { 
+
+    async update(id, obj) {
         if(!id) return;
         checkOnline();
         validateAndSanitize(obj);
-        await retryOperation(() => this.col.doc(id.toString()).set(obj, { merge: true })); 
+        await retryOperation(() => this.col.doc(id.toString()).set(obj, { merge: true }));
+        this._invalidateCache();
     }
-    async delete(id) { 
+
+    async delete(id) {
         if(!id) return;
         checkOnline();
-        await retryOperation(() => this.col.doc(id.toString()).delete()); 
+        await retryOperation(() => this.col.doc(id.toString()).delete());
+        this._invalidateCache();
     }
+
     async first() {
+        if (this._cache && this._cache.length > 0) return this._cache[0];
         checkOnline();
         const snap = await retryOperation(() => this.col.limit(1).get());
         return snap.empty ? null : snap.docs[0].data();
     }
-    async toArray() { 
+
+    async toArray(options = {}) {
         checkOnline();
-        const snap = await retryOperation(() => this.col.get()); 
-        return snap.docs.map(d => d.data()); 
+        const now = Date.now();
+        const ttl = options.ttl !== undefined ? options.ttl : this._getTTL();
+
+        if (!options.fresh && this._cache && (now - this._cacheTime < ttl)) {
+            return this._cache;
+        }
+
+        if (this._inFlightToArray) {
+            return await this._inFlightToArray;
+        }
+
+        this._inFlightToArray = (async () => {
+            try {
+                const snap = await retryOperation(() => this.col.get());
+                const arr = snap.docs.map(d => d.data());
+                this._cache = arr;
+                this._cacheTime = Date.now();
+                return arr;
+            } finally {
+                this._inFlightToArray = null;
+            }
+        })();
+
+        return await this._inFlightToArray;
     }
+
     orderBy(field) { return new FirebaseQuery(this.col.orderBy(field)); }
     where(field) {
         const col = this.col;
