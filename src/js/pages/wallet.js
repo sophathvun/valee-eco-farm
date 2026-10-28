@@ -255,10 +255,8 @@ window.loadWalletData = async function() {
         const isAdmin = isWalletAdmin();
         const loggedUser = getWalletUser() || { username: 'Guest', id: 0 };
 
-        // Hide/Show Top Up button based on permission
-        const topupBtn = document.getElementById('btn-open-topup');
+        // Hide/Show Top Up button on wallet card based on permission
         const cardTopupBtn = document.getElementById('card-action-topup');
-        if (topupBtn) topupBtn.style.display = isAdmin ? 'inline-flex' : 'none';
         if (cardTopupBtn) cardTopupBtn.style.display = isAdmin ? 'inline-block' : 'none';
 
         // Populate User filter dropdown for Admin
