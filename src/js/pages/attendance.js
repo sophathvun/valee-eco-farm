@@ -84,13 +84,145 @@ window.getEmployeeLeaveBalance = getEmployeeLeaveBalance;
 
 window.initAttendance = function() {
     const dateInput = document.getElementById('attendanceMonth');
-    if (!dateInput.value) {
+    if (dateInput && !dateInput.value) {
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         dateInput.value = `${yyyy}-${mm}`;
     }
     loadAttendance();
+};
+
+window.changeAttendanceMonth = function(delta) {
+    const input = document.getElementById('attendanceMonth');
+    if (!input) return;
+    let val = input.value;
+    if (!val) {
+        const today = new Date();
+        val = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    }
+    const parts = val.split('-');
+    let y = parseInt(parts[0], 10);
+    let m = parseInt(parts[1], 10);
+    if (isNaN(y) || isNaN(m)) {
+        const today = new Date();
+        y = today.getFullYear();
+        m = today.getMonth() + 1;
+    }
+    m += delta;
+    if (m < 1) {
+        m = 12;
+        y -= 1;
+    } else if (m > 12) {
+        m = 1;
+        y += 1;
+    }
+    input.value = `${y}-${String(m).padStart(2, '0')}`;
+    input.dispatchEvent(new Event('change'));
+    loadAttendance();
+};
+
+window.handleAttendanceMonthClick = function(inputEl) {
+    if (inputEl && typeof inputEl.showPicker === 'function') {
+        try {
+            inputEl.showPicker();
+            return;
+        } catch (e) {}
+    }
+    openAttendanceMonthModal();
+};
+
+let modalPickerYear = new Date().getFullYear();
+
+window.openAttendanceMonthModal = function() {
+    const input = document.getElementById('attendanceMonth');
+    let curVal = input ? input.value : '';
+    if (!curVal) {
+        const today = new Date();
+        curVal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    }
+    const [yStr, mStr] = curVal.split('-');
+    modalPickerYear = parseInt(yStr, 10) || new Date().getFullYear();
+    const curMonth = parseInt(mStr, 10) || (new Date().getMonth() + 1);
+
+    renderAttendanceMonthModalGrid(modalPickerYear, curMonth);
+
+    const modalEl = document.getElementById('attendanceMonthModal');
+    if (modalEl) {
+        let modal = bootstrap.Modal.getInstance(modalEl);
+        if (!modal) modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+};
+
+window.changeModalYear = function(delta) {
+    modalPickerYear += delta;
+    const input = document.getElementById('attendanceMonth');
+    let curMonth = 0;
+    if (input && input.value) {
+        const [y, m] = input.value.split('-');
+        if (parseInt(y, 10) === modalPickerYear) {
+            curMonth = parseInt(m, 10);
+        }
+    }
+    renderAttendanceMonthModalGrid(modalPickerYear, curMonth);
+};
+
+window.renderAttendanceMonthModalGrid = function(year, selectedMonth) {
+    const yearText = document.getElementById('attModalYearText');
+    if (yearText) yearText.textContent = year;
+
+    const grid = document.getElementById('attModalMonthGrid');
+    if (!grid) return;
+
+    const months = [
+        { num: 1, km: 'មករា', en: 'Jan' },
+        { num: 2, km: 'កុម្ភៈ', en: 'Feb' },
+        { num: 3, km: 'មីនា', en: 'Mar' },
+        { num: 4, km: 'មេសា', en: 'Apr' },
+        { num: 5, km: 'ឧសភា', en: 'May' },
+        { num: 6, km: 'មិថុនា', en: 'Jun' },
+        { num: 7, km: 'កក្កដា', en: 'Jul' },
+        { num: 8, km: 'សីហា', en: 'Aug' },
+        { num: 9, km: 'កញ្ញា', en: 'Sep' },
+        { num: 10, km: 'តុលា', en: 'Oct' },
+        { num: 11, km: 'វិច្ឆិកា', en: 'Nov' },
+        { num: 12, km: 'ធ្នូ', en: 'Dec' }
+    ];
+
+    let html = '';
+    months.forEach(m => {
+        const isSelected = (m.num === selectedMonth);
+        const btnClass = isSelected ? 'btn-primary text-white shadow-sm fw-bold' : 'btn-outline-secondary';
+        html += `
+            <div class="col-4">
+                <button type="button" class="btn ${btnClass} btn-sm w-100 py-2 d-flex flex-column align-items-center rounded-3" onclick="selectAttendanceMonth(${year}, ${m.num})">
+                    <span style="font-size: 0.85rem; font-weight: 600;">${m.km}</span>
+                    <small style="font-size: 0.68rem; opacity: 0.85;">${m.en}</small>
+                </button>
+            </div>
+        `;
+    });
+    grid.innerHTML = html;
+};
+
+window.selectAttendanceMonth = function(year, month) {
+    const input = document.getElementById('attendanceMonth');
+    if (input) {
+        input.value = `${year}-${String(month).padStart(2, '0')}`;
+        input.dispatchEvent(new Event('change'));
+    }
+    const modalEl = document.getElementById('attendanceMonthModal');
+    if (modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+    }
+    loadAttendance();
+};
+
+window.selectCurrentMonthAndYear = function() {
+    const today = new Date();
+    selectAttendanceMonth(today.getFullYear(), today.getMonth() + 1);
 };
 
 window.loadAttendance = async function() {

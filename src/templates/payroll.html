@@ -90,7 +90,7 @@
                 <div class="row g-2 align-items-center">
                     <div class="col-md-3 col-6">
                         <label class="form-label text-muted small fw-bold mb-1">ខែ/ឆ្នាំ (Filter Month)</label>
-                        <input type="month" class="form-control form-control-sm" id="payrollFilterMonth" onchange="loadPayrollBatches()">
+                        <input type="month" class="form-control form-control-sm" id="payrollFilterMonth" onchange="loadPayrollBatches()" onclick="try{this.showPicker()}catch(e){}" style="cursor: pointer;">
                     </div>
                     <div class="col-md-3 col-6">
                         <label class="form-label text-muted small fw-bold mb-1">ស្ថានភាព (Status)</label>
