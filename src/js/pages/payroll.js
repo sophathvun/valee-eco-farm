@@ -34,23 +34,46 @@ function formatPayDate(dateStr) {
 
 // ====== 1. INITIALIZATION ======
 window.initPayroll = async function() {
-    const filterMonth = document.getElementById('payrollFilterMonth');
-    if (filterMonth && !filterMonth.value) {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        filterMonth.value = `${yyyy}-${mm}`;
-    }
+    try {
+        if (!db.payroll) db.payroll = new FirebaseStore('payroll');
+        const allBatches = await db.payroll.toArray();
 
-    const genMonth = document.getElementById('genPayMonth');
-    if (genMonth && !genMonth.value) {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        genMonth.value = `${yyyy}-${mm}`;
-    }
+        const filterMonth = document.getElementById('payrollFilterMonth');
+        if (filterMonth && !filterMonth.value) {
+            if (allBatches && allBatches.length > 0) {
+                // Find latest batch month so existing data is immediately shown!
+                const sorted = [...allBatches].sort((a, b) => (b.startDate || '').localeCompare(a.startDate || '') || (b.createdAt || '').localeCompare(a.createdAt || ''));
+                const latest = sorted[0];
+                if (latest && latest.year && latest.month) {
+                    filterMonth.value = `${latest.year}-${String(latest.month).padStart(2, '0')}`;
+                } else {
+                    const now = new Date();
+                    filterMonth.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+                }
+            } else {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                filterMonth.value = `${yyyy}-${mm}`;
+            }
+        }
 
-    await loadPayrollBatches();
+        const genMonth = document.getElementById('genPayMonth');
+        if (genMonth && !genMonth.value) {
+            if (filterMonth && filterMonth.value) {
+                genMonth.value = filterMonth.value;
+            } else {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                genMonth.value = `${yyyy}-${mm}`;
+            }
+        }
+
+        await loadPayrollBatches();
+    } catch (e) {
+        console.error("initPayroll error:", e);
+    }
 };
 
 window.resetPayrollFilters = function() {
@@ -1342,7 +1365,8 @@ window.togglePayrollFullscreen = function() {
 };
 
 window.filterPayrollDetailTable = function() {
-    const query = (document.getElementById('payrollDetailSearch')?.value || '').toLowerCase().trim();
+    const searchEl = document.getElementById('payrollDetailSearch');
+    const query = (searchEl ? searchEl.value : '').toLowerCase().trim();
     const rows = document.querySelectorAll('#payrollDetailItemsList tr');
     
     let currentDeptRow = null;
@@ -2878,3 +2902,14 @@ window.exportPayrollExcel = async function(batchId) {
     link.click();
     document.body.removeChild(link);
 };
+
+// Auto-initialize if payroll tab is currently active
+try {
+    const _currentHashTab = (window.location.hash || '').replace('#', '').split('?')[0].split('/')[0];
+    const _activePayrollView = document.getElementById('payroll-view');
+    if (_currentHashTab === 'payroll' || (_activePayrollView && _activePayrollView.classList.contains('active'))) {
+        if (typeof window.initPayroll === 'function') {
+            window.initPayroll().catch(e => console.warn("Auto initPayroll notice:", e));
+        }
+    }
+} catch (e) {}

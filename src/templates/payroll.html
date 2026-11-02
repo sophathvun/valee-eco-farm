@@ -91,14 +91,14 @@
                     <div class="col-md-4 col-12">
                         <label class="form-label text-muted small fw-bold mb-1">ខែ/ឆ្នាំ (Filter Month)</label>
                         <div class="input-group input-group-sm">
-                            <button class="btn btn-outline-secondary" type="button" onclick="changePayrollFilterMonth(-1)" title="ខែមុន (Previous Month)">
+                            <button class="btn btn-outline-secondary" type="button" onclick="if(window.changePayrollFilterMonth)window.changePayrollFilterMonth(-1)" title="ខែមុន (Previous Month)">
                                 <i class="bi bi-chevron-left"></i>
                             </button>
-                            <input type="month" class="form-control form-control-sm text-center fw-bold" id="payrollFilterMonth" onchange="loadPayrollBatches()" onclick="handlePayrollFilterMonthClick(this)" style="cursor: pointer;">
-                            <button class="btn btn-outline-secondary" type="button" onclick="changePayrollFilterMonth(1)" title="ខែបន្ទាប់ (Next Month)">
+                            <input type="month" class="form-control form-control-sm text-center fw-bold" id="payrollFilterMonth" onchange="if(window.loadPayrollBatches)window.loadPayrollBatches()" onclick="if(window.handlePayrollFilterMonthClick)window.handlePayrollFilterMonthClick(this);else try{this.showPicker()}catch(e){}" style="cursor: pointer;">
+                            <button class="btn btn-outline-secondary" type="button" onclick="if(window.changePayrollFilterMonth)window.changePayrollFilterMonth(1)" title="ខែបន្ទាប់ (Next Month)">
                                 <i class="bi bi-chevron-right"></i>
                             </button>
-                            <button class="btn btn-outline-primary" type="button" onclick="openPayrollFilterMonthModal()" title="ជ្រើសរើសខែ និងឆ្នាំ (Select Month/Year)">
+                            <button class="btn btn-outline-primary" type="button" onclick="if(window.openPayrollFilterMonthModal)window.openPayrollFilterMonthModal()" title="ជ្រើសរើសខែ និងឆ្នាំ (Select Month/Year)">
                                 <i class="bi bi-calendar3"></i>
                             </button>
                         </div>
@@ -317,23 +317,23 @@
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <label class="form-label small fw-bold text-dark mb-0">ជ្រើសរើសខែ និងឆ្នាំ (Month / Year)</label>
                             <div class="d-flex gap-1">
-                                <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 rounded-pill" style="font-size: 0.74rem;" onclick="setGenPayrollMonthShortcut('prev')" title="ជ្រើសរើសខែមុន (Previous Month)">
+                                <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 rounded-pill" style="font-size: 0.74rem;" onclick="if(window.setGenPayrollMonthShortcut)window.setGenPayrollMonthShortcut('prev')" title="ជ្រើសរើសខែមុន (Previous Month)">
                                     <i class="bi bi-arrow-left me-1"></i>ខែមុន
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 rounded-pill" style="font-size: 0.74rem;" onclick="setGenPayrollMonthShortcut('current')" title="ជ្រើសរើសខែនេះ (Current Month)">
+                                <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 rounded-pill" style="font-size: 0.74rem;" onclick="if(window.setGenPayrollMonthShortcut)window.setGenPayrollMonthShortcut('current')" title="ជ្រើសរើសខែនេះ (Current Month)">
                                     <i class="bi bi-clock me-1"></i>ខែនេះ
                                 </button>
                             </div>
                         </div>
                         <div class="input-group">
-                            <button class="btn btn-outline-secondary" type="button" onclick="changeGenPayrollMonth(-1)" title="ខែមុន (Previous Month)">
+                            <button class="btn btn-outline-secondary" type="button" onclick="if(window.changeGenPayrollMonth)window.changeGenPayrollMonth(-1)" title="ខែមុន (Previous Month)">
                                 <i class="bi bi-chevron-left"></i>
                             </button>
-                            <input type="month" class="form-control text-center fw-bold fs-6" id="genPayMonth" onchange="checkPayrollPeriodAvailability()" onclick="handleGenPayrollMonthClick(this)" style="cursor: pointer;" required>
-                            <button class="btn btn-outline-secondary" type="button" onclick="changeGenPayrollMonth(1)" title="ខែបន្ទាប់ (Next Month)">
+                            <input type="month" class="form-control text-center fw-bold fs-6" id="genPayMonth" onchange="if(window.checkPayrollPeriodAvailability)window.checkPayrollPeriodAvailability()" onclick="if(window.handleGenPayrollMonthClick)window.handleGenPayrollMonthClick(this);else try{this.showPicker()}catch(e){}" style="cursor: pointer;" required>
+                            <button class="btn btn-outline-secondary" type="button" onclick="if(window.changeGenPayrollMonth)window.changeGenPayrollMonth(1)" title="ខែបន្ទាប់ (Next Month)">
                                 <i class="bi bi-chevron-right"></i>
                             </button>
-                            <button class="btn btn-outline-primary" type="button" onclick="openGenPayrollMonthModal()" title="ជ្រើសរើសខែ និងឆ្នាំ (Select Month/Year)">
+                            <button class="btn btn-outline-primary" type="button" onclick="if(window.openGenPayrollMonthModal)window.openGenPayrollMonthModal()" title="ជ្រើសរើសខែ និងឆ្នាំ (Select Month/Year)">
                                 <i class="bi bi-calendar3"></i>
                             </button>
                         </div>
@@ -504,7 +504,7 @@
                 </div>
             </div>
             <div class="modal-footer border-0 bg-body-tertiary py-2 justify-content-between">
-                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" onclick="selectPayrollPickerThisMonth()">
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" onclick="if(window.selectPayrollPickerThisMonth)window.selectPayrollPickerThisMonth()">
                     <i class="bi bi-clock-history me-1"></i>ខែនេះ (This Month)
                 </button>
                 <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">បិទ</button>
@@ -512,3 +512,17 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Safeguard stubs in case template is rendered before payroll.js completes loading
+    if (!window.handlePayrollFilterMonthClick) {
+        window.handlePayrollFilterMonthClick = function(el) {
+            try { if (el && typeof el.showPicker === 'function') el.showPicker(); } catch(e) {}
+        };
+    }
+    if (!window.handleGenPayrollMonthClick) {
+        window.handleGenPayrollMonthClick = function(el) {
+            try { if (el && typeof el.showPicker === 'function') el.showPicker(); } catch(e) {}
+        };
+    }
+</script>
