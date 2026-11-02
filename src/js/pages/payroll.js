@@ -245,17 +245,224 @@ window.loadPayrollBatches = async function() {
     }
 };
 
-// ====== 3. GENERATE PAYROLL MODAL & LOGIC ======
+// ====== 3. GENERATE PAYROLL MODAL & MONTH HELPERS ======
+let payrollModalPickerYear = new Date().getFullYear();
+let payrollMonthPickerTarget = 'genPayMonth'; // 'genPayMonth' or 'payrollFilterMonth'
+
+window.changeGenPayrollMonth = function(delta) {
+    const input = document.getElementById('genPayMonth');
+    if (!input) return;
+    let val = input.value;
+    let y, m;
+    if (val && val.includes('-')) {
+        const [yStr, mStr] = val.split('-');
+        y = parseInt(yStr, 10);
+        m = parseInt(mStr, 10);
+    } else {
+        const now = new Date();
+        y = now.getFullYear();
+        m = now.getMonth() + 1;
+    }
+    m += delta;
+    if (m < 1) {
+        m = 12;
+        y -= 1;
+    } else if (m > 12) {
+        m = 1;
+        y += 1;
+    }
+    input.value = `${y}-${String(m).padStart(2, '0')}`;
+    input.dispatchEvent(new Event('change'));
+    checkPayrollPeriodAvailability();
+};
+
+window.setGenPayrollMonthShortcut = function(type) {
+    const input = document.getElementById('genPayMonth');
+    if (!input) return;
+    const now = new Date();
+    let y = now.getFullYear();
+    let m = now.getMonth() + 1;
+    if (type === 'prev') {
+        m -= 1;
+        if (m < 1) {
+            m = 12;
+            y -= 1;
+        }
+    }
+    input.value = `${y}-${String(m).padStart(2, '0')}`;
+    input.dispatchEvent(new Event('change'));
+    checkPayrollPeriodAvailability();
+};
+
+window.handleGenPayrollMonthClick = function(inputEl) {
+    if (inputEl && typeof inputEl.showPicker === 'function') {
+        try {
+            inputEl.showPicker();
+            return;
+        } catch (e) {}
+    }
+    openGenPayrollMonthModal();
+};
+
+window.openGenPayrollMonthModal = function() {
+    payrollMonthPickerTarget = 'genPayMonth';
+    openPayrollMonthPickerModal();
+};
+
+window.changePayrollFilterMonth = function(delta) {
+    const input = document.getElementById('payrollFilterMonth');
+    if (!input) return;
+    let val = input.value;
+    let y, m;
+    if (val && val.includes('-')) {
+        const [yStr, mStr] = val.split('-');
+        y = parseInt(yStr, 10);
+        m = parseInt(mStr, 10);
+    } else {
+        const now = new Date();
+        y = now.getFullYear();
+        m = now.getMonth() + 1;
+    }
+    m += delta;
+    if (m < 1) {
+        m = 12;
+        y -= 1;
+    } else if (m > 12) {
+        m = 1;
+        y += 1;
+    }
+    input.value = `${y}-${String(m).padStart(2, '0')}`;
+    input.dispatchEvent(new Event('change'));
+    loadPayrollBatches();
+};
+
+window.handlePayrollFilterMonthClick = function(inputEl) {
+    if (inputEl && typeof inputEl.showPicker === 'function') {
+        try {
+            inputEl.showPicker();
+            return;
+        } catch (e) {}
+    }
+    openPayrollFilterMonthModal();
+};
+
+window.openPayrollFilterMonthModal = function() {
+    payrollMonthPickerTarget = 'payrollFilterMonth';
+    openPayrollMonthPickerModal();
+};
+
+function openPayrollMonthPickerModal() {
+    const targetInput = document.getElementById(payrollMonthPickerTarget);
+    let curVal = targetInput ? targetInput.value : '';
+    if (!curVal) {
+        const today = new Date();
+        curVal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    }
+    const [yStr, mStr] = curVal.split('-');
+    payrollModalPickerYear = parseInt(yStr, 10) || new Date().getFullYear();
+    const curMonth = parseInt(mStr, 10) || (new Date().getMonth() + 1);
+
+    renderPayrollMonthModalGrid(payrollModalPickerYear, curMonth);
+
+    const modalEl = document.getElementById('payrollMonthPickerModal');
+    if (modalEl) {
+        let modal = bootstrap.Modal.getInstance(modalEl);
+        if (!modal) modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+}
+
+window.changePayrollModalYear = function(delta) {
+    payrollModalPickerYear += delta;
+    const targetInput = document.getElementById(payrollMonthPickerTarget);
+    let curMonth = 0;
+    if (targetInput && targetInput.value) {
+        const [y, m] = targetInput.value.split('-');
+        if (parseInt(y, 10) === payrollModalPickerYear) {
+            curMonth = parseInt(m, 10);
+        }
+    }
+    renderPayrollMonthModalGrid(payrollModalPickerYear, curMonth);
+};
+
+window.renderPayrollMonthModalGrid = function(year, selectedMonth) {
+    const yearText = document.getElementById('payrollModalYearText');
+    if (yearText) yearText.textContent = year;
+
+    const grid = document.getElementById('payrollModalMonthGrid');
+    if (!grid) return;
+
+    const months = [
+        { num: 1, km: 'មករា', en: 'Jan' },
+        { num: 2, km: 'កុម្ភៈ', en: 'Feb' },
+        { num: 3, km: 'មីនា', en: 'Mar' },
+        { num: 4, km: 'មេសា', en: 'Apr' },
+        { num: 5, km: 'ឧសភា', en: 'May' },
+        { num: 6, km: 'មិថុនា', en: 'Jun' },
+        { num: 7, km: 'កក្កដា', en: 'Jul' },
+        { num: 8, km: 'សីហា', en: 'Aug' },
+        { num: 9, km: 'កញ្ញា', en: 'Sep' },
+        { num: 10, km: 'តុលា', en: 'Oct' },
+        { num: 11, km: 'វិច្ឆិកា', en: 'Nov' },
+        { num: 12, km: 'ធ្នូ', en: 'Dec' }
+    ];
+
+    let html = '';
+    months.forEach(m => {
+        const isSelected = (m.num === selectedMonth);
+        const btnClass = isSelected ? 'btn-primary text-white shadow-sm fw-bold' : 'btn-outline-secondary';
+        html += `
+            <div class="col-4">
+                <button type="button" class="btn ${btnClass} btn-sm w-100 py-2 d-flex flex-column align-items-center rounded-3" onclick="selectPayrollPickerMonth(${year}, ${m.num})">
+                    <span style="font-size: 0.85rem; font-weight: 600;">${m.km}</span>
+                    <small style="font-size: 0.68rem; opacity: 0.85;">${m.en}</small>
+                </button>
+            </div>
+        `;
+    });
+    grid.innerHTML = html;
+};
+
+window.selectPayrollPickerMonth = function(year, month) {
+    const targetInput = document.getElementById(payrollMonthPickerTarget);
+    if (targetInput) {
+        targetInput.value = `${year}-${String(month).padStart(2, '0')}`;
+        targetInput.dispatchEvent(new Event('change'));
+    }
+    const modalEl = document.getElementById('payrollMonthPickerModal');
+    if (modalEl) {
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+    }
+    if (payrollMonthPickerTarget === 'genPayMonth') {
+        checkPayrollPeriodAvailability();
+    } else {
+        loadPayrollBatches();
+    }
+};
+
+window.selectPayrollPickerThisMonth = function() {
+    const today = new Date();
+    selectPayrollPickerMonth(today.getFullYear(), today.getMonth() + 1);
+};
+
 window.openGeneratePayrollModal = async function() {
     const modalEl = document.getElementById('generatePayrollModal');
     if (!modalEl) return;
 
     const genMonth = document.getElementById('genPayMonth');
-    if (genMonth && !genMonth.value) {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        genMonth.value = `${yyyy}-${mm}`;
+    const filterMonth = document.getElementById('payrollFilterMonth');
+    if (genMonth) {
+        if (!genMonth.value || genMonth.value === '') {
+            if (filterMonth && filterMonth.value) {
+                genMonth.value = filterMonth.value;
+            } else {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                genMonth.value = `${yyyy}-${mm}`;
+            }
+        }
     }
 
     // Check availability for selected month & periods
@@ -646,7 +853,7 @@ window.handleGeneratePayroll = async function(e) {
 
         // Batch object
         const batchData = {
-            id: existingId || Date.now(),
+            id: Date.now() + Math.floor(Math.random() * 1000),
             year: year,
             month: month,
             period: period,
@@ -654,45 +861,16 @@ window.handleGeneratePayroll = async function(e) {
             title: `ខែ${getKhmerMonthName(month)} ឆ្នាំ${year} - លើកទី ${period} (ថ្ងៃទី ${period === 1 ? '០១ ដល់ ១៥' : '១៦ ដល់ ' + lastDayOfMonth})`,
             startDate: startDate,
             endDate: endDate,
-            status: existing ? existing.status : 'Draft',
-            expenseTransactionId: existing ? (existing.expenseTransactionId || null) : null,
-            isExpenseRecorded: existing ? Boolean(existing.isExpenseRecorded) : false,
+            status: 'Draft',
+            expenseTransactionId: null,
+            isExpenseRecorded: false,
             note: note,
-            createdAt: existing ? existing.createdAt : new Date().toISOString(),
+            createdAt: new Date().toISOString(),
             createdBy: currentUser ? (currentUser.fullname || currentUser.username) : 'Admin',
             items: items
         };
 
-        if (existingId) {
-            await db.payroll.update(existingId, batchData);
-
-            // If existing batch was already Paid and has linked expense transaction, sync updated amount
-            if (existing && existing.status === 'Paid' && (existing.expenseTransactionId || batchData.expenseTransactionId)) {
-                try {
-                    let totalNetUSD = 0;
-                    items.forEach(it => {
-                        const n = parseFloat(it.netSalary) || 0;
-                        if (it.currency === 'KHR') {
-                            totalNetUSD += (n / (window.sysExchangeRate || 4100));
-                        } else {
-                            totalNetUSD += n;
-                        }
-                    });
-                    totalNetUSD = parseFloat(totalNetUSD.toFixed(2));
-                    const txId = existing.expenseTransactionId || batchData.expenseTransactionId;
-                    if (txId && db.transactions) {
-                        await db.transactions.update(txId, {
-                            amount: totalNetUSD,
-                            payrollBatchId: existingId
-                        });
-                    }
-                } catch (e) {
-                    console.warn("Could not sync updated amount to existing expense transaction:", e);
-                }
-            }
-        } else {
-            await db.payroll.add(batchData);
-        }
+        await db.payroll.add(batchData);
 
         // Close modal
         const modalEl = document.getElementById('generatePayrollModal');

@@ -88,9 +88,20 @@
         <div class="card shadow-sm border-0 rounded-3 mb-4">
             <div class="card-body py-3 border-bottom bg-light bg-opacity-50">
                 <div class="row g-2 align-items-center">
-                    <div class="col-md-3 col-6">
+                    <div class="col-md-4 col-12">
                         <label class="form-label text-muted small fw-bold mb-1">ខែ/ឆ្នាំ (Filter Month)</label>
-                        <input type="month" class="form-control form-control-sm" id="payrollFilterMonth" onchange="loadPayrollBatches()" onclick="try{this.showPicker()}catch(e){}" style="cursor: pointer;">
+                        <div class="input-group input-group-sm">
+                            <button class="btn btn-outline-secondary" type="button" onclick="changePayrollFilterMonth(-1)" title="ខែមុន (Previous Month)">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <input type="month" class="form-control form-control-sm text-center fw-bold" id="payrollFilterMonth" onchange="loadPayrollBatches()" onclick="handlePayrollFilterMonthClick(this)" style="cursor: pointer;">
+                            <button class="btn btn-outline-secondary" type="button" onclick="changePayrollFilterMonth(1)" title="ខែបន្ទាប់ (Next Month)">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <button class="btn btn-outline-primary" type="button" onclick="openPayrollFilterMonthModal()" title="ជ្រើសរើសខែ និងឆ្នាំ (Select Month/Year)">
+                                <i class="bi bi-calendar3"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <label class="form-label text-muted small fw-bold mb-1">ស្ថានភាព (Status)</label>
@@ -101,7 +112,7 @@
                             <option value="Paid">Paid (បានទូទាត់)</option>
                         </select>
                     </div>
-                    <div class="col-md-6 col-12 text-md-end text-start pt-md-3">
+                    <div class="col-md-5 col-6 text-md-end text-start pt-md-3">
                         <button class="btn btn-outline-secondary btn-sm px-3" onclick="resetPayrollFilters()">
                             <i class="bi bi-arrow-counterclockwise"></i> សម្អាត Filter
                         </button>
@@ -303,8 +314,32 @@
             <div class="modal-body p-4">
                 <form id="generatePayrollForm" onsubmit="handleGeneratePayroll(event)">
                     <div class="mb-3">
-                        <label class="form-label small fw-bold text-dark">ជ្រើសរើសខែ និងឆ្នាំ (Month / Year)</label>
-                        <input type="month" class="form-control" id="genPayMonth" onchange="checkPayrollPeriodAvailability()" required>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label small fw-bold text-dark mb-0">ជ្រើសរើសខែ និងឆ្នាំ (Month / Year)</label>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 rounded-pill" style="font-size: 0.74rem;" onclick="setGenPayrollMonthShortcut('prev')" title="ជ្រើសរើសខែមុន (Previous Month)">
+                                    <i class="bi bi-arrow-left me-1"></i>ខែមុន
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 rounded-pill" style="font-size: 0.74rem;" onclick="setGenPayrollMonthShortcut('current')" title="ជ្រើសរើសខែនេះ (Current Month)">
+                                    <i class="bi bi-clock me-1"></i>ខែនេះ
+                                </button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeGenPayrollMonth(-1)" title="ខែមុន (Previous Month)">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <input type="month" class="form-control text-center fw-bold fs-6" id="genPayMonth" onchange="checkPayrollPeriodAvailability()" onclick="handleGenPayrollMonthClick(this)" style="cursor: pointer;" required>
+                            <button class="btn btn-outline-secondary" type="button" onclick="changeGenPayrollMonth(1)" title="ខែបន្ទាប់ (Next Month)">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <button class="btn btn-outline-primary" type="button" onclick="openGenPayrollMonthModal()" title="ជ្រើសរើសខែ និងឆ្នាំ (Select Month/Year)">
+                                <i class="bi bi-calendar3"></i>
+                            </button>
+                        </div>
+                        <div class="text-muted mt-1" style="font-size: 0.78rem;">
+                            <i class="bi bi-info-circle me-1 text-primary"></i>ចុច <span class="badge bg-light text-dark border">◀</span> ឬ <span class="badge bg-light text-dark border">▶</span> ឬចុច <span class="badge bg-primary-subtle text-primary border border-primary">📅</span> ដើម្បីប្តូរខែ (ឧ. ប្តូរទៅខែតុលា)
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -437,6 +472,42 @@
                 <div id="payslip-render-container" class="p-4 bg-white">
                     <!-- Dynamic Payslip Content Injected Here -->
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Month Selector Modal for Payroll -->
+<div class="modal fade" id="payrollMonthPickerModal" tabindex="-1" aria-labelledby="payrollMonthPickerModalLabel" aria-hidden="true" style="z-index: 1065;">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-primary text-white border-bottom py-2">
+                <h6 class="modal-title fw-bold" id="payrollMonthPickerModalLabel">
+                    <i class="bi bi-calendar3 me-2"></i>ជ្រើសរើសខែ និងឆ្នាំ (Select Month)
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-3">
+                <!-- Year selector -->
+                <div class="d-flex align-items-center justify-content-between mb-3 bg-body-tertiary rounded-3 p-2 border">
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle" onclick="changePayrollModalYear(-1)" style="width: 32px; height: 32px;" title="ឆ្នាំមុន (Previous Year)">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <span class="fw-bold fs-5 text-primary" id="payrollModalYearText">2026</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle" onclick="changePayrollModalYear(1)" style="width: 32px; height: 32px;" title="ឆ្នាំបន្ទាប់ (Next Year)">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+                <!-- 12 Month Grid -->
+                <div class="row g-2" id="payrollModalMonthGrid">
+                    <!-- Injected dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-body-tertiary py-2 justify-content-between">
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" onclick="selectPayrollPickerThisMonth()">
+                    <i class="bi bi-clock-history me-1"></i>ខែនេះ (This Month)
+                </button>
+                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">បិទ</button>
             </div>
         </div>
     </div>
